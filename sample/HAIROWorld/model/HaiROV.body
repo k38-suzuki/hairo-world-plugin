@@ -1,0 +1,155 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: HaiROV
+
+ORANGE_APP: &OrangeApp
+  appearance:
+    material:
+      diffuseColor: [ 1.0, 0.5, 0.0 ]
+      specularColor: [ 0.2, 0.1, 0.0 ]
+      shininess: 0.6
+
+GREEN_APP: &GreenApp
+  appearance:
+    material:
+      diffuseColor: [ 0, 1, 0 ]
+      specularColor: [ 0, 0.2, 0 ]
+      shininess: 0.6
+
+RED_APP: &RedApp
+  appearance:
+    material:
+      diffuseColor: [ 1, 0, 0 ]
+      specularColor: [ 0.2, 0, 0 ]
+      shininess: 0.6
+
+THRUSTER_COMMON: &ThrusterCommon
+  parent: CHASSIS
+  jointType: fixed
+  centerOfMass: [ 0, 0, 0 ]
+  mass: 0.1
+  inertia: [ 2.83333e-05, 0, 0, 0, 2.83333e-05, 0, 0, 0, 4.16667e-05 ]
+  density: 1000.0
+  surface: [ 0.0015, 0.0015, 0.0015, 0.0015, 0.0025, 0.0025 ]
+  cdw: 1.2
+  tw: 0.2
+
+THRUSTER_COMMON_SHAPE: &ThrusterCommonShape
+  type: Shape
+  geometry:
+    type: Box
+    size: [ 0.05, 0.05, 0.03 ]
+
+CAMERA_COMMON: &CameraCommon
+  type: Camera
+  format: COLOR
+  fieldOfView: 62
+  nearClipDistance: 0.02
+  width: 640
+  height: 480
+  frameRate: 30
+  elements:
+    Shape:
+      rotation: [ 1, 0, 0, 90 ]
+      geometry:
+        type: Cylinder
+        radius: 0.03
+        height: 0.02
+      appearance:
+        material:
+          diffuseColor: [ 0.2, 0.2, 0.8 ]
+          specularColor: [ 0.6, 0.6, 1.0 ]
+          shininess: 0.6
+          transparency: 0.5
+
+links:
+  -
+    name: CHASSIS
+    translation: [ 0, 0, 0 ]
+    jointType: free
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 5.0
+    inertia: [ 0.0260417, 0, 0, 0, 0.0260417, 0, 0, 0, 0.0333333 ]
+    density: 1000.0
+    surface: [ 0.03, 0.03, 0.03, 0.03, 0.04, 0.04 ]
+    cdw: 1.2
+    tw: 0.2
+    elements:
+      -
+        type: Shape
+        geometry:
+          type: Box
+          size: [ 0.2, 0.2, 0.15 ]
+        <<: *OrangeApp
+      - <<: *CameraCommon
+        name: FrontCamera
+        translation: [ 0.11, 0, 0 ]
+        rotation: [ [ 1, 0, 0, 90 ], [ 0, 1, 0, -90 ] ]
+      - <<: *CameraCommon
+        name: BottomCamera
+        translation: [ 0, 0, -0.08 ]
+      -
+        type: RateGyroSensor
+        name: GyroSensor
+        maxAngularVelocity: 1000.0
+      -
+        type: PassiveMarker
+        name: GreenMarker
+        translation: [ -0.15, 0.0, 0.0 ]
+        radius: 0.03
+        color: [ 0.0, 1.0, 0.0 ]
+        transparency: 0.3
+      -
+        type: Thruster
+        name: Thruster_R
+        translation: [ 0.0, -0.1, 0.0 ]
+      -
+        type: Thruster
+        name: Thruster_L
+        translation: [ 0.0, 0.1, 0.0 ]
+  -
+    name: THRUSTER_RF
+    translation: [ 0.1, -0.1, 0.035 ]
+    <<: *ThrusterCommon
+    elements:
+      - <<: *ThrusterCommonShape
+        <<: *GreenApp
+      -
+        type: Thruster
+        name: Thruster_RF
+        rotation: [ 0, 1, 0, -90 ]
+  -
+    name: THRUSTER_LF
+    translation: [ 0.1, 0.1, 0.035 ]
+    <<: *ThrusterCommon
+    elements:
+      - <<: *ThrusterCommonShape
+        <<: *GreenApp
+      -
+        type: Thruster
+        name: Thruster_LF
+        rotation: [ 0, 1, 0, -90 ]
+  -
+    name: THRUSTER_LR
+    translation: [ -0.1, 0.1, 0.035 ]
+    <<: *ThrusterCommon
+    elements:
+      - <<: *ThrusterCommonShape
+        <<: *RedApp
+      -
+        type: Thruster
+        name: Thruster_LR
+        rotation: [ 0, 1, 0, -90 ]
+  -
+    name: THRUSTER_RR
+    translation: [ -0.1, -0.1, 0.035 ]
+    <<: *ThrusterCommon
+    elements:
+      - <<: *ThrusterCommonShape
+        <<: *RedApp
+      -
+        type: Thruster
+        name: Thruster_RR
+        rotation: [ 0, 1, 0, -90 ]
+

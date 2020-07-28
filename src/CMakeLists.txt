@@ -1,0 +1,11 @@
+
+if(ENABLE_GUI)
+    add_subdirectory(BodyEditPlugin)
+    add_subdirectory(BoxTerrainBuilderPlugin)
+    add_subdirectory(CrawlerRobotBuilderPlugin)
+    add_subdirectory(FluidDynamicsPlugin)
+    add_subdirectory(ImageEffectPlugin)
+    add_subdirectory(JoystickStartPlugin)
+    add_subdirectory(MotionCapturePlugin)
+    add_subdirectory(TCPlugin)
+endif()

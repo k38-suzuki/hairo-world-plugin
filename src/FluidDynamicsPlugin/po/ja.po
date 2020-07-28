@@ -1,0 +1,98 @@
+# Japanese translations for PACKAGE package.
+# Copyright (C) 2020 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# suzuki <suzuki.kenta38@jaea.go.jp>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-02-05 22:34+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../FluidAreaItem.cpp:178
+msgid "Box"
+msgstr ""
+
+#: ../FluidAreaItem.cpp:179
+msgid "Cylinder"
+msgstr ""
+
+#: ../FluidAreaItem.cpp:180
+msgid "Sphere"
+msgstr ""
+
+#: ../FluidAreaItem.cpp:232
+msgid "FluidAreaItem"
+msgstr "流体エリアアイテム"
+
+#: ../FluidAreaItem.cpp:236
+msgid "Fluid Area"
+msgstr "流体エリア"
+
+#: ../FluidAreaItem.cpp:251
+msgid "Density"
+msgstr "密度"
+
+#: ../FluidAreaItem.cpp:253
+msgid "Viscosity"
+msgstr "粘度"
+
+#: ../FluidAreaItem.cpp:255
+msgid "Flow"
+msgstr "定常流"
+
+#: ../FluidAreaItem.cpp:256
+msgid "Shape"
+msgstr "形状"
+
+#: ../FluidAreaItem.cpp:259
+msgid "Size"
+msgstr "サイズ"
+
+#: ../FluidAreaItem.cpp:263
+msgid "Radius"
+msgstr "半径"
+
+#: ../FluidAreaItem.cpp:266
+msgid "Height"
+msgstr "高さ"
+
+#: ../FluidAreaItem.cpp:270
+msgid "Translation"
+msgstr "位置"
+
+#: ../FluidAreaItem.cpp:273
+msgid "RPY"
+msgstr "回転"
+
+#: ../FluidAreaItem.cpp:276
+msgid "DiffuseColor"
+msgstr "拡散色"
+
+#: ../FluidAreaItem.cpp:278
+msgid "EmissiveColor"
+msgstr "発光色"
+
+#: ../FluidAreaItem.cpp:280
+msgid "SpecularColor"
+msgstr "鏡面色"
+
+#: ../FluidAreaItem.cpp:282
+msgid "Shininess"
+msgstr "輝度"
+
+#: ../FluidAreaItem.cpp:284
+msgid "Transparency"
+msgstr "透過度"
+
+#: ../FluidDynamicsSimulatorItem.cpp:89
+msgid "FluidDynamicsSimulatorItem"
+msgstr "流体力学シミュレータアイテム"

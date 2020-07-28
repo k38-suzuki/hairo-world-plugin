@@ -1,0 +1,68 @@
+# Japanese translations for PACKAGE package.
+# Copyright (C) 2020 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# suzuki <suzuki.kenta38@jaea.go.jp>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-02-05 22:34+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../JoystickStartPlugin.cpp:56
+msgid "JoystickStart"
+msgstr "ジョイスティックスタート"
+
+#: ../JoystickStartPlugin.cpp:58
+msgid "Use JoystickStart"
+msgstr "スタートボタンでシミュレーションを開始"
+
+#: ../JoystickStartPlugin.cpp:60
+msgid "Use JoystickLoad"
+msgstr "ロゴボタンでプロジェクトファイルを読み込む"
+
+#: ../JoystickStartPlugin.cpp:137
+msgid "There is no simulator item."
+msgstr "シミュレータアイテムがありません."
+
+#: ../JoystickStartPlugin.cpp:141
+msgid "Please select a simulator item to simulate."
+msgstr "シミュレータアイテムを選択してください."
+
+#: ../JoystickStartPlugin.cpp:171
+msgid "{} cannot be processed because it is not related with a world."
+msgstr ""
+
+#: ../JoystickStartPlugin.cpp:177
+msgid ""
+"{} cannot be processed because another simulatorin the same world is also "
+"selected."
+msgstr ""
+
+#: ../JoystickStartPlugin.cpp:207
+msgid "Open a Choreonoid project file"
+msgstr "Choreonoidプロジェクトファイルの読み込み"
+
+#: ../JoystickStartPlugin.cpp:210
+msgid "Open"
+msgstr "読み込み"
+
+#: ../JoystickStartPlugin.cpp:211
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: ../JoystickStartPlugin.cpp:214
+msgid "Project files (*.cnoid)"
+msgstr ""
+
+#: ../JoystickStartPlugin.cpp:215
+msgid "Any files (*)"
+msgstr ""

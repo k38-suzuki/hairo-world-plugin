@@ -1,0 +1,158 @@
+# Japanese translations for PACKAGE package.
+# Copyright (C) 2020 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# suzuki <suzuki.kenta38@jaea.go.jp>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-02-05 22:34+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../CrawlerRobotBuilderDialog.cpp:33 ../CrawlerRobotBuilderDialog.cpp:424
+msgid "CrawlerRobotBuilder"
+msgstr "クローラロボットビルダ"
+
+#: ../CrawlerRobotBuilderDialog.cpp:37
+msgid "New Body"
+msgstr "新規"
+
+#: ../CrawlerRobotBuilderDialog.cpp:38
+msgid "Export Body"
+msgstr "ボディを保存"
+
+#: ../CrawlerRobotBuilderDialog.cpp:39
+msgid "Import YAML"
+msgstr "YAMLの読み込み"
+
+#: ../CrawlerRobotBuilderDialog.cpp:40
+msgid "Export YAML"
+msgstr "YAMLを保存"
+
+#: ../CrawlerRobotBuilderDialog.cpp:159
+msgid "Chassis"
+msgstr "シャーシ"
+
+#: ../CrawlerRobotBuilderDialog.cpp:160 ../CrawlerRobotBuilderDialog.cpp:178
+#: ../CrawlerRobotBuilderDialog.cpp:206 ../CrawlerRobotBuilderDialog.cpp:235
+#: ../CrawlerRobotBuilderDialog.cpp:258
+msgid "mass [kg]"
+msgstr "質量 [kg]"
+
+#: ../CrawlerRobotBuilderDialog.cpp:162 ../CrawlerRobotBuilderDialog.cpp:180
+#: ../CrawlerRobotBuilderDialog.cpp:208 ../CrawlerRobotBuilderDialog.cpp:237
+#: ../CrawlerRobotBuilderDialog.cpp:260
+msgid "color"
+msgstr "色"
+
+#: ../CrawlerRobotBuilderDialog.cpp:168
+msgid "size(x-y-z) [m, m, m]"
+msgstr "サイズ(x-y-z)[m, m, m]"
+
+#: ../CrawlerRobotBuilderDialog.cpp:177
+msgid "Track"
+msgstr "トラック"
+
+#: ../CrawlerRobotBuilderDialog.cpp:186 ../CrawlerRobotBuilderDialog.cpp:266
+msgid "radius [m]"
+msgstr "半径 [m]"
+
+#: ../CrawlerRobotBuilderDialog.cpp:190 ../CrawlerRobotBuilderDialog.cpp:219
+#: ../CrawlerRobotBuilderDialog.cpp:248 ../CrawlerRobotBuilderDialog.cpp:270
+msgid "width [m]"
+msgstr "幅 [m]"
+
+#: ../CrawlerRobotBuilderDialog.cpp:192 ../CrawlerRobotBuilderDialog.cpp:221
+#: ../CrawlerRobotBuilderDialog.cpp:250
+msgid "wheelbase [m]"
+msgstr "ホイールベース [m]"
+
+#: ../CrawlerRobotBuilderDialog.cpp:202
+msgid "Front SubTrack"
+msgstr "サブトラック（前）"
+
+#: ../CrawlerRobotBuilderDialog.cpp:214 ../CrawlerRobotBuilderDialog.cpp:243
+msgid "radius(forward-backward) [m]"
+msgstr "半径（前-後） [m]"
+
+#: ../CrawlerRobotBuilderDialog.cpp:232
+msgid "Rear SubTrack"
+msgstr "サブトラック（後）"
+
+#: ../CrawlerRobotBuilderDialog.cpp:257
+msgid "Spacer"
+msgstr "スペーサ"
+
+#: ../CrawlerRobotBuilderDialog.cpp:276
+msgid "Track Belt"
+msgstr "ベルト（トラック）"
+
+#: ../CrawlerRobotBuilderDialog.cpp:278 ../CrawlerRobotBuilderDialog.cpp:328
+msgid "number of nodes [-]"
+msgstr "ノードの数"
+
+#: ../CrawlerRobotBuilderDialog.cpp:280 ../CrawlerRobotBuilderDialog.cpp:330
+msgid "node thickness [m]"
+msgstr "ノードの厚さ（凹）"
+
+#: ../CrawlerRobotBuilderDialog.cpp:283 ../CrawlerRobotBuilderDialog.cpp:333
+msgid "node width [m]"
+msgstr "ノードの幅"
+
+#: ../CrawlerRobotBuilderDialog.cpp:285 ../CrawlerRobotBuilderDialog.cpp:335
+msgid "node thickerthickness [m]"
+msgstr "ノードの厚さ（凸）"
+
+#: ../CrawlerRobotBuilderDialog.cpp:288 ../CrawlerRobotBuilderDialog.cpp:338
+msgid "use thicker node every [-]"
+msgstr "ノードの周期"
+
+#: ../CrawlerRobotBuilderDialog.cpp:291 ../CrawlerRobotBuilderDialog.cpp:341
+msgid "node distance tension [m]"
+msgstr "ノードのテンション"
+
+#: ../CrawlerRobotBuilderDialog.cpp:293 ../CrawlerRobotBuilderDialog.cpp:298
+#: ../CrawlerRobotBuilderDialog.cpp:306 ../CrawlerRobotBuilderDialog.cpp:343
+#: ../CrawlerRobotBuilderDialog.cpp:348 ../CrawlerRobotBuilderDialog.cpp:355
+msgid "e-"
+msgstr ""
+
+#: ../CrawlerRobotBuilderDialog.cpp:296 ../CrawlerRobotBuilderDialog.cpp:346
+msgid "stabilizing hinge friction parameter [-]"
+msgstr "ヒンジの摩擦"
+
+#: ../CrawlerRobotBuilderDialog.cpp:301 ../CrawlerRobotBuilderDialog.cpp:350
+msgid "min stabilizing hinge normal force [N]"
+msgstr "ヒンジの法線力"
+
+#: ../CrawlerRobotBuilderDialog.cpp:304 ../CrawlerRobotBuilderDialog.cpp:353
+msgid "hinge compliance [rad/Nm]"
+msgstr "ヒンジコンプライアンス"
+
+#: ../CrawlerRobotBuilderDialog.cpp:309 ../CrawlerRobotBuilderDialog.cpp:358
+msgid "hinge spook damping [s]"
+msgstr "ヒンジスプークダンパ"
+
+#: ../CrawlerRobotBuilderDialog.cpp:312 ../CrawlerRobotBuilderDialog.cpp:361
+msgid "nodes to wheels merge threshold [-]"
+msgstr "ノードのマージ閾値"
+
+#: ../CrawlerRobotBuilderDialog.cpp:314 ../CrawlerRobotBuilderDialog.cpp:363
+msgid "nodes to wheels split threshold [-]"
+msgstr "ノードのスプリット閾値"
+
+#: ../CrawlerRobotBuilderDialog.cpp:326
+msgid "SubTrack Belt"
+msgstr "ベルト（サブトラック）"
+
+#: ../CrawlerRobotBuilderDialog.cpp:376
+msgid "AGX"
+msgstr ""

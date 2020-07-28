@@ -1,0 +1,5 @@
+choreonoid_add_simple_controller(HaiROVJoystickController HaiROVJoystickController.cpp)
+target_link_libraries(HaiROVJoystickController CnoidFluidDynamicsPlugin)
+
+choreonoid_add_simple_controller(HobbyDroneJoystickController HobbyDroneJoystickController.cpp)
+target_link_libraries(HobbyDroneJoystickController CnoidFluidDynamicsPlugin)

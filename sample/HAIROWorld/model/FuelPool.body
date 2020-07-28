@@ -1,0 +1,271 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+name: FuelPool
+
+APP: &App
+  material: { diffuseColor: [ 0.6, 0.6, 0.6 ] }
+
+SHAPE: &Shape
+  -
+    type: Shape
+    geometry: { type: Box, size: [ 0.14, 0.14, 4.5 ] }
+    appearance: *App
+  -
+    type: Shape
+    translation: [ 0, 0, 2.3 ]
+    geometry: { type: Box, size: [ 0.17, 0.17, 0.1 ] }
+    appearance: *App
+  -
+    type: Shape
+    translation: [ 0, 0, -2.3 ]
+    geometry: { type: Box, size: [ 0.17, 0.17, 0.1 ] }
+    appearance: *App
+  -
+    type: Shape
+    translation: [ 0, 0, 2.375 ]
+    geometry: { type: Box, size: [ 0.15, 0.08, 0.05 ] }
+    appearance: *App
+
+LINE: &Line
+  -
+   type: Transform
+   translation: [ 0.0, 0.0, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, -0.2, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, -0.4, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, -0.6, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, -0.8, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, -1.0, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, -1.2, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, -1.4, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, -1.6, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, -1.8, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, -2.0, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, -2.2, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, -2.4, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, 0.2, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, 0.4, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, 0.6, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, 0.8, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, 1.0, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, 1.2, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, 1.4, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, 1.6, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, 1.8, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, 2.0, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, 2.2, 0.0 ]
+   elements: *Shape
+  -
+   type: Transform
+   translation: [ 0.0, 2.4, 0.0 ]
+   elements: *Shape
+
+BODY: &Body
+  parent: Line0
+  jointType: fixed
+  material: Ground
+  elements: *Line
+
+WALL: &Wall
+  parent: Line0
+  jointType: fixed
+  material: Ground
+  AMOR: true
+  elements:
+    Shape:
+      geometry: { type: Box, size: [ 0.2, 5.6, 5.0 ] }
+      appearance: *App
+
+links:
+  -
+    name: Line0
+    translation: [ 0.0, 0.0, -4.0 ]
+    jointType: fixed
+    material: Ground
+    elements: *Line
+  -
+    name: Line1
+    translation: [ 2.4, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line2
+    translation: [ 2.2, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line3
+    translation: [ 2.0, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line4
+    translation: [ 1.8, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line5
+    translation: [ 1.6, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line6
+    translation: [ 1.4, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line7
+    translation: [ 1.2, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line8
+    translation: [ 1.0, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line9
+    translation: [ 0.8, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line10
+    translation: [ 0.6, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line11
+    translation: [ 0.4, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line12
+    translation: [ 0.2, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line13
+    translation: [ -2.4, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line14
+    translation: [ -2.2, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line15
+    translation: [ -2.0, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line16
+    translation: [ -1.8, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line17
+    translation: [ -1.6, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line18
+    translation: [ -1.4, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line19
+    translation: [ -1.2, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line20
+    translation: [ -1.0, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line21
+    translation: [ -0.8, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line22
+    translation: [ -0.6, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line23
+    translation: [ -0.4, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: Line24
+    translation: [ -0.2, 0.0, 0.0 ]
+    <<: *Body
+  -
+    name: WALL_L
+    parent: Line0
+    translation: [ -2.7, 0.0, 2.0 ]
+    <<: *Wall
+  -
+    name: WALL_R
+    parent: Line0
+    translation: [ 2.7, 0.0, 2.0 ]
+    <<: *Wall
+  -
+    name: WALL_F
+    parent: Line0
+    translation: [ 0.0, 2.7, 2.0 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *Wall
+  -
+    name: WALL_B
+    parent: Line0
+    translation: [ 0.0, -2.7, 2.0 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *Wall

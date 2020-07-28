@@ -1,0 +1,2 @@
+choreonoid_add_simple_controller(BoxROVJoystickController BoxROVJoystickController.cpp)
+target_link_libraries(BoxROVJoystickController CnoidFluidDynamicsPlugin)

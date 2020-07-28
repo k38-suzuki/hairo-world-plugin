@@ -1,0 +1,69 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: BoxROV
+
+links:
+  -
+    name: CHASSIS
+    translation: [ 0, 0, 0.1 ]
+    jointType: free
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 3.0
+    inertia: [
+      0.02, 0, 0,
+      0, 0.02, 0,
+      0, 0, 0.02 ]
+    density: 1000.0
+    surface: [ 0.04, 0.04, 0.04, 0.04, 0.04, 0.04 ]
+    cdw: 1.2
+    tw: 0.2
+    elements:
+      -
+        type: Shape
+        geometry:
+          type: Box
+          size: [ 0.2, 0.2, 0.2 ]
+        appearance:
+          material:
+            diffuseColor: [ 0, 0.6, 0 ]
+            specularColor: [ 0.2, 0.8, 0.2 ]
+            shininess: 0.6
+      -
+        type: Thruster
+        name: LeftThruster
+        translation: [ -0.1, 0.1, 0 ]
+      -
+        type: Thruster
+        name: RightThruster
+        translation: [ -0.1, -0.1, 0 ]
+      -
+        type: PassiveMarker
+        name: RedMarker
+        translation: [ 0, 0, 0.15 ]
+        radius: 0.02
+        color: [ 1.0, 0, 0 ]
+        transparency: 0.5
+      - 
+        type: Camera
+        name: Camera
+        translation: [ 0, 0, -0.1 ]
+        rotation: [ 0, 0, 1, -90 ]
+        format: COLOR
+        fieldOfView: 62
+        nearClipDistance: 0.02
+        width: 640
+        height: 480
+        frameRate: 30
+        elements:
+          Shape:
+            rotation: [ 1, 0, 0, 90 ]
+            geometry:
+              type: Cylinder
+              radius: 0.02
+              height: 0.02
+            appearance:
+              material:
+                diffuseColor: [ 0.2, 0.2, 0.8 ]
+                specularColor: [ 0.6, 0.6, 1.0 ]
+                shininess: 0.6

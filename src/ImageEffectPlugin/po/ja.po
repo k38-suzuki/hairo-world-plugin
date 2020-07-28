@@ -1,0 +1,90 @@
+# Japanese translations for PACKAGE package.
+# Copyright (C) 2020 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# suzuki <suzuki.kenta38@jaea.go.jp>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-02-05 22:34+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../ImageDialog.cpp:47
+msgid "Configuration"
+msgstr "設定"
+
+#: ../ImageDialog.cpp:50
+msgid "Visual Effects"
+msgstr "視覚効果"
+
+#: ../ImageDialog.cpp:53
+msgid "Hue"
+msgstr "色相"
+
+#: ../ImageDialog.cpp:53
+msgid "Saturation"
+msgstr "彩度"
+
+#: ../ImageDialog.cpp:53
+msgid "Value"
+msgstr "明度"
+
+#: ../ImageDialog.cpp:54
+msgid "Red"
+msgstr "赤"
+
+#: ../ImageDialog.cpp:54
+msgid "Green"
+msgstr "緑"
+
+#: ../ImageDialog.cpp:54
+msgid "Blue"
+msgstr "青"
+
+#: ../ImageDialog.cpp:55
+msgid "CoefB"
+msgstr "歪み"
+
+#: ../ImageDialog.cpp:55
+msgid "CoefD"
+msgstr "拡大率"
+
+#: ../ImageDialog.cpp:55
+msgid "Std_dev"
+msgstr "標準偏差"
+
+#: ../ImageDialog.cpp:56
+msgid "Salt"
+msgstr "白色ノイズ"
+
+#: ../ImageDialog.cpp:56
+msgid "Pepper"
+msgstr "黒色ノイズ"
+
+#: ../ImageDialog.cpp:94
+msgid "Clear"
+msgstr "クリア"
+
+#: ../CameraVisualizerItem.cpp:101
+msgid "CameraVisualizer"
+msgstr "カメラビジュアライザ"
+
+#: ../CameraVisualizerItem.cpp:104
+msgid "CameraImageVisualizer2"
+msgstr "カメラ画像ビジュアライザ２"
+
+#: ../CameraVisualizerItem.cpp:105
+msgid "LightSwitcher"
+msgstr "ライトスイッチャ"
+
+#: ../CameraVisualizerItem.cpp:112
+msgid "Show the config dialog"
+msgstr "設定ダイアログの表示"
