@@ -1,2 +1,2 @@
 # hairo-world-plugin
-HAIROWorldPlugin
+HAIROWorldPlugin for Choreonoid
