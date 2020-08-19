@@ -59,6 +59,7 @@ items:
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
+          is_selected: true
           data: 
             timeStep: 0.001
             realtimeSync: true
@@ -84,45 +85,6 @@ items:
             kinematicWalking: false
             2Dmode: false
             oldAccelSensorMode: false
-          children: 
-            - 
-              id: 5
-              name: "FluidDynamicsSimulator"
-              plugin: FluidDynamics
-              class: FluidDynamicsSimulatorItem
-              data: 
-                enabled: true
-            - 
-              id: 6
-              name: "MotionCaptureSimulator"
-              plugin: MotionCapture
-              class: MotionCaptureSimulatorItem
-              data: 
-                enabled: true
-                record: true
-                cycleTime: 0.3
-                exportCsv: false
-        - 
-          id: 7
-          name: "FluidArea"
-          plugin: FluidDynamics
-          class: FluidAreaItem
-          is_checked: true
-          data: 
-            translation: [ 0, 0, 0 ]
-            rotation: [ 0, 0, 0 ]
-            density: 1000
-            viscosity: 0.001
-            type: "Box"
-            size: [ 2, 2, 2 ]
-            radius: 1
-            height: 1
-            flow: [ 0, 0, 0 ]
-            diffuseColor: [ 0, 1, 1 ]
-            emissiveColor: [ 0, 0, 0 ]
-            specularColor: [ 0, 0, 0 ]
-            shininess: 0
-            transparency: 0.8
 views: 
   - 
     id: 0
@@ -162,10 +124,9 @@ views:
       editMode: false
       viewpointControlMode: thirdPerson
       collisionLines: false
-      polygonMode: fill
       restrictCameraRoll: true
       verticalAxis: Z
-      lightingMode: full
+      lightingMode: normal
       cullingMode: enabled
       defaultHeadLight: true
       defaultHeadLightIntensity: 0.75
@@ -281,8 +242,16 @@ toolbars:
     speedScale: 1
     syncToOngoingUpdates: true
     autoExpansion: true
-  "LeggedBodyBar": 
-    stanceWidth: 0.15
+  "KinematicsBar": 
+    forward_kinematics: true
+    inverse_kinematics: true
+    preset_kinematics: true
+    enablePositionDragger: true
+    penetrationBlock: false
+    collisionLinkHighlight: false
+    snapDistance: 0.025
+    penetrationBlockDepth: 0.0005
+    lazyCollisionDetectionMode: true
   "BodyMotionGenerationBar": 
     autoGenerationForNewBody: true
     balancer: false
@@ -316,16 +285,8 @@ toolbars:
     waistHeightRelaxation: false
     gravity: 9.8
     dynamicsTimeRatio: 1
-  "KinematicsBar": 
-    forward_kinematics: true
-    inverse_kinematics: true
-    preset_kinematics: true
-    enablePositionDragger: true
-    penetrationBlock: false
-    collisionLinkHighlight: false
-    snapDistance: 0.025
-    penetrationBlockDepth: 0.0005
-    lazyCollisionDetectionMode: true
+  "LeggedBodyBar": 
+    stanceWidth: 0.15
 Body: 
   "BodyMotionEngine": 
     updateJointVelocities: false
@@ -370,7 +331,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 466, 465 ]
+              sizes: [ 449, 448 ]
               children: 
                 - 
                   type: pane
@@ -382,7 +343,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 698, 233 ]
+              sizes: [ 673, 224 ]
               children: 
                 - 
                   type: pane
@@ -394,7 +355,7 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 164, 767 ]
+          sizes: [ 163, 734 ]
           children: 
             - 
               type: pane
@@ -402,7 +363,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 285, 478 ]
+              sizes: [ 286, 444 ]
               children: 
                 - 
                   type: pane

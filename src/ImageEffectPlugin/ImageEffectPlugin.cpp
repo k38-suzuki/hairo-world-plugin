@@ -5,7 +5,7 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "CameraVisualizerItem.h".h"
+#include "CameraVisualizerItem.h"
 
 using namespace cnoid;
 

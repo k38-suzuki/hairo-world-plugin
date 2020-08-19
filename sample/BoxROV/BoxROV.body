@@ -37,33 +37,4 @@ links:
         type: Thruster
         name: RightThruster
         translation: [ -0.1, -0.1, 0 ]
-      -
-        type: PassiveMarker
-        name: RedMarker
-        translation: [ 0, 0, 0.15 ]
-        radius: 0.02
-        color: [ 1.0, 0, 0 ]
-        transparency: 0.5
-      - 
-        type: Camera
-        name: Camera
-        translation: [ 0, 0, -0.1 ]
-        rotation: [ 0, 0, 1, -90 ]
-        format: COLOR
-        fieldOfView: 62
-        nearClipDistance: 0.02
-        width: 640
-        height: 480
-        frameRate: 30
-        elements:
-          Shape:
-            rotation: [ 1, 0, 0, 90 ]
-            geometry:
-              type: Cylinder
-              radius: 0.02
-              height: 0.02
-            appearance:
-              material:
-                diffuseColor: [ 0.2, 0.2, 0.8 ]
-                specularColor: [ 0.6, 0.6, 1.0 ]
-                shininess: 0.6
+
