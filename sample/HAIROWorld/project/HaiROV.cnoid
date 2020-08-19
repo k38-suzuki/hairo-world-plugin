@@ -66,10 +66,32 @@ items:
                     class: CameraImageVisualizer2
                     name: FrontCamera
                     is_checked: true
+                    hue: 6.9116e-310
+                    saturation: 6.9116e-310
+                    value: 6.9116e-310
+                    red: 6.9116e-310
+                    green: 6.9116e-310
+                    blue: 6.9116e-310
+                    coef_b: 6.9116e-310
+                    coef_d: 6.9116e-310
+                    std_dev: 6.9116e-310
+                    salt: 6.9116e-310
+                    pepper: 6.9116e-310
                   - 
                     class: CameraImageVisualizer2
                     name: BottomCamera
                     is_checked: true
+                    hue: 0
+                    saturation: 0
+                    value: 0
+                    red: 0
+                    green: 0
+                    blue: 0
+                    coef_b: -0.3
+                    coef_d: 1.7
+                    std_dev: 0
+                    salt: 0
+                    pepper: 0
         - 
           id: 5
           name: "FuelPool"
@@ -109,6 +131,7 @@ items:
               name: "AISTSimulator"
               plugin: Body
               class: AISTSimulatorItem
+              is_selected: true
               data: 
                 timeStep: 0.001
                 realtimeSync: true
@@ -145,8 +168,119 @@ items:
                     record: true
                     cycleTime: 0.4
                     exportCsv: false
+                  children: 
+                    - 
+                      id: 9
+                      name: "20200820_010611"
+                      plugin: MotionCapture
+                      class: MarkerPointItem
+                      is_checked: true
+                      data: 
+                        children: 34
+                        point0: [ -0.15, 0, -0.5 ]
+                        color0: [ 0, 1, 0 ]
+                        transparency0: 0.3
+                        point1: [ -0.15, 0, -0.5 ]
+                        color1: [ 0, 1, 0 ]
+                        transparency1: 0.3
+                        point2: [ -0.15, 0, -0.5 ]
+                        color2: [ 0, 1, 0 ]
+                        transparency2: 0.3
+                        point3: [ -0.15, 0, -0.5 ]
+                        color3: [ 0, 1, 0 ]
+                        transparency3: 0.3
+                        point4: [ -0.15, 0, -0.5 ]
+                        color4: [ 0, 1, 0 ]
+                        transparency4: 0.3
+                        point5: [ -0.15, 0, -0.5 ]
+                        color5: [ 0, 1, 0 ]
+                        transparency5: 0.3
+                        point6: [ -0.15, 0, -0.5 ]
+                        color6: [ 0, 1, 0 ]
+                        transparency6: 0.3
+                        point7: [ -0.15, 0, -0.5 ]
+                        color7: [ 0, 1, 0 ]
+                        transparency7: 0.3
+                        point8: [ -0.15, 0, -0.5 ]
+                        color8: [ 0, 1, 0 ]
+                        transparency8: 0.3
+                        point9: [ -0.15, 0, -0.5 ]
+                        color9: [ 0, 1, 0 ]
+                        transparency9: 0.3
+                        point10: [ -0.15, 0, -0.5 ]
+                        color10: [ 0, 1, 0 ]
+                        transparency10: 0.3
+                        point11: [ -0.15, 0, -0.5 ]
+                        color11: [ 0, 1, 0 ]
+                        transparency11: 0.3
+                        point12: [ -0.15, 0, -0.5 ]
+                        color12: [ 0, 1, 0 ]
+                        transparency12: 0.3
+                        point13: [ -0.15, 0, -0.5 ]
+                        color13: [ 0, 1, 0 ]
+                        transparency13: 0.3
+                        point14: [ -0.15, 0, -0.5 ]
+                        color14: [ 0, 1, 0 ]
+                        transparency14: 0.3
+                        point15: [ -0.15, 0, -0.5 ]
+                        color15: [ 0, 1, 0 ]
+                        transparency15: 0.3
+                        point16: [ -0.15, 0, -0.5 ]
+                        color16: [ 0, 1, 0 ]
+                        transparency16: 0.3
+                        point17: [ -0.15, 0, -0.5 ]
+                        color17: [ 0, 1, 0 ]
+                        transparency17: 0.3
+                        point18: [ -0.15, 0, -0.5 ]
+                        color18: [ 0, 1, 0 ]
+                        transparency18: 0.3
+                        point19: [ -0.15, 0, -0.5 ]
+                        color19: [ 0, 1, 0 ]
+                        transparency19: 0.3
+                        point20: [ -0.15, 0, -0.5 ]
+                        color20: [ 0, 1, 0 ]
+                        transparency20: 0.3
+                        point21: [ -0.15, 0, -0.5 ]
+                        color21: [ 0, 1, 0 ]
+                        transparency21: 0.3
+                        point22: [ -0.15, 0, -0.5 ]
+                        color22: [ 0, 1, 0 ]
+                        transparency22: 0.3
+                        point23: [ -0.15, 0, -0.5 ]
+                        color23: [ 0, 1, 0 ]
+                        transparency23: 0.3
+                        point24: [ -0.15, 0, -0.5 ]
+                        color24: [ 0, 1, 0 ]
+                        transparency24: 0.3
+                        point25: [ -0.15, 0, -0.5 ]
+                        color25: [ 0, 1, 0 ]
+                        transparency25: 0.3
+                        point26: [ -0.15, 0, -0.5 ]
+                        color26: [ 0, 1, 0 ]
+                        transparency26: 0.3
+                        point27: [ -0.15, 0, -0.5 ]
+                        color27: [ 0, 1, 0 ]
+                        transparency27: 0.3
+                        point28: [ -0.15, 0, -0.5 ]
+                        color28: [ 0, 1, 0 ]
+                        transparency28: 0.3
+                        point29: [ -0.15, 0, -0.5 ]
+                        color29: [ 0, 1, 0 ]
+                        transparency29: 0.3
+                        point30: [ -0.15, 0, -0.5 ]
+                        color30: [ 0, 1, 0 ]
+                        transparency30: 0.3
+                        point31: [ -0.15, 0, -0.5 ]
+                        color31: [ 0, 1, 0 ]
+                        transparency31: 0.3
+                        point32: [ -0.15, 0, -0.5 ]
+                        color32: [ 0, 1, 0 ]
+                        transparency32: 0.3
+                        point33: [ -0.15, 0, -0.5 ]
+                        color33: [ 0, 1, 0 ]
+                        transparency33: 0.3
                 - 
-                  id: 9
+                  id: 10
                   name: "GLVisionSimulator"
                   plugin: Body
                   class: GLVisionSimulatorItem
@@ -164,7 +298,7 @@ items:
                     enableAdditionalLights: true
                     antiAliasing: false
         - 
-          id: 10
+          id: 11
           name: "FluidArea"
           plugin: FluidDynamics
           class: FluidAreaItem
@@ -204,7 +338,7 @@ views:
     class: ItemTreeView
     mounted: true
     state: 
-      expanded: [ 1, 2, 4, 6 ]
+      expanded: [ 1, 2, 3, 4, 6, 8 ]
   - 
     id: 3
     name: "Location"
@@ -230,10 +364,9 @@ views:
       editMode: false
       viewpointControlMode: thirdPerson
       collisionLines: false
-      polygonMode: fill
       restrictCameraRoll: true
       verticalAxis: Z
-      lightingMode: full
+      lightingMode: normal
       cullingMode: enabled
       defaultHeadLight: true
       defaultHeadLightIntensity: 0.75
@@ -348,6 +481,8 @@ toolbars:
     speedScale: 1
     syncToOngoingUpdates: true
     autoExpansion: true
+  "LeggedBodyBar": 
+    stanceWidth: 0.15
   "BodyMotionGenerationBar": 
     autoGenerationForNewBody: true
     balancer: false
@@ -381,8 +516,6 @@ toolbars:
     waistHeightRelaxation: false
     gravity: 9.8
     dynamicsTimeRatio: 1
-  "LeggedBodyBar": 
-    stanceWidth: 0.15
   "KinematicsBar": 
     forward_kinematics: true
     inverse_kinematics: true
@@ -437,7 +570,7 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 466, 465 ]
+          sizes: [ 449, 448 ]
           children: 
             - 
               type: pane
@@ -449,7 +582,7 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 665, 266 ]
+          sizes: [ 641, 256 ]
           children: 
             - 
               type: splitter

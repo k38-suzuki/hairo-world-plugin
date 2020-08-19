@@ -227,6 +227,20 @@ bool CameraVisualizerItem::store(Archive& archive)
         if(item->isChecked()){
             subArchive->write("is_checked", true);
         }
+        CameraImageVisualizerItem2* vitem = dynamic_cast<CameraImageVisualizerItem2*>(item);
+        if(vitem) {
+            subArchive->write("hue", vitem->effect.hue());
+            subArchive->write("saturation", vitem->effect.saturation());
+            subArchive->write("value", vitem->effect.value());
+            subArchive->write("red", vitem->effect.red());
+            subArchive->write("green", vitem->effect.green());
+            subArchive->write("blue", vitem->effect.blue());
+            subArchive->write("coef_b", vitem->effect.coefB());
+            subArchive->write("coef_d", vitem->effect.coefD());
+            subArchive->write("std_dev", vitem->effect.stdDev());
+            subArchive->write("salt", vitem->effect.salt());
+            subArchive->write("pepper", vitem->effect.pepper());
+        }
         item->store(*subArchive);
 
         subItems->append(subArchive);
@@ -260,6 +274,35 @@ bool CameraVisualizerItem::restore(const Archive& archive)
                 }
                 if(subArchive->get("is_checked", false)){
                     item->setChecked(true);
+                }
+                Item* tmpItem = item;
+                if(tmpItem) {
+                    CameraImageVisualizerItem2* vitem = dynamic_cast<CameraImageVisualizerItem2*>(tmpItem);
+                    if(vitem) {
+                        double value;
+                        subArchive->read("hue", value);
+                        vitem->effect.setHue(value);
+                        subArchive->read("saturation", value);
+                        vitem->effect.setSaturation(value);
+                        subArchive->read("value", value);
+                        vitem->effect.setValue(value);
+                        subArchive->read("red", value);
+                        vitem->effect.setRed(value);
+                        subArchive->read("green", value);
+                        vitem->effect.setGreen(value);
+                        subArchive->read("blue", value);
+                        vitem->effect.setBlue(value);
+                        subArchive->read("coef_b", value);
+                        vitem->effect.setCoefB(value);
+                        subArchive->read("coef_d", value);
+                        vitem->effect.setCoefD(value);
+                        subArchive->read("std_dev", value);
+                        vitem->effect.setStdDev(value);
+                        subArchive->read("salt", value);
+                        vitem->effect.setSalt(value);
+                        subArchive->read("pepper", value);
+                        vitem->effect.setPepper(value);
+                    }
                 }
                 impl->restoredSubItems.push_back(item);
             }
