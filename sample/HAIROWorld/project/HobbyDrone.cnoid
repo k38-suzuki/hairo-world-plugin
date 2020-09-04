@@ -67,6 +67,17 @@ items:
                     class: CameraImageVisualizer2
                     name: FrontCamera
                     is_checked: true
+                    hue: 0
+                    saturation: 0
+                    value: 0
+                    red: 0
+                    green: 0
+                    blue: 0
+                    coef_b: 0
+                    coef_d: 1
+                    std_dev: 0.1
+                    salt: 0
+                    pepper: 0
         - 
           id: 5
           name: "FluidDynamicsSimulator"
@@ -311,10 +322,9 @@ views:
       editMode: false
       viewpointControlMode: thirdPerson
       collisionLines: false
-      polygonMode: fill
       restrictCameraRoll: true
       verticalAxis: Z
-      lightingMode: full
+      lightingMode: normal
       cullingMode: enabled
       defaultHeadLight: true
       defaultHeadLightIntensity: 0.75
@@ -429,6 +439,16 @@ toolbars:
     speedScale: 1
     syncToOngoingUpdates: true
     autoExpansion: true
+  "KinematicsBar": 
+    forward_kinematics: true
+    inverse_kinematics: true
+    preset_kinematics: true
+    enablePositionDragger: true
+    penetrationBlock: false
+    collisionLinkHighlight: false
+    snapDistance: 0.025
+    penetrationBlockDepth: 0.0005
+    lazyCollisionDetectionMode: true
   "BodyMotionGenerationBar": 
     autoGenerationForNewBody: true
     balancer: false
@@ -464,16 +484,6 @@ toolbars:
     dynamicsTimeRatio: 1
   "LeggedBodyBar": 
     stanceWidth: 0.15
-  "KinematicsBar": 
-    forward_kinematics: true
-    inverse_kinematics: true
-    preset_kinematics: true
-    enablePositionDragger: true
-    penetrationBlock: false
-    collisionLinkHighlight: false
-    snapDistance: 0.025
-    penetrationBlockDepth: 0.0005
-    lazyCollisionDetectionMode: true
 Body: 
   "BodyMotionEngine": 
     updateJointVelocities: false
@@ -518,7 +528,7 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 466, 465 ]
+          sizes: [ 449, 448 ]
           children: 
             - 
               type: pane
@@ -530,7 +540,7 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 665, 266 ]
+          sizes: [ 641, 256 ]
           children: 
             - 
               type: splitter

@@ -75,6 +75,7 @@ links:
     surface: [ 0.03, 0.03, 0.03, 0.03, 0.04, 0.04 ]
     cdw: 1.2
     tw: 0.2
+    cv: 10.0
     elements:
       -
         type: Shape

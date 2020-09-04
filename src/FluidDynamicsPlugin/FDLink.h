@@ -34,6 +34,8 @@ public:
     double td() const;
     void setSurface(const Vector6 surface);
     Vector6 surface() const;
+    void setCv(const double cv);
+    double cv() const;
 
 private:
     FDLinkImpl* impl;

@@ -75,6 +75,11 @@ links:
     centerOfMass: [ 0, 0, 0 ]
     mass: 1.0
     inertia: [ 0.00228333, 0, 0, 0, 0.00228333, 0, 0, 0, 0.00375 ]
+    density: 500.0
+    surface: [ 0.0105, 0.0105, 0.0105, 0.0105, 0.0225, 0.0225 ]
+    cda: 0.25
+    tw: 0.2
+    cv: 10.0
     elements:
       -
         type: Shape

@@ -281,26 +281,62 @@ bool CameraVisualizerItem::restore(const Archive& archive)
                     if(vitem) {
                         double value;
                         subArchive->read("hue", value);
+                        if(fabs(value) < 0.01) {
+                            value = 0.0;
+                        }
                         vitem->effect.setHue(value);
+                        if(fabs(value) < 0.01) {
+                            value = 0.0;
+                        }
                         subArchive->read("saturation", value);
+                        if(fabs(value) < 0.01) {
+                            value = 0.0;
+                        }
                         vitem->effect.setSaturation(value);
                         subArchive->read("value", value);
+                        if(fabs(value) < 0.01) {
+                            value = 0.0;
+                        }
                         vitem->effect.setValue(value);
                         subArchive->read("red", value);
+                        if(fabs(value) < 0.01) {
+                            value = 0.0;
+                        }
                         vitem->effect.setRed(value);
                         subArchive->read("green", value);
+                        if(fabs(value) < 0.01) {
+                            value = 0.0;
+                        }
                         vitem->effect.setGreen(value);
                         subArchive->read("blue", value);
+                        if(fabs(value) < 0.01) {
+                            value = 0.0;
+                        }
                         vitem->effect.setBlue(value);
                         subArchive->read("coef_b", value);
+                        if(fabs(value) < 0.01) {
+                            value = 0.0;
+                        }
                         vitem->effect.setCoefB(value);
                         subArchive->read("coef_d", value);
+                        if(fabs(value) < 1.0) {
+                            value = 1.0;
+                        }
                         vitem->effect.setCoefD(value);
                         subArchive->read("std_dev", value);
+                        if(fabs(value) < 0.01) {
+                            value = 0.0;
+                        }
                         vitem->effect.setStdDev(value);
                         subArchive->read("salt", value);
+                        if(fabs(value) < 0.01) {
+                            value = 0.0;
+                        }
                         vitem->effect.setSalt(value);
                         subArchive->read("pepper", value);
+                        if(fabs(value) < 0.01) {
+                            value = 0.0;
+                        }
                         vitem->effect.setPepper(value);
                     }
                 }
@@ -388,28 +424,31 @@ void CameraImageVisualizerItem2::enableVisualization(bool on)
 void CameraImageVisualizerItem2::doUpdateVisualization()
 {
     if(camera){
-        ImageGenerator generator;
-        const Image& tmpImage = *camera->sharedImage();
-
         ImageableItem* item = ImageViewBar::instance()->getSelectedImageableItem();
         CameraImageVisualizerItem2* eitem = dynamic_cast<CameraImageVisualizerItem2*>(item);
-        if(eitem == this) {
-            if(pitem != this) {
-                imageDialog->setImageEffect(&effect);
+
+        if(eitem) {
+            if(eitem == this) {
+                if(pitem != this) {
+                    imageDialog->setImageEffect(&effect);
+                }
+                effect.setHue(imageDialog->value(0));
+                effect.setSaturation(imageDialog->value(1));
+                effect.setValue(imageDialog->value(2));
+                effect.setRed(imageDialog->value(3));
+                effect.setGreen(imageDialog->value(4));
+                effect.setBlue(imageDialog->value(5));
+                effect.setCoefB(imageDialog->value(6));
+                effect.setCoefD(imageDialog->value(7));
+                effect.setStdDev(imageDialog->value(8));
+                effect.setSalt(imageDialog->value(9));
+                effect.setPepper(imageDialog->value(10));
+                pitem = this;
             }
-            effect.setHue(imageDialog->value(0));
-            effect.setSaturation(imageDialog->value(1));
-            effect.setValue(imageDialog->value(2));
-            effect.setRed(imageDialog->value(3));
-            effect.setGreen(imageDialog->value(4));
-            effect.setBlue(imageDialog->value(5));
-            effect.setCoefB(imageDialog->value(6));
-            effect.setCoefD(imageDialog->value(7));
-            effect.setStdDev(imageDialog->value(8));
-            effect.setSalt(imageDialog->value(9));
-            effect.setPepper(imageDialog->value(10));
-            pitem = this;
         }
+
+        ImageGenerator generator;
+        const Image& tmpImage = *camera->sharedImage();
 
         Image hsvImage = generator.hsv(tmpImage, effect.hue(), effect.saturation(), effect.value() );
         Image rgbImage = generator.rgb(hsvImage, effect.red(), effect.green(), effect.blue() );

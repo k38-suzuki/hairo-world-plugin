@@ -66,17 +66,17 @@ items:
                     class: CameraImageVisualizer2
                     name: FrontCamera
                     is_checked: true
-                    hue: 6.9116e-310
-                    saturation: 6.9116e-310
-                    value: 6.9116e-310
-                    red: 6.9116e-310
-                    green: 6.9116e-310
-                    blue: 6.9116e-310
-                    coef_b: 6.9116e-310
-                    coef_d: 6.9116e-310
-                    std_dev: 6.9116e-310
-                    salt: 6.9116e-310
-                    pepper: 6.9116e-310
+                    hue: 0
+                    saturation: 0
+                    value: 0
+                    red: 0
+                    green: 0
+                    blue: 0
+                    coef_b: 0
+                    coef_d: 1
+                    std_dev: 0
+                    salt: 0
+                    pepper: 0
                   - 
                     class: CameraImageVisualizer2
                     name: BottomCamera
@@ -131,7 +131,6 @@ items:
               name: "AISTSimulator"
               plugin: Body
               class: AISTSimulatorItem
-              is_selected: true
               data: 
                 timeStep: 0.001
                 realtimeSync: true
@@ -471,18 +470,6 @@ views:
     class: PythonConsoleView
     mounted: true
 toolbars: 
-  "TimeBar": 
-    minTime: 0
-    maxTime: 0
-    frameRate: 1000
-    playbackFrameRate: 60
-    idleLoopDrivenMode: false
-    currentTime: 0
-    speedScale: 1
-    syncToOngoingUpdates: true
-    autoExpansion: true
-  "LeggedBodyBar": 
-    stanceWidth: 0.15
   "BodyMotionGenerationBar": 
     autoGenerationForNewBody: true
     balancer: false
@@ -516,6 +503,16 @@ toolbars:
     waistHeightRelaxation: false
     gravity: 9.8
     dynamicsTimeRatio: 1
+  "TimeBar": 
+    minTime: 0
+    maxTime: 0
+    frameRate: 1000
+    playbackFrameRate: 60
+    idleLoopDrivenMode: false
+    currentTime: 0
+    speedScale: 1
+    syncToOngoingUpdates: true
+    autoExpansion: true
   "KinematicsBar": 
     forward_kinematics: true
     inverse_kinematics: true
@@ -526,6 +523,8 @@ toolbars:
     snapDistance: 0.025
     penetrationBlockDepth: 0.0005
     lazyCollisionDetectionMode: true
+  "LeggedBodyBar": 
+    stanceWidth: 0.15
 Body: 
   "BodyMotionEngine": 
     updateJointVelocities: false

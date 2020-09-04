@@ -23,6 +23,7 @@ public:
     double cda;
     double td;
     Vector6 surface;
+    double cv;
 
     void initialize();
 };
@@ -143,6 +144,18 @@ Vector6 FDLink::surface() const
 }
 
 
+void FDLink::setCv(const double cv)
+{
+    impl->cv = cv;
+}
+
+
+double FDLink::cv() const
+{
+    return impl->cv;
+}
+
+
 void FDLinkImpl::initialize()
 {
     density = 0.0;
@@ -151,4 +164,5 @@ void FDLinkImpl::initialize()
     cda = 0.0;
     td = 0.0;
     surface << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+    cv = 0.0;
 }

@@ -172,7 +172,8 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
                     index = 0;
                 }
                 f_drag[k] = 0.5 * density * v[k] * v[k] * fdLink->surface()[k * 2 + index] * cd * sign;
-                f_visco[k] = 200.0 * viscosity * v[k] * sign;
+                double cv = fdLink->cv();
+                f_visco[k] = cv * viscosity * v[k] * sign;
             }
             for(int k = 0; k < 3; ++k) {
                 double sign = 1.0;
@@ -184,7 +185,8 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
                     index = 0;
                 }
                 tau_drag[k] = density * w[k] * w[k] * (fdLink->surface()[index0 * 2 + index] + fdLink->surface()[index1 * 2 + index]) * fdLink->td() * sign;
-                tau_visco[k] = 0.5 * viscosity * w[k] * sign;
+                double cv = fdLink->cv();
+                tau_visco[k] = cv * viscosity * w[k] * sign;
             }
 
             vector<Vector3> f_exts;
@@ -298,6 +300,7 @@ void FluidDynamicsSimulatorItemImpl::createFDBody(Body* body)
         if(node.read("cda", d)) fdLink->setCda(d);
         if(node.read("td", d)) fdLink->setTd(d);
         if(read(node, "surface", v6)) fdLink->setSurface(v6);
+        if(node.read("cv", d)) fdLink->setCv(d);
         fdBody->addFDLinks(fdLink);
     }
     fdBodies.push_back(fdBody);

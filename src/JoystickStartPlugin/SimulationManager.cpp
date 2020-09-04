@@ -7,6 +7,7 @@
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
 #include <cnoid/ExecutablePath>
+#include <cnoid/FileDialog>
 #include <cnoid/FileUtil>
 #include <cnoid/ItemTreeView>
 #include <cnoid/Joystick>
@@ -19,15 +20,15 @@
 #include <cnoid/SimulatorItem>
 #include <cnoid/TimeBar>
 #include <cnoid/WorldItem>
-#include <QFileDialog>
-#include <boost/filesystem.hpp>
+#include <cnoid/stdx/filesystem>
+#include <QMessageBox>
 #include <fmt/format.h>
 #include <functional>
 #include "gettext.h"
 
 using namespace std;
 using namespace cnoid;
-namespace filesystem = boost::filesystem;
+namespace filesystem = stdx::filesystem;
 using fmt::format;
 
 namespace {
@@ -49,6 +50,8 @@ public:
   SimulationManager* self;
   bool start = false;
   bool pause = false;
+  string currentProjectName;
+  string currentProjectFile;
   void startSimulation(bool doReset = true);
   void startSimulation(SimulatorItem* simulatorItem, bool doReset);
   void stopSimulation(SimulatorItem* simulatorItem);
@@ -233,7 +236,39 @@ void SimulationManagerImpl::onPauseSimulationClicked()
 
 void SimulationManagerImpl::openDialogToLoadProject()
 {
-    QFileDialog dialog(MainWindow::instance());
+    ProjectManager* pm = ProjectManager::instance();
+    MessageView* mv = MessageView::instance();
+    auto mw = MainWindow::instance();
+    int numItems = RootItem::instance()->countDescendantItems();
+    if(numItems > 0){
+        QString title = _("Warning");
+        QString message;
+        QMessageBox::StandardButton clicked;
+        if(currentProjectFile.empty()){
+            if(numItems == 1){
+                message = _("A project item exists. "
+                            "Do you want to save it as a project file before loading a new project?");
+            } else {
+                message = _("Project items exist. "
+                            "Do you want to save them as a project file before loading a new project?");
+            }
+            clicked = QMessageBox::warning(
+                mw, title, message, QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Ignore);
+        } else {
+            message = _("Project \"%1\" exists. Do you want to save it before loading a new project?");
+            clicked = QMessageBox::warning(
+                mw, title, message.arg(currentProjectName.c_str()),
+                QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Ignore);
+        }
+        if(clicked == QMessageBox::Cancel){
+            return;
+        }
+        if(clicked == QMessageBox::Save){
+            pm->overwriteCurrentProject();
+        }
+    }
+
+    FileDialog dialog(mw);
     dialog.setWindowTitle(_("Open a Choreonoid project file"));
     dialog.setFileMode(QFileDialog::ExistingFile);
     dialog.setViewMode(QFileDialog::List);
@@ -245,13 +280,13 @@ void SimulationManagerImpl::openDialogToLoadProject()
     filters << _("Any files (*)");
     dialog.setNameFilters(filters);
 
-    dialog.setDirectory(AppConfig::archive()->get
-                        ("currentFileDialogDirectory", shareDirectory()).c_str());
+    dialog.updatePresetDirectories();
 
     if(dialog.exec()){
-        AppConfig::archive()->writePath("currentFileDialogDirectory", dialog.directory().absolutePath().toStdString());
-        string filename = getNativePathString(filesystem::path(dialog.selectedFiles().front().toStdString()));
-        ProjectManager::instance()->loadProject(filename, nullptr);
+        pm->clearProject();
+        mv->flush();
+        string filename = dialog.selectedFiles().front().toStdString();
+        pm->loadProject(filename, nullptr);
     }
 }
 
