@@ -1,2 +1,2 @@
-add_subdirectory(BoxROV)
 add_subdirectory(HAIROWorld)
+add_subdirectory(Tutorial)
