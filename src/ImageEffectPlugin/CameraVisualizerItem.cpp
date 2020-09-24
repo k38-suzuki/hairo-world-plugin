@@ -110,7 +110,7 @@ void CameraVisualizerItem::initializeClass(ExtensionManager* ext)
         imageDialog = ext->manage(new ImageDialog());
     }
 
-    bar->addButton(QIcon(":/Base/icons/setup.svg"), _("Show the config dialog"))
+    bar->addButton(QIcon(":/Base/icon/setup.svg"), _("Show the config dialog"))
             ->sigClicked().connect([&](){ imageDialog->show(); });
 }
 
