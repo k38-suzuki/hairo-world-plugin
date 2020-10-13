@@ -172,7 +172,7 @@ TCAreaItemImpl::TCAreaItemImpl(TCAreaItem* self)
     type.setSymbol(TCAreaItem::CYLINDER, N_("Cylinder"));
     type.setSymbol(TCAreaItem::SPHERE, N_("Sphere"));
     size << 1.0, 1.0, 1.0;
-    radius = 1.0;
+    radius = 0.5;
     height = 1.0;
     inboundDelay = 0.0;
     inboundRate = 0.0;

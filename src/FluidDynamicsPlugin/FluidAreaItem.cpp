@@ -161,7 +161,7 @@ FluidAreaItemImpl::FluidAreaItemImpl(FluidAreaItem* self)
     type.setSymbol(FluidAreaItem::CYLINDER, N_("Cylinder"));
     type.setSymbol(FluidAreaItem::SPHERE, N_("Sphere"));
     size << 1.0, 1.0, 1.0;
-    radius = 1.0;
+    radius = 0.5;
     height = 1.0;
     flow << 0.0, 0.0, 0.0;
     diffuseColor << 0.0, 1.0, 1.0;
