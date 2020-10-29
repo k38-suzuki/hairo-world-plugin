@@ -464,9 +464,15 @@ void TCSimulatorItemImpl::onTCExecute(TCAreaItem* item)
 
 void TCSimulatorItemImpl::onCommandExecute(const string& message)
 {
-    int ret = system(message.c_str());
-    MessageView* mv = MessageView::mainInstance();
-//    mv->putln(_(fmt::format("{0}", message)));
+    pid_t pid = fork();
+    if(pid == -1) {
+        exit(EXIT_FAILURE);
+    } else if(pid == 0) {
+        int ret = system(message.c_str());
+        MessageView* mv = MessageView::mainInstance();
+//        mv->putln(_(fmt::format("{0}", message)));
+        exit(EXIT_SUCCESS);
+    }
 }
 
 
