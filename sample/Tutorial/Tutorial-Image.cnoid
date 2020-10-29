@@ -9,7 +9,6 @@ items:
       name: "World"
       plugin: Body
       class: WorldItem
-      is_selected: true
       is_checked: true
       data: 
         collisionDetection: false
@@ -229,7 +228,7 @@ views:
     class: SceneView
     mounted: true
     state: 
-      editMode: false
+      editMode: true
       viewpointControlMode: thirdPerson
       collisionLines: false
       restrictCameraRoll: true
@@ -243,9 +242,6 @@ views:
       worldLightIntensity: 0.1
       worldLightAmbient: 0
       additionalLights: true
-      shadowLights: 
-        - 1
-        - 2
       fog: true
       floorGrid: false
       floorGridSpan: 10
@@ -417,6 +413,18 @@ toolbars:
     speedScale: 1
     syncToOngoingUpdates: true
     autoExpansion: true
+  "LeggedBodyBar": 
+    stanceWidth: 0.15
+  "KinematicsBar": 
+    forward_kinematics: true
+    inverse_kinematics: true
+    preset_kinematics: true
+    enablePositionDragger: true
+    penetrationBlock: false
+    collisionLinkHighlight: false
+    snapDistance: 0.025
+    penetrationBlockDepth: 0.0005
+    lazyCollisionDetectionMode: true
   "BodyMotionGenerationBar": 
     autoGenerationForNewBody: true
     balancer: false
@@ -450,24 +458,12 @@ toolbars:
     waistHeightRelaxation: false
     gravity: 9.8
     dynamicsTimeRatio: 1
-  "LeggedBodyBar": 
-    stanceWidth: 0.15
-  "KinematicsBar": 
-    forward_kinematics: true
-    inverse_kinematics: true
-    preset_kinematics: true
-    enablePositionDragger: true
-    penetrationBlock: false
-    collisionLinkHighlight: false
-    snapDistance: 0.025
-    penetrationBlockDepth: 0.0005
-    lazyCollisionDetectionMode: true
 Body: 
   "BodyMotionEngine": 
     updateJointVelocities: false
   "BodySelectionManager": 
-    currentBodyItem: 2
-    currentLink: "CHASSIS"
+    currentBodyItem: 5
+    currentLink: "Pipes"
   "EditableSceneBody": 
     editableSceneBodies: 
       - 
