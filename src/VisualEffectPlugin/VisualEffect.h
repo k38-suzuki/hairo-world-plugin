@@ -3,18 +3,18 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_IMAGE_EFFECT_PLUGIN_IMAGE_EFFECT_H
-#define CNOID_IMAGE_EFFECT_PLUGIN_IMAGE_EFFECT_H
+#ifndef CNOID_VISUAL_EFFECT_PLUGIN_VISUAL_EFFECT_H
+#define CNOID_VISUAL_EFFECT_PLUGIN_VISUAL_EFFECT_H
 
 namespace cnoid {
 
-class ImageEffectImpl;
+class VisualEffectImpl;
 
-class ImageEffect
+class VisualEffect
 {
 public:
-    ImageEffect();
-    virtual ~ImageEffect();
+    VisualEffect();
+    virtual ~VisualEffect();
 
     void setHue(const double hue);
     double hue() const;
@@ -40,10 +40,10 @@ public:
     double pepper() const;
 
 private:
-    ImageEffectImpl* impl;
-    friend class ImageEffectImpl;
+    VisualEffectImpl* impl;
+    friend class VisualEffectImpl;
 };
 
 }
 
-#endif // CNOID_IMAGE_EFFECT_PLUGIN_IMAGE_EFFECT_H
+#endif // CNOID_VISUAL_EFFECT_PLUGIN_VISUAL_EFFECT_H

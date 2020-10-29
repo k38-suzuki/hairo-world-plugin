@@ -34,7 +34,7 @@ public:
         static std::string text =
             fmt::format("FluidDynamics Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
-            "Copyrigh (c) 2019 Japan Atomic Energy Agency.\n"
+            "Copyright (c) 2020 Japan Atomic Energy Agency.\n"
             "\n" +
             MITLicenseText();
         return text.c_str();

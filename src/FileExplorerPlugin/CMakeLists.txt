@@ -1,24 +1,17 @@
 
 set(sources
-    CameraVisualizerItem.cpp
-    ImageEffectPlugin.cpp
-    ImageEffect.cpp
-    ImageGenerator.cpp
-    ImageDialog.cpp
+    FileExplorer.cpp
+    FileExplorerPlugin.cpp
     )
 
 set(headers
-    CameraVisualizerItem.h
-    ImageEffect.h
-    ImageGenerator.h
-    ImageDialog.h
-    exportdecl.h
+    FileExplorer.h
     gettext.h
     )
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
-  set(target CnoidImageEffectPlugin)
+  set(target CnoidFileExplorerPlugin)
   make_gettext_mofiles(${target} mofiles)
   add_cnoid_plugin(${target} SHARED ${sources} ${mofiles} ${headers})
   target_link_libraries(${target} CnoidBodyPlugin)
@@ -26,12 +19,12 @@ if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
 else()
   # Stand alone build
   cmake_minimum_required(VERSION 3.1.0)
-  project(ImageEffectPlugin)
+  project(FileExplorerPlugin)
   find_package(Choreonoid REQUIRED)
   add_definitions(${CHOREONOID_DEFINITIONS})
   include_directories(${CHOREONOID_INCLUDE_DIRS})
   link_directories(${CHOREONOID_LIBRARY_DIRS})
-  set(target CnoidImageEffectPlugin)
+  set(target CnoidFileExplorerPlugin)
   make_gettext_mofiles(${target} mofiles)
   add_library(${target} SHARED ${sources} ${mofiles} ${headers})
   target_link_libraries(${target} ${CHOREONOID_BODY_PLUGIN_LIBRARIES})

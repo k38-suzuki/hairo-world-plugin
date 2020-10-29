@@ -17,14 +17,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../BodyEditPlugin.cpp:35
+#: ../FileExplorerPlugin.cpp:35
 msgid "Open"
 msgstr "開く"
 
-#: ../BodyEditPlugin.cpp:36
+#: ../FileExplorerPlugin.cpp:36
 msgid "File"
 msgstr "ファイル"
 
-#: ../BodyEditPlugin.cpp:38
+#: ../FileExplorerPlugin.cpp:38
 msgid "Directory"
 msgstr "ディレクトリ"

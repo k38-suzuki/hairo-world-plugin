@@ -11,11 +11,11 @@ using namespace cnoid;
 
 namespace {
 
-class ImageEffectPlugin : public Plugin
+class VisualEffectPlugin : public Plugin
 {
 public:
 
-    ImageEffectPlugin() : Plugin("ImageEffect")
+    VisualEffectPlugin() : Plugin("VisualEffect")
     {
         require("Body");
     }
@@ -29,9 +29,9 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("ImageEffect Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            fmt::format("VisualEffect Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
-            "Copyrigh (c) 2019 Japan Atomic Energy Agency.\n"
+            "Copyright (c) 2020 Japan Atomic Energy Agency.\n"
             "\n" +
             MITLicenseText();
         return text.c_str();
@@ -40,4 +40,4 @@ public:
 
 }
 
-CNOID_IMPLEMENT_PLUGIN_ENTRY(ImageEffectPlugin)
+CNOID_IMPLEMENT_PLUGIN_ENTRY(VisualEffectPlugin)

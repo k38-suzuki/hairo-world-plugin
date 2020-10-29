@@ -15,8 +15,8 @@
 #include <cnoid/RangeCamera>
 #include <cnoid/SpotLight>
 #include "gettext.h"
-#include "ImageDialog.h"
-#include "ImageEffect.h"
+#include "VisualEffectDialog.h"
+#include "VisualEffect.h"
 #include "ImageGenerator.h"
 
 using namespace std;
@@ -26,7 +26,7 @@ namespace {
 
 class CameraImageVisualizerItem2;
 CameraImageVisualizerItem2* pitem = nullptr;
-ImageDialog* imageDialog = nullptr;
+VisualEffectDialog* effectDialog = nullptr;
 
 class CameraVisualizerItemBase
 {
@@ -54,7 +54,7 @@ public:
     virtual void doUpdateVisualization() override;
 
     CameraPtr camera;
-    ImageEffect effect;
+    VisualEffect effect;
     ScopedConnectionSet connections;
     std::shared_ptr<const Image> image;
     Signal<void()> sigImageUpdated_;
@@ -106,12 +106,12 @@ void CameraVisualizerItem::initializeClass(ExtensionManager* ext)
     im.registerClass<LightSwitcherItem>(N_("LightSwitcher"));
 
     ImageViewBar* bar = ImageViewBar::instance();
-    if(!imageDialog) {
-        imageDialog = ext->manage(new ImageDialog());
+    if(!effectDialog) {
+        effectDialog = ext->manage(new VisualEffectDialog());
     }
 
     bar->addButton(QIcon(":/Base/icon/setup.svg"), _("Show the config dialog"))
-            ->sigClicked().connect([&](){ imageDialog->show(); });
+            ->sigClicked().connect([&](){ effectDialog->show(); });
 }
 
 
@@ -266,7 +266,7 @@ bool CameraVisualizerItem::restore(const Archive& archive)
             string className, itemName;
             subArchive->read("class", className);
             subArchive->read("name", itemName);
-            if(ItemPtr item = ItemManager::createItem("ImageEffect", className)){
+            if(ItemPtr item = ItemManager::createItem("VisualEffect", className)){
                 item->setName(itemName);
                 item->restore(*subArchive);
                 if(subArchive->get("is_selected", false)){
@@ -430,19 +430,19 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
         if(eitem) {
             if(eitem == this) {
                 if(pitem != this) {
-                    imageDialog->setImageEffect(&effect);
+                    effectDialog->setVisualEffect(&effect);
                 }
-                effect.setHue(imageDialog->value(0));
-                effect.setSaturation(imageDialog->value(1));
-                effect.setValue(imageDialog->value(2));
-                effect.setRed(imageDialog->value(3));
-                effect.setGreen(imageDialog->value(4));
-                effect.setBlue(imageDialog->value(5));
-                effect.setCoefB(imageDialog->value(6));
-                effect.setCoefD(imageDialog->value(7));
-                effect.setStdDev(imageDialog->value(8));
-                effect.setSalt(imageDialog->value(9));
-                effect.setPepper(imageDialog->value(10));
+                effect.setHue(effectDialog->value(0));
+                effect.setSaturation(effectDialog->value(1));
+                effect.setValue(effectDialog->value(2));
+                effect.setRed(effectDialog->value(3));
+                effect.setGreen(effectDialog->value(4));
+                effect.setBlue(effectDialog->value(5));
+                effect.setCoefB(effectDialog->value(6));
+                effect.setCoefD(effectDialog->value(7));
+                effect.setStdDev(effectDialog->value(8));
+                effect.setSalt(effectDialog->value(9));
+                effect.setPepper(effectDialog->value(10));
                 pitem = this;
             }
         }

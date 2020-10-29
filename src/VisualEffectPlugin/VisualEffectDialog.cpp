@@ -3,7 +3,7 @@
    \author Kenta Suzuki
 */
 
-#include "ImageDialog.h"
+#include "VisualEffectDialog.h"
 #include <cnoid/Button>
 #include <cnoid/Separator>
 #include <cnoid/Slider>
@@ -18,12 +18,12 @@ using namespace cnoid;
 
 namespace cnoid {
 
-class ImageDialogImpl
+class VisualEffectDialogImpl
 {
 public:
-    ImageDialogImpl(ImageDialog* self);
+    VisualEffectDialogImpl(VisualEffectDialog* self);
 
-    ImageDialog* self;
+    VisualEffectDialog* self;
     vector<DoubleSpinBox*> dspins;
 
     void onAccepted();
@@ -34,13 +34,13 @@ public:
 }
 
 
-ImageDialog::ImageDialog()
+VisualEffectDialog::VisualEffectDialog()
 {
-    impl = new ImageDialogImpl(this);
+    impl = new VisualEffectDialogImpl(this);
 }
 
 
-ImageDialogImpl::ImageDialogImpl(ImageDialog* self)
+VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
     : self(self)
 {
     self->setWindowTitle(_("Configuration"));
@@ -90,19 +90,19 @@ ImageDialogImpl::ImageDialogImpl(ImageDialog* self)
 }
 
 
-ImageDialog::~ImageDialog()
+VisualEffectDialog::~VisualEffectDialog()
 {
     delete impl;
 }
 
 
-double ImageDialog::value(const int index) const
+double VisualEffectDialog::value(const int index) const
 {
     return impl->dspins[index]->value();
 }
 
 
-void ImageDialog::setImageEffect(ImageEffect* effect)
+void VisualEffectDialog::setVisualEffect(VisualEffect* effect)
 {
     impl->dspins[0]->setValue(effect->hue());
     impl->dspins[1]->setValue(effect->saturation());
@@ -118,7 +118,7 @@ void ImageDialog::setImageEffect(ImageEffect* effect)
 }
 
 
-void ImageDialogImpl::onClearButtonClicked()
+void VisualEffectDialogImpl::onClearButtonClicked()
 {
     for(int i = 0; i < 11; i++) {
         if(i == 7) {
@@ -131,25 +131,25 @@ void ImageDialogImpl::onClearButtonClicked()
 }
 
 
-void ImageDialog::onAccepted()
+void VisualEffectDialog::onAccepted()
 {
     impl->onAccepted();
 }
 
 
-void ImageDialogImpl::onAccepted()
+void VisualEffectDialogImpl::onAccepted()
 {
 
 }
 
 
-void ImageDialog::onRejected()
+void VisualEffectDialog::onRejected()
 {
     impl->onRejected();
 }
 
 
-void ImageDialogImpl::onRejected()
+void VisualEffectDialogImpl::onRejected()
 {
 
 }

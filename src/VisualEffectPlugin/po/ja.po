@@ -17,59 +17,59 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../ImageDialog.cpp:47
+#: ../VisualEffectDialog.cpp:47
 msgid "Configuration"
 msgstr "設定"
 
-#: ../ImageDialog.cpp:50
+#: ../VisualEffectDialog.cpp:50
 msgid "Visual Effects"
 msgstr "視覚効果"
 
-#: ../ImageDialog.cpp:53
+#: ../VisualEffectDialog.cpp:53
 msgid "Hue"
 msgstr "色相"
 
-#: ../ImageDialog.cpp:53
+#: ../VisualEffectDialog.cpp:53
 msgid "Saturation"
 msgstr "彩度"
 
-#: ../ImageDialog.cpp:53
+#: ../VisualEffectDialog.cpp:53
 msgid "Value"
 msgstr "明度"
 
-#: ../ImageDialog.cpp:54
+#: ../VisualEffectDialog.cpp:54
 msgid "Red"
 msgstr "赤"
 
-#: ../ImageDialog.cpp:54
+#: ../VisualEffectDialog.cpp:54
 msgid "Green"
 msgstr "緑"
 
-#: ../ImageDialog.cpp:54
+#: ../VisualEffectDialog.cpp:54
 msgid "Blue"
 msgstr "青"
 
-#: ../ImageDialog.cpp:55
+#: ../VisualEffectDialog.cpp:55
 msgid "CoefB"
 msgstr "歪み"
 
-#: ../ImageDialog.cpp:55
+#: ../VisualEffectDialog.cpp:55
 msgid "CoefD"
 msgstr "拡大率"
 
-#: ../ImageDialog.cpp:55
+#: ../VisualEffectDialog.cpp:55
 msgid "Std_dev"
 msgstr "標準偏差"
 
-#: ../ImageDialog.cpp:56
+#: ../VisualEffectDialog.cpp:56
 msgid "Salt"
 msgstr "白色ノイズ"
 
-#: ../ImageDialog.cpp:56
+#: ../VisualEffectDialog.cpp:56
 msgid "Pepper"
 msgstr "黒色ノイズ"
 
-#: ../ImageDialog.cpp:94
+#: ../VisualEffectDialog.cpp:94
 msgid "Clear"
 msgstr "クリア"
 

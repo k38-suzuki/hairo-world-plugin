@@ -3,7 +3,7 @@
    \author Kenta Suzuki
 */
 
-#include "BodyEdit.h"
+#include "FileExplorer.h"
 #include <cnoid/BodyItem>
 #include <cnoid/ExtCommandItem>
 #include <cnoid/ItemTreeView>
@@ -28,19 +28,19 @@ void onItemTriggered(const Item* item, int index)
 }
 
 
-BodyEdit::BodyEdit()
+FileExplorer::FileExplorer()
 {
 
 }
 
 
-BodyEdit::~BodyEdit()
+FileExplorer::~FileExplorer()
 {
 
 }
 
 
-void BodyEdit::initializeClass(ExtensionManager* ext)
+void FileExplorer::initializeClass(ExtensionManager* ext)
 {
     ItemTreeView::instance()->customizeContextMenu<BodyItem>(
         [](BodyItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {

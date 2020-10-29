@@ -59,7 +59,7 @@ items:
             - 
               id: 4
               name: "CameraVisualizer"
-              plugin: ImageEffect
+              plugin: VisualEffect
               class: CameraVisualizer
               data: 
                 sub_items: 
