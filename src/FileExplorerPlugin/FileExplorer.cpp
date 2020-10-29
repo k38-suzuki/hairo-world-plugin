@@ -5,10 +5,11 @@
 
 #include "FileExplorer.h"
 #include <cnoid/BodyItem>
-#include <cnoid/ExtCommandItem>
 #include <cnoid/ItemTreeView>
 #include <cnoid/MenuManager>
 #include <cnoid/SceneItem>
+#include <sys/types.h>
+#include <unistd.h>
 #include "gettext.h"
 
 using namespace std;
@@ -20,9 +21,14 @@ void onItemTriggered(const Item* item, int index)
 {
     string message = index ? "nautilus" : "gedit";
     message += " " +  item->filePath();
-    ExtCommandItem* eitem = new ExtCommandItem();
-    eitem->setCommand(message);
-    eitem->execute();
+
+    pid_t pid = fork();
+    if(pid == -1) {
+        exit(EXIT_FAILURE);
+    } else if(pid == 0) {
+        int ret = system(message.c_str());
+        exit(EXIT_SUCCESS);
+    }
 }
 
 }
