@@ -179,7 +179,7 @@ bool MotionCaptureSimulatorItemImpl::initializeSimulation(SimulatorItem* simulat
             item->setName(date);
 
             self->addChildItem(item);
-            ItemTreeView::instance()->checkItem(item, true);
+            ItemTreeView::instance()->checkItem(item, false);
         }
 
         if(exportCsv) {
@@ -206,6 +206,8 @@ void MotionCaptureSimulatorItem::finalizeSimulation()
 
 void MotionCaptureSimulatorItemImpl::finalizeSimulation()
 {
+    ItemTreeView::instance()->checkItem(item, true);
+
     if(ofs) {
         ofs.close();
     }
