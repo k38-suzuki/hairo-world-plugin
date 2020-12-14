@@ -194,7 +194,6 @@ bool TCSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
         TCAreaItem* item = items[i];
         item->setId(i);
     }
-    onTCClear();
     onTCInitialize();
     return true;
 }
@@ -489,21 +488,17 @@ bool TCSimulatorItemImpl::onAddressCheck(const string& address) const
                     int element = atoi(ipelements[i].c_str());
                     if((element >= 0) && (element <= 255)) {
 
-                    }
-                    else {
+                    } else {
                         return false;
                     }
                 }
-            }
-            else {
+            } else {
                 return false;
             }
-        }
-        else {
+        } else {
             return false;
         }
-    }
-    else {
+    } else {
         return false;
     }
     return true;
