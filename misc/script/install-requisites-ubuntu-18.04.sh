@@ -1,5 +1,8 @@
 #!/bin/sh
 
+sudo apt-get -y install \
+gedit
+
 LOGNAME=$(logname)
 
 echo "$LOGNAME    ALL=NOPASSWD: /sbin/modprobe" >> /etc/sudoers
