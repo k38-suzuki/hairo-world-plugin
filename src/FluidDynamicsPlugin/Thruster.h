@@ -16,7 +16,7 @@ class CNOID_EXPORT Thruster : public Device
 public:
     Thruster();
     Thruster(const Thruster& org, bool copyStateOnly = false);
-    virtual const char* typeName() override;
+    virtual const char* typeName() const override;
     void copyStateFrom(const Thruster& other);
     virtual void copyStateFrom(const DeviceState& other) override;
     virtual DeviceState* cloneState() const override;

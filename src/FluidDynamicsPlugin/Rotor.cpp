@@ -127,7 +127,7 @@ Rotor::Rotor(const Rotor& org, bool copyStateOnly)
 }
 
 
-const char* Rotor::typeName()
+const char* Rotor::typeName() const
 {
     return "Rotor";
 }

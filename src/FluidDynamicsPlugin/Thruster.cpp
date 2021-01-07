@@ -115,7 +115,7 @@ Thruster::Thruster(const Thruster& org, bool copyStateOnly)
 }
 
 
-const char* Thruster::typeName()
+const char* Thruster::typeName() const
 {
     return "Thruster";
 }

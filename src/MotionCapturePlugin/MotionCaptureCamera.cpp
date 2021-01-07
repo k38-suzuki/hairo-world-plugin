@@ -152,7 +152,7 @@ MotionCaptureCamera::MotionCaptureCamera(const MotionCaptureCamera& org, bool co
 }
 
 
-const char* MotionCaptureCamera::typeName()
+const char* MotionCaptureCamera::typeName() const
 {
     return "MotionCaptureCamera";
 }

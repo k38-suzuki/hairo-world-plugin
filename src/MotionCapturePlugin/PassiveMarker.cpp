@@ -116,7 +116,7 @@ PassiveMarker::PassiveMarker(const PassiveMarker &org, bool copyStateOnly)
 }
 
 
-const char* PassiveMarker::typeName()
+const char* PassiveMarker::typeName() const
 {
     return "PassiveMarker";
 }

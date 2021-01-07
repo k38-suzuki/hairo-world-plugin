@@ -18,7 +18,7 @@ class CNOID_EXPORT PassiveMarker : public Device
 public:
     PassiveMarker();
     PassiveMarker(const PassiveMarker& org, bool copyStateOnly = false);
-    virtual const char* typeName() override;
+    virtual const char* typeName() const override;
     void copyStateFrom(const PassiveMarker& other);
     virtual void copyStateFrom(const DeviceState& other) override;
     virtual DeviceState* cloneState() const override;
