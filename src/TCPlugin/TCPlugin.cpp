@@ -24,14 +24,8 @@ public:
 
     virtual bool initialize() override
     {
-//        if(getuid()) {
-//            MessageView* mv = MessageView::mainInstance();
-//            mv->putln(_("you need to be root user"));
-//        }
-//        else {
-            TCAreaItem::initializeClass(this);
-            TCSimulatorItem::initializeClass(this);
-//        }
+        TCAreaItem::initializeClass(this);
+        TCSimulatorItem::initializeClass(this);
         return true;
     }
 

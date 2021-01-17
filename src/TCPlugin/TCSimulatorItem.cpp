@@ -9,11 +9,9 @@
 #include <cnoid/EigenUtil>
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
-#include <cnoid/MessageView>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
-#include <boost/format.hpp>
 #include <fmt/format.h>
 #include <stdlib.h>
 #include <net/if.h>
@@ -89,6 +87,7 @@ public:
 TCSimulatorItem::TCSimulatorItem()
 {
     impl = new TCSimulatorItemImpl(this);
+    impl->onTCInitialize();
 }
 
 
@@ -158,6 +157,7 @@ TCSimulatorItemImpl::TCSimulatorItemImpl(TCSimulatorItem* self, const TCSimulato
 
 TCSimulatorItem::~TCSimulatorItem()
 {
+    impl->onTCFinalize();
     delete impl;
 }
 
@@ -208,7 +208,6 @@ void TCSimulatorItem::finalizeSimulation()
 void TCSimulatorItemImpl::finalizeSimulation()
 {
     onTCClear();
-    onTCFinalize();
 }
 
 
@@ -342,67 +341,63 @@ void TCSimulatorItemImpl::onTCInitialize()
         }
     }
 
-    string message = (
-                boost::format("sudo modprobe ifb;\n"
-                              "sudo modprobe act_mirred;\n"
-                              "sudo ip link set dev %s up;\n")
-                % ifbDeviceName.c_str()).str();
+    string message = (fmt::format("sudo modprobe ifb;\n"
+                                  "sudo modprobe act_mirred;\n"
+                                  "sudo ip link set dev {0} up;\n",
+                                ifbDeviceName));
     onCommandExecute(message);
 }
 
 
 void TCSimulatorItemImpl::onTCClear()
 {
-    string message = (
-                boost::format("sudo tc qdisc del dev %s ingress;\n"
-                              "sudo tc qdisc del dev %s root;\n"
-                              "sudo tc qdisc del dev %s root;\n")
-                % interfaceName.c_str()
-                % ifbDeviceName.c_str()
-                % interfaceName.c_str()
-                ).str();
+    string message = (fmt::format("sudo tc qdisc del dev {0} ingress;\n"
+                                  "sudo tc qdisc del dev {1} root;\n"
+                                  "sudo tc qdisc del dev {0} root;\n",
+                                  interfaceName, ifbDeviceName));
     onCommandExecute(message);
 }
 
 
 void TCSimulatorItemImpl::onTCFinalize()
 {
-    string message = (
-                boost::format("sudo ip link set dev %s down;\n"
-                              "sudo rmmod ifb;\n")
-                % ifbDeviceName.c_str()
-                ).str();
+    string message = (fmt::format("sudo ip link set dev {0} down;\n"
+                                  "sudo rmmod ifb;\n",
+                                  ifbDeviceName));
     onCommandExecute(message);
 }
 
 
 void TCSimulatorItemImpl::onTCExecute(TCAreaItem* item)
 {
-    if(interfaceName.empty()) {
-        return;
+    double inboundDelay = item->inboundDelay();
+    double inboundLoss = item->inboundLoss();
+    double inboundRate = item->inboundRate();
+    double outboundDelay = item->outboundDelay();
+    double outboundLoss = item->outboundLoss();
+    double outboundRate = item->outboundRate();
+
+    string inboundEffects;
+    string outboundEffects;
+
+    if(inboundDelay > 0.0) {
+        inboundEffects += " delay " + (fmt::format("{0:.2f}", inboundDelay)) + "ms";
+    }
+    if(inboundRate > 0.0) {
+        inboundEffects += " rate " + (fmt::format("{0:.2f}", inboundRate)) + "kbps";
+    }
+    if(inboundLoss > 0.0) {
+        inboundEffects += " loss " + (fmt::format("{0:.2f}", inboundLoss)) + "%";
     }
 
-    string head[] = { " delay ", " rate ", " loss " };
-    string unit[] = { "ms", "kbps", "%" };
-    vector<double> value;
-    value.push_back(item->inboundDelay());
-    value.push_back(item->inboundRate());
-    value.push_back(item->inboundLoss());
-    value.push_back(item->outboundDelay());
-    value.push_back(item->outboundRate());
-    value.push_back(item->outboundLoss());
-
-    string effects[6];
-    for(int i = 0; i < 6; i++) {
-        if(value[i] > 0.0) {
-            int index = i % 3;
-            effects[i] = (boost::format("%s%3.2lf%s")
-                          % head[index].c_str() % value[i] % unit[index].c_str()
-                        ).str();
-        }
-        else {
-            effects[i].clear();
-        }
+    if(outboundDelay > 0.0) {
+        outboundEffects += " delay " + (fmt::format("{0:.2f}", outboundDelay)) + "ms";
+    }
+    if(outboundRate > 0.0) {
+        outboundEffects += " rate " + (fmt::format("{0:.2f}", outboundRate)) + "kbps";
+    }
+    if(outboundLoss > 0.0) {
+        outboundEffects += " loss " + (fmt::format("{0:.2f}", outboundLoss)) + "%";
     }
 
     string srcipName = item->source();
@@ -418,45 +413,29 @@ void TCSimulatorItemImpl::onTCExecute(TCAreaItem* item)
     string dstMessage;
 
     if((!srcipName.empty()) && (!dstipName.empty())) {
-        dstMessage = (
-                    boost::format("sudo tc qdisc add dev %s parent 1:2 handle 20: netem limit 2000%s%s%s;\n"
-                                  "sudo tc filter add dev %s protocol ip parent 1: prio 2 u32 match ip src %s match ip dst %s flowid 1:2;\n")
-                    % ifbDeviceName.c_str() % effects[0].c_str() % effects[1].c_str() % effects[2].c_str()
-                    % ifbDeviceName.c_str() % dstipName.c_str() % srcipName.c_str()
-                    ).str();
-        srcMessage = (
-                    boost::format("sudo tc qdisc add dev %s parent 1:2 handle 20: netem limit 2000%s%s%s;\n"
-                                  "sudo tc filter add dev %s protocol ip parent 1: prio 2 u32 match ip src %s match ip dst %s flowid 1:2;\n")
-                    % interfaceName.c_str() % effects[3].c_str() % effects[4].c_str() % effects[5].c_str()
-                    % interfaceName.c_str() % srcipName.c_str() % dstipName.c_str()
-                    ).str();
+        dstMessage = (fmt::format("sudo tc qdisc add dev {0} parent 1:2 handle 20: netem limit 2000{1};\n"
+                                  "sudo tc filter add dev {0} protocol ip parent 1: prio 2 u32 match ip src {2} match ip dst {3} flowid 1:2;\n",
+                                ifbDeviceName, inboundEffects, dstipName, srcipName));
+        srcMessage = (fmt::format("sudo tc qdisc add dev {0} parent 1:2 handle 20: netem limit 2000{1};\n"
+                                  "sudo tc filter add dev {0} protocol ip parent 1: prio 2 u32 match ip src {2} match ip dst {3} flowid 1:2;\n",
+                                interfaceName, outboundEffects, srcipName, dstipName));
     }
     else {
         dstMessage.clear();
         srcMessage.clear();
     }
 
-    string message = (
-                boost::format("sudo tc qdisc add dev %s ingress handle ffff:;\n"
-                              "sudo tc filter add dev %s parent ffff: protocol ip u32 match u32 0 0 action mirred egress redirect dev %s;\n"
-                              "sudo tc qdisc add dev %s root handle 1: "
-                              "prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;\n"
-                              "sudo tc qdisc add dev %s parent 1:1 handle 10: netem limit 2000;\n"
-                              "%s"
-                              "sudo tc qdisc add dev %s root handle 1: "
-                              "prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;\n"
-                              "sudo tc qdisc add dev %s parent 1:1 handle 10: netem limit 2000;\n"
-                              "%s")
-                % interfaceName.c_str()
-                % interfaceName.c_str() % ifbDeviceName.c_str()
-                % ifbDeviceName.c_str()
-                % ifbDeviceName.c_str()
-                % dstMessage.c_str()
-                % interfaceName.c_str()
-                % interfaceName.c_str()
-                % srcMessage.c_str()
-                ).str();
-
+    string message = (fmt::format("sudo tc qdisc add dev {0} ingress handle ffff:;\n"
+                                  "sudo tc filter add dev {0} parent ffff: protocol ip u32 match u32 0 0 action mirred egress redirect dev {1};\n"
+                                  "sudo tc qdisc add dev {1} root handle 1: "
+                                  "prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;\n"
+                                  "sudo tc qdisc add dev {1} parent 1:1 handle 10: netem limit 2000;\n"
+                                  "{2}"
+                                  "sudo tc qdisc add dev {0} root handle 1: "
+                                  "prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;\n"
+                                  "sudo tc qdisc add dev {0} parent 1:1 handle 10: netem limit 2000;\n"
+                                  "{3}",
+                                  interfaceName, ifbDeviceName, dstMessage, srcMessage));
     onCommandExecute(message);
 }
 
@@ -468,8 +447,6 @@ void TCSimulatorItemImpl::onCommandExecute(const string& message)
         exit(EXIT_FAILURE);
     } else if(pid == 0) {
         int ret = system(message.c_str());
-        MessageView* mv = MessageView::mainInstance();
-//        mv->putln(_(fmt::format("{0}", message)));
         exit(EXIT_SUCCESS);
     }
 }
