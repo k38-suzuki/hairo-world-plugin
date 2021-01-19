@@ -66,6 +66,7 @@ public:
     string interfaceName;
     string ifbDeviceName;
     int prevItemId;
+    bool init;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void finalizeSimulation();
@@ -102,6 +103,7 @@ TCSimulatorItemImpl::TCSimulatorItemImpl(TCSimulatorItem* self)
     interfaceName.clear();
     ifbDeviceName.clear();
     prevItemId = INT_MAX;
+    init = false;
 
     struct ifreq ifr[IFR_MAX];
     struct ifconf ifc;
@@ -151,6 +153,7 @@ TCSimulatorItemImpl::TCSimulatorItemImpl(TCSimulatorItem* self, const TCSimulato
     interfaceName = org.interfaceName;
     ifbDeviceName = org.ifbDeviceName;
     prevItemId = org.prevItemId;
+    init = org.init;
 }
 
 
@@ -178,6 +181,7 @@ bool TCSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
     bodies.clear();
     items.clear();
     prevItemId = INT_MAX;
+    init = false;
     vector<SimulationBody*> simulationBodies = simulatorItem->simulationBodies();
     if(simulationBodies.size()) {
         for(size_t i = 0; i < simulationBodies.size(); i++) {
@@ -319,7 +323,6 @@ void TCSimulatorItemImpl::onPreDynamicsFunction()
         }
     }
 
-    static bool init = false;
     if(currentItem->id() != prevItemId) {
         if(!init) {
             onTCExecute(currentItem);
