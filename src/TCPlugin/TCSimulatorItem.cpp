@@ -9,6 +9,7 @@
 #include <cnoid/EigenUtil>
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
+#include <cnoid/Process>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
@@ -17,7 +18,6 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include "gettext.h"
 #include "TCAreaItem.h"
@@ -87,7 +87,6 @@ public:
 TCSimulatorItem::TCSimulatorItem()
 {
     impl = new TCSimulatorItemImpl(this);
-    impl->onTCInitialize();
 }
 
 
@@ -157,7 +156,6 @@ TCSimulatorItemImpl::TCSimulatorItemImpl(TCSimulatorItem* self, const TCSimulato
 
 TCSimulatorItem::~TCSimulatorItem()
 {
-    impl->onTCFinalize();
     delete impl;
 }
 
@@ -208,6 +206,7 @@ void TCSimulatorItem::finalizeSimulation()
 void TCSimulatorItemImpl::finalizeSimulation()
 {
     onTCClear();
+    onTCFinalize();
 }
 
 
@@ -320,9 +319,15 @@ void TCSimulatorItemImpl::onPreDynamicsFunction()
         }
     }
 
+    static bool init = false;
     if(currentItem->id() != prevItemId) {
-        onTCClear();
-        onTCExecute(currentItem);
+        if(!init) {
+            onTCExecute(currentItem);
+            init = true;
+        } else {
+            onTCClear();
+            onTCExecute(currentItem);
+        }
     }
     prevItemId = currentItem->id();
 }
@@ -420,10 +425,6 @@ void TCSimulatorItemImpl::onTCExecute(TCAreaItem* item)
                                   "sudo tc filter add dev {0} protocol ip parent 1: prio 2 u32 match ip src {2} match ip dst {3} flowid 1:2;\n",
                                 interfaceName, outboundEffects, srcipName, dstipName));
     }
-    else {
-        dstMessage.clear();
-        srcMessage.clear();
-    }
 
     string message = (fmt::format("sudo tc qdisc add dev {0} ingress handle ffff:;\n"
                                   "sudo tc filter add dev {0} parent ffff: protocol ip u32 match u32 0 0 action mirred egress redirect dev {1};\n"
@@ -442,12 +443,10 @@ void TCSimulatorItemImpl::onTCExecute(TCAreaItem* item)
 
 void TCSimulatorItemImpl::onCommandExecute(const string& message)
 {
-    pid_t pid = fork();
-    if(pid == -1) {
-        exit(EXIT_FAILURE);
-    } else if(pid == 0) {
-        int ret = system(message.c_str());
-        exit(EXIT_SUCCESS);
+    vector<string> commands = split(message, ';');
+    for(size_t i = 0; i < commands.size(); ++i) {
+        QString command = QString::fromStdString(commands[i]);
+        Process::execute(command);
     }
 }
 
