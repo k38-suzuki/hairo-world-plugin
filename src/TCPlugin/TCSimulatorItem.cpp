@@ -349,9 +349,9 @@ void TCSimulatorItemImpl::onTCInitialize()
         }
     }
 
-    string message = (fmt::format("sudo modprobe ifb;\n"
-                                  "sudo modprobe act_mirred;\n"
-                                  "sudo ip link set dev {0} up;\n",
+    string message = (fmt::format("sudo modprobe ifb;"
+                                  "sudo modprobe act_mirred;"
+                                  "sudo ip link set dev {0} up;",
                                 ifbDeviceName));
     onCommandExecute(message);
 }
@@ -359,9 +359,9 @@ void TCSimulatorItemImpl::onTCInitialize()
 
 void TCSimulatorItemImpl::onTCClear()
 {
-    string message = (fmt::format("sudo tc qdisc del dev {0} ingress;\n"
-                                  "sudo tc qdisc del dev {1} root;\n"
-                                  "sudo tc qdisc del dev {0} root;\n",
+    string message = (fmt::format("sudo tc qdisc del dev {0} ingress;"
+                                  "sudo tc qdisc del dev {1} root;"
+                                  "sudo tc qdisc del dev {0} root;",
                                   interfaceName, ifbDeviceName));
     onCommandExecute(message);
 }
@@ -369,8 +369,8 @@ void TCSimulatorItemImpl::onTCClear()
 
 void TCSimulatorItemImpl::onTCFinalize()
 {
-    string message = (fmt::format("sudo ip link set dev {0} down;\n"
-                                  "sudo rmmod ifb;\n",
+    string message = (fmt::format("sudo ip link set dev {0} down;"
+                                  "sudo rmmod ifb;",
                                   ifbDeviceName));
     onCommandExecute(message);
 }
@@ -421,23 +421,23 @@ void TCSimulatorItemImpl::onTCExecute(TCAreaItem* item)
     string dstMessage;
 
     if((!srcipName.empty()) && (!dstipName.empty())) {
-        dstMessage = (fmt::format("sudo tc qdisc add dev {0} parent 1:2 handle 20: netem limit 2000{1};\n"
-                                  "sudo tc filter add dev {0} protocol ip parent 1: prio 2 u32 match ip src {2} match ip dst {3} flowid 1:2;\n",
+        dstMessage = (fmt::format("sudo tc qdisc add dev {0} parent 1:2 handle 20: netem limit 2000{1};"
+                                  "sudo tc filter add dev {0} protocol ip parent 1: prio 2 u32 match ip src {2} match ip dst {3} flowid 1:2;",
                                 ifbDeviceName, inboundEffects, dstipName, srcipName));
-        srcMessage = (fmt::format("sudo tc qdisc add dev {0} parent 1:2 handle 20: netem limit 2000{1};\n"
-                                  "sudo tc filter add dev {0} protocol ip parent 1: prio 2 u32 match ip src {2} match ip dst {3} flowid 1:2;\n",
+        srcMessage = (fmt::format("sudo tc qdisc add dev {0} parent 1:2 handle 20: netem limit 2000{1};"
+                                  "sudo tc filter add dev {0} protocol ip parent 1: prio 2 u32 match ip src {2} match ip dst {3} flowid 1:2;",
                                 interfaceName, outboundEffects, srcipName, dstipName));
     }
 
-    string message = (fmt::format("sudo tc qdisc add dev {0} ingress handle ffff:;\n"
-                                  "sudo tc filter add dev {0} parent ffff: protocol ip u32 match u32 0 0 action mirred egress redirect dev {1};\n"
+    string message = (fmt::format("sudo tc qdisc add dev {0} ingress handle ffff:;"
+                                  "sudo tc filter add dev {0} parent ffff: protocol ip u32 match u32 0 0 action mirred egress redirect dev {1};"
                                   "sudo tc qdisc add dev {1} root handle 1: "
-                                  "prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;\n"
-                                  "sudo tc qdisc add dev {1} parent 1:1 handle 10: netem limit 2000;\n"
+                                  "prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;"
+                                  "sudo tc qdisc add dev {1} parent 1:1 handle 10: netem limit 2000;"
                                   "{2}"
                                   "sudo tc qdisc add dev {0} root handle 1: "
-                                  "prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;\n"
-                                  "sudo tc qdisc add dev {0} parent 1:1 handle 10: netem limit 2000;\n"
+                                  "prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;"
+                                  "sudo tc qdisc add dev {0} parent 1:1 handle 10: netem limit 2000;"
                                   "{3}",
                                   interfaceName, ifbDeviceName, dstMessage, srcMessage));
     onCommandExecute(message);
