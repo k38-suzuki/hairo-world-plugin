@@ -1781,10 +1781,18 @@ void CrawlerRobotBuilderDialogImpl::onExportAGXBody(QString fileName)
 
 void CrawlerRobotBuilderDialogImpl::onColorChanged(PushButton* pushbutton)
 {
-    QColor selectedColor = QColorDialog::getColor();
-    if(!selectedColor.isValid()) {
-        selectedColor = QColor(255.0, 255.0, 255.0);
+    QColor selectedColor;
+    QColor currentColor = pushbutton->palette().color(QPalette::Button);
+    QColorDialog dialog(MainWindow::instance());
+    dialog.setWindowTitle(_("Select a color"));
+    dialog.setCurrentColor(currentColor);
+    dialog.setOption (QColorDialog::DontUseNativeDialog);
+    if(dialog.exec()) {
+        selectedColor = dialog.currentColor();
+    } else {
+        selectedColor = currentColor;
     }
+
     QPalette palette;
     palette.setColor(QPalette::Button, selectedColor);
     pushbutton->setPalette(palette);
