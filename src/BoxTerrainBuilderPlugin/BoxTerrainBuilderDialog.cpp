@@ -7,9 +7,12 @@
 #include <cnoid/Button>
 #include <cnoid/FileDialog>
 #include <cnoid/LineEdit>
+#include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/ProjectManager>
 #include <cnoid/SpinBox>
+#include <cnoid/stdx/filesystem>
+#include <cnoid/UTF8>
 #include <QApplication>
 #include <QDebug>
 #include <QFileInfo>
@@ -27,6 +30,7 @@
 
 using namespace std;
 using namespace cnoid;
+namespace filesystem = cnoid::stdx::filesystem;
 
 BoxTerrainBuilderDialog* stepFieldBuilderDialog = nullptr;
 
@@ -48,6 +52,7 @@ public:
     void onLoadButtonClicked();
     void onClearButtonClicked();
     void onExportBody();
+    string getSaveFilename(FileDialog& dialog);
 };
 
 
@@ -359,37 +364,58 @@ void BoxTerrainBuilderDialogImpl::onRejected()
 
 void BoxTerrainBuilderDialogImpl::onSaveButtonClicked()
 {
-    QString currentDirectory = QString::fromStdString(ProjectManager::instance()->currentProjectDirectory());
-    QString inputFileName = inputFileLine->text();
-    if(!inputFileName.isEmpty()) {
-        QFileInfo inputInfo(inputFileName);
-        currentDirectory = inputInfo.absolutePath();
-        QString outputFileName = QFileDialog::getSaveFileName(nullptr, _("output body file"), currentDirectory,
-                                                        _("BODY files (*.body)"));
-        if(!outputFileName.isEmpty()) {
-            QFileInfo outputInfo(outputFileName);
-            QString ext = outputInfo.suffix();
-            if(ext.isEmpty()) {
-                outputFileName += ".body";
-            }
-            outputFileLine->setText(outputFileName);
-            onExportBody();
-        }
+    FileDialog dialog(MainWindow::instance());
+    dialog.setWindowTitle(_("Save a Body file"));
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setViewMode(QFileDialog::List);
+    dialog.setLabelText(QFileDialog::Accept, _("Save"));
+    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
+    dialog.setOption(QFileDialog::DontConfirmOverwrite);
+
+    QStringList filters;
+    filters << _("Body files (*.body)");
+    filters << _("Any files (*)");
+    dialog.setNameFilters(filters);
+
+    dialog.updatePresetDirectories();
+
+    ProjectManager* pm = ProjectManager::instance();
+    string currentProjectFile = pm->currentProjectFile();
+    QFileInfo info(QString::fromStdString(currentProjectFile));
+    string currentProjectName = info.baseName().toStdString();
+    if(!dialog.selectFilePath(currentProjectFile)) {
+        dialog.selectFile(currentProjectName);
+    }
+
+    if(dialog.exec() == QDialog::Accepted) {
+        QString fileName = QString::fromStdString(getSaveFilename(dialog));
+        outputFileLine->setText(fileName);
+        onExportBody();
     }
 }
 
 
 void BoxTerrainBuilderDialogImpl::onLoadButtonClicked()
 {
-    QString currentDirectory = QString::fromStdString(ProjectManager::instance()->currentProjectDirectory());
-    QString inputFileName = inputFileLine->text();
-    if(!inputFileName.isEmpty()) {
-        QFileInfo info(inputFileName);
-        currentDirectory = info.absolutePath();
+    FileDialog dialog(MainWindow::instance());
+    dialog.setWindowTitle(_("Open a CSV file"));
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setViewMode(QFileDialog::List);
+    dialog.setLabelText(QFileDialog::Accept, _("Open"));
+    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
+
+    QStringList filters;
+    filters << _("CSV files (*.csv)");
+    filters << _("Any files (*)");
+    dialog.setNameFilters(filters);
+
+    dialog.updatePresetDirectories();
+
+    if(dialog.exec()) {
+        string filename = dialog.selectedFiles().front().toStdString();
+        inputFileLine->setText(filename);
     }
-    inputFileName = QFileDialog::getOpenFileName(nullptr, _("input csv file"), currentDirectory,
-                                                   _("CSV files (*.csv)"));
-    inputFileLine->setText(inputFileName);
 }
 
 
@@ -495,4 +521,20 @@ void BoxTerrainBuilderDialogImpl::onExportBody()
         }
         fclose(fp);
     }
+}
+
+
+string BoxTerrainBuilderDialogImpl::getSaveFilename(FileDialog& dialog)
+{
+    std::string filename;
+    auto filenames = dialog.selectedFiles();
+    if(!filenames.isEmpty()){
+        filename = filenames.front().toStdString();
+        filesystem::path path(fromUTF8(filename));
+        string ext = path.extension().string();
+        if(ext != ".body"){
+            filename += ".body";
+        }
+    }
+    return filename;
 }

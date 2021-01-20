@@ -17,50 +17,62 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../BoxTerrainBuilderDialog.cpp:269 ../BoxTerrainBuilderDialog.cpp:325
+#: ../BoxTerrainBuilderDialog.cpp:274 ../BoxTerrainBuilderDialog.cpp:330
 msgid "BoxTerrainBuilder"
 msgstr "ボックステレインビルダ"
 
-#: ../BoxTerrainBuilderDialog.cpp:279
+#: ../BoxTerrainBuilderDialog.cpp:284
 msgid "Clear"
 msgstr "クリア"
 
-#: ../BoxTerrainBuilderDialog.cpp:280
+#: ../BoxTerrainBuilderDialog.cpp:285
 msgid "scale[0.1-10.0]"
 msgstr "スケール[0.1-10.0]"
 
-#: ../BoxTerrainBuilderDialog.cpp:286
+#: ../BoxTerrainBuilderDialog.cpp:291
 msgid "Load"
 msgstr "読み込み"
 
-#: ../BoxTerrainBuilderDialog.cpp:287
+#: ../BoxTerrainBuilderDialog.cpp:292
 msgid "Input File (.csv)"
 msgstr "入力ファイル (.csv)"
 
-#: ../BoxTerrainBuilderDialog.cpp:293
+#: ../BoxTerrainBuilderDialog.cpp:298 ../BoxTerrainBuilderDialog.cpp:372
 msgid "Save"
 msgstr "保存"
 
-#: ../BoxTerrainBuilderDialog.cpp:294
+#: ../BoxTerrainBuilderDialog.cpp:299
 msgid "Output File (.body)"
 msgstr "出力ファイル (.body)"
 
-#: ../BoxTerrainBuilderDialog.cpp:298
+#: ../BoxTerrainBuilderDialog.cpp:303
 msgid "Overwrite"
 msgstr "上書き保存"
 
-#: ../BoxTerrainBuilderDialog.cpp:367
-msgid "output body file"
+#: ../BoxTerrainBuilderDialog.cpp:368
+msgid "Save a Body file"
 msgstr "ボディファイルの保存"
 
-#: ../BoxTerrainBuilderDialog.cpp:368
-msgid "BODY files (*.body)"
+#: ../BoxTerrainBuilderDialog.cpp:373 ../BoxTerrainBuilderDialog.cpp:406
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: ../BoxTerrainBuilderDialog.cpp:377
+msgid "Body files (*.body)"
 msgstr "ボディファイル(*.body)"
 
-#: ../BoxTerrainBuilderDialog.cpp:390
-msgid "input csv file"
-msgstr "入力ファイルの読み込み"
+#: ../BoxTerrainBuilderDialog.cpp:378 ../BoxTerrainBuilderDialog.cpp:410
+msgid "Any files (*)"
+msgstr "全てのファイル(*)"
 
-#: ../BoxTerrainBuilderDialog.cpp:391
+#: ../BoxTerrainBuilderDialog.cpp:402
+msgid "Open a CSV file"
+msgstr "CSVファイルの読み込み"
+
+#: ../BoxTerrainBuilderDialog.cpp:405
+msgid "Open"
+msgstr "読み込み"
+
+#: ../BoxTerrainBuilderDialog.cpp:409
 msgid "CSV files (*.csv)"
 msgstr "CSVファイル(*.csv)"
