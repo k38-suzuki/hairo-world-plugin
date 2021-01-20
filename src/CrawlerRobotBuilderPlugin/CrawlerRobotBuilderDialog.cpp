@@ -11,15 +11,18 @@
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/ExtensionManager>
+#include <cnoid/FileDialog>
+#include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/ProjectManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
+#include <cnoid/stdx/filesystem>
+#include <cnoid/UTF8>
 #include <cnoid/Widget>
 #include <cnoid/YAMLReader>
 #include <cnoid/YAMLWriter>
 #include <QColorDialog>
-#include <QFileDialog>
 #include <QFileInfo>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -31,6 +34,7 @@
 
 using namespace std;
 using namespace cnoid;
+namespace filesystem = cnoid::stdx::filesystem;
 
 CrawlerRobotBuilderDialog* builderDialog = nullptr;
 
@@ -163,6 +167,7 @@ public:
     void onColorChanged(PushButton* pushbutton);
     void setColor(PushButton* pushbutton, Vector3 color);
     Vector3 getColor(PushButton* colorButton);
+    string getSaveFilename(FileDialog& dialog, string& suffix);
 };
 
 }
@@ -704,9 +709,26 @@ void CrawlerRobotBuilderDialogImpl::onNewBodyButtonClicked()
 
 void CrawlerRobotBuilderDialogImpl::onImportYamlButtonClicked()
 {
-    QString currentDirectory = QString::fromStdString(ProjectManager::instance()->currentProjectDirectory());
-    QString yamlFileName = QFileDialog::getOpenFileName(nullptr, "Save Config YAML", currentDirectory,
-            "Config YAML (*.yaml *.yml)");
+    QString yamlFileName;
+    FileDialog dialog(MainWindow::instance());
+    dialog.setWindowTitle(_("Open a configuration file"));
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setViewMode(QFileDialog::List);
+    dialog.setLabelText(QFileDialog::Accept, _("Open"));
+    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
+
+    QStringList filters;
+    filters << _("YAML files (*.yaml *.yml)");
+    filters << _("Any files (*)");
+    dialog.setNameFilters(filters);
+
+    dialog.updatePresetDirectories();
+
+    if(dialog.exec()) {
+        string filename = dialog.selectedFiles().front().toStdString();
+        yamlFileName = QString::fromStdString(filename);
+    }
+
     if(!yamlFileName.isEmpty()) {
         QFileInfo info(yamlFileName);
         if(info.suffix().isEmpty()) {
@@ -810,14 +832,38 @@ void CrawlerRobotBuilderDialogImpl::onImportYamlButtonClicked()
 
 void CrawlerRobotBuilderDialogImpl::onExportYamlButtonClicked()
 {
-    QString currentDirectory = QString::fromStdString(ProjectManager::instance()->currentProjectDirectory());
-    QString yamlFileName = QFileDialog::getSaveFileName(nullptr, "Save Config YAML", currentDirectory,
-            "Config YAML (*.yaml *.yml)");
+    QString yamlFileName;
+    FileDialog dialog(MainWindow::instance());
+    dialog.setWindowTitle(_("Save a configuration file"));
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setViewMode(QFileDialog::List);
+    dialog.setLabelText(QFileDialog::Accept, _("Save"));
+    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
+    dialog.setOption(QFileDialog::DontConfirmOverwrite);
+
+    QStringList filters;
+    filters << _("YAML files (*.yaml *.yml)");
+    filters << _("Any files (*)");
+    dialog.setNameFilters(filters);
+
+    dialog.updatePresetDirectories();
+
+    ProjectManager* pm = ProjectManager::instance();
+    string currentProjectFile = pm->currentProjectFile();
+    QFileInfo info(QString::fromStdString(currentProjectFile));
+    string currentProjectName = info.baseName().toStdString();
+    if(!dialog.selectFilePath(currentProjectFile)) {
+        dialog.selectFile(currentProjectName);
+    }
+
+    if(dialog.exec() == QDialog::Accepted) {
+        string suffix = ".yaml";
+        QString fileName = QString::fromStdString(getSaveFilename(dialog, suffix));
+        yamlFileName = fileName;
+    }
+
     if(!yamlFileName.isEmpty()) {
-        QFileInfo info(yamlFileName);
-        if(info.suffix().isEmpty()) {
-            yamlFileName += ".yaml";
-        }
         string bodyName = info.baseName().toStdString();
 
         YAMLWriter writer(yamlFileName.toStdString());
@@ -960,14 +1006,38 @@ void CrawlerRobotBuilderDialogImpl::onEnableAgxCheckToggled(bool on)
 
 void CrawlerRobotBuilderDialogImpl::onExportBodyButtonClicked()
 {
-    QString currentDirectory = QString::fromStdString(ProjectManager::instance()->currentProjectDirectory());
-    QString bodyFileName = QFileDialog::getSaveFileName(nullptr, "export body file", currentDirectory,
-                                                        "Body files (*.body)");
+    QString bodyFileName;
+    FileDialog dialog(MainWindow::instance());
+    dialog.setWindowTitle(_("Save a Body file"));
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setViewMode(QFileDialog::List);
+    dialog.setLabelText(QFileDialog::Accept, _("Save"));
+    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
+    dialog.setOption(QFileDialog::DontConfirmOverwrite);
+
+    QStringList filters;
+    filters << _("Body files (*.body)");
+    filters << _("Any files (*)");
+    dialog.setNameFilters(filters);
+
+    dialog.updatePresetDirectories();
+
+    ProjectManager* pm = ProjectManager::instance();
+    string currentProjectFile = pm->currentProjectFile();
+    QFileInfo info(QString::fromStdString(currentProjectFile));
+    string currentProjectName = info.baseName().toStdString();
+    if(!dialog.selectFilePath(currentProjectFile)) {
+        dialog.selectFile(currentProjectName);
+    }
+
+    if(dialog.exec() == QDialog::Accepted) {
+        string suffix = ".body";
+        QString fileName = QString::fromStdString(getSaveFilename(dialog, suffix));
+        bodyFileName = fileName;
+    }
+
     if(!bodyFileName.isEmpty()) {
-        QFileInfo info(bodyFileName);
-        if(info.suffix().isEmpty()) {
-            bodyFileName += ".body";
-        }
         if(!trackBeltCheck->isChecked()) {
             onExportBody(bodyFileName);
         }
@@ -1737,4 +1807,20 @@ Vector3 CrawlerRobotBuilderDialogImpl::getColor(PushButton* colorButton)
 {
     QColor selectedColor = colorButton->palette().color(QPalette::Button);
     return Vector3(selectedColor.red() / 255.0, selectedColor.green() / 255.0, selectedColor.blue() / 255.0);
+}
+
+
+string CrawlerRobotBuilderDialogImpl::getSaveFilename(FileDialog& dialog, string& suffix)
+{
+    std::string filename;
+    auto filenames = dialog.selectedFiles();
+    if(!filenames.isEmpty()){
+        filename = filenames.front().toStdString();
+        filesystem::path path(fromUTF8(filename));
+        string ext = path.extension().string();
+        if(ext != suffix){
+            filename += suffix;
+        }
+    }
+    return filename;
 }
