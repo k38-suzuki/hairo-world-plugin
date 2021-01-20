@@ -5,14 +5,15 @@
 
 #include "BoxTerrainBuilderDialog.h"
 #include <cnoid/Button>
+#include <cnoid/FileDialog>
+#include <cnoid/LineEdit>
 #include <cnoid/MenuManager>
-#include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include <cnoid/SpinBox>
 #include <QApplication>
 #include <QDebug>
-#include <QFileDialog>
 #include <QFileInfo>
+#include <QGridLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QLabel>
@@ -35,15 +36,18 @@ class BoxTerrainBuilderDialogImpl
 {
 public:
     BoxTerrainBuilderDialogImpl(BoxTerrainBuilderDialog* self);
-
     BoxTerrainBuilderDialog* self;
-    QString fileName;
+
     DoubleSpinBox* scaleSpin;
+    LineEdit* inputFileLine;
+    LineEdit* outputFileLine;
 
     void onAccepted();
     void onRejected();
-    void onExportButtonClicked();
-    void onExportBody(QString filePath);
+    void onSaveButtonClicked();
+    void onLoadButtonClicked();
+    void onClearButtonClicked();
+    void onExportBody();
 };
 
 
@@ -264,21 +268,43 @@ BoxTerrainBuilderDialogImpl::BoxTerrainBuilderDialogImpl(BoxTerrainBuilderDialog
 {
     self->setWindowTitle(_("BoxTerrainBuilder"));
     QVBoxLayout* vbox = new QVBoxLayout();
-    QHBoxLayout* hbox = new QHBoxLayout();
-    hbox->addWidget(new QLabel(_("scale[0.1-10.0]")));
-    hbox->addStretch();
+    QGridLayout* gbox = new QGridLayout();
+    int index = 0;
+
     scaleSpin = new DoubleSpinBox();
     scaleSpin->setDecimals(1);
     scaleSpin->setSingleStep(0.1);
     scaleSpin->setValue(1.0);
     scaleSpin->setRange(0.1, 10.0);
-    hbox->addWidget(scaleSpin);
-    PushButton* button = new PushButton(_("Build"));
-    hbox->addWidget(button);
-    vbox->addLayout(hbox);
+    PushButton* clearButton = new PushButton(_("Clear"));
+    gbox->addWidget(new QLabel(_("scale[0.1-10.0]")), index, 0);
+    gbox->addWidget(scaleSpin, index, 1);
+    gbox->addWidget(clearButton, index++, 2);
+
+    inputFileLine = new LineEdit();
+    inputFileLine->setEnabled(false);
+    PushButton* loadButton = new PushButton(_("Load"));
+    gbox->addWidget(new QLabel(_("Input File (.csv)")), index, 0);
+    gbox->addWidget(inputFileLine, index, 1);
+    gbox->addWidget(loadButton, index++, 2);
+
+    outputFileLine = new LineEdit();
+    outputFileLine->setEnabled(false);
+    PushButton* saveButton = new PushButton(_("Save"));
+    gbox->addWidget(new QLabel(_("Output File (.body)")), index, 0);
+    gbox->addWidget(outputFileLine, index, 1);
+    gbox->addWidget(saveButton, index++, 2);
+
+    PushButton* overwriteButton = new PushButton(_("Overwrite"));
+    gbox->addWidget(overwriteButton, index, 2);
+    vbox->addLayout(gbox);
+
     self->setLayout(vbox);
 
-    button->sigClicked().connect([&](){ onExportButtonClicked(); });
+    clearButton->sigClicked().connect([&](){ onClearButtonClicked(); });
+    loadButton->sigClicked().connect([&](){ onLoadButtonClicked(); });
+    saveButton->sigClicked().connect([&](){ onSaveButtonClicked(); });
+    overwriteButton->sigClicked().connect([&](){ onExportBody(); });
 }
 
 
@@ -331,62 +357,91 @@ void BoxTerrainBuilderDialogImpl::onRejected()
 }
 
 
-void BoxTerrainBuilderDialogImpl::onExportButtonClicked()
+void BoxTerrainBuilderDialogImpl::onSaveButtonClicked()
 {
     QString currentDirectory = QString::fromStdString(ProjectManager::instance()->currentProjectDirectory());
-    if(!fileName.isEmpty()) {
-        QFileInfo info(fileName);
-        currentDirectory = info.absolutePath();
+    QString inputFileName = inputFileLine->text();
+    if(!inputFileName.isEmpty()) {
+        QFileInfo inputInfo(inputFileName);
+        currentDirectory = inputInfo.absolutePath();
+        QString outputFileName = QFileDialog::getSaveFileName(nullptr, _("output body file"), currentDirectory,
+                                                        _("BODY files (*.body)"));
+        if(!outputFileName.isEmpty()) {
+            QFileInfo outputInfo(outputFileName);
+            QString ext = outputInfo.suffix();
+            if(ext.isEmpty()) {
+                outputFileName += ".body";
+            }
+            outputFileLine->setText(outputFileName);
+            onExportBody();
+        }
     }
-    fileName = QFileDialog::getOpenFileName(nullptr, "import csv file", currentDirectory,
-                                                   "CSV files (*.csv)");
-    onExportBody(fileName);
 }
 
 
-void BoxTerrainBuilderDialogImpl::onExportBody(QString filePath)
+void BoxTerrainBuilderDialogImpl::onLoadButtonClicked()
 {
-    if(!filePath.isEmpty()) {
+    QString currentDirectory = QString::fromStdString(ProjectManager::instance()->currentProjectDirectory());
+    QString inputFileName = inputFileLine->text();
+    if(!inputFileName.isEmpty()) {
+        QFileInfo info(inputFileName);
+        currentDirectory = info.absolutePath();
+    }
+    inputFileName = QFileDialog::getOpenFileName(nullptr, _("input csv file"), currentDirectory,
+                                                   _("CSV files (*.csv)"));
+    inputFileLine->setText(inputFileName);
+}
 
-        QString exportFilePath = filePath;
-        exportFilePath = exportFilePath.replace(".csv", ".body");
 
-        FILE* exportFile = fopen(exportFilePath.toStdString().c_str(), "w");
-        if(exportFile == NULL) {
+void BoxTerrainBuilderDialogImpl::onClearButtonClicked()
+{
+    inputFileLine->clear();
+    outputFileLine->clear();
+    scaleSpin->setValue(1.0);
+}
+
+
+void BoxTerrainBuilderDialogImpl::onExportBody()
+{
+    QString inputFileName = inputFileLine->text();
+    QString outputFileName = outputFileLine->text();
+    if(!inputFileName.isEmpty() && !outputFileName.isEmpty()) {
+        FILE* fp = fopen(outputFileName.toStdString().c_str(), "w");
+        if(fp == NULL) {
             qCritical().noquote() << "cannot open body file." << endl;
         }
         else {
             CellManager cm;
-            if(!cm.read(filePath.toStdString())) {
+            if(!cm.read(inputFileName.toStdString())) {
                 qCritical().noquote() << "cannot csv body file." << endl;
             }
             else {
 
-                QFileInfo info(exportFilePath);
+                QFileInfo info(outputFileName);
                 QString bodyName = info.baseName();
 
-                fprintf(exportFile, "format: ChoreonoidBody\n");
-                fprintf(exportFile, "formatVersion: 1.0\n");
-                fprintf(exportFile, "name: %s\n", bodyName.toStdString().c_str());
-                fprintf(exportFile, "links:\n");
-                fprintf(exportFile, "  -\n");
-                fprintf(exportFile, "    name: STEPFIELD\n");
-                fprintf(exportFile, "#    parent: \n");
-                fprintf(exportFile, "    translation: [ 0, 0, 0 ]\n");
-                fprintf(exportFile, "    rotation: [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ] ]\n");
-                fprintf(exportFile, "    jointType: fixed\n");
-                fprintf(exportFile, "    material: Ground\n");
-                fprintf(exportFile, "    elements:\n");
-                fprintf(exportFile, "      Shape:\n");
-                fprintf(exportFile, "        geometry:\n");
-                fprintf(exportFile, "          type: IndexedFaceSet\n");
-                fprintf(exportFile, "          coordinate: [\n");
+                fprintf(fp, "format: ChoreonoidBody\n");
+                fprintf(fp, "formatVersion: 1.0\n");
+                fprintf(fp, "name: %s\n", bodyName.toStdString().c_str());
+                fprintf(fp, "links:\n");
+                fprintf(fp, "  -\n");
+                fprintf(fp, "    name: STEPFIELD\n");
+                fprintf(fp, "#    parent: \n");
+                fprintf(fp, "    translation: [ 0, 0, 0 ]\n");
+                fprintf(fp, "    rotation: [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ] ]\n");
+                fprintf(fp, "    jointType: fixed\n");
+                fprintf(fp, "    material: Ground\n");
+                fprintf(fp, "    elements:\n");
+                fprintf(fp, "      Shape:\n");
+                fprintf(fp, "        geometry:\n");
+                fprintf(fp, "          type: IndexedFaceSet\n");
+                fprintf(fp, "          coordinate: [\n");
 
 
                 for(int k = 0; k < cm.getYsize(); k++) {
                     for(int j = 0; j < cm.getXsize(); j++) {
                         for(int i = 0; i < 4; i++) {
-                            fprintf(exportFile, "            %4.2f, %4.2f, %4.2f,\n", cm.getPointax(j, k, i), cm.getPointay(j, k, i), cm.getPointaz(j, k, i));
+                            fprintf(fp, "            %4.2f, %4.2f, %4.2f,\n", cm.getPointax(j, k, i), cm.getPointay(j, k, i), cm.getPointaz(j, k, i));
                         }
                     }
                 }
@@ -394,50 +449,50 @@ void BoxTerrainBuilderDialogImpl::onExportBody(QString filePath)
                 for(int k = 0; k < cm.getYsize(); k++) {
                     for(int j = 0; j < cm.getXsize(); j++) {
                         for(int i = 0; i < 4; i++) {
-                            fprintf(exportFile, "            %4.2f, %4.2f, %4.2f,\n", cm.getPointbx(j, k, i), cm.getPointby(j, k, i), cm.getPointbz(j, k, i));
+                            fprintf(fp, "            %4.2f, %4.2f, %4.2f,\n", cm.getPointbx(j, k, i), cm.getPointby(j, k, i), cm.getPointbz(j, k, i));
                         }
                     }
                 }
 
-                fprintf(exportFile, "          ]\n");
-                fprintf(exportFile, "          coordIndex: [\n");
+                fprintf(fp, "          ]\n");
+                fprintf(fp, "          coordIndex: [\n");
 
                 for(int j = 0; j < cm.getYsize(); j++) {
                     for(int i = 0; i < cm.getXsize(); i++) {
-                        fprintf(exportFile,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 0, 0), cm.getId(i, j, 1, 0), cm.getId(i, j, 2, 0), cm.getId(i, j, 3, 0));
-                        fprintf(exportFile,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 0, 1), cm.getId(i, j, 3, 1), cm.getId(i, j, 2, 1), cm.getId(i, j, 1, 1));
+                        fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 0, 0), cm.getId(i, j, 1, 0), cm.getId(i, j, 2, 0), cm.getId(i, j, 3, 0));
+                        fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 0, 1), cm.getId(i, j, 3, 1), cm.getId(i, j, 2, 1), cm.getId(i, j, 1, 1));
                         if(i != 0) {
-                            fprintf(exportFile,  "            %d, %d, %d, %d, -1,\n", cm.getId(i - 1, j, 3, 0), cm.getId(i - 1, j, 2, 0), cm.getId(i, j, 1, 0), cm.getId(i, j, 0, 0));
+                            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i - 1, j, 3, 0), cm.getId(i - 1, j, 2, 0), cm.getId(i, j, 1, 0), cm.getId(i, j, 0, 0));
                         }
                         else {
-                            fprintf(exportFile,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 1, 1), cm.getId(i, j, 1, 0), cm.getId(i, j, 0, 0), cm.getId(i, j, 0, 1));
+                            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 1, 1), cm.getId(i, j, 1, 0), cm.getId(i, j, 0, 0), cm.getId(i, j, 0, 1));
                         }
 
                         if(j != 0) {
-                            fprintf(exportFile,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j - 1, 1, 0), cm.getId(i, j, 0, 0), cm.getId(i, j, 3, 0), cm.getId(i, j - 1, 2, 0));
+                            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j - 1, 1, 0), cm.getId(i, j, 0, 0), cm.getId(i, j, 3, 0), cm.getId(i, j - 1, 2, 0));
                         }
                         else {
-                            fprintf(exportFile,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 0, 1), cm.getId(i, j, 0, 0), cm.getId(i, j, 3, 0), cm.getId(i, j, 3, 1));
+                            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 0, 1), cm.getId(i, j, 0, 0), cm.getId(i, j, 3, 0), cm.getId(i, j, 3, 1));
                         }
 
                         if(j == cm.getYsize() - 1) {
-                            fprintf(exportFile,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 1, 0), cm.getId(i, j, 1, 1), cm.getId(i, j, 2, 1), cm.getId(i, j, 2, 0));
+                            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 1, 0), cm.getId(i, j, 1, 1), cm.getId(i, j, 2, 1), cm.getId(i, j, 2, 0));
                         }
 
                         if(i == cm.getXsize() - 1) {
-                            fprintf(exportFile,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 2, 1), cm.getId(i, j, 3, 1), cm.getId(i, j, 3, 0), cm.getId(i, j, 2, 0));
+                            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 2, 1), cm.getId(i, j, 3, 1), cm.getId(i, j, 3, 0), cm.getId(i, j, 2, 0));
                         }
                     }
                 }
 
-                fprintf(exportFile, "          ]\n");
-                fprintf(exportFile, "        appearance:\n");
-                fprintf(exportFile, "          material:\n");
-                fprintf(exportFile, "            diffuseColor: [ 1, 1, 1 ]\n");
-                fprintf(exportFile, "#          texture:\n");
-                fprintf(exportFile, "#            url: \"texture/oak.png\"\n");
+                fprintf(fp, "          ]\n");
+                fprintf(fp, "        appearance:\n");
+                fprintf(fp, "          material:\n");
+                fprintf(fp, "            diffuseColor: [ 1, 1, 1 ]\n");
+                fprintf(fp, "#          texture:\n");
+                fprintf(fp, "#            url: \"texture/oak.png\"\n");
             }
         }
-        fclose(exportFile);
+        fclose(fp);
     }
 }

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-05 22:34+0900\n"
+"POT-Creation-Date: 2021-01-20 03:33-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
 "Language-Team: Japanese\n"
@@ -17,14 +17,50 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../BoxTerrainBuilderDialog.cpp:240 ../BoxTerrainBuilderDialog.cpp:274
+#: ../BoxTerrainBuilderDialog.cpp:269 ../BoxTerrainBuilderDialog.cpp:325
 msgid "BoxTerrainBuilder"
 msgstr "ボックステレインビルダ"
 
-#: ../BoxTerrainBuilderDialog.cpp:243
-msgid "scale[0.1-10.0]"
-msgstr "スケール"
+#: ../BoxTerrainBuilderDialog.cpp:279
+msgid "Clear"
+msgstr "クリア"
 
-#: ../BoxTerrainBuilderDialog.cpp:251
-msgid "Build"
-msgstr "実行"
+#: ../BoxTerrainBuilderDialog.cpp:280
+msgid "scale[0.1-10.0]"
+msgstr "スケール[0.1-10.0]"
+
+#: ../BoxTerrainBuilderDialog.cpp:286
+msgid "Load"
+msgstr "読み込み"
+
+#: ../BoxTerrainBuilderDialog.cpp:287
+msgid "Input File (.csv)"
+msgstr "入力ファイル (.csv)"
+
+#: ../BoxTerrainBuilderDialog.cpp:293
+msgid "Save"
+msgstr "保存"
+
+#: ../BoxTerrainBuilderDialog.cpp:294
+msgid "Output File (.body)"
+msgstr "出力ファイル (.body)"
+
+#: ../BoxTerrainBuilderDialog.cpp:298
+msgid "Overwrite"
+msgstr "上書き保存"
+
+#: ../BoxTerrainBuilderDialog.cpp:367
+msgid "output body file"
+msgstr "ボディファイルの保存"
+
+#: ../BoxTerrainBuilderDialog.cpp:368
+msgid "BODY files (*.body)"
+msgstr "ボディファイル(*.body)"
+
+#: ../BoxTerrainBuilderDialog.cpp:390
+msgid "input csv file"
+msgstr "入力ファイルの読み込み"
+
+#: ../BoxTerrainBuilderDialog.cpp:391
+msgid "CSV files (*.csv)"
+msgstr "CSVファイル(*.csv)"
