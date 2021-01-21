@@ -122,8 +122,7 @@ void SimulationManagerImpl::startSimulation(SimulatorItem* simulatorItem, bool d
             pause = false;
         }
         TimeBar::instance()->startPlaybackFromFillLevel();
-    }
-    else {
+    } else {
         simulatorItem->startSimulation(doReset);
         pause = false;
     }
@@ -146,8 +145,7 @@ void SimulationManagerImpl::pauseSimulation(SimulatorItem* simulatorItem)
         if(timeBar->isDoingPlayback()) {
             timeBar->stopPlayback();
         }
-    }
-    else {
+    } else {
         if(simulatorItem->isRunning()) {
             simulatorItem->restartSimulation();
         }
@@ -165,12 +163,10 @@ void SimulationManagerImpl::forEachSimulator(std::function<void(SimulatorItem* s
         simulatorItems.extractChildItems(RootItem::instance());
         if(simulatorItems.empty()) {
             mv->notify(_("There is no simulator item."));
-        }
-        else if(simulatorItems.size() > 1) {
+        } else if(simulatorItems.size() > 1) {
             simulatorItems.clear();
             mv->notify(_("Please select a simulator item to simulate."));
-        }
-        else {
+        } else {
             if(doSelect) {
                 ItemTreeView::instance()->selectItem(simulatorItems.front());
             }
@@ -199,16 +195,14 @@ void SimulationManagerImpl::forEachSimulator(std::function<void(SimulatorItem* s
         WorldItem* world = simulatorItem->findOwnerItem<WorldItem>();
         if(!world) {
             mv->notify(format(_("{} cannot be processed because it is not related with a world."), simulatorItem->name()));
-        }
-        else {
+        } else {
             WorldToSimulatorMap::iterator p = worldToSimulator.find(world);
             if(p != worldToSimulator.end()) {
                 if(!p->second) {
                     mv->notify(format(_("{} cannot be processed because another simulator"
                                         "in the same world is also selected."),
                                       simulatorItem->name()));
-                }
-                else {
+                } else {
                     callback(simulatorItem);
                 }
             }
@@ -307,8 +301,7 @@ void SimulationManagerImpl::onButtonClicked(const int id, const bool isPressed)
                     //start
                     startSimulation(true);
                     start = !start;
-                }
-                else {
+                } else {
                     //pause
                     pause = !pause;
                     onPauseSimulationClicked();
@@ -321,8 +314,7 @@ void SimulationManagerImpl::onButtonClicked(const int id, const bool isPressed)
                     //re-start
                     startSimulation(false);
                     start = !start;
-                }
-                else {
+                } else {
                     //stop
                     onStopSimulationClicked();
                     start = false;
@@ -332,10 +324,6 @@ void SimulationManagerImpl::onButtonClicked(const int id, const bool isPressed)
             break;
         case Joystick::LOGO_BUTTON:
             if(useJoystickLoad->isChecked()) {
-                ItemTreeView* view = ItemTreeView::instance();
-                view->selectAllItems();
-                view->itemTreeWidget()->cutSelectedItems();
-                view->clearSelection();
                 openDialogToLoadProject();
                 start = false;
                 pause = false;
