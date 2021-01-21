@@ -13,7 +13,6 @@
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
 #include <vector>
-#include <iostream>
 #include <cmath>
 #include "FDBody.h"
 #include "FluidAreaItem.h"
@@ -220,11 +219,9 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
         if(item) {
             double density = item->density();
             if(density > 10.0) {
-
                 Matrix3 R = link->R() * thruster->R_local();
                 const Vector3 f = R * (Vector3::UnitX() * (thruster->force() + thruster->forceOffset()));
-                const Vector3 point = link->R() * thruster->p_local();
-                const Vector3 p = link->T() * point;
+                const Vector3 p = link->T() * thruster->p_local();
                 Vector3 tau_ext = R * (Vector3::UnitX() * (thruster->torque() + thruster->torqueOffset()));
                 if(thruster->on()) {
                     link->f_ext() += f;
@@ -261,8 +258,7 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
 
                 Matrix3 R = link->R() * rotor->R_local();
                 const Vector3 f = R * (Vector3::UnitZ() * (rotor->force() + rotor->forceOffset() + staticForce));
-                const Vector3 point = link->R() * rotor->p_local();
-                const Vector3 p = link->T() * point;
+                const Vector3 p = link->T() * rotor->p_local();
                 Vector3 tau_ext = R * (Vector3::UnitZ() * (rotor->torque() + rotor->torqueOffset()));
                 if(rotor->on()) {
                     link->f_ext() += f;
