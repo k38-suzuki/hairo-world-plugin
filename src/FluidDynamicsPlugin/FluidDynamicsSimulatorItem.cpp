@@ -37,6 +37,9 @@ public:
     Vector3 gravity;
     std::vector<FDBody*> fdBodies;
     ItemList<FluidAreaItem> items;
+    DeviceList<Thruster> thrusters;
+    DeviceList<Rotor> rotors;
+
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
@@ -60,6 +63,8 @@ FluidDynamicsSimulatorItemImpl::FluidDynamicsSimulatorItemImpl(FluidDynamicsSimu
     gravity << 0.0, 0.0, -9.80665;
     fdBodies.clear();
     items.clear();
+    thrusters.clear();
+    rotors.clear();
 }
 
 
@@ -77,6 +82,8 @@ FluidDynamicsSimulatorItemImpl::FluidDynamicsSimulatorItemImpl(FluidDynamicsSimu
     gravity = org.gravity;
     fdBodies = org.fdBodies;
     items = org.items;
+    thrusters = org.thrusters;
+    rotors = org.rotors;
 }
 
 
@@ -104,13 +111,17 @@ bool FluidDynamicsSimulatorItemImpl::initializeSimulation(SimulatorItem* simulat
     gravity = simulatorItem->getGravity();
     fdBodies.clear();
     items.clear();
+    thrusters.clear();
+    rotors.clear();
     vector<SimulationBody*> simulationBodies = simulatorItem->simulationBodies();
     for(size_t i = 0; i < simulationBodies.size(); i++) {
-        createFDBody(simulationBodies[i]->body());
+        Body* body = simulationBodies[i]->body();
+        createFDBody(body);
+        thrusters << body->devices();
+        rotors << body->devices();
     }
 
     if(fdBodies.size()) {
-//        cout << fdBodies.size() << endl;
         items = ItemTreeView::instance()->checkedItems<FluidAreaItem>();
         simulatorItem->addPreDynamicsFunction([&](){ onPreDynamicsFunction(); });
     }
@@ -122,48 +133,51 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
 {
     for(size_t i = 0; i < fdBodies.size(); i++) {
         FDBody* fdBody = fdBodies[i];
-        Body* body = fdBodies[i]->body();
         for(int j = 0; j < fdBody->numFDLinks(); j++) {
             FDLink* fdLink = fdBody->fdLink(j);
             Link* link = fdLink->link();
             double density = 0.0;
             double viscosity = 0.0;
-            Vector3 flow = Vector3::Zero();
 
+            //flow
+            Vector3 ff = Vector3::Zero();
             FluidAreaItem* item = isCollided(link);
             if(item) {
                 density = item->density();
                 viscosity = item->viscosity();
-                flow = item->flow();
+                ff = item->flow();
             }
-
-            //flow
-            Vector3 f_flow = flow;
+            link->f_ext() += ff;
+            Vector3 cr = link->T() * Vector3(0.0, 0.0, 0.0);
+            link->tau_ext() += cr.cross(ff);
 
             // buoyancy
             double volume = 0.0;
             if(fdLink->density() != 0.0) {
                 volume = link->mass() / fdLink->density();
             }
-            Vector3 f_buoyancy = density * gravity * volume * -1.0;
-            Vector3 centerOfBuoyancy = link->R() * fdLink->centerOfBuoyancy();
-            Vector3 tau_buoyancy = centerOfBuoyancy.cross(f_buoyancy);
+            Vector3 fb = density * gravity * volume * -1.0;
+            link->f_ext() += fb;
+            Vector3 cb = link->T() * fdLink->centerOfBuoyancy();
+            link->tau_ext() += cb.cross(fb);
 
             Vector3 v = link->v();
             Vector3 w = link->w();
-
-            //drag
-            Vector3 f_drag = Vector3::Zero();
-            Vector3 tau_drag = Vector3::Zero();
-            //viscous drag
-            Vector3 f_visco = Vector3::Zero();
-            Vector3 tau_visco = Vector3::Zero();
             double cd = 0.0;
             if(density > 10.0) {
                 cd = fdLink->cdw();
             } else {
                 cd = fdLink->cda();
             }
+
+            //drag
+            Vector3 fd = Vector3::Zero();
+            Vector3 td = Vector3::Zero();
+            //viscous drag
+            Vector3 fv = Vector3::Zero();
+            Vector3 tv = Vector3::Zero();
+
+            // Force
             for(int k = 0; k < 3; ++k) {
                 double sign = 1.0;
                 int index = 1;
@@ -171,10 +185,12 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
                     sign = -1.0;
                     index = 0;
                 }
-                f_drag[k] = 0.5 * density * v[k] * v[k] * fdLink->surface()[k * 2 + index] * cd * sign;
+                fd[k] = 0.5 * density * v[k] * v[k] * fdLink->surface()[k * 2 + index] * cd * sign;
                 double cv = fdLink->cv();
-                f_visco[k] = cv * viscosity * v[k] * sign;
+                fv[k] = cv * viscosity * fabs(v[k]) * sign;
             }
+
+            // Moment
             for(int k = 0; k < 3; ++k) {
                 double sign = 1.0;
                 int index = 1;
@@ -184,96 +200,75 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
                     sign = -1.0;
                     index = 0;
                 }
-                tau_drag[k] = density * w[k] * w[k] * (fdLink->surface()[index0 * 2 + index] + fdLink->surface()[index1 * 2 + index]) * fdLink->td() * sign;
+                td[k] = density * w[k] * w[k] * (fdLink->surface()[index0 * 2 + index] + fdLink->surface()[index1 * 2 + index]) * fdLink->td() * sign;
                 double cv = fdLink->cv();
-                tau_visco[k] = cv * viscosity * w[k] * sign;
+                tv[k] = cv * viscosity * fabs(w[k]) * sign;
             }
 
-            vector<Vector3> f_exts;
-            f_exts.push_back(f_flow);
-            f_exts.push_back(f_buoyancy);
-            f_exts.push_back(f_drag);
-            f_exts.push_back(f_visco);
-            for(int k = 0; k < f_exts.size(); k++) {
-                if(!isnan(f_exts[k].norm())) {
-                    link->f_ext() += f_exts[k];
-                }
-            }
+            link->f_ext() += fd;
+            link->tau_ext() += cr.cross(fd) + td;
+            link->f_ext() += fv;
+            link->tau_ext() += cr.cross(fv) + tv;
+        }
+    }
 
-            vector<Vector3> tau_exts;
-            tau_exts.push_back(tau_buoyancy);
-            tau_exts.push_back(tau_drag);
-            tau_exts.push_back(tau_visco);
-            for(int k = 0; k < tau_exts.size(); k++) {
-                if(!isnan(tau_exts[k].norm())) {
-                    link->tau_ext() += tau_exts[k];
+    // Thruster
+    for(int k = 0; k < thrusters.size(); k++) {
+        Thruster* thruster = thrusters[k];
+        Link* link = thruster->link();
+        FluidAreaItem* item = isCollided(link);
+        if(item) {
+            double density = item->density();
+            if(density > 10.0) {
+
+                Matrix3 R = link->R() * thruster->R_local();
+                const Vector3 f = R * (Vector3::UnitX() * (thruster->force() + thruster->forceOffset()));
+                const Vector3 point = link->R() * thruster->p_local();
+                const Vector3 p = link->T() * point;
+                Vector3 tau_ext = R * (Vector3::UnitX() * (thruster->torque() + thruster->torqueOffset()));
+                if(thruster->on()) {
+                    link->f_ext() += f;
+                    link->tau_ext() += p.cross(f) + tau_ext;
                 }
             }
         }
+    }
 
-        //thruster
-        DeviceList<Thruster> thrusters = body->devices();
-        for(int k = 0; k < thrusters.size(); k++) {
-            Thruster* thruster = thrusters[k];
-            Link* link = thruster->link();
-            FluidAreaItem* item = isCollided(link);
-            if(item) {
-                double density = item->density();
-                if(density > 10.0) {
-                    const Matrix3 R = link->R() * thruster->R_local();
-                    const Vector3 p = link->R() * thruster->p_local();
-                    Quat rotation(R);
-                    Vector3 f_ext = rotation * (Vector3::UnitX() * (thruster->force() + thruster->forceOffset()));
-                    Vector3 tau_ext = rotation * (Vector3::UnitX() * (thruster->torque() + thruster->torqueOffset()) + p.cross(f_ext));
-                    if(thruster->on()) {
-                        link->f_ext() += f_ext;
-                        link->tau_ext() += tau_ext;
+    // Rotor
+    for(int k = 0; k < rotors.size(); k++) {
+        Rotor* rotor = rotors[k];
+        Link* link = rotor->link();
+        FluidAreaItem* item = isCollided(link);
+        if(item) {
+            double density = item->density();
+            if(density < 10.0) {
+                double n = rotor->kv() * rotor->voltage();
+                double d3 = rotor->diameter() / 10.0;
+                double p1 = rotor->pitch() / 10.0;
+                double k = rotor->k();
+                double g = fabs(gravity[2]);
+                if(n <= 0.0) {
+                    n = link->dq_target() * 30.0 / PI;
+                } else {
+                    double dir = 1.0;
+                    if(rotor->reverse()) {
+                        dir *= -1.0;
                     }
+                    link->dq_target() = n * PI / 30.0 * dir;
+                }
+                double n2 = n / 1000.0;
+                double staticForce = k * d3 * d3 * d3 * p1 * n2 * n2 * g / 1000.0;
+
+                Matrix3 R = link->R() * rotor->R_local();
+                const Vector3 f = R * (Vector3::UnitZ() * (rotor->force() + rotor->forceOffset() + staticForce));
+                const Vector3 point = link->R() * rotor->p_local();
+                const Vector3 p = link->T() * point;
+                Vector3 tau_ext = R * (Vector3::UnitZ() * (rotor->torque() + rotor->torqueOffset()));
+                if(rotor->on()) {
+                    link->f_ext() += f;
+                    link->tau_ext() += p.cross(f) + tau_ext;
                 }
             }
-        }
-
-        //rotor
-        DeviceList<Rotor> rotors = body->devices();
-        for(int k = 0; k < rotors.size(); k++) {
-            Rotor* rotor = rotors[k];
-            Link* link = rotor->link();
-            FluidAreaItem* item = isCollided(link);
-            if(item) {
-                double density = item->density();
-                if(density < 10.0) {
-                    const Matrix3 R = link->R() * rotor->R_local();
-                    const Vector3 p = link->R() * rotor->p_local();
-                    Quat rotation(R);
-                    double n = rotor->kv() * rotor->voltage();
-                    double d3 = rotor->diameter() / 10.0;
-                    double p1 = rotor->pitch() / 10.0;
-                    double k = rotor->k();
-                    double g = fabs(gravity[2]);
-                    if(n <= 0.0) {
-                        n = link->dq_target() * 30.0 / PI;
-                    } else {
-                        double dir = 1.0;
-                        if(rotor->reverse()) {
-                            dir *= -1.0;
-                        }
-                        link->dq_target() = n * PI / 30.0 * dir;
-                    }
-                    double n2 = n / 1000.0;
-                    double staticForce = k * d3 * d3 * d3 * p1 * n2 * n2 * g / 1000.0;
-                    Vector3 f_ext = rotation * (Vector3::UnitZ() * (rotor->force() + rotor->forceOffset() + staticForce));
-                    Vector3 tau_ext = rotation * (Vector3::UnitZ() * (rotor->torque() + rotor->torqueOffset()) + p.cross(f_ext));
-                    if(rotor->on()) {
-                        link->f_ext() += f_ext;
-                        link->tau_ext() += tau_ext;
-                    }
-                }
-            }
-        }
-
-        for(int k = 0; k < body->numLinks(); k++) {
-            Link* link = body->link(k);
-            link->tau_ext() += -1.0 * link->f_ext().cross(link->T().translation());
         }
     }
 }
