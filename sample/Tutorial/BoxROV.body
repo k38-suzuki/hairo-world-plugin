@@ -34,9 +34,9 @@ links:
       -
         type: Thruster
         name: LeftThruster
-        translation: [ -0.1, 0.1, 0 ]
+        translation: [ 0, 0.1, 0 ]
       -
         type: Thruster
         name: RightThruster
-        translation: [ -0.1, -0.1, 0 ]
+        translation: [ 0, -0.1, 0 ]
 
