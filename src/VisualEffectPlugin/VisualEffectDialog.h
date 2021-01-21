@@ -19,8 +19,18 @@ public:
     VisualEffectDialog();
     virtual ~VisualEffectDialog();
 
-    double value(const int index) const;
     void setVisualEffect(VisualEffect* effect);
+    double hue() const;
+    double saturation() const;
+    double value() const;
+    double red() const;
+    double green() const;
+    double blue() const;
+    double coefB() const;
+    double coefD() const;
+    double stdDev() const;
+    double salt() const;
+    double pepper() const;
 
 protected:
     virtual void onAccepted() override;

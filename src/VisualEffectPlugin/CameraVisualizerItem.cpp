@@ -432,17 +432,17 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
                 if(pitem != this) {
                     effectDialog->setVisualEffect(&effect);
                 }
-                effect.setHue(effectDialog->value(0));
-                effect.setSaturation(effectDialog->value(1));
-                effect.setValue(effectDialog->value(2));
-                effect.setRed(effectDialog->value(3));
-                effect.setGreen(effectDialog->value(4));
-                effect.setBlue(effectDialog->value(5));
-                effect.setCoefB(effectDialog->value(6));
-                effect.setCoefD(effectDialog->value(7));
-                effect.setStdDev(effectDialog->value(8));
-                effect.setSalt(effectDialog->value(9));
-                effect.setPepper(effectDialog->value(10));
+                effect.setHue(effectDialog->hue());
+                effect.setSaturation(effectDialog->saturation());
+                effect.setValue(effectDialog->value());
+                effect.setRed(effectDialog->red());
+                effect.setGreen(effectDialog->green());
+                effect.setBlue(effectDialog->blue());
+                effect.setCoefB(effectDialog->coefB());
+                effect.setCoefD(effectDialog->coefD());
+                effect.setStdDev(effectDialog->stdDev());
+                effect.setSalt(effectDialog->salt());
+                effect.setPepper(effectDialog->pepper());
                 pitem = this;
             }
         }
