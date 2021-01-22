@@ -1066,9 +1066,8 @@ void CrawlerRobotBuilderDialogImpl::onExportBody(QString fileName)
     fprintf(fp, "\n");
     fprintf(fp, "TRACK_BODY: &TrackBody\n");
     fprintf(fp, "  parent: CHASSIS\n");
-    fprintf(fp, "  jointType: fixed\n");
+    fprintf(fp, "  jointType: pseudo_continuous_track\n");
     fprintf(fp, "  jointAxis: Y\n");
-    fprintf(fp, "  actuationMode: jointSurfaceVelocity\n");
     fprintf(fp, "  centerOfMass: [ 0, 0, 0 ]\n");
     fprintf(fp, "  mass: %3.2lf\n", trackMassSpin->value());
     fprintf(fp, "  inertia: [ %s ]\n", boxInertia(trackMassSpin->value(), trackWheelBaseSpin->value(), trackWidthSpin->value(), trackRadiusSpin->value() * 2.0).c_str());
@@ -1121,9 +1120,8 @@ void CrawlerRobotBuilderDialogImpl::onExportBody(QString fileName)
     fprintf(fp, "          shininess: 0.6\n");
     fprintf(fp, "\n");
     fprintf(fp, "TRACKF_BODY: &TrackFBody\n");
-    fprintf(fp, "  jointType: fixed\n");
+    fprintf(fp, "  jointType: pseudo_continuous_track\n");
     fprintf(fp, "  jointAxis: Y\n");
-    fprintf(fp, "  actuationMode: jointSurfaceVelocity\n");
     fprintf(fp, "  centerOfMass: [ 0, 0, 0 ]\n");
     fprintf(fp, "  mass: %3.2lf\n", frontSubTrackMassSpin->value());
     double frontSubTrackRadius = std::max(frontSubTrackForwardRadiusSpin->value(), frontSubTrackBackwardRadiusSpin->value());
@@ -1158,9 +1156,8 @@ void CrawlerRobotBuilderDialogImpl::onExportBody(QString fileName)
     fprintf(fp, "          shininess: 0.6\n");
     fprintf(fp, "\n");
     fprintf(fp, "TRACKR_BODY: &TrackRBody\n");
-    fprintf(fp, "  jointType: fixed\n");
+    fprintf(fp, "  jointType: pseudo_continuous_track\n");
     fprintf(fp, "  jointAxis: Y\n");
-    fprintf(fp, "  actuationMode: jointSurfaceVelocity\n");
     fprintf(fp, "  centerOfMass: [ 0, 0, 0 ]\n");
     fprintf(fp, "  mass: %3.2lf\n", rearSubTrackMassSpin->value());
     double rearSubTrackRadius = std::max(frontSubTrackForwardRadiusSpin->value(), frontSubTrackBackwardRadiusSpin->value());
