@@ -1,4 +1,8 @@
 
+if(NOT ENABLE_GUI OR WIN32 OR APPLE)
+  return()
+endif()
+
 option(BUILD_HAIRO_WORLD_PLUGIN "Building a HairoWorldPlugin" OFF)
 if(NOT BUILD_HAIRO_WORLD_PLUGIN)
   return()
