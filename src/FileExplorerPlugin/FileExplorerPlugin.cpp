@@ -26,6 +26,12 @@ public:
         return true;
     }
 
+    virtual bool finalize() override
+    {
+        FileExplorer::finalizeClass();
+        return true;
+    }
+
     virtual const char* description() const override
     {
         static std::string text =

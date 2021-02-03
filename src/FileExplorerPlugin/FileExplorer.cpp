@@ -48,7 +48,7 @@ FileExplorer::FileExplorer()
 
 FileExplorer::~FileExplorer()
 {
-    onProcessKilled();
+
 }
 
 
@@ -77,4 +77,10 @@ void FileExplorer::initializeClass(ExtensionManager* ext)
             menuManager.addSeparator();
             menuFunction.dispatchAs<Item>(item);
         });
+}
+
+
+void FileExplorer::finalizeClass()
+{
+    onProcessKilled();
 }

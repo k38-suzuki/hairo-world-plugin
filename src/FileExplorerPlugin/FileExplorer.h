@@ -17,6 +17,7 @@ public:
     virtual ~FileExplorer();
 
     static void initializeClass(ExtensionManager* ext);
+    static void finalizeClass();
 };
 
 }

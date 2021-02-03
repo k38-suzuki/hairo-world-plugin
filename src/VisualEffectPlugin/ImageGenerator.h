@@ -12,7 +12,7 @@ namespace cnoid {
 
 class ImageGeneratorImpl;
 
-class ImageGenerator
+class CNOID_EXPORT ImageGenerator
 {
 public:
     ImageGenerator();
