@@ -78,8 +78,7 @@ void SceneRotor::updateScene()
     if(on != isRotorAttached) {
         if(on) {
             addChildOnce(scene);
-        }
-        else {
+        } else {
             removeChild(scene);
         }
         isRotorAttached = on;

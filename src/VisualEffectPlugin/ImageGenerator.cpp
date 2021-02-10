@@ -131,11 +131,9 @@ Image ImageGeneratorImpl::gaussianNoise(const Image image, const double m_std_de
                 pixel[j] = cloneImage.pixels()[i + j] + (int)addLumi;
                 if(pixel[j] < 0) {
                     cloneImage.pixels()[i + j] = 0;
-                }
-                else if(pixel[j] > 255) {
+                } else if(pixel[j] > 255) {
                     cloneImage.pixels()[i + j] = 255;
-                }
-                else {
+                } else {
                     cloneImage.pixels()[i + j] = pixel[j];
                 }
             }
@@ -147,11 +145,9 @@ Image ImageGeneratorImpl::gaussianNoise(const Image image, const double m_std_de
             int pixel = cloneImage.pixels()[i] + (int)addLumi;
             if(pixel < 0) {
                 cloneImage.pixels()[i] = 0;
-            }
-            else if(pixel > 255) {
+            } else if(pixel > 255) {
                 cloneImage.pixels()[i] = 255;
-            }
-            else {
+            } else {
                 cloneImage.pixels()[i] = pixel;
             }
         }
@@ -272,8 +268,7 @@ Image ImageGeneratorImpl::hsv(const Image image, const double m_hue, const doubl
             default:
                 break;
             }
-        }
-        else {
+        } else {
             rgb[0] = v;
             rgb[1] = v;
             rgb[2] = v;
@@ -401,14 +396,12 @@ Image filteredImage(Image image, double m_scalex, double m_scaley)
             int m, n;
             if(y > 0) {
                 m = (int)y;
-            }
-            else {
+            } else {
                 m = (int)(y - 1);
             }
             if(x > 0) {
                 n = (int)x;
-            }
-            else {
+            } else {
                 n = (int)(x - 1);
             }
             int q = y - m;
@@ -430,8 +423,7 @@ Image filteredImage(Image image, double m_scalex, double m_scaley)
                                 + p * image.pixels()[3 * ((m  + ys) * width + (n + 1 + xs)) + k])
                                 + q * ((1.0 - p) * image.pixels()[3 * ((m + 1 + ys) * width + (n + xs)) + k]
                                 + p * image.pixels()[3 * ((m + 1 + ys) * width + (n + 1 + xs)) + k]));
-                    }
-                    else {
+                    } else {
                         d = 0;
                     }
                     if(d < 0) {
@@ -442,16 +434,14 @@ Image filteredImage(Image image, double m_scalex, double m_scaley)
                     }
                     cloneImage.pixels()[3 * ((i + ys) * width + (j + xs)) + k] = d;
                 }
-            }
-            else if(numComp == 1) {
+            } else if(numComp == 1) {
                 int d;
                 if((m > -ys) && (m < ys) && (n >= -xs) && (n < xs)) {
                     d = (int)((1.0 - q) * ((1.0 - p) * image.pixels()[3 * ((m  + ys) * width + (n  + xs))]
                             + p * image.pixels()[3 * ((m  + ys) * width + (n + 1 + xs))])
                             + q * ((1.0 - p) * image.pixels()[3 * ((m + 1 + ys) * width + (n + xs))]
                             + p * image.pixels()[3 * ((m + 1 + ys) * width + (n + 1 + xs))]));
-                }
-                else {
+                } else {
                     d = 0;
                 }
                 if(d < 0) {

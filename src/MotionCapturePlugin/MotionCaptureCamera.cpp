@@ -104,8 +104,7 @@ void SceneMotionCaptureCamera::updateScene()
     if(on != isMotionCaptureCameraAttached) {
         if(on) {
             addChildOnce(transform);
-        }
-        else {
+        } else {
             removeChild(transform);
         }
         isMotionCaptureCameraAttached = on;

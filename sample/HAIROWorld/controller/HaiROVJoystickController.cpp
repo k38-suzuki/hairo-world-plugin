@@ -182,16 +182,13 @@ public:
             if(i == 3) {
                 dzref[i] = X[i] * pos;
                 f[i] = P[i] * (dzref[i] - dz[i]) + D[i] * (0.0 - ddz[i]);
-            }
-            else {
+            } else {
                 if(i == 0) {
                     zref[i] += X[i] * pos;
-                }
-                else {
+                } else {
                     if(manualMode) {
                         zref[i] = X[i] * pos;
-                    }
-                    else {
+                    } else {
                         int j = i - 1;
                         dxyref[j] = KX[j] * pos;
                         zref[i] = KP[j] * (dxyref[j] - dxy_local[1 - j])

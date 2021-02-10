@@ -67,8 +67,7 @@ void ScenePassiveMarker::updateScene()
     if(on != isPassiveMarkerAttached) {
         if(on) {
             addChildOnce(shape);
-        }
-        else {
+        } else {
             removeChild(shape);
         }
         isPassiveMarkerAttached = on;

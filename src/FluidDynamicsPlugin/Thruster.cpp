@@ -72,8 +72,7 @@ void SceneThruster::updateScene()
     if(on != isThrusterAttached) {
         if(on) {
             addChildOnce(scene);
-        }
-        else {
+        } else {
             removeChild(scene);
         }
         isThrusterAttached = on;

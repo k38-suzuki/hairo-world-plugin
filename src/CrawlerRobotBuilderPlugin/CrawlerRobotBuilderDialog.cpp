@@ -1048,8 +1048,7 @@ void CrawlerRobotBuilderDialogImpl::onExportBodyButtonClicked()
     if(!bodyFileName.isEmpty()) {
         if(!trackBeltCheck->isChecked()) {
             onExportBody(bodyFileName);
-        }
-        else {
+        } else {
             onExportAGXBody(bodyFileName);
         }
     }
