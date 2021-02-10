@@ -144,7 +144,7 @@ bool loadItem(Mapping& node, MarkerPointItem* item)
             Vector3 color;
             if(read(info, "color", color)) {}
             double transparency;
-            if(node.read("transparency", transparency)) {}
+            if(info.read("transparency", transparency)) {}
             item->addPoint(point, 0.03, Vector3f(color[0], color[1], color[2]), transparency);
         }
     }
