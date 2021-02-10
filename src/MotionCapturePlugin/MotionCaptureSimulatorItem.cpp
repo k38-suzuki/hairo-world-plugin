@@ -10,11 +10,9 @@
 #include <cnoid/Item>
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
-#include <cnoid/ProjectManager>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SimulatorItem>
 #include <QDateTime>
-#include <fstream>
 #include "gettext.h"
 #include "MarkerPointItem.h"
 #include "MotionCaptureCamera.h"
@@ -36,9 +34,7 @@ public:
     DeviceList<MotionCaptureCamera> cameras;
     MarkerPointItem* item;
     double cycleTime;
-    bool exportCsv;
     bool record;
-    ofstream ofs;
     double timeStep;
     string fileName;
     int frame;
@@ -69,7 +65,6 @@ MotionCaptureSimulatorItemImpl::MotionCaptureSimulatorItemImpl(MotionCaptureSimu
 
     item = nullptr;
     cycleTime = 0.1;
-    exportCsv = false;
     record = true;
     timeStep = 0.0;
     fileName.clear();
@@ -94,7 +89,6 @@ MotionCaptureSimulatorItemImpl::MotionCaptureSimulatorItemImpl(MotionCaptureSimu
 
     item = org.item;
     cycleTime = org.cycleTime;
-    exportCsv = org.exportCsv;
     record = org.record;
     timeStep = org.timeStep;
     fileName = org.fileName;
@@ -138,32 +132,6 @@ bool MotionCaptureSimulatorItemImpl::initializeSimulation(SimulatorItem* simulat
     QDateTime dateTime = QDateTime::currentDateTime();
     string date = dateTime.toString("yyyyMMdd_hhmmss").toStdString();
 
-    if(exportCsv) {
-        string header[5];
-        header[0] = "Trajectories";
-        header[1] = "100";
-        header[2] = ",";
-        header[3] = "Frame,SubFrame";
-        header[4] = ",";
-
-        for(size_t i = 0; i < markers.size(); ++i) {
-            PassiveMarker* marker = markers[i];
-            Body* body = marker->body();
-            header[2] += "," + body->name() + ":" + marker->name() + ",,";
-            header[3] += ",X,Y,Z";
-            header[4] += ",mm,mm,mm";
-        }
-
-        fileName = ProjectManager::instance()->currentProjectDirectory() + "/" + date + ".csv";
-
-        ofs.open(fileName);
-        if(ofs) {
-            for(int i = 0; i < 5; i++) {
-                ofs << header[i] << endl;
-            }
-        }
-    }
-
     if(record) {
         item = new MarkerPointItem();
         item->setName(date);
@@ -175,6 +143,13 @@ bool MotionCaptureSimulatorItemImpl::initializeSimulation(SimulatorItem* simulat
         markerPosSeq->setNumParts(numParts);
         markerPosSeq->setDimension(0, numParts, 1);
         markerPosSeq->setFrameRate(1.0 / cycleTime);
+
+        for(size_t i = 0; i < markers.size(); ++i) {
+            PassiveMarker* marker = markers[i];
+            Body* body = marker->body();
+            string label = body->name() + ":" + marker->name();
+            item->addLabel(label);
+        }
 
         simulatorItem->addPreDynamicsFunction([&](){ onMarkerGeneration(); });
     } else {
@@ -193,10 +168,6 @@ void MotionCaptureSimulatorItem::finalizeSimulation()
 void MotionCaptureSimulatorItemImpl::finalizeSimulation()
 {
     ItemTreeView::instance()->checkItem(item, true);
-
-    if(ofs) {
-        ofs.close();
-    }
 }
 
 
@@ -269,7 +240,6 @@ void MotionCaptureSimulatorItemImpl::onMarkerGeneration()
     timeCounter += timeStep;
 
     if(timeCounter >= cycleTime) {
-        string data;
         shared_ptr<MultiSE3Seq> markerPosSeq = item->seq();
         markerPosSeq->setNumFrames(frame + 1);
         MultiSE3Seq::Frame p = markerPosSeq->frame(frame);
@@ -284,16 +254,9 @@ void MotionCaptureSimulatorItemImpl::onMarkerGeneration()
                 p[i].set(point, R);
                 item->addPoint(point, marker->radius(),
                                Vector3f(color[0], color[1], color[2]), marker->transparency());
-                data += "," + to_string(point[0] * 1000.0) +
-                        "," + to_string(point[1] * 1000.0) +
-                        "," + to_string(point[2] * 1000.0);
             }
         }
 
-        if(ofs) {
-            static int i = 0;
-            ofs << i++ << ",0" << data << endl;
-        }
         timeCounter -= cycleTime;
         frame++;
     }
@@ -316,10 +279,7 @@ void MotionCaptureSimulatorItem::doPutProperties(PutPropertyFunction& putPropert
 void MotionCaptureSimulatorItemImpl::doPutProperties(PutPropertyFunction& putProperty)
 {
     putProperty(_("Record"), record, changeProperty(record));
-    if(record) {
-        putProperty(_("CycleTime"), cycleTime, changeProperty(cycleTime));
-        putProperty(_("Export CSV"), exportCsv, changeProperty(exportCsv));
-    }
+    putProperty(_("CycleTime"), cycleTime, changeProperty(cycleTime));
 }
 
 
@@ -334,7 +294,6 @@ bool MotionCaptureSimulatorItemImpl::store(Archive& archive)
 {
     archive.write("record", record);
     archive.write("cycleTime", cycleTime);
-    archive.write("exportCsv", exportCsv);
     return true;
 }
 
@@ -350,6 +309,5 @@ bool MotionCaptureSimulatorItemImpl::restore(const Archive& archive)
 {
     archive.read("record", record);
     archive.read("cycleTime", cycleTime);
-    archive.read("exportCsv", exportCsv);
     return true;
 }

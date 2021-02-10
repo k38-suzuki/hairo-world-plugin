@@ -11,6 +11,7 @@
 #include <cnoid/ExtensionManager>
 #include <cnoid/ItemManager>
 #include <cnoid/MeshGenerator>
+#include <cnoid/UTF8>
 #include <cnoid/YAMLReader>
 #include <cnoid/YAMLWriter>
 #include <cnoid/stdx/filesystem>
@@ -22,6 +23,7 @@
 
 using namespace std;
 using namespace cnoid;
+namespace filesystem = cnoid::stdx::filesystem;
 
 int colorIndex = 1;
 bool colorRotation = true;
@@ -162,6 +164,7 @@ public:
     MarkerPointItem* self;
 
     SgGroupPtr scene;
+    vector<string> labels;
 
     void addPoint(const Vector3 point, const double radius, const Vector3f color, const double transparency);
     void doPutProperties(PutPropertyFunction& putProperty);
@@ -182,6 +185,7 @@ MarkerPointItemImpl::MarkerPointItemImpl(MarkerPointItem* self)
     : self(self)
 {   
     scene = new SgGroup();
+    labels.clear();
 }
 
 
@@ -198,6 +202,7 @@ MarkerPointItemImpl::MarkerPointItemImpl(MarkerPointItem* self, const MarkerPoin
     : self(self)
 {
     scene = new SgGroup(*org.scene);
+    labels = org.labels;
 }
 
 
@@ -248,6 +253,18 @@ void MarkerPointItemImpl::addPoint(const Vector3 point, const double radius, con
 }
 
 
+void MarkerPointItem::addLabel(const string label)
+{
+    impl->labels.push_back(label);
+}
+
+
+vector<string> MarkerPointItem::labels() const
+{
+    return impl->labels;
+}
+
+
 bool MarkerPointItem::load(MarkerPointItem* item, const string fileName)
 {
     stdx::filesystem::path name(fileName);
@@ -267,31 +284,72 @@ bool MarkerPointItem::load(MarkerPointItem* item, const string fileName)
 
 bool MarkerPointItem::save(MarkerPointItem* item, const string fileName)
 {
+    string name = fileName;
+    stdx::filesystem::path path(fromUTF8(name));
+    string ext = path.extension().string();
+    if(ext.empty()) {
+        name += ".yaml";
+    }
 
-    if(!fileName.empty()) {
-        YAMLWriter writer(fileName);
+    if((ext == ".yaml") || (ext == ".yml")) {
+        if(!name.empty()) {
+            YAMLWriter writer(name);
 
-        writer.startMapping();
-        writer.putKey("markers");
-        writer.startListing();
-
-        SgGroupPtr scene = dynamic_cast<SgGroup*>(item->getScene());
-        int numChildren = scene->numChildren();
-        for(size_t i = 0; i < numChildren; i++) {
-            SgPosTransform* pos = dynamic_cast<SgPosTransform*>(scene->child(i));
-            SgShape* shape = dynamic_cast<SgShape*>(pos->child(0));
-            SgMaterial* material = shape->material();
             writer.startMapping();
-            putKeyVector3(&writer, "point", pos->translation());
-            Vector3f color = material->diffuseColor();
-            putKeyVector3(&writer, "color", Vector3(color[0], color[1], color[2]));
-            writer.putKeyValue("transparency", material->transparency());
+            writer.putKey("markers");
+            writer.startListing();
+
+            SgGroupPtr scene = dynamic_cast<SgGroup*>(item->getScene());
+            int numChildren = scene->numChildren();
+            for(size_t i = 0; i < numChildren; i++) {
+                SgPosTransform* pos = dynamic_cast<SgPosTransform*>(scene->child(i));
+                SgShape* shape = dynamic_cast<SgShape*>(pos->child(0));
+                SgMaterial* material = shape->material();
+                writer.startMapping();
+                putKeyVector3(&writer, "point", pos->translation());
+                Vector3f color = material->diffuseColor();
+                putKeyVector3(&writer, "color", Vector3(color[0], color[1], color[2]));
+                writer.putKeyValue("transparency", material->transparency());
+                writer.endMapping();
+            }
+
+            writer.endListing();
             writer.endMapping();
         }
+    } else if(ext == ".csv") {
+        ofstream ofs;
+        ofs.open(name);
+        if(ofs.is_open()) {
+            shared_ptr<MultiSE3Seq> markerPosSeq = item->seq();
+            int numParts = markerPosSeq->numParts();
+            int numFrames = markerPosSeq->numFrames();
 
-        writer.endListing();
-        writer.endMapping();
+            string headers[] = { "Trajectories", "100", ",", "Frame,SubFrame", ","};
+            vector<string> labels = item->labels();
+            for(int i = 0; i < numParts; ++i) {
+                headers[2] += "," + labels[i] + ",,";
+                headers[3] += ",X,Y,Z";
+                headers[4] += ",mm,mm,mm";
+            }
+
+            for(int i = 0; i < 5; ++i) {
+                ofs << headers[i] << endl;
+            }
+
+            for(int i = 0; i < numFrames; ++i) {
+                MultiSE3Seq::Frame frame = markerPosSeq->frame(i);
+                ofs << i + 1 << ",0";
+                for(int j = 0; j < numParts; ++j) {
+                    SE3&x = frame[j];
+                    Vector3& p = x.translation();
+                     ofs << "," << p[0] * 1000.0 << "," << p[1] * 1000.0 << "," << p[2] * 1000.0;
+                }
+                ofs << endl;
+            }
+            ofs.close();
+        }
     }
+
     return true;
 }
 
