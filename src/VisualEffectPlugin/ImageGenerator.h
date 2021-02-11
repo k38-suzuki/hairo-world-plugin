@@ -23,7 +23,7 @@ public:
     Image hsv(const Image image, const double m_hue, const double m_saturation, const double m_value);
     Image rgb(const Image image, const double m_red, const double m_green, const double m_blue);
     Image saltPepperNoise(const Image image, const double m_salt, const double m_pepper);
-    Image filteredImage(Image image, double m_scalex, double m_scaley);
+    Image filteredImage(const Image image, const double m_scalex, const double m_scaley);
 
 private:
     ImageGeneratorImpl* impl;

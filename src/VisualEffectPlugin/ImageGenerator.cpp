@@ -29,7 +29,7 @@ public:
     Image hsv(const Image image, const double m_hue, const double m_saturation, const double m_value);
     Image rgb(const Image image, const double m_red, const double m_green, const double m_blue);
     Image saltPepperNoise(const Image image, const double m_salt, const double m_pepper);
-    Image filteredImage(Image image, double m_scalex, double m_scaley);
+    Image filteredImage(const Image image, const double m_scalex, const double m_scaley);
 };
 
 }
@@ -67,9 +67,9 @@ Image ImageGeneratorImpl::barrelDistortion(const Image image, const double m_coe
 {
     Image cloneImage;
     cloneImage.setSize(image.width(), image.height(), image.numComponents());
-    int width = cloneImage.width();
-    int height = cloneImage.height();
-    int numComp = cloneImage.numComponents();
+    int width = image.width();
+    int height = image.height();
+    int numComp = image.numComponents();
     int length = width * height * numComp;
 
     double coefa = 0.0;
@@ -117,9 +117,9 @@ Image ImageGeneratorImpl::gaussianNoise(const Image image, const double m_std_de
 {
     Image cloneImage = image;
     cloneImage.setSize(image.width(), image.height(), image.numComponents());
-    int width = cloneImage.width();
-    int height = cloneImage.height();
-    int numComp = cloneImage.numComponents();
+    int width = image.width();
+    int height = image.height();
+    int numComp = image.numComponents();
     int length = width * height * numComp;
 
     if(numComp == 3) {
@@ -128,27 +128,25 @@ Image ImageGeneratorImpl::gaussianNoise(const Image image, const double m_std_de
             int pixel[3];
 
             for(int j = 0; j < 3; j++) {
-                pixel[j] = cloneImage.pixels()[i + j] + (int)addLumi;
-                if(pixel[j] < 0) {
-                    cloneImage.pixels()[i + j] = 0;
-                } else if(pixel[j] > 255) {
-                    cloneImage.pixels()[i + j] = 255;
-                } else {
-                    cloneImage.pixels()[i + j] = pixel[j];
+                pixel[j] = image.pixels()[i + j] + (int)addLumi;
+                if(pixel[j] > 255) {
+                    pixel[j] = 255;
+                } else if(pixel[j] < 0) {
+                    pixel[j] = 0;
                 }
+                cloneImage.pixels()[i + j] = pixel[j];
             }
         }
     } else if(numComp == 1) {
         for(int i = 0; i < length; i++) {
             double addLumi = dist(engine) * m_std_dev * 255.0;
-            int pixel = cloneImage.pixels()[i] + (int)addLumi;
-            if(pixel < 0) {
-                cloneImage.pixels()[i] = 0;
-            } else if(pixel > 255) {
-                cloneImage.pixels()[i] = 255;
-            } else {
-                cloneImage.pixels()[i] = pixel;
+            int pixel = image.pixels()[i] + (int)addLumi;
+            if(pixel > 255) {
+                pixel = 255;
+            } else if(pixel < 0) {
+                pixel = 0;
             }
+            cloneImage.pixels()[i] = pixel;
         }
     }
     return cloneImage;
@@ -165,15 +163,15 @@ Image ImageGeneratorImpl::hsv(const Image image, const double m_hue, const doubl
 {
     Image cloneImage = image;
     cloneImage.setSize(image.width(), image.height(), image.numComponents());
-    int width = cloneImage.width();
-    int height = cloneImage.height();
-    int numComp = cloneImage.numComponents();
+    int width = image.width();
+    int height = image.height();
+    int numComp = image.numComponents();
     int length = width * height * numComp;
 
     for(int i = 0; i < length; i += 3) {
-        int red = (int)cloneImage.pixels()[i];
-        int green = (int)cloneImage.pixels()[i + 1];
-        int blue = (int)cloneImage.pixels()[i + 2];
+        int red = (int)image.pixels()[i];
+        int green = (int)image.pixels()[i + 1];
+        int blue = (int)image.pixels()[i + 2];
 
         QColor rgbColor = QColor::fromRgb(red, green, blue);
         int h = rgbColor.hue() + m_hue * 360.0;
@@ -217,22 +215,24 @@ Image ImageGeneratorImpl::rgb(const Image image, const double m_red, const doubl
 {
     Image cloneImage = image;
     cloneImage.setSize(image.width(), image.height(), image.numComponents());
-    int width = cloneImage.width();
-    int height = cloneImage.height();
-    int numComp = cloneImage.numComponents();
+    int width = image.width();
+    int height = image.height();
+    int numComp = image.numComponents();
     int length = width * height * numComp;
 
-    int coefLumi[] = { (int)(255.0 * m_red), (int)(255.0 * m_green), (int)(255.0 * m_blue) };
-
     for(int i = 0; i < length; i += 3) {
+        int red = (int)image.pixels()[i] + m_red * 255.0;
+        int green = (int)image.pixels()[i + 1] + m_green * 255.0;
+        int blue = (int)image.pixels()[i + 2] + m_blue * 255.0;
+
+        int rgb[] = { red, green, blue };
         for(int j = 0; j < 3; j++) {
-            int lumi = cloneImage.pixels()[i + j] + coefLumi[j];
-            if(lumi > 255) {
-                lumi = 255;
-            } else if(lumi < 0) {
-                lumi = 0;
+            if(rgb[j] > 255) {
+                rgb[j] = 255;
+            } else if(rgb[j] < 0) {
+                rgb[j] = 0;
             }
-            cloneImage.pixels()[i + j] = lumi;
+            cloneImage.pixels()[i + j] = rgb[j];
         }
     }
     return cloneImage;
@@ -249,9 +249,9 @@ Image ImageGeneratorImpl::saltPepperNoise(const Image image, const double m_salt
 {
     Image cloneImage = image;
     cloneImage.setSize(image.width(), image.height(), image.numComponents());
-    int width = cloneImage.width();
-    int height = cloneImage.height();
-    int numComp = cloneImage.numComponents();
+    int width = image.width();
+    int height = image.height();
+    int numComp = image.numComponents();
     int length = width * height * numComp;
 
     if(numComp == 3) {
@@ -291,14 +291,14 @@ Image ImageGenerator::filteredImage(Image image, double m_scalex, double m_scale
 }
 
 
-Image filteredImage(Image image, double m_scalex, double m_scaley)
+Image ImageGeneratorImpl::filteredImage(const Image image, const double m_scalex, const double m_scaley)
 {
     //Linear interpolation
     Image cloneImage = image;
     cloneImage.setSize(image.width(), image.height(), image.numComponents());
-    int width = cloneImage.width();
-    int height = cloneImage.height();
-    int numComp = cloneImage.numComponents();
+    int width = image.width();
+    int height = image.height();
+    int numComp = image.numComponents();
     int length = width * height * numComp;
     double scalex = m_scalex;
     double scaley = m_scaley;
