@@ -16,7 +16,6 @@
 #include <QApplication>
 #include <QDebug>
 #include <QDialogButtonBox>
-#include <QFileInfo>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -389,8 +388,8 @@ void BoxTerrainBuilderDialogImpl::onSaveButtonClicked()
 
     ProjectManager* pm = ProjectManager::instance();
     string currentProjectFile = pm->currentProjectFile();
-    QFileInfo info(QString::fromStdString(currentProjectFile));
-    string currentProjectName = info.baseName().toStdString();
+    filesystem::path path(currentProjectFile);
+    string currentProjectName = path.stem();
     if(!dialog.selectFilePath(currentProjectFile)) {
         dialog.selectFile(currentProjectName);
     }
@@ -447,13 +446,12 @@ void BoxTerrainBuilderDialogImpl::onExportBody()
             if(!cm.read(inputFileName.toStdString())) {
                 qCritical().noquote() << "cannot csv body file." << endl;
             } else {
-
-                QFileInfo info(outputFileName);
-                QString bodyName = info.baseName();
+                filesystem::path path(outputFileName.toStdString());
+                string bodyName = path.stem();
 
                 fprintf(fp, "format: ChoreonoidBody\n");
                 fprintf(fp, "formatVersion: 1.0\n");
-                fprintf(fp, "name: %s\n", bodyName.toStdString().c_str());
+                fprintf(fp, "name: %s\n", bodyName.c_str());
                 fprintf(fp, "links:\n");
                 fprintf(fp, "  -\n");
                 fprintf(fp, "    name: STEPFIELD\n");

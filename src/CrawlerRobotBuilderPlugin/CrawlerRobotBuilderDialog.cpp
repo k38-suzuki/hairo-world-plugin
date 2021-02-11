@@ -24,7 +24,6 @@
 #include <cnoid/YAMLWriter>
 #include <QColorDialog>
 #include <QDialogButtonBox>
-#include <QFileInfo>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPalette>
@@ -163,8 +162,8 @@ public:
     void onImportYamlButtonClicked();
     void onExportBodyButtonClicked();
     void onEnableAgxCheckToggled(bool on);
-    void onExportBody(QString fileName);
-    void onExportAGXBody(QString fileName);
+    void onExportBody(string fileName);
+    void onExportAGXBody(string fileName);
     void onColorChanged(PushButton* pushbutton);
     void setColor(PushButton* pushbutton, Vector3 color);
     Vector3 getColor(PushButton* colorButton);
@@ -717,7 +716,6 @@ void CrawlerRobotBuilderDialogImpl::onNewBodyButtonClicked()
 
 void CrawlerRobotBuilderDialogImpl::onImportYamlButtonClicked()
 {
-    QString yamlFileName;
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Open a configuration file"));
     dialog.setFileMode(QFileDialog::ExistingFile);
@@ -732,20 +730,21 @@ void CrawlerRobotBuilderDialogImpl::onImportYamlButtonClicked()
 
     dialog.updatePresetDirectories();
 
+    string filename;
     if(dialog.exec()) {
-        string filename = dialog.selectedFiles().front().toStdString();
-        yamlFileName = QString::fromStdString(filename);
+        filename = dialog.selectedFiles().front().toStdString();
     }
 
-    if(!yamlFileName.isEmpty()) {
-        QFileInfo info(yamlFileName);
-        if(info.suffix().isEmpty()) {
-            yamlFileName += ".yaml";
+    if(!filename.empty()) {
+        filesystem::path path(filename);
+        string ext = path.extension();
+        if(ext.empty()) {
+            filename += ".yaml";
         }
 
         YAMLReader reader;
-        if(reader.load(yamlFileName.toStdString())) {
-            Mapping* topNode = reader.loadDocument(yamlFileName.toStdString())->toMapping();
+        if(reader.load(filename)) {
+            Mapping* topNode = reader.loadDocument(filename)->toMapping();
             Listing* configList = topNode->findListing("configs");
             if(configList->isValid()) {
                 for(int i = 0; i < configList->size(); i++) {
@@ -834,7 +833,6 @@ void CrawlerRobotBuilderDialogImpl::onImportYamlButtonClicked()
 
 void CrawlerRobotBuilderDialogImpl::onExportYamlButtonClicked()
 {
-    QString yamlFileName;
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Save a configuration file"));
     dialog.setFileMode(QFileDialog::AnyFile);
@@ -853,22 +851,23 @@ void CrawlerRobotBuilderDialogImpl::onExportYamlButtonClicked()
 
     ProjectManager* pm = ProjectManager::instance();
     string currentProjectFile = pm->currentProjectFile();
-    QFileInfo info(QString::fromStdString(currentProjectFile));
-    string currentProjectName = info.baseName().toStdString();
+    filesystem::path cpfpath(currentProjectFile);
+    string currentProjectName = cpfpath.stem();
     if(!dialog.selectFilePath(currentProjectFile)) {
         dialog.selectFile(currentProjectName);
     }
 
+    string filename;
     if(dialog.exec() == QDialog::Accepted) {
         string suffix = ".yaml";
-        QString fileName = QString::fromStdString(getSaveFilename(dialog, suffix));
-        yamlFileName = fileName;
+        filename = getSaveFilename(dialog, suffix);
     }
 
-    if(!yamlFileName.isEmpty()) {
-        string bodyName = info.baseName().toStdString();
+    if(!filename.empty()) {
+        filesystem::path path(filename);
+        string bodyName = path.stem();
 
-        YAMLWriter writer(yamlFileName.toStdString());
+        YAMLWriter writer(filename);
 
         writer.startMapping();
         writer.putKeyValue("format", "CrawlerRobotBuilderYaml");
@@ -1008,7 +1007,6 @@ void CrawlerRobotBuilderDialogImpl::onEnableAgxCheckToggled(bool on)
 
 void CrawlerRobotBuilderDialogImpl::onExportBodyButtonClicked()
 {
-    QString bodyFileName;
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Save a Body file"));
     dialog.setFileMode(QFileDialog::AnyFile);
@@ -1027,34 +1025,34 @@ void CrawlerRobotBuilderDialogImpl::onExportBodyButtonClicked()
 
     ProjectManager* pm = ProjectManager::instance();
     string currentProjectFile = pm->currentProjectFile();
-    QFileInfo info(QString::fromStdString(currentProjectFile));
-    string currentProjectName = info.baseName().toStdString();
+    filesystem::path path(currentProjectFile);
+    string currentProjectName = path.stem();
     if(!dialog.selectFilePath(currentProjectFile)) {
         dialog.selectFile(currentProjectName);
     }
 
+    string filename;
     if(dialog.exec() == QDialog::Accepted) {
         string suffix = ".body";
-        QString fileName = QString::fromStdString(getSaveFilename(dialog, suffix));
-        bodyFileName = fileName;
+        filename = getSaveFilename(dialog, suffix);
     }
 
-    if(!bodyFileName.isEmpty()) {
+    if(!filename.empty()) {
         if(!trackBeltCheck->isChecked()) {
-            onExportBody(bodyFileName);
+            onExportBody(filename);
         } else {
-            onExportAGXBody(bodyFileName);
+            onExportAGXBody(filename);
         }
     }
 }
 
 
-void CrawlerRobotBuilderDialogImpl::onExportBody(QString fileName)
+void CrawlerRobotBuilderDialogImpl::onExportBody(string fileName)
 {
-    QFileInfo info(fileName);
-    string bodyName = info.baseName().toStdString();
+    filesystem::path path(fileName);
+    string bodyName = path.stem();
 
-    FILE* fp = fopen(fileName.toStdString().c_str(), "w");
+    FILE* fp = fopen(fileName.c_str(), "w");
     if(fp == NULL) {
         return;
     }
@@ -1299,12 +1297,12 @@ void CrawlerRobotBuilderDialogImpl::onExportBody(QString fileName)
 }
 
 
-void CrawlerRobotBuilderDialogImpl::onExportAGXBody(QString fileName)
+void CrawlerRobotBuilderDialogImpl::onExportAGXBody(string fileName)
 {
-    QFileInfo info(fileName);
-    string bodyName = info.baseName().toStdString();
+    filesystem::path path(fileName);
+    string bodyName = path.stem();
 
-    FILE* fp = fopen(fileName.toStdString().c_str(), "w");
+    FILE* fp = fopen(fileName.c_str(), "w");
     if(fp == NULL) {
         return;
     }
@@ -1818,7 +1816,7 @@ Vector3 CrawlerRobotBuilderDialogImpl::getColor(PushButton* colorButton)
 
 string CrawlerRobotBuilderDialogImpl::getSaveFilename(FileDialog& dialog, string& suffix)
 {
-    std::string filename;
+    string filename;
     auto filenames = dialog.selectedFiles();
     if(!filenames.isEmpty()){
         filename = filenames.front().toStdString();
