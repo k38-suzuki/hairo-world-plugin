@@ -319,8 +319,7 @@ FluidAreaItem* FluidDynamicsSimulatorItemImpl::isCollided(const Link* link)
                     ) {
                 targetItem = item;
             }
-        }
-        else if(item->type() == "Cylinder") {
+        } else if(item->type() == "Cylinder") {
             Vector3 a = m * (Vector3(0.0, 1.0, 0.0) * item->height() / 2.0) + translation;
             Vector3 b = m * (Vector3(0.0, 1.0, 0.0) * item->height() / 2.0 * -1.0) + translation;
             Vector3 c = a - b;
@@ -333,8 +332,7 @@ FluidAreaItem* FluidDynamicsSimulatorItemImpl::isCollided(const Link* link)
                     targetItem = item;
                 }
             }
-        }
-        else if(item->type() == "Sphere") {
+        } else if(item->type() == "Sphere") {
             Vector3 r = translation - p;
             if(r.norm() <= item->radius()) {
                 targetItem = item;

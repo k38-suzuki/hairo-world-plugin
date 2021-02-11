@@ -764,15 +764,13 @@ void CrawlerRobotBuilderDialogImpl::onImportYamlButtonClicked()
                         if(node.read("ySize", d)) chassisYSizeSpin->setValue(d);
                         if(node.read("zSize", d)) chassisZSizeSpin->setValue(d);
                         if(read(node, "diffuseColor", diffuseColor)) setColor(chassisColorButton, diffuseColor);
-                    }
-                    else if(name == "TRACK") {
+                    } else if(name == "TRACK") {
                         if(node.read("mass", d)) trackMassSpin->setValue(d);
                         if(node.read("radius", d)) trackRadiusSpin->setValue(d);
                         if(node.read("width", d)) trackWidthSpin->setValue(d);
                         if(node.read("wheelBase", d)) trackWheelBaseSpin->setValue(d);
                         if(read(node, "diffuseColor", diffuseColor)) setColor(trackColorButton, diffuseColor);
-                    }
-                    else if(name == "FRONTSUBTRACK") {
+                    } else if(name == "FRONTSUBTRACK") {
                         if(node.read("mass", d)) frontSubTrackMassSpin->setValue(d);
                         if(node.read("forwardRadius", d)) frontSubTrackForwardRadiusSpin->setValue(d);
                         if(node.read("backwardRadius", d)) frontSubTrackBackwardRadiusSpin->setValue(d);
@@ -780,8 +778,7 @@ void CrawlerRobotBuilderDialogImpl::onImportYamlButtonClicked()
                         if(node.read("wheelBase", d)) frontSubTrackWheelBaseSpin->setValue(d);
                         if(read(node, "diffuseColor", diffuseColor)) setColor(frontSubTrackColorButton, diffuseColor);
                         if(node.read("on", on)) frontSubTrackCheck->setChecked(on);
-                    }
-                    else if(name == "REARSUBTRACK") {
+                    } else if(name == "REARSUBTRACK") {
                         if(node.read("mass", d)) rearSubTrackMassSpin->setValue(d);
                         if(node.read("forwardRadius", d)) rearSubTrackForwardRadiusSpin->setValue(d);
                         if(node.read("backwardRadius", d)) rearSubTrackBackwardRadiusSpin->setValue(d);
@@ -789,14 +786,12 @@ void CrawlerRobotBuilderDialogImpl::onImportYamlButtonClicked()
                         if(node.read("wheelBase", d)) rearSubTrackWheelBaseSpin->setValue(d);
                         if(read(node, "diffuseColor", diffuseColor)) setColor(rearSubTrackColorButton, diffuseColor);
                         if(node.read("on", on)) rearSubTrackCheck->setChecked(on);
-                    }
-                    else if(name == "SPACER") {
+                    } else if(name == "SPACER") {
                         if(node.read("mass", d)) spacerMassSpin->setValue(d);
                         if(node.read("radius", d)) spacerRadiusSpin->setValue(d);
                         if(node.read("width", d)) spacerWidthSpin->setValue(d);
                         if(read(node, "diffuseColor", diffuseColor)) setColor(spacerColorButton, diffuseColor);
-                    }
-                    else if(name == "TRACKBELT") {
+                    } else if(name == "TRACKBELT") {
                         if(node.read("numberOfNodes", v)) trackBeltNumberOfNodesSpin->setValue(v);
                         if(node.read("nodeThickness", d)) trackBeltNodeThicknessSpin->setValue(d);
                         if(node.read("nodeWidth", d)) trackBeltNodeWidthSpin->setValue(d);
@@ -813,8 +808,7 @@ void CrawlerRobotBuilderDialogImpl::onImportYamlButtonClicked()
                         if(node.read("nodesToWheelsMergeThreshold", d)) trackBeltNodesToWheelsMergeThresholdSpin->setValue(d);
                         if(node.read("nodesToWheelsSplitThreshold", d)) trackBeltNodesToWheelsSplitThresholdSpin->setValue(d);
                         if(node.read("on", on)) trackBeltCheck->setChecked(on);
-                    }
-                    else if(name == "SUBTRACKBELT") {
+                    } else if(name == "SUBTRACKBELT") {
                         if(node.read("numberOfNodes", v)) subTrackBeltNumberOfNodesSpin->setValue(v);
                         if(node.read("nodeThickness", d)) subTrackBeltNodeThicknessSpin->setValue(d);
                         if(node.read("nodeWidth", d)) subTrackBeltNodeWidthSpin->setValue(d);

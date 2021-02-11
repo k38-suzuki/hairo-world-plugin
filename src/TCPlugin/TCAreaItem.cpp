@@ -282,12 +282,10 @@ bool TCAreaItem::save(TCAreaItem* item, const string fileName)
         writer.putKeyValue("type", item->type());
         if(item->type() == "Box") {
             putKeyVector3(&writer, "size", item->size());
-        }
-        else if(item->type() == "Cylinder") {
+        } else if(item->type() == "Cylinder") {
             writer.putKeyValue("radius", item->radius());
             writer.putKeyValue("height", item->height());
-        }
-        else if(item->type() == "Sphere") {
+        } else if(item->type() == "Sphere") {
             writer.putKeyValue("radius", item->radius());
         }
         writer.putKeyValue("inboundDelay", item->inboundDelay());
@@ -331,11 +329,9 @@ void TCAreaItemImpl::updateScene()
     SgMesh* mesh;
     if(type.is(TCAreaItem::BOX)) {
         mesh = generator.generateBox(size);
-    }
-    else if(type.is(TCAreaItem::CYLINDER)) {
+    } else if(type.is(TCAreaItem::CYLINDER)) {
         mesh = generator.generateCylinder(radius.value(), height.value());
-    }
-    else if(type.is(TCAreaItem::SPHERE)) {
+    } else if(type.is(TCAreaItem::SPHERE)) {
         mesh = generator.generateSphere(radius.value());
     }
     SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
@@ -624,11 +620,9 @@ bool TCAreaItemImpl::onAreaTypePropertyChanged(const int index)
     SgMesh* mesh;
     if(type.is(TCAreaItem::BOX)) {
         mesh = generator.generateBox(size);
-    }
-    else if(type.is(TCAreaItem::CYLINDER)) {
+    } else if(type.is(TCAreaItem::CYLINDER)) {
         mesh = generator.generateCylinder(radius.value(), height.value());
-    }
-    else if(type.is(TCAreaItem::SPHERE)) {
+    } else if(type.is(TCAreaItem::SPHERE)) {
         mesh = generator.generateSphere(radius.value());
     }
     SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
@@ -665,8 +659,7 @@ bool TCAreaItemImpl::onAreaRadiusPropertyChanged(const string& value)
         SgMesh* mesh;
         if(type.is(TCAreaItem::CYLINDER)) {
             mesh = generator.generateCylinder(radius, height.value());
-        }
-        else if(type.is(TCAreaItem::SPHERE)) {
+        } else if(type.is(TCAreaItem::SPHERE)) {
             mesh = generator.generateSphere(radius);
         }
         SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
@@ -812,8 +805,7 @@ void TCAreaItemImpl::doPutProperties(PutPropertyFunction& putProperty)
     if(type.is(TCAreaItem::BOX)) {
         putProperty(_("Size"), str(size),
                 [&](const string& value){ return onAreaSizePropertyChanged(value); });
-    }
-    else if(type.is(TCAreaItem::CYLINDER) || type.is(TCAreaItem::SPHERE)) {
+    } else if(type.is(TCAreaItem::CYLINDER) || type.is(TCAreaItem::SPHERE)) {
         putProperty(_("Radius"), to_string(radius.value()),
                 [&](const string& value){ return onAreaRadiusPropertyChanged(value); });
         if(type.is(TCAreaItem::CYLINDER)) {

@@ -7,6 +7,7 @@
 #include <cmath>
 #include <algorithm>
 #include <random>
+#include <QColor>
 
 using namespace std;
 using namespace cnoid;
@@ -96,8 +97,7 @@ Image ImageGeneratorImpl::barrelDistortion(const Image image, const double m_coe
                     for(int k = 0; k < 3; k++) {
                         cloneImage.pixels()[3 * index + k] = image.pixels()[3 * (srcy * width + srcx) + k];
                     }
-                }
-                else if(numComp == 1) {
+                } else if(numComp == 1) {
                     cloneImage.pixels()[3 * index] = image.pixels()[3 * (srcy * width + srcx)];
                 }
             }
@@ -138,8 +138,7 @@ Image ImageGeneratorImpl::gaussianNoise(const Image image, const double m_std_de
                 }
             }
         }
-    }
-    else if(numComp == 1) {
+    } else if(numComp == 1) {
         for(int i = 0; i < length; i++) {
             double addLumi = dist(engine) * m_std_dev * 255.0;
             int pixel = cloneImage.pixels()[i] + (int)addLumi;
@@ -172,118 +171,37 @@ Image ImageGeneratorImpl::hsv(const Image image, const double m_hue, const doubl
     int length = width * height * numComp;
 
     for(int i = 0; i < length; i += 3) {
-        //rgb to hsv
-        float red = (float)cloneImage.pixels()[i] / 255.0;
-        float green = (float)cloneImage.pixels()[i + 1] / 255.0;
-        float blue = (float)cloneImage.pixels()[i + 2] / 255.0;
-        float max = std::max({ red, green, blue });
-        float min = std::min({ red, green, blue });
-        float diff = max - min;
-        float hue;
-        float saturation = diff / max;
-        float value = max;
+        int red = (int)cloneImage.pixels()[i];
+        int green = (int)cloneImage.pixels()[i + 1];
+        int blue = (int)cloneImage.pixels()[i + 2];
 
-        if(max == red) {
-            hue = 60.0 * (green - blue) / diff;
-        }
-        else if(max == green) {
-            hue = 60.0 * (blue - red) / diff + 120.0;
-        }
-        else if(max == blue) {
-            hue = 60.0 * (red - green) / diff + 240.0;
+        QColor rgbColor = QColor::fromRgb(red, green, blue);
+        int h = rgbColor.hue() + m_hue * 360.0;
+        int s = rgbColor.saturation() + m_saturation * 255.0;
+        int v = rgbColor.value() + m_value * 255.0;
+
+        if(h > 359) {
+            h -= 360;
+        } else if(h < 0) {
+            h = 0;
         }
 
-        if(hue < 0.0) {
-            hue += 360.0;
+        if(s > 255) {
+            s = 255;
+        } else if(s < 0) {
+            s = 0;
         }
 
-        //hsv to rgb
-        float h = hue + m_hue * 360.0;
-        float s = saturation + m_saturation;
-        float v = value + m_value;
-        float rgb[3];
-
-        if(h >= 360.0) {
-            while(h >= 360.0) {
-                h -= 360.0;
-            }
-        }
-        else if(h < 0.0) {
-            while (h < 0.0) {
-                h += 360.0;
-            }
+        if(v > 255) {
+            v = 255;
+        } else if(v < 0) {
+            v = 0;
         }
 
-        if(s > 1.0) {
-            s = 1.0;
-        }
-        else if(s < 0.0) {
-            s = 0.0;
-        }
-
-        if(v > 1.0) {
-            v = 1.0;
-        }
-        else if(v < 0.0) {
-            v = 0.0;
-        }
-
-        if(s > 0.0) {
-            float dh = std::floor(h / 60.0);
-            float p = v * (1.0 - s);
-            float q = v * (1.0 - s * (h / 60.0 - dh));
-            float t = v * (1.0 - s * (1.0 - (h / 60.0 - dh)));
-
-            switch ((int)dh) {
-            case 0:
-                rgb[0] = v;
-                rgb[1] = t;
-                rgb[2] = p;
-                break;
-            case 1:
-                rgb[0] = q;
-                rgb[1] = v;
-                rgb[2] = p;
-                break;
-            case 2:
-                rgb[0] = p;
-                rgb[1] = v;
-                rgb[2] = t;
-                break;
-            case 3:
-                rgb[0] = p;
-                rgb[1] = q;
-                rgb[2] = v;
-                break;
-            case 4:
-                rgb[0] = t;
-                rgb[1] = p;
-                rgb[2] = v;
-                break;
-            case 5:
-                rgb[0] = v;
-                rgb[1] = p;
-                rgb[2] = q;
-                break;
-            default:
-                break;
-            }
-        } else {
-            rgb[0] = v;
-            rgb[1] = v;
-            rgb[2] = v;
-        }
-
-        for(int j = 0; j < 3; j++) {
-            rgb[j] *= 255.0;
-            if(rgb[j] > 255.0) {
-                rgb[j] = 255.0;
-            }
-            else if(rgb[j] < 0.0) {
-                    rgb[j] = 0.0;
-            }
-            cloneImage.pixels()[i + j] = (int)(rgb[j]);
-        }
+        QColor hsvColor = QColor::fromHsv(h, s, v);
+        cloneImage.pixels()[i] = hsvColor.red();
+        cloneImage.pixels()[i + 1] = hsvColor.green();
+        cloneImage.pixels()[i + 2] = hsvColor.blue();
     }
     return cloneImage;
 }
@@ -311,8 +229,7 @@ Image ImageGeneratorImpl::rgb(const Image image, const double m_red, const doubl
             int lumi = cloneImage.pixels()[i + j] + coefLumi[j];
             if(lumi > 255) {
                 lumi = 255;
-            }
-            else if(lumi < 0) {
+            } else if(lumi < 0) {
                 lumi = 0;
             }
             cloneImage.pixels()[i + j] = lumi;
@@ -352,8 +269,7 @@ Image ImageGeneratorImpl::saltPepperNoise(const Image image, const double m_salt
                 cloneImage.pixels()[i + 2] = 0;
             }
         }
-    }
-    else if(numComp == 1) {
+    } else if(numComp == 1) {
         for(int i = 0; i < length; i++) {
             double salt = (double)(rand() % 101) / 100.0;
             if(salt < m_salt) {

@@ -434,11 +434,9 @@ bool FluidAreaItemImpl::onAreaTypePropertyChanged(const int index)
     SgMesh* mesh;
     if(type.is(FluidAreaItem::BOX)) {
         mesh = generator.generateBox(size);
-    }
-    else if(type.is(FluidAreaItem::CYLINDER)) {
+    } else if(type.is(FluidAreaItem::CYLINDER)) {
         mesh = generator.generateCylinder(radius.value(), height.value());
-    }
-    else if(type.is(FluidAreaItem::SPHERE)) {
+    } else if(type.is(FluidAreaItem::SPHERE)) {
         mesh = generator.generateSphere(radius.value());
     }
     SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
@@ -475,8 +473,7 @@ bool FluidAreaItemImpl::onAreaRadiusPropertyChanged(const string& value)
         SgMesh* mesh;
         if(type.is(FluidAreaItem::CYLINDER)) {
             mesh = generator.generateCylinder(radius, height.value());
-        }
-        else if(type.is(FluidAreaItem::SPHERE)) {
+        } else if(type.is(FluidAreaItem::SPHERE)) {
             mesh = generator.generateSphere(radius);
         }
         SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
@@ -606,11 +603,9 @@ void FluidAreaItemImpl::updateScene()
     SgMesh* mesh;
     if(type.is(FluidAreaItem::BOX)) {
         mesh = generator.generateBox(size);
-    }
-    else if(type.is(FluidAreaItem::CYLINDER)) {
+    } else if(type.is(FluidAreaItem::CYLINDER)) {
         mesh = generator.generateCylinder(radius.value(), height.value());
-    }
-    else if(type.is(FluidAreaItem::SPHERE)) {
+    } else if(type.is(FluidAreaItem::SPHERE)) {
         mesh = generator.generateSphere(radius.value());
     }
     SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
@@ -651,12 +646,10 @@ bool FluidAreaItem::save(FluidAreaItem* item, const string fileName)
         writer.putKeyValue("type", item->type());
         if(item->type() == "Box") {
             putKeyVector3(&writer, "size", item->size());
-        }
-        else if(item->type() == "Cylinder") {
+        } else if(item->type() == "Cylinder") {
             writer.putKeyValue("radius", item->radius());
             writer.putKeyValue("height", item->height());
-        }
-        else if(item->type() == "Sphere") {
+        } else if(item->type() == "Sphere") {
             writer.putKeyValue("radius", item->radius());
         }
         writer.putKeyValue("density", item->density());
@@ -700,8 +693,7 @@ void FluidAreaItemImpl::doPutProperties(PutPropertyFunction& putProperty)
     if(type.is(FluidAreaItem::BOX)) {
         putProperty(_("Size"), str(size),
                 [&](const string& value){ return onAreaSizePropertyChanged(value); });
-    }
-    else if(type.is(FluidAreaItem::CYLINDER) || type.is(FluidAreaItem::SPHERE)) {
+    } else if(type.is(FluidAreaItem::CYLINDER) || type.is(FluidAreaItem::SPHERE)) {
         putProperty(_("Radius"), to_string(radius.value()),
                 [&](const string& value){ return onAreaRadiusPropertyChanged(value); });
         if(type.is(FluidAreaItem::CYLINDER)) {
