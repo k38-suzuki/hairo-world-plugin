@@ -41,6 +41,7 @@ public:
     ofstream ofs;
     double timeStep;
     string fileName;
+    int frame;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void finalizeSimulation();
@@ -72,6 +73,7 @@ MotionCaptureSimulatorItemImpl::MotionCaptureSimulatorItemImpl(MotionCaptureSimu
     record = true;
     timeStep = 0.0;
     fileName.clear();
+    frame = 0;
 }
 
 
@@ -96,6 +98,7 @@ MotionCaptureSimulatorItemImpl::MotionCaptureSimulatorItemImpl(MotionCaptureSimu
     record = org.record;
     timeStep = org.timeStep;
     fileName = org.fileName;
+    frame = org.frame;
 }
 
 
@@ -123,6 +126,7 @@ bool MotionCaptureSimulatorItemImpl::initializeSimulation(SimulatorItem* simulat
     markers.clear();
     cameras.clear();
     timeStep = simulatorItem->worldTimeStep();
+    frame = 0;
 
     vector<SimulationBody*> simulationBodies = simulatorItem->simulationBodies();
     for(size_t i = 0; i < simulationBodies.size(); i++) {
@@ -165,6 +169,12 @@ bool MotionCaptureSimulatorItemImpl::initializeSimulation(SimulatorItem* simulat
         item->setName(date);
         self->addChildItem(item);
         ItemTreeView::instance()->checkItem(item, false);
+        int numParts = markers.size();
+        shared_ptr<MultiSE3Seq> markerPosSeq = item->seq();
+        markerPosSeq->setSeqContentName("MarkerPosSeq");
+        markerPosSeq->setNumParts(numParts);
+        markerPosSeq->setDimension(0, numParts, 1);
+        markerPosSeq->setFrameRate(1.0 / cycleTime);
 
         simulatorItem->addPreDynamicsFunction([&](){ onMarkerGeneration(); });
     } else {
@@ -260,12 +270,18 @@ void MotionCaptureSimulatorItemImpl::onMarkerGeneration()
 
     if(timeCounter >= cycleTime) {
         string data;
+        shared_ptr<MultiSE3Seq> markerPosSeq = item->seq();
+        markerPosSeq->setNumFrames(frame + 1);
+        MultiSE3Seq::Frame p = markerPosSeq->frame(frame);
+
         for(size_t i = 0; i < markers.size(); ++i) {
             PassiveMarker* marker = markers[i];
             if(marker->on()) {
                 Link* link = marker->link();
                 Vector3 point = link->T() * marker->p_local();
+                Matrix3 R = link->R() * marker->R_local();
                 Vector3 color = marker->color();
+                p[i].set(point, R);
                 item->addPoint(point, marker->radius(),
                                Vector3f(color[0], color[1], color[2]), marker->transparency());
                 data += "," + to_string(point[0] * 1000.0) +
@@ -279,6 +295,7 @@ void MotionCaptureSimulatorItemImpl::onMarkerGeneration()
             ofs << i++ << ",0" << data << endl;
         }
         timeCounter -= cycleTime;
+        frame++;
     }
 }
 

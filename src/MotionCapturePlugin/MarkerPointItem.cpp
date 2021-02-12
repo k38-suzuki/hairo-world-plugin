@@ -186,7 +186,7 @@ MarkerPointItemImpl::MarkerPointItemImpl(MarkerPointItem* self)
 
 
 MarkerPointItem::MarkerPointItem(const MarkerPointItem& org)
-    : Item(org),
+    : MultiSE3SeqItem(org),
       impl(new MarkerPointItemImpl(this, *org.impl))
 
 {
@@ -304,6 +304,7 @@ Item* MarkerPointItem::doDuplicate() const
 
 void MarkerPointItem::doPutProperties(PutPropertyFunction& putProperty)
 {
+    MultiSE3SeqItem::doPutProperties(putProperty);
     impl->doPutProperties(putProperty);
 }
 

@@ -6,7 +6,7 @@
 #ifndef CNOID_MOTION_CAPTURE_PLUGIN_MARKER_POINT_ITEM_H
 #define CNOID_MOTION_CAPTURE_PLUGIN_MARKER_POINT_ITEM_H
 
-#include <cnoid/Item>
+#include <cnoid/MultiSE3SeqItem>
 #include <cnoid/SceneGraph>
 #include <cnoid/SceneProvider>
 
@@ -14,7 +14,7 @@ namespace cnoid {
 
 class MarkerPointItemImpl;
 
-class MarkerPointItem : public Item, public SceneProvider
+class MarkerPointItem : public MultiSE3SeqItem, public SceneProvider
 {
 public:
     MarkerPointItem();
