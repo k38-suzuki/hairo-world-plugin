@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PATH_PLUGIN_MARKER_POINT_ITEM_H
-#define CNOID_PATH_PLUGIN_MARKER_POINT_ITEM_H
+#ifndef CNOID_MOTION_CAPTURE_PLUGIN_MARKER_POINT_ITEM_H
+#define CNOID_MOTION_CAPTURE_PLUGIN_MARKER_POINT_ITEM_H
 
 #include <cnoid/Item>
 #include <cnoid/SceneGraph>
@@ -44,4 +44,4 @@ typedef ref_ptr<MarkerPointItem> MarkerPointItemPtr;
 
 }
 
-#endif // CNOID_PATH_PLUGIN_MARKER_POINT_ITEM_H
+#endif // CNOID_MOTION_CAPTURE_PLUGIN_MARKER_POINT_ITEM_H

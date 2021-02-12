@@ -70,20 +70,15 @@ bool loadCsv(MarkerPointItem* item, const string fileName)
                     if(data[0] != "Trajectories") {
                         return false;
                     }
-                }
-                else if(i == 1) {
+                } else if(i == 1) {
 
-                }
-                else if(i == 2) {
+                } else if(i == 2) {
 
-                }
-                else if(i == 3) {
+                } else if(i == 3) {
 
-                }
-                else if(i == 4) {
+                } else if(i == 4) {
 
-                }
-                else {
+                } else {
                     vector<string> data = csplit(line);
                     data.erase(data.begin(), data.begin() + 2);
                     int rcolorIndex = 1;
@@ -93,8 +88,7 @@ bool loadCsv(MarkerPointItem* item, const string fileName)
                         int index;
                         if(!colorRotation) {
                             index = colorIndex;
-                        }
-                        else {
+                        } else {
                             index = rcolorIndex;
                         }
                         stringstream ss;
@@ -111,8 +105,7 @@ bool loadCsv(MarkerPointItem* item, const string fileName)
                         for(int k = 0; k < 3; k++) {
                             if(color[k] > 1.0) {
                                 color[k] = 1.0;
-                            }
-                            else if(color[k] < 0.0) {
+                            } else if(color[k] < 0.0) {
                                 color[k] = 0.0;
                             }
                         }
@@ -166,15 +159,14 @@ class MarkerPointItemImpl
 public:
     MarkerPointItemImpl(MarkerPointItem* self);
     MarkerPointItemImpl(MarkerPointItem* self, const MarkerPointItemImpl& org);
-
     MarkerPointItem* self;
+
     SgGroupPtr scene;
 
+    void addPoint(const Vector3 point, const double radius, const Vector3f color, const double transparency);
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
     bool restore(const Archive& archive);
-    SgGroupPtr points() { return scene; }
-    void addPoint(const Vector3 point, const double radius, const Vector3f color, const double transparency);
 };
 
 }
@@ -244,7 +236,7 @@ void MarkerPointItemImpl::addPoint(const Vector3 point, const double radius, con
 {
     MeshGenerator generator;
     SgShape* shape = new SgShape();
-    shape->setMesh(generator.generateSphere(0.03));
+    shape->setMesh(generator.generateBox(Vector3(radius, radius, radius)));
     SgMaterial* material = new SgMaterial();
     material->setDiffuseColor(color);
     material->setTransparency(transparency);
@@ -266,8 +258,7 @@ bool MarkerPointItem::load(MarkerPointItem* item, const string fileName)
             Mapping* topNode = reader.loadDocument(fileName)->toMapping();
             loadItem(*topNode, item);
         }
-    }
-    else if(extension == ".csv") {
+    } else if(extension == ".csv") {
         loadCsv(item, fileName);
     }
     return true;

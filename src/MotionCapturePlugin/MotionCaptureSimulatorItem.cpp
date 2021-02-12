@@ -5,8 +5,6 @@
 
 #include "MotionCaptureSimulatorItem.h"
 #include <cnoid/Archive>
-#include <cnoid/Body>
-#include <cnoid/BodyItem>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/Item>
@@ -34,9 +32,8 @@ public:
     MotionCaptureSimulatorItemImpl(MotionCaptureSimulatorItem* self, const MotionCaptureSimulatorItemImpl& org);
 
     MotionCaptureSimulatorItem* self;
-    vector<PassiveMarker*> markers_;
-    vector<MotionCaptureCamera*> cameras_;
-    vector<Body*> bodies;
+    DeviceList<PassiveMarker> markers;
+    DeviceList<MotionCaptureCamera> cameras;
     MarkerPointItem* item;
     double cycleTime;
     bool exportCsv;
@@ -66,8 +63,8 @@ MotionCaptureSimulatorItem::MotionCaptureSimulatorItem()
 MotionCaptureSimulatorItemImpl::MotionCaptureSimulatorItemImpl(MotionCaptureSimulatorItem* self)
     : self(self)
 {
-    markers_.clear();
-    cameras_.clear();
+    markers.clear();
+    cameras.clear();
 
     item = nullptr;
     cycleTime = 0.1;
@@ -90,8 +87,8 @@ MotionCaptureSimulatorItem::MotionCaptureSimulatorItem(const MotionCaptureSimula
 MotionCaptureSimulatorItemImpl::MotionCaptureSimulatorItemImpl(MotionCaptureSimulatorItem* self, const MotionCaptureSimulatorItemImpl& org)
     : self(self)
 {
-    markers_ = org.markers_;
-    cameras_ = org.cameras_;
+    markers = org.markers;
+    cameras = org.cameras;
 
     item = org.item;
     cycleTime = org.cycleTime;
@@ -123,76 +120,55 @@ bool MotionCaptureSimulatorItem::initializeSimulation(SimulatorItem* simulatorIt
 
 bool MotionCaptureSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 {
-    markers_.clear();
-    cameras_.clear();
-    bodies.clear();
+    markers.clear();
+    cameras.clear();
     timeStep = simulatorItem->worldTimeStep();
 
     vector<SimulationBody*> simulationBodies = simulatorItem->simulationBodies();
     for(size_t i = 0; i < simulationBodies.size(); i++) {
         Body* body = simulationBodies[i]->body();
-        bodies.push_back(body);
-
-        DeviceList<PassiveMarker> markers = body->devices();
-        for(size_t j = 0; j < markers.size(); j++) {
-            PassiveMarker* marker = markers[j];
-            markers_.push_back(marker);
-        }
-        DeviceList<MotionCaptureCamera> cameras = body->devices();
-        for(size_t j = 0; j < cameras.size(); j++) {
-            MotionCaptureCamera* camera = cameras[j];
-            cameras_.push_back(camera);
-        }
-    }
-    if(markers_.size() && !record) {
-        simulatorItem->addPreDynamicsFunction([&](){ onMarkerDetection(); });
+        markers << body->devices();
+        cameras << body->devices();
     }
 
-    string header[5];
-    header[0] = "Trajectories";
-    header[1] = "100";
-    header[2] = ",";
-    header[3] = "Frame,SubFrame";
-    header[4] = ",";
+    QDateTime dateTime = QDateTime::currentDateTime();
+    string date = dateTime.toString("yyyyMMdd_hhmmss").toStdString();
 
-    if(bodies.size()) {
-        for(size_t j = 0; j < bodies.size(); j++) {
-            Body* body = bodies[j];
-            DeviceList<PassiveMarker> markers(body->devices());
-            if(markers.size()) {
-                for(int k = 0; k < markers.size(); k++) {
-                    PassiveMarker* marker = markers[k];
-                    header[2] += "," + body->name() + ":" + marker->name() + ",,";
-                    header[3] += ",X,Y,Z";
-                    header[4] += ",mm,mm,mm";
-                }
-            }
+    if(exportCsv) {
+        string header[5];
+        header[0] = "Trajectories";
+        header[1] = "100";
+        header[2] = ",";
+        header[3] = "Frame,SubFrame";
+        header[4] = ",";
+
+        for(size_t i = 0; i < markers.size(); ++i) {
+            PassiveMarker* marker = markers[i];
+            Body* body = marker->body();
+            header[2] += "," + body->name() + ":" + marker->name() + ",,";
+            header[3] += ",X,Y,Z";
+            header[4] += ",mm,mm,mm";
         }
-
-        QDateTime dateTime = QDateTime::currentDateTime();
-        string date = dateTime.toString("yyyyMMdd_hhmmss").toStdString();
 
         fileName = ProjectManager::instance()->currentProjectDirectory() + "/" + date + ".csv";
 
-        if(record) {
-            item = new MarkerPointItem();
-            item->setName(date);
-
-            self->addChildItem(item);
-            ItemTreeView::instance()->checkItem(item, false);
-        }
-
-        if(exportCsv) {
-            ofs.open(fileName);
-        }
+        ofs.open(fileName);
         if(ofs) {
             for(int i = 0; i < 5; i++) {
                 ofs << header[i] << endl;
             }
         }
-        if(record) {
-            simulatorItem->addPreDynamicsFunction([&](){ onMarkerGeneration(); });
-        }
+    }
+
+    if(record) {
+        item = new MarkerPointItem();
+        item->setName(date);
+        self->addChildItem(item);
+        ItemTreeView::instance()->checkItem(item, false);
+
+        simulatorItem->addPreDynamicsFunction([&](){ onMarkerGeneration(); });
+    } else {
+        simulatorItem->addPreDynamicsFunction([&](){ onMarkerDetection(); });
     }
     return true;
 }
@@ -217,8 +193,8 @@ void MotionCaptureSimulatorItemImpl::finalizeSimulation()
 void MotionCaptureSimulatorItemImpl::onMarkerDetection()
 {
     vector<PassiveMarker*> capturedMarkers;
-    for(size_t i = 0; i < cameras_.size(); i++) {
-        MotionCaptureCamera* camera = cameras_[i];
+    for(size_t i = 0; i < cameras.size(); i++) {
+        MotionCaptureCamera* camera = cameras[i];
         Link* clink = camera->link();
         double rangehy = camera->focalLength() * tan((double)camera->fieldOfView() / 2.0 * TO_RADIAN);
         double rangehz = rangehy * 2.0 / camera->aspectRatio()[0] * camera->aspectRatio()[1] / 2.0;
@@ -235,8 +211,8 @@ void MotionCaptureSimulatorItemImpl::onMarkerDetection()
         Vector3 oc = c - o;
         Vector3 od = d - o;
 
-        for(size_t j = 0; j < markers_.size(); j++) {
-            PassiveMarker* marker = markers_[j];
+        for(size_t j = 0; j < markers.size(); j++) {
+            PassiveMarker* marker = markers[j];
             Link* mlink = marker->link();
             Vector3 mp = mlink->T().translation() + mlink->R() * marker->R_local() * marker->p_local();
             Vector3 op = mp - o;
@@ -284,24 +260,17 @@ void MotionCaptureSimulatorItemImpl::onMarkerGeneration()
 
     if(timeCounter >= cycleTime) {
         string data;
-        for(int j = 0; j < (int)bodies.size(); j++) {
-            Body* body = bodies[j];
-            DeviceList<PassiveMarker> markers(body->devices());
-            for(int k = 0; k < markers.size(); k++) {
-                PassiveMarker* marker = markers[k];
-                if(marker->on()) {
-                    Link* link = marker->link();
-                    Vector3 point = (link->T() * marker->T_local()).translation();
-//                        Vector3 point = link->T().translation() + link->R() * marker->R_local() * marker->p_local();
-                    Vector3 color = marker->color();
-                    if(record) {
-                        item->addPoint(point, marker->radius(),
-                                       Vector3f(color[0], color[1], color[2]), marker->transparency());
-                    }
-                    data += "," + to_string(point[0] * 1000.0) +
-                            "," + to_string(point[1] * 1000.0) +
-                            "," + to_string(point[2] * 1000.0);
-                }
+        for(size_t i = 0; i < markers.size(); ++i) {
+            PassiveMarker* marker = markers[i];
+            if(marker->on()) {
+                Link* link = marker->link();
+                Vector3 point = link->T() * marker->p_local();
+                Vector3 color = marker->color();
+                item->addPoint(point, marker->radius(),
+                               Vector3f(color[0], color[1], color[2]), marker->transparency());
+                data += "," + to_string(point[0] * 1000.0) +
+                        "," + to_string(point[1] * 1000.0) +
+                        "," + to_string(point[2] * 1000.0);
             }
         }
 
