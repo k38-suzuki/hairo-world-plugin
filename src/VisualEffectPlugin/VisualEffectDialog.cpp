@@ -7,6 +7,7 @@
 #include <cnoid/Button>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
+#include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QLabel>
 #include <QHBoxLayout>
@@ -38,7 +39,7 @@ public:
 
     void onAccepted();
     void onRejected();
-    void onClearButtonClicked();
+    void onResetButtonClicked();
 };
 
 }
@@ -119,20 +120,23 @@ VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
     gbox->addWidget(new QLabel(_("Pepper")), index, 4);
     gbox->addWidget(pepperSpin, index++, 5);
 
-    PushButton* clearButton = new PushButton(_("Clear"));
-    QHBoxLayout* hbox = new QHBoxLayout();
-    hbox->addStretch();
-    hbox->addWidget(clearButton);
+    PushButton* resetButton = new PushButton(_("&Reset"));
+    QPushButton* okButton = new QPushButton(_("&Ok"));
+    okButton->setDefault(true);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    buttonBox->addButton(resetButton, QDialogButtonBox::ResetRole);
+    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
+    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
 
     QVBoxLayout* vbox = new QVBoxLayout();
     HSeparatorBox* hsbox = new HSeparatorBox(new QLabel(_("Visual Effects")));
     vbox->addLayout(hsbox);
     vbox->addLayout(gbox);
     vbox->addWidget(new HSeparator());
-    vbox->addLayout(hbox);
+    vbox->addWidget(buttonBox);
     self->setLayout(vbox);
 
-    clearButton->sigClicked().connect([&](){ onClearButtonClicked(); });
+    resetButton->sigClicked().connect([&](){ onResetButtonClicked(); });
 }
 
 
@@ -224,7 +228,7 @@ double VisualEffectDialog::pepper() const
 }
 
 
-void VisualEffectDialogImpl::onClearButtonClicked()
+void VisualEffectDialogImpl::onResetButtonClicked()
 {
     hueSpin->setValue(0.0);
     saturationSpin->setValue(0.0);

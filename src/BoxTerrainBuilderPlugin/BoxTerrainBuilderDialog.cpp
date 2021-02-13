@@ -15,6 +15,7 @@
 #include <cnoid/UTF8>
 #include <QApplication>
 #include <QDebug>
+#include <QDialogButtonBox>
 #include <QFileInfo>
 #include <QGridLayout>
 #include <QHBoxLayout>
@@ -253,8 +254,7 @@ const int CellManager::getId(int x, int y, int index, int sindex) const
 {
     if(sindex == 0) {
         return impl->cella[y][x][index];
-    }
-    else {
+    } else {
         return impl->cellb[y][x][index];
     }
 }
@@ -303,6 +303,13 @@ BoxTerrainBuilderDialogImpl::BoxTerrainBuilderDialogImpl(BoxTerrainBuilderDialog
     PushButton* overwriteButton = new PushButton(_("Overwrite"));
     gbox->addWidget(overwriteButton, index, 2);
     vbox->addLayout(gbox);
+
+    QPushButton* okButton = new QPushButton(_("&Ok"));
+    okButton->setDefault(true);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
+    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
+    vbox->addWidget(buttonBox);
 
     self->setLayout(vbox);
 
@@ -435,13 +442,11 @@ void BoxTerrainBuilderDialogImpl::onExportBody()
         FILE* fp = fopen(outputFileName.toStdString().c_str(), "w");
         if(fp == NULL) {
             qCritical().noquote() << "cannot open body file." << endl;
-        }
-        else {
+        } else {
             CellManager cm;
             if(!cm.read(inputFileName.toStdString())) {
                 qCritical().noquote() << "cannot csv body file." << endl;
-            }
-            else {
+            } else {
 
                 QFileInfo info(outputFileName);
                 QString bodyName = info.baseName();
@@ -489,15 +494,13 @@ void BoxTerrainBuilderDialogImpl::onExportBody()
                         fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 0, 1), cm.getId(i, j, 3, 1), cm.getId(i, j, 2, 1), cm.getId(i, j, 1, 1));
                         if(i != 0) {
                             fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i - 1, j, 3, 0), cm.getId(i - 1, j, 2, 0), cm.getId(i, j, 1, 0), cm.getId(i, j, 0, 0));
-                        }
-                        else {
+                        } else {
                             fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 1, 1), cm.getId(i, j, 1, 0), cm.getId(i, j, 0, 0), cm.getId(i, j, 0, 1));
                         }
 
                         if(j != 0) {
                             fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j - 1, 1, 0), cm.getId(i, j, 0, 0), cm.getId(i, j, 3, 0), cm.getId(i, j - 1, 2, 0));
-                        }
-                        else {
+                        } else {
                             fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 0, 1), cm.getId(i, j, 0, 0), cm.getId(i, j, 3, 0), cm.getId(i, j, 3, 1));
                         }
 

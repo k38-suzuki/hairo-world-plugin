@@ -23,6 +23,7 @@
 #include <cnoid/YAMLReader>
 #include <cnoid/YAMLWriter>
 #include <QColorDialog>
+#include <QDialogButtonBox>
 #include <QFileInfo>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -528,6 +529,12 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
     trackBeltHbox->addWidget(new QLabel(_("AGX")));
     trackBeltHbox->addStretch();
 
+    QPushButton* okButton = new QPushButton(_("&Ok"));
+    okButton->setDefault(true);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
+    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
+
     //main layout
     QVBoxLayout* mainVbox = new QVBoxLayout();
     QHBoxLayout* mainHbox = new QHBoxLayout();
@@ -538,6 +545,7 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
     mainLeftVbox->addLayout(frontSubTrackVbox);
     mainLeftVbox->addLayout(rearSubTrackVbox);
     mainLeftVbox->addLayout(spacerVbox);
+    mainLeftVbox->addWidget(buttonBox);
     mainLeftVbox->addStretch();
     mainRightVbox->addLayout(trackBeltVbox);
     mainRightVbox->addLayout(subTrackBeltVbox);
