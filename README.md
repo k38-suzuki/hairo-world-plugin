@@ -4,6 +4,9 @@ HAIROWorldPlugin for Choreonoid
 Document of HAIROWorldPlugin (in Japanese)
 https://k38-suzuki.github.io/hairo-world-plugin-doc
 
+Development Report
+https://www.fujipress.jp/jrm/rb/robot003200061292/
+
 We have confirmed that HAIROWorldPlugin works on the following platforms.
 
   Ubuntu Linux 18.04 and 20.04 (x64 architecture)
