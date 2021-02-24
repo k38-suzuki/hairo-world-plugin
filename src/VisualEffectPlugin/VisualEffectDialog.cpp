@@ -5,6 +5,7 @@
 
 #include "VisualEffectDialog.h"
 #include <cnoid/Button>
+#include <cnoid/CheckBox>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <QDialogButtonBox>
@@ -36,6 +37,7 @@ public:
     DoubleSpinBox* stdDevSpin;
     DoubleSpinBox* saltSpin;
     DoubleSpinBox* pepperSpin;
+    CheckBox* flipCheck;
 
     void onAccepted();
     void onRejected();
@@ -74,6 +76,7 @@ VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
     stdDevSpin = new DoubleSpinBox();
     saltSpin = new DoubleSpinBox();
     pepperSpin = new DoubleSpinBox();
+    flipCheck = new CheckBox();
 
     vector<DoubleSpinBox*> dspins;
     dspins.push_back(hueSpin);
@@ -94,6 +97,8 @@ VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
         dspin->setSingleStep(0.1);
     }
     coefDSpin->setValue(1.0);
+    flipCheck->setText(_("Flip"));
+    flipCheck->setChecked(false);
 
     QGridLayout* gbox = new QGridLayout();
     int index = 0;
@@ -119,6 +124,7 @@ VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
     gbox->addWidget(saltSpin, index, 3);
     gbox->addWidget(new QLabel(_("Pepper")), index, 4);
     gbox->addWidget(pepperSpin, index++, 5);
+    gbox->addWidget(flipCheck, index++, 0);
 
     PushButton* resetButton = new PushButton(_("&Reset"));
     QPushButton* okButton = new QPushButton(_("&Ok"));
@@ -159,6 +165,7 @@ void VisualEffectDialog::setVisualEffect(VisualEffect* effect)
     impl->stdDevSpin->setValue(effect->stdDev());
     impl->saltSpin->setValue(effect->salt());
     impl->pepperSpin->setValue(effect->pepper());
+    impl->flipCheck->setChecked(effect->flip());
 }
 
 
@@ -228,6 +235,12 @@ double VisualEffectDialog::pepper() const
 }
 
 
+bool VisualEffectDialog::flip() const
+{
+    return impl->flipCheck->isChecked();
+}
+
+
 void VisualEffectDialogImpl::onResetButtonClicked()
 {
     hueSpin->setValue(0.0);
@@ -241,6 +254,7 @@ void VisualEffectDialogImpl::onResetButtonClicked()
     stdDevSpin->setValue(0.0);
     saltSpin->setValue(0.0);
     pepperSpin->setValue(0.0);
+    flipCheck->setChecked(false);
 }
 
 

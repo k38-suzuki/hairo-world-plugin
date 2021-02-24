@@ -21,6 +21,7 @@ public:
     double stdDev;
     double salt;
     double pepper;
+    bool flip;
 };
 
 }
@@ -46,6 +47,7 @@ VisualEffectImpl::VisualEffectImpl(VisualEffect* self)
     stdDev = 0.0;
     salt = 0.0;
     pepper = 0.0;
+    flip = false;
 }
 
 
@@ -184,4 +186,16 @@ void VisualEffect::setPepper(const double pepper)
 double VisualEffect::pepper() const
 {
     return impl->pepper;
+}
+
+
+void VisualEffect::setFlip(const bool flip)
+{
+    impl->flip = flip;
+}
+
+
+bool VisualEffect::flip() const
+{
+    return impl->flip;
 }

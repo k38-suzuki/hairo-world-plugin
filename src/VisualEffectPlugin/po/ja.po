@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-05 22:34+0900\n"
+"POT-Creation-Date: 2021-02-24 05:04-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
 "Language-Team: Japanese\n"
@@ -17,74 +17,82 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../VisualEffectDialog.cpp:47
-msgid "Configuration"
-msgstr "設定"
-
-#: ../VisualEffectDialog.cpp:50
-msgid "Visual Effects"
-msgstr "視覚効果"
-
-#: ../VisualEffectDialog.cpp:53
-msgid "Hue"
-msgstr "色相"
-
-#: ../VisualEffectDialog.cpp:53
-msgid "Saturation"
-msgstr "彩度"
-
-#: ../VisualEffectDialog.cpp:53
-msgid "Value"
-msgstr "明度"
-
-#: ../VisualEffectDialog.cpp:54
-msgid "Red"
-msgstr "赤"
-
-#: ../VisualEffectDialog.cpp:54
-msgid "Green"
-msgstr "緑"
-
-#: ../VisualEffectDialog.cpp:54
-msgid "Blue"
-msgstr "青"
-
-#: ../VisualEffectDialog.cpp:55
-msgid "CoefB"
-msgstr "歪み"
-
-#: ../VisualEffectDialog.cpp:55
-msgid "CoefD"
-msgstr "拡大率"
-
-#: ../VisualEffectDialog.cpp:55
-msgid "Std_dev"
-msgstr "標準偏差"
-
-#: ../VisualEffectDialog.cpp:56
-msgid "Salt"
-msgstr "白色ノイズ"
-
-#: ../VisualEffectDialog.cpp:56
-msgid "Pepper"
-msgstr "黒色ノイズ"
-
-#: ../VisualEffectDialog.cpp:94
-msgid "Clear"
-msgstr "クリア"
-
-#: ../CameraVisualizerItem.cpp:101
+#: ../CameraVisualizerItem.cpp:102
 msgid "CameraVisualizer"
 msgstr "カメラビジュアライザ"
 
-#: ../CameraVisualizerItem.cpp:104
+#: ../CameraVisualizerItem.cpp:105
 msgid "CameraImageVisualizer2"
 msgstr "カメラ画像ビジュアライザ２"
 
-#: ../CameraVisualizerItem.cpp:105
+#: ../CameraVisualizerItem.cpp:106
 msgid "LightSwitcher"
 msgstr "ライトスイッチャ"
 
-#: ../CameraVisualizerItem.cpp:112
+#: ../CameraVisualizerItem.cpp:113
 msgid "Show the config dialog"
 msgstr "設定ダイアログの表示"
+
+#: ../VisualEffectDialog.cpp:59
+msgid "Configuration"
+msgstr "設定"
+
+#: ../VisualEffectDialog.cpp:100
+msgid "Flip"
+msgstr "反転"
+
+#: ../VisualEffectDialog.cpp:105
+msgid "Hue"
+msgstr "色相"
+
+#: ../VisualEffectDialog.cpp:107
+msgid "Saturation"
+msgstr "彩度"
+
+#: ../VisualEffectDialog.cpp:109
+msgid "Value"
+msgstr "明度"
+
+#: ../VisualEffectDialog.cpp:111
+msgid "Red"
+msgstr "赤"
+
+#: ../VisualEffectDialog.cpp:113
+msgid "Green"
+msgstr "緑"
+
+#: ../VisualEffectDialog.cpp:115
+msgid "Blue"
+msgstr "青"
+
+#: ../VisualEffectDialog.cpp:117
+msgid "CoefB"
+msgstr "歪み"
+
+#: ../VisualEffectDialog.cpp:119
+msgid "CoefD"
+msgstr "拡大率"
+
+#: ../VisualEffectDialog.cpp:121
+msgid "Std_dev"
+msgstr "標準偏差"
+
+#: ../VisualEffectDialog.cpp:123
+msgid "Salt"
+msgstr "白色ノイズ"
+
+#: ../VisualEffectDialog.cpp:125
+msgid "Pepper"
+msgstr "黒色ノイズ"
+
+#: ../VisualEffectDialog.cpp:129
+msgid "&Reset"
+msgstr ""
+
+#: ../VisualEffectDialog.cpp:130
+msgid "&Ok"
+msgstr ""
+
+#: ../VisualEffectDialog.cpp:138
+msgid "Visual Effects"
+msgstr ""

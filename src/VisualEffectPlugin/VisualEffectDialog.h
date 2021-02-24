@@ -31,6 +31,7 @@ public:
     double stdDev() const;
     double salt() const;
     double pepper() const;
+    bool flip() const;
 
 protected:
     virtual void onAccepted() override;

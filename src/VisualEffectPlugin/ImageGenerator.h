@@ -24,6 +24,7 @@ public:
     Image rgb(const Image image, const double m_red, const double m_green, const double m_blue);
     Image saltPepperNoise(const Image image, const double m_salt, const double m_pepper);
     Image filteredImage(const Image image, const double m_scalex, const double m_scaley);
+    Image flippedImage(const Image image);
 
 private:
     ImageGeneratorImpl* impl;

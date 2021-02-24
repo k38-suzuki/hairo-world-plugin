@@ -240,6 +240,7 @@ bool CameraVisualizerItem::store(Archive& archive)
             subArchive->write("std_dev", vitem->effect.stdDev());
             subArchive->write("salt", vitem->effect.salt());
             subArchive->write("pepper", vitem->effect.pepper());
+            subArchive->write("flip", vitem->effect.flip());
         }
         item->store(*subArchive);
 
@@ -338,6 +339,9 @@ bool CameraVisualizerItem::restore(const Archive& archive)
                             value = 0.0;
                         }
                         vitem->effect.setPepper(value);
+                        bool flip;
+                        subArchive->read("flip", flip);
+                        vitem->effect.setFlip(flip);
                     }
                 }
                 impl->restoredSubItems.push_back(item);
@@ -443,6 +447,7 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
                 effect.setStdDev(effectDialog->stdDev());
                 effect.setSalt(effectDialog->salt());
                 effect.setPepper(effectDialog->pepper());
+                effect.setFlip(effectDialog->flip());
                 pitem = this;
             }
         }
@@ -456,7 +461,13 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
         Image gaussImage = generator.gaussianNoise(barrelImage, effect.stdDev());
         Image spImage = generator.saltPepperNoise(gaussImage, effect.salt(), effect.pepper());
 
-        image = make_shared<Image>(spImage);
+        bool flipped = effect.flip();
+        Image flippedImage = spImage;
+        if(flipped) {
+            flippedImage = generator.flippedImage(spImage);
+        }
+
+        image = make_shared<Image>(flippedImage);
     } else {
         image.reset();
     }

@@ -38,6 +38,9 @@ public:
     double salt() const;
     void setPepper(const double pepper);
     double pepper() const;
+    void setFlip(const bool flip);
+    bool flip() const;
+
 
 private:
     VisualEffectImpl* impl;

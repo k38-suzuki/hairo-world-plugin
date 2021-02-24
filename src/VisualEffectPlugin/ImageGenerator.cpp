@@ -30,6 +30,7 @@ public:
     Image rgb(const Image image, const double m_red, const double m_green, const double m_blue);
     Image saltPepperNoise(const Image image, const double m_salt, const double m_pepper);
     Image filteredImage(const Image image, const double m_scalex, const double m_scaley);
+    Image flippedImage(const Image image);
 };
 
 }
@@ -368,6 +369,30 @@ Image ImageGeneratorImpl::filteredImage(const Image image, const double m_scalex
                 }
                 cloneImage.pixels()[3 * ((i + ys) * width + (j + xs))] = d;
             }
+        }
+    }
+    return cloneImage;
+}
+
+
+Image ImageGenerator::flippedImage(const Image image)
+{
+    return impl->flippedImage(image);
+}
+
+
+Image ImageGeneratorImpl::flippedImage(const Image image)
+{
+    Image cloneImage = image;
+    cloneImage.setSize(image.width(), image.height(), image.numComponents());
+    int width = image.width();
+    int height = image.height();
+    int numComp = image.numComponents();
+    int length = width * height * numComp;
+
+    for(int i = 0; i < length; i += 3) {
+        for(int j = 0; j < 3; j++) {
+            cloneImage.pixels()[i + j] = image.pixels()[ length - i + j ];
         }
     }
     return cloneImage;
