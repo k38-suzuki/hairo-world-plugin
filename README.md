@@ -8,7 +8,9 @@ How to refer to HAIROWorldPlugin?
 Please explicitly write the version of Choreonoid you used, and refer the following document in context of using HAIROWorldPlugin.
 
 Kenta Suzuki, Kuniaki Kawabata, “Development of a Robot Simulator for Decommissioning Tasks Utilizing Remotely Operated Robots”, Journal of Robotics and Mechatronics, Vol.32, No.6, pp.1292-1300, doi: 10.20965/jrm.2020.p1292, 2020
+
 This is an open access article, and you can download it from following link.
+
 Development Report
 https://www.fujipress.jp/jrm/rb/robot003200061292/
 
