@@ -18,13 +18,13 @@ public:
     ImageGenerator();
     virtual ~ImageGenerator();
 
-    Image barrelDistortion(const Image image, const double m_coefb, double m_coefd);
-    Image gaussianNoise(const Image image, const double m_std_dev);
-    Image hsv(const Image image, const double m_hue, const double m_saturation, const double m_value);
-    Image rgb(const Image image, const double m_red, const double m_green, const double m_blue);
-    Image saltPepperNoise(const Image image, const double m_salt, const double m_pepper);
-    Image filteredImage(const Image image, const double m_scalex, const double m_scaley);
-    Image flippedImage(const Image image);
+    void barrelDistortion(Image& image, const double m_coefb, double m_coefd);
+    void gaussianNoise(Image& image, const double m_std_dev);
+    void hsv(Image& image, const double m_hue, const double m_saturation, const double m_value);
+    void rgb(Image& image, const double m_red, const double m_green, const double m_blue);
+    void saltPepperNoise(Image& image, const double m_salt, const double m_pepper);
+    void filteredImage(Image& image, const double m_scalex, const double m_scaley);
+    void flippedImage(Image& image);
 
 private:
     ImageGeneratorImpl* impl;

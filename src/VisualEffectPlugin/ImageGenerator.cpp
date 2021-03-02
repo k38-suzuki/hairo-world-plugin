@@ -24,13 +24,13 @@ public:
     default_random_engine engine;
     normal_distribution<> dist;
 
-    Image barrelDistortion(const Image image, const double m_coefb, double m_coefd);
-    Image gaussianNoise(const Image image, const double m_std_dev);
-    Image hsv(const Image image, const double m_hue, const double m_saturation, const double m_value);
-    Image rgb(const Image image, const double m_red, const double m_green, const double m_blue);
-    Image saltPepperNoise(const Image image, const double m_salt, const double m_pepper);
-    Image filteredImage(const Image image, const double m_scalex, const double m_scaley);
-    Image flippedImage(const Image image);
+    void barrelDistortion(Image& image, const double m_coefb, double m_coefd);
+    void gaussianNoise(Image& image, const double m_std_dev);
+    void hsv(Image& image, const double m_hue, const double m_saturation, const double m_value);
+    void rgb(Image& image, const double m_red, const double m_green, const double m_blue);
+    void saltPepperNoise(Image& image, const double m_salt, const double m_pepper);
+    void filteredImage(Image& image, const double m_scalex, const double m_scaley);
+    void flippedImage(Image& image);
 };
 
 }
@@ -58,13 +58,13 @@ ImageGenerator::~ImageGenerator()
 }
 
 
-Image ImageGenerator::barrelDistortion(const Image image, const double m_coefb, double m_coefd)
+void ImageGenerator::barrelDistortion(Image& image, const double m_coefb, double m_coefd)
 {
-    return impl->barrelDistortion(image, m_coefb, m_coefd);
+    impl->barrelDistortion(image, m_coefb, m_coefd);
 }
 
 
-Image ImageGeneratorImpl::barrelDistortion(const Image image, const double m_coefb, double m_coefd)
+void ImageGeneratorImpl::barrelDistortion(Image& image, const double m_coefb, double m_coefd)
 {
     Image cloneImage;
     cloneImage.setSize(image.width(), image.height(), image.numComponents());
@@ -104,20 +104,19 @@ Image ImageGeneratorImpl::barrelDistortion(const Image image, const double m_coe
             }
         }
     }
-    return cloneImage;
+    image = cloneImage;
 }
 
 
-Image ImageGenerator::gaussianNoise(const Image image, const double m_std_dev)
+void ImageGenerator::gaussianNoise(Image& image, const double m_std_dev)
 {
-    return impl->gaussianNoise(image, m_std_dev);
+    impl->gaussianNoise(image, m_std_dev);
 }
 
 
-Image ImageGeneratorImpl::gaussianNoise(const Image image, const double m_std_dev)
+void ImageGeneratorImpl::gaussianNoise(Image& image, const double m_std_dev)
 {
-    Image cloneImage = image;
-    cloneImage.setSize(image.width(), image.height(), image.numComponents());
+    image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
     int height = image.height();
     int numComp = image.numComponents();
@@ -135,7 +134,7 @@ Image ImageGeneratorImpl::gaussianNoise(const Image image, const double m_std_de
                 } else if(pixel[j] < 0) {
                     pixel[j] = 0;
                 }
-                cloneImage.pixels()[i + j] = pixel[j];
+                image.pixels()[i + j] = pixel[j];
             }
         }
     } else if(numComp == 1) {
@@ -147,23 +146,21 @@ Image ImageGeneratorImpl::gaussianNoise(const Image image, const double m_std_de
             } else if(pixel < 0) {
                 pixel = 0;
             }
-            cloneImage.pixels()[i] = pixel;
+            image.pixels()[i] = pixel;
         }
     }
-    return cloneImage;
 }
 
 
-Image ImageGenerator::hsv(const Image image, const double m_hue, const double m_saturation, const double m_value)
+void ImageGenerator::hsv(Image& image, const double m_hue, const double m_saturation, const double m_value)
 {
-    return impl->hsv(image, m_hue, m_saturation, m_value);
+    impl->hsv(image, m_hue, m_saturation, m_value);
 }
 
 
-Image ImageGeneratorImpl::hsv(const Image image, const double m_hue, const double m_saturation, const double m_value)
+void ImageGeneratorImpl::hsv(Image& image, const double m_hue, const double m_saturation, const double m_value)
 {
-    Image cloneImage = image;
-    cloneImage.setSize(image.width(), image.height(), image.numComponents());
+    image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
     int height = image.height();
     int numComp = image.numComponents();
@@ -198,24 +195,22 @@ Image ImageGeneratorImpl::hsv(const Image image, const double m_hue, const doubl
         }
 
         QColor hsvColor = QColor::fromHsv(h, s, v);
-        cloneImage.pixels()[i] = hsvColor.red();
-        cloneImage.pixels()[i + 1] = hsvColor.green();
-        cloneImage.pixels()[i + 2] = hsvColor.blue();
+        image.pixels()[i] = hsvColor.red();
+        image.pixels()[i + 1] = hsvColor.green();
+        image.pixels()[i + 2] = hsvColor.blue();
     }
-    return cloneImage;
 }
 
 
-Image ImageGenerator::rgb(const Image image, const double m_red, const double m_green, const double m_blue)
+void ImageGenerator::rgb(Image& image, const double m_red, const double m_green, const double m_blue)
 {
-    return impl->rgb(image, m_red, m_green, m_blue);
+    impl->rgb(image, m_red, m_green, m_blue);
 }
 
 
-Image ImageGeneratorImpl::rgb(const Image image, const double m_red, const double m_green, const double m_blue)
+void ImageGeneratorImpl::rgb(Image& image, const double m_red, const double m_green, const double m_blue)
 {
-    Image cloneImage = image;
-    cloneImage.setSize(image.width(), image.height(), image.numComponents());
+    image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
     int height = image.height();
     int numComp = image.numComponents();
@@ -233,23 +228,21 @@ Image ImageGeneratorImpl::rgb(const Image image, const double m_red, const doubl
             } else if(rgb[j] < 0) {
                 rgb[j] = 0;
             }
-            cloneImage.pixels()[i + j] = rgb[j];
+            image.pixels()[i + j] = rgb[j];
         }
     }
-    return cloneImage;
 }
 
 
-Image ImageGenerator::saltPepperNoise(const Image image, const double m_salt, const double m_pepper)
+void ImageGenerator::saltPepperNoise(Image& image, const double m_salt, const double m_pepper)
 {
-    return impl->saltPepperNoise(image, m_salt, m_pepper);
+    impl->saltPepperNoise(image, m_salt, m_pepper);
 }
 
 
-Image ImageGeneratorImpl::saltPepperNoise(const Image image, const double m_salt, const double m_pepper)
+void ImageGeneratorImpl::saltPepperNoise(Image& image, const double m_salt, const double m_pepper)
 {
-    Image cloneImage = image;
-    cloneImage.setSize(image.width(), image.height(), image.numComponents());
+    image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
     int height = image.height();
     int numComp = image.numComponents();
@@ -259,40 +252,39 @@ Image ImageGeneratorImpl::saltPepperNoise(const Image image, const double m_salt
         for(int i = 0; i < length; i += 3) {
             double salt = (double)(rand() % 101) / 100.0;
             if(salt < m_salt) {
-                cloneImage.pixels()[i] = 255;
-                cloneImage.pixels()[i + 1] = 255;
-                cloneImage.pixels()[i + 2] = 255;
+                image.pixels()[i] = 255;
+                image.pixels()[i + 1] = 255;
+                image.pixels()[i + 2] = 255;
             }
             double pepper = (double)(rand() % 101) / 100.0;
             if(pepper < m_pepper) {
-                cloneImage.pixels()[i] = 0;
-                cloneImage.pixels()[i + 1] = 0;
-                cloneImage.pixels()[i + 2] = 0;
+                image.pixels()[i] = 0;
+                image.pixels()[i + 1] = 0;
+                image.pixels()[i + 2] = 0;
             }
         }
     } else if(numComp == 1) {
         for(int i = 0; i < length; i++) {
             double salt = (double)(rand() % 101) / 100.0;
             if(salt < m_salt) {
-                cloneImage.pixels()[i] = 255;
+                image.pixels()[i] = 255;
             }
             double pepper = (double)(rand() % 101) / 100.0;
             if(pepper < m_pepper) {
-                cloneImage.pixels()[i] = 0;
+                image.pixels()[i] = 0;
             }
         }
     }
-    return cloneImage;
 }
 
 
-Image ImageGenerator::filteredImage(Image image, double m_scalex, double m_scaley)
+void ImageGenerator::filteredImage(Image& image, double m_scalex, double m_scaley)
 {
-    return impl->filteredImage(image, m_scalex, m_scaley);
+    impl->filteredImage(image, m_scalex, m_scaley);
 }
 
 
-Image ImageGeneratorImpl::filteredImage(const Image image, const double m_scalex, const double m_scaley)
+void ImageGeneratorImpl::filteredImage(Image& image, const double m_scalex, const double m_scaley)
 {
     //Linear interpolation
     Image cloneImage = image;
@@ -371,17 +363,17 @@ Image ImageGeneratorImpl::filteredImage(const Image image, const double m_scalex
             }
         }
     }
-    return cloneImage;
+    image = cloneImage;
 }
 
 
-Image ImageGenerator::flippedImage(const Image image)
+void ImageGenerator::flippedImage(Image& image)
 {
-    return impl->flippedImage(image);
+    impl->flippedImage(image);
 }
 
 
-Image ImageGeneratorImpl::flippedImage(const Image image)
+void ImageGeneratorImpl::flippedImage(Image& image)
 {
     Image cloneImage = image;
     cloneImage.setSize(image.width(), image.height(), image.numComponents());
@@ -395,5 +387,5 @@ Image ImageGeneratorImpl::flippedImage(const Image image)
             cloneImage.pixels()[i + j] = image.pixels()[ length - i + j ];
         }
     }
-    return cloneImage;
+    image = cloneImage;
 }

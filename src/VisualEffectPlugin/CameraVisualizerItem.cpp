@@ -453,21 +453,41 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
         }
 
         ImageGenerator generator;
-        const Image& tmpImage = *camera->sharedImage();
+        Image orgImage = *camera->sharedImage();
 
-        Image hsvImage = generator.hsv(tmpImage, effect.hue(), effect.saturation(), effect.value() );
-        Image rgbImage = generator.rgb(hsvImage, effect.red(), effect.green(), effect.blue() );
-        Image barrelImage = generator.barrelDistortion(rgbImage, effect.coefB(), effect.coefD());
-        Image gaussImage = generator.gaussianNoise(barrelImage, effect.stdDev());
-        Image spImage = generator.saltPepperNoise(gaussImage, effect.salt(), effect.pepper());
-
+        double hue = effect.hue();
+        double saturation = effect.saturation();
+        double value = effect.value();
+        double red = effect.red();
+        double green = effect.green();
+        double blue = effect.blue();
         bool flipped = effect.flip();
-        Image flippedImage = spImage;
+        double coefB = effect.coefB();
+        double coefD = effect.coefD();
+        double stdDev = effect.stdDev();
+        double salt = effect.salt();
+        double pepper = effect.pepper();
+
+        if(hue > 0.0 || saturation > 0.0 || value > 0.0) {
+            generator.hsv(orgImage, hue, saturation, value);
+        }
+        if(red > 0.0 || green > 0.0 || blue > 0.0) {
+            generator.rgb(orgImage, red, green, blue);
+        }
         if(flipped) {
-            flippedImage = generator.flippedImage(spImage);
+            generator.flippedImage(orgImage);
+        }
+        if(coefB < 0.0 || coefD > 1.0) {
+            generator.barrelDistortion(orgImage, coefB, coefD);
+        }
+        if(stdDev > 0.0) {
+            generator.gaussianNoise(orgImage, stdDev);
+        }
+        if(salt > 0.0 || pepper > 0.0) {
+            generator.saltPepperNoise(orgImage, salt, pepper);
         }
 
-        image = make_shared<Image>(flippedImage);
+        image = make_shared<Image>(orgImage);
     } else {
         image.reset();
     }
