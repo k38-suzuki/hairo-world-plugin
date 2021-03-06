@@ -72,7 +72,7 @@ Link* FDLink::link() const
 }
 
 
-void FDLink::setDensity(const double density)
+void FDLink::setDensity(const double& density)
 {
     impl->density = density;
 }
@@ -84,7 +84,7 @@ double FDLink::density() const
 }
 
 
-void FDLink::setCenterOfBuoyancy(const Vector3 centerOfBuoyancy)
+void FDLink::setCenterOfBuoyancy(const Vector3& centerOfBuoyancy)
 {
     impl->centerOfBuoyancy = centerOfBuoyancy;
 }
@@ -96,7 +96,7 @@ Vector3 FDLink::centerOfBuoyancy() const
 }
 
 
-void FDLink::setCdw(const double cdw)
+void FDLink::setCdw(const double& cdw)
 {
     impl->cdw = cdw;
 }
@@ -108,7 +108,7 @@ double FDLink::cdw() const
 }
 
 
-void FDLink::setCda(const double cda)
+void FDLink::setCda(const double& cda)
 {
     impl->cda = cda;
 }
@@ -120,7 +120,7 @@ double FDLink::cda() const
 }
 
 
-void FDLink::setTd(const double td)
+void FDLink::setTd(const double& td)
 {
     impl->td = td;
 }
@@ -132,7 +132,7 @@ double FDLink::td() const
 }
 
 
-void FDLink::setSurface(const Vector6 surface)
+void FDLink::setSurface(const Vector6& surface)
 {
     impl->surface = surface;
 }
@@ -144,7 +144,7 @@ Vector6 FDLink::surface() const
 }
 
 
-void FDLink::setCv(const double cv)
+void FDLink::setCv(const double& cv)
 {
     impl->cv = cv;
 }

@@ -24,12 +24,12 @@ public:
     virtual SgNode* getScene() override;
     static void initializeClass(ExtensionManager* ext);
 
-    void addPoint(const Vector3 point, const double radius, const Vector3f color, const double transparency);
-    void addLabel(const std::string label);
+    void addPoint(const Vector3& point, const double& radius, const Vector3f color, const double& transparency);
+    void addLabel(const std::string& label);
     std::vector<std::string> labels() const;
 
-    static bool load(MarkerPointItem* item, const std::string fileName);
-    static bool save(MarkerPointItem* item, const std::string fileName);
+    static bool load(MarkerPointItem* item, const std::string& fileName);
+    static bool save(MarkerPointItem* item, const std::string& fileName);
 
 protected:
     virtual Item* doDuplicate() const override;

@@ -8,43 +8,51 @@
 
 namespace cnoid {
 
-class VisualEffectImpl;
-
 class VisualEffect
 {
 public:
     VisualEffect();
     virtual ~VisualEffect();
 
-    void setHue(const double hue);
-    double hue() const;
-    void setSaturation(const double saturation);
-    double saturation() const;
-    void setValue(const double value);
-    double value() const;
-    void setRed(const double red);
-    double red() const;
-    void setGreen(const double green);
-    double green() const;
-    void setBlue(const double blue);
-    double blue() const;
-    void setCoefB(const double coefB);
-    double coefB() const;
-    void setCoefD(const double coefD);
-    double coefD() const;
-    void setStdDev(const double stdDev);
-    double stdDev() const;
-    void setSalt(const double salt);
-    double salt() const;
-    void setPepper(const double pepper);
-    double pepper() const;
-    void setFlip(const bool flip);
-    bool flip() const;
+    void setHue(const double& hue) { hue_ = hue; }
+    double hue() const { return hue_; }
+    void setSaturation(const double& saturation) { saturation_ = saturation; }
+    double saturation() const { return saturation_; }
+    void setValue(const double& value) { value_ = value; }
+    double value() const { return value_; }
+    void setRed(const double& red) { red_ = red; }
+    double red() const { return red_; }
+    void setGreen(const double& green) { green_ = green; }
+    double green() const { return green_; }
+    void setBlue(const double& blue) { blue_ = blue; }
+    double blue() const { return blue_; }
+    void setCoefB(const double& coefB) { coefB_ = coefB; }
+    double coefB() const { return coefB_; }
+    void setCoefD(const double& coefD) { coefD_ = coefD; }
+    double coefD() const { return coefD_; }
+    void setStdDev(const double& stdDev) { stdDev_ = stdDev; }
+    double stdDev() const { return stdDev_; }
+    void setSalt(const double& salt) { salt_ = salt; }
+    double salt() const { return salt_; }
+    void setPepper(const double& pepper) { pepper_ = pepper; }
+    double pepper() const { return pepper_; }
+    void setFlip(const bool& flip) { flip_ = flip; }
+    bool flip() const { return flip_; }
 
 
 private:
-    VisualEffectImpl* impl;
-    friend class VisualEffectImpl;
+    double hue_;
+    double saturation_;
+    double value_;
+    double red_;
+    double green_;
+    double blue_;
+    double coefB_;
+    double coefD_;
+    double stdDev_;
+    double salt_;
+    double pepper_;
+    bool flip_;
 };
 
 }

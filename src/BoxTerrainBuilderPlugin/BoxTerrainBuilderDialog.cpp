@@ -62,16 +62,16 @@ public:
     CellManager();
     ~CellManager();
 
-    bool read(const string fileName);
-    const int getXsize() const;
-    const int getYsize() const;
-    const double getPointax(int x, int y, int index) const;
-    const double getPointay(int x, int y, int index) const;
-    const double getPointaz(int x, int y, int index) const;
-    const double getPointbx(int x, int y, int index) const;
-    const double getPointby(int x, int y, int index) const;
-    const double getPointbz(int x, int y, int index) const;
-    const int getId(int x, int y, int index, int sindex) const;
+    bool read(const string& fileName);
+    int getXsize() const;
+    int getYsize() const;
+    double getPointax(const int& x, const int& y, const int& index) const;
+    double getPointay(const int& x, const int& y, const int& index) const;
+    double getPointaz(const int& x, const int& y, const int& index) const;
+    double getPointbx(const int& x, const int& y, const int& index) const;
+    double getPointby(const int& x, const int& y, const int& index) const;
+    double getPointbz(const int& x, const int& y, const int& index) const;
+    int getId(const int& x, const int& y, const int& index, const int& sindex) const;
 
 private:
     class CellManagerImpl;
@@ -81,7 +81,7 @@ private:
 class CellManager::CellManagerImpl
 {
 public:
-    bool read(const string fileName);
+    bool read(const string& fileName);
 
     double height[512][512];
     double cella[512][512][4];
@@ -107,14 +107,14 @@ CellManager::~CellManager()
 }
 
 
-bool CellManager::read(const string fileName)
+bool CellManager::read(const string& fileName)
 {
     impl->read(fileName);
     return true;
 }
 
 
-bool CellManager::CellManagerImpl::read(const string fileName)
+bool CellManager::CellManagerImpl::read(const string& fileName)
 {
     //set height
     ifstream ifs(fileName.c_str());
@@ -201,55 +201,55 @@ bool CellManager::CellManagerImpl::read(const string fileName)
 }
 
 
-const int CellManager::getXsize() const
+int CellManager::getXsize() const
 {
     return impl->xsize;
 }
 
 
-const int CellManager::getYsize() const
+int CellManager::getYsize() const
 {
     return impl->ysize;
 }
 
 
-const double CellManager::getPointax(int x, int y, int index) const
+double CellManager::getPointax(const int& x, const int& y, const int& index) const
 {
     return impl->pointa[y][x][index][0];
 }
 
 
-const double CellManager::getPointay(int x, int y, int index) const
+double CellManager::getPointay(const int& x, const int& y, const int& index) const
 {
     return impl->pointa[y][x][index][1];
 }
 
 
-const double CellManager::getPointaz(int x, int y, int index) const
+double CellManager::getPointaz(const int& x, const int& y, const int& index) const
 {
     return impl->pointa[y][x][index][2];
 }
 
 
-const double CellManager::getPointbx(int x, int y, int index) const
+double CellManager::getPointbx(const int& x, const int& y, const int& index) const
 {
     return impl->pointb[y][x][index][0];
 }
 
 
-const double CellManager::getPointby(int x, int y, int index) const
+double CellManager::getPointby(const int& x, const int& y, const int& index) const
 {
     return impl->pointb[y][x][index][1];
 }
 
 
-const double CellManager::getPointbz(int x, int y, int index) const
+double CellManager::getPointbz(const int& x, const int& y, const int& index) const
 {
     return impl->pointb[y][x][index][2];
 }
 
 
-const int CellManager::getId(int x, int y, int index, int sindex) const
+int CellManager::getId(const int& x, const int& y, const int& index, const int& sindex) const
 {
     if(sindex == 0) {
         return impl->cella[y][x][index];

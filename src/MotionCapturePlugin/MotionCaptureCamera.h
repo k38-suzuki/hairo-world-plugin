@@ -26,23 +26,23 @@ public:
 
     virtual void on(const bool on) override;
     virtual bool on() const override;
-    void setFieldOfView(const int fieldOfView) { fieldOfView_ = fieldOfView; }
+    void setFieldOfView(const int& fieldOfView) { fieldOfView_ = fieldOfView; }
     int fieldOfView() const { return fieldOfView_; }
-    void setFocalLength(const double focalLength) { focalLength_ = focalLength; }
+    void setFocalLength(const double& focalLength) { focalLength_ = focalLength; }
     double focalLength() const { return focalLength_; }
-    void setAspectRatio(const Vector2 aspectRatio) { aspectRatio_ = aspectRatio; }
+    void setAspectRatio(const Vector2& aspectRatio) { aspectRatio_ = aspectRatio; }
     Vector2 aspectRatio() const { return aspectRatio_; }
-    void setDiffuseColor(const Vector3 diffuseColor) { diffuseColor_ = diffuseColor; }
+    void setDiffuseColor(const Vector3& diffuseColor) { diffuseColor_ = diffuseColor; }
     Vector3 diffuseColor() const { return diffuseColor_; }
-    void setEmissiveColor(const Vector3 emissiveColor) { emissiveColor_ = emissiveColor; }
+    void setEmissiveColor(const Vector3& emissiveColor) { emissiveColor_ = emissiveColor; }
     Vector3 emissiveColor() const { return emissiveColor_; }
-    void setSpecularColor(const Vector3 specularColor) { specularColor_ = specularColor; }
+    void setSpecularColor(const Vector3& specularColor) { specularColor_ = specularColor; }
     Vector3 specularColor() const { return specularColor_; }
-    void setAmbientIntensity(const float ambientIntensity) { ambientIntensity_ = ambientIntensity; }
+    void setAmbientIntensity(const float& ambientIntensity) { ambientIntensity_ = ambientIntensity; }
     float ambientIntensity() const { return ambientIntensity_; }
-    void setShininess(const float shininess) { shininess_ = shininess; }
+    void setShininess(const float& shininess) { shininess_ = shininess; }
     float shininess() const { return shininess_; }
-    void setTransparency(const float transparency) { transparency_ = transparency; }
+    void setTransparency(const float& transparency) { transparency_ = transparency; }
     float transparency() const { return transparency_; }
 
 protected:

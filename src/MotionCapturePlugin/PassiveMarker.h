@@ -30,11 +30,11 @@ public:
     virtual const double* readState(const double* buf) override;
     virtual double* writeState(double* out_buf) const override;
 
-    void setRadius(const double radius) { radius_ = radius; }
+    void setRadius(const double& radius) { radius_ = radius; }
     double radius() const { return radius_; }
-    void setColor(const Vector3 color) { color_ = color; }
+    void setColor(const Vector3& color) { color_ = color; }
     Vector3 color() const { return color_; }
-    void setTransparency(const double transparency) { transparency_ = transparency; }
+    void setTransparency(const double& transparency) { transparency_ = transparency; }
     double transparency() const { return transparency_; }
 
 protected:

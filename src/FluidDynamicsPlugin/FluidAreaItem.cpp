@@ -50,7 +50,7 @@ void loadItem(Mapping& node, FluidAreaItem* item)
 }
 
 
-bool loadDocument(const string fileName)
+bool loadDocument(const string& fileName)
 {
     YAMLReader reader;
     if(reader.load(fileName)) {
@@ -68,7 +68,7 @@ bool loadDocument(const string fileName)
 }
 
 
-bool loadDocument(FluidAreaItem* item, const string fileName)
+bool loadDocument(FluidAreaItem* item, const string& fileName)
 {
     YAMLReader reader;
     if(reader.load(fileName)) {
@@ -85,7 +85,7 @@ bool loadDocument(FluidAreaItem* item, const string fileName)
 }
 
 
-void putKeyVector3(YAMLWriter* writer, const string key, const Vector3 value)
+void putKeyVector3(YAMLWriter* writer, const string& key, const Vector3& value)
 {
     writer->putKey(key);
     writer->startFlowStyleListing();
@@ -130,7 +130,7 @@ public:
     void updateScene();
     bool onTranslationPropertyChanged(const string& value);
     bool onRotationPropertyChanged(const string& value);
-    bool onAreaTypePropertyChanged(const int index);
+    bool onAreaTypePropertyChanged(const int& index);
     bool onAreaSizePropertyChanged(const string& value);
     bool onAreaRadiusPropertyChanged(const string& value);
     bool onAreaHeightPropertyChanged(const string& value);
@@ -232,7 +232,7 @@ void FluidAreaItem::initializeClass(ExtensionManager* ext)
 }
 
 
-void FluidAreaItem::setTranslation(const Vector3 translation)
+void FluidAreaItem::setTranslation(const Vector3& translation)
 {
     impl->translation = translation;
 }
@@ -244,7 +244,7 @@ Vector3 FluidAreaItem::translation() const
 }
 
 
-void FluidAreaItem::setRotation(const Vector3 rotation)
+void FluidAreaItem::setRotation(const Vector3& rotation)
 {
     impl->rotation = rotation;
 }
@@ -256,7 +256,7 @@ Vector3 FluidAreaItem::rotation() const
 }
 
 
-void FluidAreaItem::setDensity(const double density)
+void FluidAreaItem::setDensity(const double& density)
 {
     impl->density = density;
 }
@@ -268,7 +268,7 @@ double FluidAreaItem::density() const
 }
 
 
-void FluidAreaItem::setViscosity(const double viscosity)
+void FluidAreaItem::setViscosity(const double& viscosity)
 {
     impl->viscosity = viscosity;
 }
@@ -280,7 +280,7 @@ double FluidAreaItem::viscosity() const
 }
 
 
-void FluidAreaItem::setType(const string type)
+void FluidAreaItem::setType(const string& type)
 {
     impl->type.select(type);
 }
@@ -292,7 +292,7 @@ string FluidAreaItem::type() const
 }
 
 
-void FluidAreaItem::setSize(const Vector3 size)
+void FluidAreaItem::setSize(const Vector3& size)
 {
     impl->size = size;
 }
@@ -304,7 +304,7 @@ Vector3 FluidAreaItem::size() const
 }
 
 
-void FluidAreaItem::setRadius(const double radius)
+void FluidAreaItem::setRadius(const double& radius)
 {
     impl->radius = radius;
 }
@@ -316,7 +316,7 @@ double FluidAreaItem::radius() const
 }
 
 
-void FluidAreaItem::setHeight(const double height)
+void FluidAreaItem::setHeight(const double& height)
 {
     impl->height = height;
 }
@@ -328,7 +328,7 @@ double FluidAreaItem::height() const
 }
 
 
-void FluidAreaItem::setFlow(const Vector3 flow)
+void FluidAreaItem::setFlow(const Vector3& flow)
 {
     impl->flow = flow;
 }
@@ -340,7 +340,7 @@ Vector3 FluidAreaItem::flow() const
 }
 
 
-void FluidAreaItem::setDiffuseColor(const Vector3 diffuseColor)
+void FluidAreaItem::setDiffuseColor(const Vector3& diffuseColor)
 {
     impl->diffuseColor = diffuseColor;
 }
@@ -352,7 +352,7 @@ Vector3 FluidAreaItem::diffuseColor() const
 }
 
 
-void FluidAreaItem::setEmissiveColor(const Vector3 emissiveColor)
+void FluidAreaItem::setEmissiveColor(const Vector3& emissiveColor)
 {
     impl->emissiveColor = emissiveColor;
 }
@@ -364,7 +364,7 @@ Vector3 FluidAreaItem::emissiveColor() const
 }
 
 
-void FluidAreaItem::setSpecularColor(const Vector3 specularColor)
+void FluidAreaItem::setSpecularColor(const Vector3& specularColor)
 {
     impl->specularColor = specularColor;
 }
@@ -376,7 +376,7 @@ Vector3 FluidAreaItem::specularColor() const
 }
 
 
-void FluidAreaItem::setShininess(const double shininess)
+void FluidAreaItem::setShininess(const double& shininess)
 {
     impl->shininess = shininess;
 }
@@ -388,7 +388,7 @@ double FluidAreaItem::shininess() const
 }
 
 
-void FluidAreaItem::setTransparency(const double transparency)
+void FluidAreaItem::setTransparency(const double& transparency)
 {
     impl->transparency = transparency;
 }
@@ -426,7 +426,7 @@ bool FluidAreaItemImpl::onRotationPropertyChanged(const string& value)
 }
 
 
-bool FluidAreaItemImpl::onAreaTypePropertyChanged(const int index)
+bool FluidAreaItemImpl::onAreaTypePropertyChanged(const int& index)
 {
     MeshGenerator generator;
 
@@ -621,7 +621,7 @@ void FluidAreaItemImpl::updateScene()
 }
 
 
-bool FluidAreaItem::load(FluidAreaItem* item, const string fileName)
+bool FluidAreaItem::load(FluidAreaItem* item, const string& fileName)
 {
     if(!loadDocument(item, fileName)) {
         return false;
@@ -630,7 +630,7 @@ bool FluidAreaItem::load(FluidAreaItem* item, const string fileName)
 }
 
 
-bool FluidAreaItem::save(FluidAreaItem* item, const string fileName)
+bool FluidAreaItem::save(FluidAreaItem* item, const string& fileName)
 {
     if(!fileName.empty()) {
         YAMLWriter writer(fileName);

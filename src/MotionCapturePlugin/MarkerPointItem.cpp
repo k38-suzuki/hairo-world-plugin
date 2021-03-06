@@ -30,7 +30,7 @@ bool colorRotation = true;
 
 namespace  {
 
-void putKeyVector3(YAMLWriter* writer, const string key, const Vector3 value)
+void putKeyVector3(YAMLWriter* writer, const string& key, const Vector3& value)
 {
     writer->putKey(key);
     writer->startFlowStyleListing();
@@ -41,7 +41,7 @@ void putKeyVector3(YAMLWriter* writer, const string key, const Vector3 value)
 }
 
 
-vector<string> csplit(const string str)
+vector<string> csplit(const string& str)
 {
     vector<string> items;
     QString qstr = QString::fromStdString(str);
@@ -53,7 +53,7 @@ vector<string> csplit(const string str)
 }
 
 
-bool loadCsv(MarkerPointItem* item, const string fileName)
+bool loadCsv(MarkerPointItem* item, const string& fileName)
 {
     if(!fileName.empty()) {
         stdx::filesystem::path name(fileName);
@@ -166,7 +166,7 @@ public:
     SgGroupPtr scene;
     vector<string> labels;
 
-    void addPoint(const Vector3 point, const double radius, const Vector3f color, const double transparency);
+    void addPoint(const Vector3& point, const double& radius, const Vector3f color, const double& transparency);
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
     bool restore(const Archive& archive);
@@ -231,13 +231,13 @@ void MarkerPointItem::initializeClass(ExtensionManager* ext)
 }
 
 
-void MarkerPointItem::addPoint(const Vector3 point, const double radius, const Vector3f color, const double transparency)
+void MarkerPointItem::addPoint(const Vector3& point, const double& radius, const Vector3f color, const double& transparency)
 {
     impl->addPoint(point, radius, color, transparency);
 }
 
 
-void MarkerPointItemImpl::addPoint(const Vector3 point, const double radius, const Vector3f color, const double transparency)
+void MarkerPointItemImpl::addPoint(const Vector3& point, const double& radius, const Vector3f color, const double& transparency)
 {
     MeshGenerator generator;
     SgShape* shape = new SgShape();
@@ -253,7 +253,7 @@ void MarkerPointItemImpl::addPoint(const Vector3 point, const double radius, con
 }
 
 
-void MarkerPointItem::addLabel(const string label)
+void MarkerPointItem::addLabel(const string& label)
 {
     impl->labels.push_back(label);
 }
@@ -265,7 +265,7 @@ vector<string> MarkerPointItem::labels() const
 }
 
 
-bool MarkerPointItem::load(MarkerPointItem* item, const string fileName)
+bool MarkerPointItem::load(MarkerPointItem* item, const string& fileName)
 {
     stdx::filesystem::path name(fileName);
     string extension = name.extension().c_str();
@@ -282,7 +282,7 @@ bool MarkerPointItem::load(MarkerPointItem* item, const string fileName)
 }
 
 
-bool MarkerPointItem::save(MarkerPointItem* item, const string fileName)
+bool MarkerPointItem::save(MarkerPointItem* item, const string& fileName)
 {
     string name = fileName;
     stdx::filesystem::path path(fromUTF8(name));

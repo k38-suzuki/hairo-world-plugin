@@ -56,7 +56,7 @@ void loadItem(Mapping& node, TCAreaItem* item)
 }
 
 
-bool loadDocument(const string fileName)
+bool loadDocument(const string& fileName)
 {
     YAMLReader reader;
     if(reader.load(fileName)) {
@@ -74,7 +74,7 @@ bool loadDocument(const string fileName)
 }
 
 
-bool loadDocument(TCAreaItem* item, const string fileName)
+bool loadDocument(TCAreaItem* item, const string& fileName)
 {
     YAMLReader reader;
     if(reader.load(fileName)) {
@@ -91,7 +91,7 @@ bool loadDocument(TCAreaItem* item, const string fileName)
 }
 
 
-void putKeyVector3(YAMLWriter* writer, const string key, const Vector3 value)
+void putKeyVector3(YAMLWriter* writer, const string& key, const Vector3& value)
 {
     writer->putKey(key);
     writer->startFlowStyleListing();
@@ -142,7 +142,7 @@ public:
     void updateScene();
     bool onTranslationPropertyChanged(const string& value);
     bool onRotationPropertyChanged(const string& value);
-    bool onAreaTypePropertyChanged(const int index);
+    bool onAreaTypePropertyChanged(const int& index);
     bool onAreaSizePropertyChanged(const string& value);
     bool onAreaRadiusPropertyChanged(const string& value);
     bool onAreaHeightPropertyChanged(const string& value);
@@ -257,7 +257,7 @@ void TCAreaItem::initializeClass(ExtensionManager* ext)
 }
 
 
-bool TCAreaItem::load(TCAreaItem* item, const string fileName)
+bool TCAreaItem::load(TCAreaItem* item, const string& fileName)
 {
     if(!loadDocument(item, fileName)) {
         return false;
@@ -266,7 +266,7 @@ bool TCAreaItem::load(TCAreaItem* item, const string fileName)
 }
 
 
-bool TCAreaItem::save(TCAreaItem* item, const string fileName)
+bool TCAreaItem::save(TCAreaItem* item, const string& fileName)
 {
     if(!fileName.empty()) {
         YAMLWriter writer(fileName);
@@ -346,7 +346,7 @@ void TCAreaItemImpl::updateScene()
     shape->notifyUpdate();
 }
 
-void TCAreaItem::setId(const int id)
+void TCAreaItem::setId(const int& id)
 {
     impl->id_ = id;
 }
@@ -358,7 +358,7 @@ int TCAreaItem::id() const
 }
 
 
-void TCAreaItem::setTranslation(const Vector3 translation)
+void TCAreaItem::setTranslation(const Vector3& translation)
 {
     impl->translation = translation;
 }
@@ -370,7 +370,7 @@ Vector3 TCAreaItem::translation() const
 }
 
 
-void TCAreaItem::setRotation(const Vector3 rotation)
+void TCAreaItem::setRotation(const Vector3& rotation)
 {
     impl->rotation = rotation;
 }
@@ -382,7 +382,7 @@ Vector3 TCAreaItem::rotation() const
 }
 
 
-void TCAreaItem::setType(const string type)
+void TCAreaItem::setType(const string& type)
 {
     impl->type.select(type);
 }
@@ -394,7 +394,7 @@ string TCAreaItem::type() const
 }
 
 
-void TCAreaItem::setSize(const Vector3 size)
+void TCAreaItem::setSize(const Vector3& size)
 {
     impl->size = size;
 }
@@ -406,7 +406,7 @@ Vector3 TCAreaItem::size() const
 }
 
 
-void TCAreaItem::setRadius(const double radius)
+void TCAreaItem::setRadius(const double& radius)
 {
     impl->radius = radius;
 }
@@ -418,7 +418,7 @@ double TCAreaItem::radius() const
 }
 
 
-void TCAreaItem::setHeight(const double height)
+void TCAreaItem::setHeight(const double& height)
 {
     impl->height = height;
 }
@@ -430,7 +430,7 @@ double TCAreaItem::height() const
 }
 
 
-void TCAreaItem::setInboundDelay(const double inboundDelay)
+void TCAreaItem::setInboundDelay(const double& inboundDelay)
 {
     impl->inboundDelay = inboundDelay;
 }
@@ -442,7 +442,7 @@ double TCAreaItem::inboundDelay() const
 }
 
 
-void TCAreaItem::setInboundRate(const double inboundRate)
+void TCAreaItem::setInboundRate(const double& inboundRate)
 {
     impl->inboundRate = inboundRate;
 }
@@ -454,7 +454,7 @@ double TCAreaItem::inboundRate() const
 }
 
 
-void TCAreaItem::setInboundLoss(const double inboundLoss)
+void TCAreaItem::setInboundLoss(const double& inboundLoss)
 {
     impl->inboundLoss = inboundLoss;
 }
@@ -466,7 +466,7 @@ double TCAreaItem::inboundLoss() const
 }
 
 
-void TCAreaItem::setOutboundDelay(const double outboundDelay)
+void TCAreaItem::setOutboundDelay(const double& outboundDelay)
 {
     impl->outboundDelay = outboundDelay;
 }
@@ -478,7 +478,7 @@ double TCAreaItem::outboundDelay() const
 }
 
 
-void TCAreaItem::setOutboundRate(const double outboundRate)
+void TCAreaItem::setOutboundRate(const double& outboundRate)
 {
     impl->outboundRate = outboundRate;
 }
@@ -490,7 +490,7 @@ double TCAreaItem::outboundRate() const
 }
 
 
-void TCAreaItem::setOutboundLoss(const double outboundLoss)
+void TCAreaItem::setOutboundLoss(const double& outboundLoss)
 {
     impl->outboundLoss = outboundLoss;
 }
@@ -502,7 +502,7 @@ double TCAreaItem::outboundLoss() const
 }
 
 
-void TCAreaItem::setSource(const string source)
+void TCAreaItem::setSource(const string& source)
 {
     impl->source = source;
 }
@@ -514,7 +514,7 @@ string TCAreaItem::source() const
 }
 
 
-void TCAreaItem::setDestination(const string destination)
+void TCAreaItem::setDestination(const string& destination)
 {
     impl->destination = destination;
 }
@@ -526,7 +526,7 @@ string TCAreaItem::destination() const
 }
 
 
-void TCAreaItem::setDiffuseColor(const Vector3 diffuseColor)
+void TCAreaItem::setDiffuseColor(const Vector3& diffuseColor)
 {
     impl->diffuseColor = diffuseColor;
 }
@@ -538,7 +538,7 @@ Vector3 TCAreaItem::diffuseColor() const
 }
 
 
-void TCAreaItem::setEmissiveColor(const Vector3 emissiveColor)
+void TCAreaItem::setEmissiveColor(const Vector3& emissiveColor)
 {
     impl->emissiveColor = emissiveColor;
 }
@@ -550,7 +550,7 @@ Vector3 TCAreaItem::emissiveColor() const
 }
 
 
-void TCAreaItem::setSpecularColor(const Vector3 specularColor)
+void TCAreaItem::setSpecularColor(const Vector3& specularColor)
 {
     impl->specularColor = specularColor;
 }
@@ -562,7 +562,7 @@ Vector3 TCAreaItem::specularColor() const
 }
 
 
-void TCAreaItem::setShininess(const double shininess)
+void TCAreaItem::setShininess(const double& shininess)
 {
     impl->shininess = shininess;
 }
@@ -574,7 +574,7 @@ double TCAreaItem::shininess() const
 }
 
 
-void TCAreaItem::setTransparency(const double transparency)
+void TCAreaItem::setTransparency(const double& transparency)
 {
     impl->transparency = transparency;
 }
@@ -612,7 +612,7 @@ bool TCAreaItemImpl::onRotationPropertyChanged(const string& value)
 }
 
 
-bool TCAreaItemImpl::onAreaTypePropertyChanged(const int index)
+bool TCAreaItemImpl::onAreaTypePropertyChanged(const int& index)
 {
     MeshGenerator generator;
 

@@ -21,7 +21,7 @@ public:
     virtual ~FDBody();
 
     Body* body() const;
-    FDLink* fdLink(const int Index);
+    FDLink* fdLink(const int& Index);
     size_t numFDLinks() const;
 
     void addFDLinks(FDLink* fdLink);

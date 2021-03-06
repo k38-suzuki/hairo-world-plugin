@@ -64,7 +64,7 @@ Body* FDBody::body() const
 }
 
 
-FDLink* FDBody::fdLink(const int Index)
+FDLink* FDBody::fdLink(const int& Index)
 {
     return impl->fdLinks[Index];
 }

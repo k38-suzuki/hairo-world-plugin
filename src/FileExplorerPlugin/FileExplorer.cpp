@@ -28,7 +28,7 @@ bool onProcessKilled()
 }
 
 
-void onItemTriggered(const Item* item, int index)
+void onItemTriggered(const Item* item, const int& index)
 {
     string message = index ? "nautilus" : "gedit";
     message += " " +  item->filePath();

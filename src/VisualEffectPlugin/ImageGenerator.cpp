@@ -24,12 +24,12 @@ public:
     default_random_engine engine;
     normal_distribution<> dist;
 
-    void barrelDistortion(Image& image, const double m_coefb, double m_coefd);
-    void gaussianNoise(Image& image, const double m_std_dev);
-    void hsv(Image& image, const double m_hue, const double m_saturation, const double m_value);
-    void rgb(Image& image, const double m_red, const double m_green, const double m_blue);
-    void saltPepperNoise(Image& image, const double m_salt, const double m_pepper);
-    void filteredImage(Image& image, const double m_scalex, const double m_scaley);
+    void barrelDistortion(Image& image, const double& m_coefb, const double& m_coefd);
+    void gaussianNoise(Image& image, const double& m_std_dev);
+    void hsv(Image& image, const double& m_hue, const double& m_saturation, const double& m_value);
+    void rgb(Image& image, const double& m_red, const double& m_green, const double& m_blue);
+    void saltPepperNoise(Image& image, const double& m_salt, const double& m_pepper);
+    void filteredImage(Image& image, const double& m_scalex, const double& m_scaley);
     void flippedImage(Image& image);
 };
 
@@ -58,13 +58,13 @@ ImageGenerator::~ImageGenerator()
 }
 
 
-void ImageGenerator::barrelDistortion(Image& image, const double m_coefb, double m_coefd)
+void ImageGenerator::barrelDistortion(Image& image, const double& m_coefb, const double& m_coefd)
 {
     impl->barrelDistortion(image, m_coefb, m_coefd);
 }
 
 
-void ImageGeneratorImpl::barrelDistortion(Image& image, const double m_coefb, double m_coefd)
+void ImageGeneratorImpl::barrelDistortion(Image& image, const double& m_coefb, const double& m_coefd)
 {
     Image cloneImage;
     cloneImage.setSize(image.width(), image.height(), image.numComponents());
@@ -108,13 +108,13 @@ void ImageGeneratorImpl::barrelDistortion(Image& image, const double m_coefb, do
 }
 
 
-void ImageGenerator::gaussianNoise(Image& image, const double m_std_dev)
+void ImageGenerator::gaussianNoise(Image& image, const double& m_std_dev)
 {
     impl->gaussianNoise(image, m_std_dev);
 }
 
 
-void ImageGeneratorImpl::gaussianNoise(Image& image, const double m_std_dev)
+void ImageGeneratorImpl::gaussianNoise(Image& image, const double& m_std_dev)
 {
     image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
@@ -152,13 +152,13 @@ void ImageGeneratorImpl::gaussianNoise(Image& image, const double m_std_dev)
 }
 
 
-void ImageGenerator::hsv(Image& image, const double m_hue, const double m_saturation, const double m_value)
+void ImageGenerator::hsv(Image& image, const double& m_hue, const double& m_saturation, const double& m_value)
 {
     impl->hsv(image, m_hue, m_saturation, m_value);
 }
 
 
-void ImageGeneratorImpl::hsv(Image& image, const double m_hue, const double m_saturation, const double m_value)
+void ImageGeneratorImpl::hsv(Image& image, const double& m_hue, const double& m_saturation, const double& m_value)
 {
     image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
@@ -202,13 +202,13 @@ void ImageGeneratorImpl::hsv(Image& image, const double m_hue, const double m_sa
 }
 
 
-void ImageGenerator::rgb(Image& image, const double m_red, const double m_green, const double m_blue)
+void ImageGenerator::rgb(Image& image, const double& m_red, const double& m_green, const double& m_blue)
 {
     impl->rgb(image, m_red, m_green, m_blue);
 }
 
 
-void ImageGeneratorImpl::rgb(Image& image, const double m_red, const double m_green, const double m_blue)
+void ImageGeneratorImpl::rgb(Image& image, const double& m_red, const double& m_green, const double& m_blue)
 {
     image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
@@ -234,13 +234,13 @@ void ImageGeneratorImpl::rgb(Image& image, const double m_red, const double m_gr
 }
 
 
-void ImageGenerator::saltPepperNoise(Image& image, const double m_salt, const double m_pepper)
+void ImageGenerator::saltPepperNoise(Image& image, const double& m_salt, const double& m_pepper)
 {
     impl->saltPepperNoise(image, m_salt, m_pepper);
 }
 
 
-void ImageGeneratorImpl::saltPepperNoise(Image& image, const double m_salt, const double m_pepper)
+void ImageGeneratorImpl::saltPepperNoise(Image& image, const double& m_salt, const double& m_pepper)
 {
     image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
@@ -278,13 +278,13 @@ void ImageGeneratorImpl::saltPepperNoise(Image& image, const double m_salt, cons
 }
 
 
-void ImageGenerator::filteredImage(Image& image, double m_scalex, double m_scaley)
+void ImageGenerator::filteredImage(Image& image, const double& m_scalex, const double& m_scaley)
 {
     impl->filteredImage(image, m_scalex, m_scaley);
 }
 
 
-void ImageGeneratorImpl::filteredImage(Image& image, const double m_scalex, const double m_scaley)
+void ImageGeneratorImpl::filteredImage(Image& image, const double& m_scalex, const double& m_scaley)
 {
     //Linear interpolation
     Image cloneImage = image;

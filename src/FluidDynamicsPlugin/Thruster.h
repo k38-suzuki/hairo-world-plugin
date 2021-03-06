@@ -30,9 +30,9 @@ public:
 
     double& force() { return force_; }
     double& torque() { return torque_; }
-    void setForceOffset(const double forceOffset) { forceOffset_ = forceOffset; }
+    void setForceOffset(const double& forceOffset) { forceOffset_ = forceOffset; }
     double forceOffset() const { return forceOffset_; }
-    void setTorqueOffset(const double torqueOffset) { torqueOffset_ = torqueOffset; }
+    void setTorqueOffset(const double& torqueOffset) { torqueOffset_ = torqueOffset; }
     double torqueOffset() const { return torqueOffset_; }
 
 protected:

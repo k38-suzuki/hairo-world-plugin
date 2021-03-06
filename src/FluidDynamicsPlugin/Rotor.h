@@ -30,21 +30,21 @@ public:
 
     double& force() { return force_; }
     double& torque() { return torque_; }
-    void setForceOffset(const double forceOffset) { forceOffset_ = forceOffset; }
+    void setForceOffset(const double& forceOffset) { forceOffset_ = forceOffset; }
     double forceOffset() const { return forceOffset_; }
-    void setTorqueOffset(const double torqueOffset) { torqueOffset_ = torqueOffset; }
+    void setTorqueOffset(const double& torqueOffset) { torqueOffset_ = torqueOffset; }
     double torqueOffset() const { return torqueOffset_; }
 
-    void setK(const double k) { k_ = k; }
+    void setK(const double& k) { k_ = k; }
     double k() const { return k_; }
-    void setKv(const double kv) { kv_ = kv; }
+    void setKv(const double& kv) { kv_ = kv; }
     double kv() const { return kv_; }
-    void setDiameter(const double diameter) { diameter_ = diameter; }
+    void setDiameter(const double& diameter) { diameter_ = diameter; }
     double diameter() const { return diameter_; }
-    void setPitch(const double pitch) { pitch_ = pitch; }
+    void setPitch(const double& pitch) { pitch_ = pitch; }
     double pitch() const { return pitch_; }
     double& voltage() { return voltage_; }
-    void setReverse(const bool reverse) { reverse_ = reverse; }
+    void setReverse(const bool& reverse) { reverse_ = reverse; }
     bool reverse() const { return reverse_; }
 
 protected:

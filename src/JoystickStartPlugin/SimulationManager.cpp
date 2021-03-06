@@ -60,7 +60,7 @@ public:
   void onStopSimulationClicked();
   void onPauseSimulationClicked();
   void openDialogToLoadProject();
-  void onButtonClicked(const int id, const bool isPressed);
+  void onButtonClicked(const int& id, const bool& isPressed);
 };
 
 }
@@ -285,13 +285,13 @@ void SimulationManagerImpl::openDialogToLoadProject()
 }
 
 
-void SimulationManager::onButtonClicked(const int id, const bool isPressed)
+void SimulationManager::onButtonClicked(const int& id, const bool& isPressed)
 {
     impl->onButtonClicked(id, isPressed);
 }
 
 
-void SimulationManagerImpl::onButtonClicked(const int id, const bool isPressed)
+void SimulationManagerImpl::onButtonClicked(const int& id, const bool& isPressed)
 {
     if(isPressed) {
         switch (id) {

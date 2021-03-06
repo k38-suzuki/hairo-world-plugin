@@ -22,19 +22,19 @@ public:
 
     Link* link() const;
 
-    void setDensity(const double density);
+    void setDensity(const double& density);
     double density() const;
-    void setCenterOfBuoyancy(const Vector3 centerOfBuoyancy);
+    void setCenterOfBuoyancy(const Vector3& centerOfBuoyancy);
     Vector3 centerOfBuoyancy() const;
-    void setCdw(const double cdw);
+    void setCdw(const double& cdw);
     double cdw() const;
-    void setCda(const double cda);
+    void setCda(const double& cda);
     double cda() const;
-    void setTd(const double td);
+    void setTd(const double& td);
     double td() const;
-    void setSurface(const Vector6 surface);
+    void setSurface(const Vector6& surface);
     Vector6 surface() const;
-    void setCv(const double cv);
+    void setCv(const double& cv);
     double cv() const;
 
 private:

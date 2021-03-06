@@ -161,13 +161,13 @@ public:
     void onExportYamlButtonClicked();
     void onImportYamlButtonClicked();
     void onExportBodyButtonClicked();
-    void onEnableAgxCheckToggled(bool on);
-    void onExportBody(string fileName);
-    void onExportAGXBody(string fileName);
+    void onEnableAgxCheckToggled(const bool& on);
+    void onExportBody(const string& fileName);
+    void onExportAGXBody(const string& fileName);
     void onColorChanged(PushButton* pushbutton);
-    void setColor(PushButton* pushbutton, Vector3 color);
+    void setColor(PushButton* pushbutton, const Vector3& color);
     Vector3 getColor(PushButton* colorButton);
-    string getSaveFilename(FileDialog& dialog, string& suffix);
+    string getSaveFilename(FileDialog& dialog, const string& suffix);
 };
 
 }
@@ -969,7 +969,7 @@ void CrawlerRobotBuilderDialogImpl::onExportYamlButtonClicked()
 }
 
 
-void CrawlerRobotBuilderDialogImpl::onEnableAgxCheckToggled(bool on)
+void CrawlerRobotBuilderDialogImpl::onEnableAgxCheckToggled(const bool& on)
 {
     trackBeltNumberOfNodesSpin->setEnabled(on);
     trackBeltNodeThicknessSpin->setEnabled(on);
@@ -1047,7 +1047,7 @@ void CrawlerRobotBuilderDialogImpl::onExportBodyButtonClicked()
 }
 
 
-void CrawlerRobotBuilderDialogImpl::onExportBody(string fileName)
+void CrawlerRobotBuilderDialogImpl::onExportBody(const string& fileName)
 {
     filesystem::path path(fileName);
     string bodyName = path.stem();
@@ -1297,7 +1297,7 @@ void CrawlerRobotBuilderDialogImpl::onExportBody(string fileName)
 }
 
 
-void CrawlerRobotBuilderDialogImpl::onExportAGXBody(string fileName)
+void CrawlerRobotBuilderDialogImpl::onExportAGXBody(const string& fileName)
 {
     filesystem::path path(fileName);
     string bodyName = path.stem();
@@ -1795,7 +1795,7 @@ void CrawlerRobotBuilderDialogImpl::onColorChanged(PushButton* pushbutton)
 }
 
 
-void CrawlerRobotBuilderDialogImpl::setColor(PushButton* pushbutton, Vector3 color)
+void CrawlerRobotBuilderDialogImpl::setColor(PushButton* pushbutton, const Vector3& color)
 {
     QColor selectedColor;
     selectedColor.setRed(color[0] * 255.0);
@@ -1814,7 +1814,7 @@ Vector3 CrawlerRobotBuilderDialogImpl::getColor(PushButton* colorButton)
 }
 
 
-string CrawlerRobotBuilderDialogImpl::getSaveFilename(FileDialog& dialog, string& suffix)
+string CrawlerRobotBuilderDialogImpl::getSaveFilename(FileDialog& dialog, const string& suffix)
 {
     string filename;
     auto filenames = dialog.selectedFiles();

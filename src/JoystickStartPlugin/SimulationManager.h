@@ -21,7 +21,7 @@ public:
     static void initializeClass(ExtensionManager* ext);
     static void finalizeClass();
 
-    void onButtonClicked(const int id, const bool isPressed);
+    void onButtonClicked(const int& id, const bool& isPressed);
 
 private:
     SimulationManagerImpl* impl;
