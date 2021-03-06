@@ -104,14 +104,6 @@ void CameraVisualizerItem::initializeClass(ExtensionManager* ext)
 
     im.registerClass<CameraImageVisualizerItem2>(N_("CameraImageVisualizer2"));
     im.registerClass<LightSwitcherItem>(N_("LightSwitcher"));
-
-    ImageViewBar* bar = ImageViewBar::instance();
-    if(!effectDialog) {
-        effectDialog = ext->manage(new VisualEffectDialog());
-    }
-
-    bar->addButton(QIcon(":/Base/icon/setup.svg"), _("Show the config dialog"))
-            ->sigClicked().connect([&](){ effectDialog->show(); });
 }
 
 
@@ -380,7 +372,7 @@ void CameraVisualizerItemBase::updateVisualization()
 CameraImageVisualizerItem2::CameraImageVisualizerItem2()
     : CameraVisualizerItemBase(this)
 {
-
+    effectDialog = VisualEffectDialog::instance();
 }
 
 
@@ -434,7 +426,7 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
         if(eitem) {
             if(eitem == this) {
                 if(pitem != this) {
-                    effectDialog->setVisualEffect(&effect);
+                    effectDialog->setVisualEffect(effect);
                 }
                 effect.setHue(effectDialog->hue());
                 effect.setSaturation(effectDialog->saturation());

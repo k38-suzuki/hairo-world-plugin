@@ -6,6 +6,7 @@
 #include "VisualEffectDialog.h"
 #include <cnoid/Button>
 #include <cnoid/CheckBox>
+#include <cnoid/ImageView>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <QDialogButtonBox>
@@ -17,6 +18,8 @@
 
 using namespace std;
 using namespace cnoid;
+
+VisualEffectDialog* effectDialog = nullptr;
 
 namespace cnoid {
 
@@ -152,20 +155,44 @@ VisualEffectDialog::~VisualEffectDialog()
 }
 
 
-void VisualEffectDialog::setVisualEffect(VisualEffect* effect)
+void VisualEffectDialog::initializeClass(ExtensionManager* ext)
 {
-    impl->hueSpin->setValue(effect->hue());
-    impl->saturationSpin->setValue(effect->saturation());
-    impl->valueSpin->setValue(effect->value());
-    impl->redSpin->setValue(effect->red());
-    impl->greenSpin->setValue(effect->green());
-    impl->blueSpin->setValue(effect->blue());
-    impl->coefBSpin->setValue(effect->coefB());
-    impl->coefDSpin->setValue(effect->coefD());
-    impl->stdDevSpin->setValue(effect->stdDev());
-    impl->saltSpin->setValue(effect->salt());
-    impl->pepperSpin->setValue(effect->pepper());
-    impl->flipCheck->setChecked(effect->flip());
+    ImageViewBar* bar = ImageViewBar::instance();
+    if(!effectDialog) {
+        effectDialog = ext->manage(new VisualEffectDialog());
+    }
+
+    bar->addButton(QIcon(":/Base/icon/setup.svg"), _("Show the config dialog"))
+            ->sigClicked().connect([&](){ effectDialog->show(); });
+}
+
+
+VisualEffectDialog* VisualEffectDialog::instance()
+{
+    return effectDialog;
+}
+
+
+void VisualEffectDialog::setVisualEffect(const VisualEffect& effect)
+{
+    setHue(effect.hue());
+    setSaturation(effect.saturation());
+    setValue(effect.value());
+    setRed(effect.red());
+    setGreen(effect.green());
+    setBlue(effect.blue());
+    setCoefB(effect.coefB());
+    setCoefD(effect.coefD());
+    setStdDev(effect.stdDev());
+    setSalt(effect.salt());
+    setPepper(effect.pepper());
+    setFlip(effect.flip());
+}
+
+
+void VisualEffectDialog::setHue(const double& hue)
+{
+    impl->hueSpin->setValue(hue);
 }
 
 
@@ -175,9 +202,21 @@ double VisualEffectDialog::hue() const
 }
 
 
+void VisualEffectDialog::setSaturation(const double& saturation)
+{
+    impl->saturationSpin->setValue(saturation);
+}
+
+
 double VisualEffectDialog::saturation() const
 {
     return impl->saturationSpin->value();
+}
+
+
+void VisualEffectDialog::setValue(const double& value)
+{
+    impl->valueSpin->setValue(value);
 }
 
 
@@ -187,9 +226,21 @@ double VisualEffectDialog::value() const
 }
 
 
+void VisualEffectDialog::setRed(const double& red)
+{
+    impl->redSpin->setValue(red);
+}
+
+
 double VisualEffectDialog::red() const
 {
     return impl->redSpin->value();
+}
+
+
+void VisualEffectDialog::setGreen(const double& green)
+{
+    impl->greenSpin->setValue(green);
 }
 
 
@@ -199,9 +250,21 @@ double VisualEffectDialog::green() const
 }
 
 
+void VisualEffectDialog::setBlue(const double& blue)
+{
+    impl->blueSpin->setValue(blue);
+}
+
+
 double VisualEffectDialog::blue() const
 {
     return impl->blueSpin->value();
+}
+
+
+void VisualEffectDialog::setCoefB(const double& coefB)
+{
+    impl->coefBSpin->setValue(coefB);
 }
 
 
@@ -211,9 +274,21 @@ double VisualEffectDialog::coefB() const
 }
 
 
+void VisualEffectDialog::setCoefD(const double& coefD)
+{
+    impl->coefDSpin->setValue(coefD);
+}
+
+
 double VisualEffectDialog::coefD() const
 {
     return impl->coefDSpin->value();
+}
+
+
+void VisualEffectDialog::setStdDev(const double& stdDev)
+{
+    impl->stdDevSpin->setValue(stdDev);
 }
 
 
@@ -223,15 +298,33 @@ double VisualEffectDialog::stdDev() const
 }
 
 
+void VisualEffectDialog::setSalt(const double& salt)
+{
+    impl->saltSpin->setValue(salt);
+}
+
+
 double VisualEffectDialog::salt() const
 {
     return impl->saltSpin->value();
 }
 
 
+void VisualEffectDialog::setPepper(const double& pepper)
+{
+    impl->pepperSpin->setValue(pepper);
+}
+
+
 double VisualEffectDialog::pepper() const
 {
     return impl->pepperSpin->value();
+}
+
+
+void VisualEffectDialog::setFlip(const double& flip)
+{
+    impl->flipCheck->setChecked(flip);
 }
 
 
