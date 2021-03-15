@@ -336,11 +336,12 @@ void TCAreaItemImpl::updateScene()
     }
     SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
     SgMaterial* material = shape->material();
+    float s = 127.0f * std::max(0.0f, std::min((float)shininess.value(), 1.0f)) + 1.0f;
     shape->setMesh(mesh);
     material->setDiffuseColor(diffuseColor);
     material->setEmissiveColor(emissiveColor);
     material->setSpecularColor(specularColor);
-    material->setShininess(shininess.value());
+    material->setSpecularExponent(s);
     material->setTransparency(transparency.value());
     shape->setMaterial(material);
     shape->notifyUpdate();
@@ -735,12 +736,13 @@ bool TCAreaItemImpl::onSpecularColorPropertyChanged(const string& value)
 
 bool TCAreaItemImpl::onShininessPropertyChanged(const string& value)
 {
-    double shininess = stod(value);
+    float shininess = stof(value);
+    float s = 127.0f * std::max(0.0f, std::min(shininess, 1.0f)) + 1.0f;
     if(shininess >= 0) {
         this->shininess = shininess;
         SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
         SgMaterial* material = shape->material();
-        material->setShininess(shininess);
+        material->setSpecularExponent(s);
         material->notifyUpdate();
         return true;
     }
