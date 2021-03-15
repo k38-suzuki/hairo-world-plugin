@@ -84,11 +84,12 @@ SceneMotionCaptureCamera::SceneMotionCaptureCamera(Device* device)
     mesh->setTriangle(5, 1, 3, 4);
 
     SgMaterial* material = new SgMaterial();
+    float s = 127.0f * std::max(0.0f, std::min((float)camera->shininess(), 1.0f)) + 1.0f;
     material->setDiffuseColor(camera->diffuseColor());
     material->setEmissiveColor(camera->emissiveColor());
     material->setSpecularColor(camera->specularColor());
     material->setAmbientIntensity(camera->ambientIntensity());
-    material->setShininess(camera->shininess());
+    material->setSpecularExponent(s);
     material->setTransparency(camera->transparency());
     shape->setMaterial(material);
     transform->addChild(shape);

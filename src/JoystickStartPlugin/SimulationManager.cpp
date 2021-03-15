@@ -121,7 +121,7 @@ void SimulationManagerImpl::startSimulation(SimulatorItem* simulatorItem, bool d
             simulatorItem->restartSimulation();
             pause = false;
         }
-        TimeBar::instance()->startPlaybackFromFillLevel();
+        TimeBar::instance()->startPlayback();
     } else {
         simulatorItem->startSimulation(doReset);
         pause = false;
@@ -149,7 +149,7 @@ void SimulationManagerImpl::pauseSimulation(SimulatorItem* simulatorItem)
         if(simulatorItem->isRunning()) {
             simulatorItem->restartSimulation();
         }
-        timeBar->startPlaybackFromFillLevel();
+        timeBar->startPlayback();
     }
 }
 
