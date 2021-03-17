@@ -13,7 +13,7 @@ items:
       data: 
         collisionDetection: false
         collisionDetector: AISTCollisionDetector
-        materialTableFile: "${SHARE}/default/materials.yaml"
+        default_material_table_file: "${SHARE}/default/materials.yaml"
       children: 
         - 
           id: 2
@@ -29,8 +29,8 @@ items:
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            jointDisplacements: [ 0, 0 ]
-            jointPositions: [ 0, 0 ]
+            jointDisplacements: [ 0, 0, 0, 0 ]
+            jointPositions: [ 0, 0, 0, 0 ]
             initialRootPosition: [ -2, -0.5, 0.106 ]
             initialRootAttitude: [ 
               1, 0, 0, 
@@ -108,6 +108,7 @@ items:
             recording: "off"
             timeRangeMode: "Unlimited"
             timeLength: 60
+            active_control_time_range_mode: false
             allLinkPositionOutputMode: false
             deviceStateOutput: true
             controllerThreads: true
@@ -116,8 +117,8 @@ items:
             dynamicsMode: "Forward dynamics"
             integrationMode: "Runge Kutta"
             gravity: [ 0, 0, -9.80665 ]
-            staticFriction: 0.5
-            dynamicFriction: 0.5
+            min_friction_coefficient: 0
+            max_friction_coefficient: 100
             cullingThresh: 0.01
             contactCullingDepth: 0.05
             errorCriterion: 0.001
@@ -146,10 +147,15 @@ items:
           data: 
             translation: [ 0, -0.5, 0.6 ]
             rotation: [ 0, 0, 0 ]
-            type: "Box"
+            type: 0
             size: [ 1, 1, 1 ]
             radius: 1
             height: 1
+            diffuseColor: [ 1, 1, 0 ]
+            emissiveColor: [ 0, 0, 0 ]
+            specularColor: [ 0, 0, 0 ]
+            shininess: 0
+            transparency: 0.8
             inboundDelay: 100
             inboundRate: 0
             inboundLoss: 0
@@ -158,11 +164,6 @@ items:
             outboundLoss: 0
             source: ""
             destination: ""
-            diffuseColor: [ 1, 1, 0 ]
-            emissiveColor: [ 0, 0, 0 ]
-            specularColor: [ 0, 0, 0 ]
-            shininess: 0
-            transparency: 0.8
 views: 
   - 
     id: 0
@@ -199,7 +200,9 @@ views:
     mounted: true
     state: 
       editMode: false
-      viewpointControlMode: thirdPerson
+      viewpointOperationMode: thirdPerson
+      visible_polygon_elements: [ face ]
+      highlighting: false
       collisionLines: false
       restrictCameraRoll: true
       verticalAxis: Z
@@ -258,7 +261,9 @@ views:
     mounted: true
     state: 
       editMode: false
-      viewpointControlMode: thirdPerson
+      viewpointOperationMode: thirdPerson
+      visible_polygon_elements: [ face ]
+      highlighting: false
       collisionLines: false
       restrictCameraRoll: true
       verticalAxis: Z
@@ -347,8 +352,8 @@ views:
     class: LinkDeviceListView
     mounted: true
     state: 
-      mode: list
       element_type: link
+      listingMode: list
   - 
     id: 10
     name: "Link Position"
@@ -432,8 +437,8 @@ Body:
   "BodyMotionEngine": 
     updateJointVelocities: false
   "BodySelectionManager": 
-    currentBodyItem: 2
-    currentLink: "CHASSIS"
+    current_body_item: 2
+    current_link: "CHASSIS"
   "EditableSceneBody": 
     editableSceneBodies: 
       - 
@@ -467,12 +472,12 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 351, 1498 ]
+      sizes: [ 288, 1227 ]
       children: 
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 466, 465 ]
+          sizes: [ 458, 458 ]
           children: 
             - 
               type: pane
@@ -484,12 +489,12 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 666, 265 ]
+          sizes: [ 655, 261 ]
           children: 
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 700, 794 ]
+              sizes: [ 573, 650 ]
               children: 
                 - 
                   type: pane
@@ -501,7 +506,7 @@ viewAreas:
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 900, 594 ]
+              sizes: [ 737, 486 ]
               children: 
                 - 
                   type: pane

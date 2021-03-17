@@ -12,7 +12,7 @@ items:
       data: 
         collisionDetection: false
         collisionDetector: AISTCollisionDetector
-        materialTableFile: "${SHARE}/default/materials.yaml"
+        default_material_table_file: "${SHARE}/default/materials.yaml"
       children: 
         - 
           id: 2
@@ -65,6 +65,7 @@ items:
             recording: "full"
             timeRangeMode: "Unlimited"
             timeLength: 180
+            active_control_time_range_mode: false
             allLinkPositionOutputMode: false
             deviceStateOutput: true
             controllerThreads: true
@@ -73,8 +74,8 @@ items:
             dynamicsMode: "Forward dynamics"
             integrationMode: "Euler"
             gravity: [ 0, 0, -9.80665 ]
-            staticFriction: 1
-            dynamicFriction: 1
+            min_friction_coefficient: 0
+            max_friction_coefficient: 100
             cullingThresh: 0.005
             contactCullingDepth: 0.05
             errorCriterion: 0.001
@@ -101,18 +102,18 @@ items:
           data: 
             translation: [ 0, 0, 0 ]
             rotation: [ 0, 0, 0 ]
-            density: 1000
-            viscosity: 0.001
-            type: "Box"
+            type: 0
             size: [ 1, 1, 1 ]
             radius: 1
             height: 1
-            flow: [ 0, 0, 0 ]
             diffuseColor: [ 0, 1, 1 ]
             emissiveColor: [ 0, 0, 0 ]
             specularColor: [ 0, 0, 0 ]
             shininess: 0
             transparency: 0.8
+            density: 1000
+            viscosity: 0.001
+            flow: [ 0, 0, 0 ]
 views: 
   - 
     id: 0
@@ -150,7 +151,9 @@ views:
     mounted: true
     state: 
       editMode: false
-      viewpointControlMode: thirdPerson
+      viewpointOperationMode: thirdPerson
+      visible_polygon_elements: [ face ]
+      highlighting: false
       collisionLines: false
       restrictCameraRoll: true
       verticalAxis: Z
@@ -232,8 +235,8 @@ views:
     class: LinkDeviceListView
     mounted: true
     state: 
-      mode: list
       element_type: link
+      listingMode: list
   - 
     id: 9
     name: "Link Position"
@@ -260,6 +263,28 @@ views:
     class: PythonConsoleView
     mounted: true
 toolbars: 
+  "TimeBar": 
+    minTime: 0
+    maxTime: 30
+    frameRate: 1000
+    playbackFrameRate: 60
+    idleLoopDrivenMode: false
+    currentTime: 0
+    speedScale: 1
+    syncToOngoingUpdates: true
+    autoExpansion: true
+  "LeggedBodyBar": 
+    stanceWidth: 0.15
+  "KinematicsBar": 
+    forward_kinematics: true
+    inverse_kinematics: true
+    preset_kinematics: true
+    enablePositionDragger: true
+    penetrationBlock: false
+    collisionLinkHighlight: false
+    snapDistance: 0.025
+    penetrationBlockDepth: 0.0005
+    lazyCollisionDetectionMode: true
   "BodyMotionGenerationBar": 
     autoGenerationForNewBody: true
     balancer: false
@@ -293,34 +318,12 @@ toolbars:
     waistHeightRelaxation: false
     gravity: 9.8
     dynamicsTimeRatio: 1
-  "TimeBar": 
-    minTime: 0
-    maxTime: 30
-    frameRate: 1000
-    playbackFrameRate: 60
-    idleLoopDrivenMode: false
-    currentTime: 0
-    speedScale: 1
-    syncToOngoingUpdates: true
-    autoExpansion: true
-  "KinematicsBar": 
-    forward_kinematics: true
-    inverse_kinematics: true
-    preset_kinematics: true
-    enablePositionDragger: true
-    penetrationBlock: false
-    collisionLinkHighlight: false
-    snapDistance: 0.025
-    penetrationBlockDepth: 0.0005
-    lazyCollisionDetectionMode: true
-  "LeggedBodyBar": 
-    stanceWidth: 0.15
 Body: 
   "BodyMotionEngine": 
     updateJointVelocities: false
   "BodySelectionManager": 
-    currentBodyItem: 2
-    currentLink: "CHASSIS"
+    current_body_item: 2
+    current_link: "CHASSIS"
   "EditableSceneBody": 
     editableSceneBodies: 
       - 
@@ -349,17 +352,17 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 1403, 446 ]
+      sizes: [ 1150, 365 ]
       children: 
         - 
           type: splitter
           orientation: horizontal
-          sizes: [ 363, 1036 ]
+          sizes: [ 297, 849 ]
           children: 
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 449, 448 ]
+              sizes: [ 441, 441 ]
               children: 
                 - 
                   type: pane
@@ -371,7 +374,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 673, 224 ]
+              sizes: [ 662, 220 ]
               children: 
                 - 
                   type: pane
@@ -383,7 +386,7 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 163, 734 ]
+          sizes: [ 198, 684 ]
           children: 
             - 
               type: pane
@@ -391,7 +394,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 286, 444 ]
+              sizes: [ 286, 394 ]
               children: 
                 - 
                   type: pane

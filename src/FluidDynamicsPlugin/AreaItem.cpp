@@ -547,7 +547,7 @@ bool AreaItemImpl::store(Archive& archive)
 {
     write(archive, "translation", translation);
     write(archive, "rotation", rotation);
-    archive.write("type", type.selectedSymbol(), DOUBLE_QUOTED);
+    archive.write("type", type.selectedIndex());
     write(archive, "size", size);
     archive.write("radius", radius);
     archive.write("height", height);
@@ -570,10 +570,9 @@ bool AreaItemImpl::restore(const Archive& archive)
 {
     read(archive, "translation", translation);
     read(archive, "rotation", rotation);
-    string symbol;
-    if(archive.read("type", symbol)) {
-        type.select(symbol);
-    }
+    int t = 0;
+    archive.read("type", t);
+    type.selectIndex(t);
     read(archive, "size", size);
     radius = archive.get("radius", radius.string());
     height = archive.get("height", height.string());

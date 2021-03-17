@@ -13,7 +13,7 @@ items:
       data: 
         collisionDetection: false
         collisionDetector: AISTCollisionDetector
-        materialTableFile: "${SHARE}/default/materials.yaml"
+        default_material_table_file: "${SHARE}/default/materials.yaml"
       children: 
         - 
           id: 2
@@ -77,6 +77,7 @@ items:
                     std_dev: 0
                     salt: 0
                     pepper: 0
+                    flip: false
                   - 
                     class: CameraImageVisualizer2
                     name: BottomCamera
@@ -92,6 +93,7 @@ items:
                     std_dev: 0
                     salt: 0
                     pepper: 0
+                    flip: false
         - 
           id: 5
           name: "FuelPool"
@@ -137,6 +139,7 @@ items:
                 recording: "full"
                 timeRangeMode: "Unlimited"
                 timeLength: 180
+                active_control_time_range_mode: false
                 allLinkPositionOutputMode: true
                 deviceStateOutput: true
                 controllerThreads: true
@@ -145,8 +148,8 @@ items:
                 dynamicsMode: "Forward dynamics"
                 integrationMode: "Runge Kutta"
                 gravity: [ 0, 0, -9.80665 ]
-                staticFriction: 1
-                dynamicFriction: 1
+                min_friction_coefficient: 0
+                max_friction_coefficient: 100
                 cullingThresh: 0.005
                 contactCullingDepth: 0.05
                 errorCriterion: 0.001
@@ -166,7 +169,6 @@ items:
                     enabled: true
                     record: true
                     cycleTime: 0.4
-                    exportCsv: false
                   children: 
                     - 
                       id: 9
@@ -305,18 +307,18 @@ items:
           data: 
             translation: [ 0, 0, -2.5 ]
             rotation: [ 0, 0, 0 ]
-            density: 1000
-            viscosity: 0.001
-            type: "Box"
+            type: 0
             size: [ 5.4, 5.4, 5 ]
             radius: 1
             height: 1
-            flow: [ 0, 0, 0 ]
             diffuseColor: [ 0, 0.5, 1 ]
             emissiveColor: [ 0, 0, 0 ]
             specularColor: [ 0, 0, 0 ]
             shininess: 0
             transparency: 0.7
+            density: 1000
+            viscosity: 0.001
+            flow: [ 0, 0, 0 ]
 views: 
   - 
     id: 0
@@ -325,7 +327,7 @@ views:
     class: ImageView
     mounted: true
     state: 
-      ImageableItem: [ 4, "BottomCamera" ]
+      imageable_item: [ 4, "BottomCamera" ]
   - 
     id: 1
     plugin: Base
@@ -361,7 +363,9 @@ views:
     mounted: true
     state: 
       editMode: false
-      viewpointControlMode: thirdPerson
+      viewpointOperationMode: thirdPerson
+      visible_polygon_elements: [ face ]
+      highlighting: false
       collisionLines: false
       restrictCameraRoll: true
       verticalAxis: Z
@@ -444,8 +448,8 @@ views:
     class: LinkDeviceListView
     mounted: true
     state: 
-      mode: list
       element_type: link
+      listingMode: list
   - 
     id: 10
     name: "Link Position"
@@ -470,6 +474,28 @@ views:
     class: PythonConsoleView
     mounted: true
 toolbars: 
+  "TimeBar": 
+    minTime: 0
+    maxTime: 0
+    frameRate: 1000
+    playbackFrameRate: 60
+    idleLoopDrivenMode: false
+    currentTime: 0
+    speedScale: 1
+    syncToOngoingUpdates: true
+    autoExpansion: true
+  "LeggedBodyBar": 
+    stanceWidth: 0.15
+  "KinematicsBar": 
+    forward_kinematics: true
+    inverse_kinematics: true
+    preset_kinematics: true
+    enablePositionDragger: true
+    penetrationBlock: false
+    collisionLinkHighlight: false
+    snapDistance: 0.025
+    penetrationBlockDepth: 0.0005
+    lazyCollisionDetectionMode: true
   "BodyMotionGenerationBar": 
     autoGenerationForNewBody: true
     balancer: false
@@ -503,34 +529,12 @@ toolbars:
     waistHeightRelaxation: false
     gravity: 9.8
     dynamicsTimeRatio: 1
-  "TimeBar": 
-    minTime: 0
-    maxTime: 0
-    frameRate: 1000
-    playbackFrameRate: 60
-    idleLoopDrivenMode: false
-    currentTime: 0
-    speedScale: 1
-    syncToOngoingUpdates: true
-    autoExpansion: true
-  "KinematicsBar": 
-    forward_kinematics: true
-    inverse_kinematics: true
-    preset_kinematics: true
-    enablePositionDragger: true
-    penetrationBlock: false
-    collisionLinkHighlight: false
-    snapDistance: 0.025
-    penetrationBlockDepth: 0.0005
-    lazyCollisionDetectionMode: true
-  "LeggedBodyBar": 
-    stanceWidth: 0.15
 Body: 
   "BodyMotionEngine": 
     updateJointVelocities: false
   "BodySelectionManager": 
-    currentBodyItem: 2
-    currentLink: "CHASSIS"
+    current_body_item: 2
+    current_link: "CHASSIS"
   "EditableSceneBody": 
     editableSceneBodies: 
       - 
@@ -564,12 +568,12 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 323, 1526 ]
+      sizes: [ 265, 1250 ]
       children: 
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 449, 448 ]
+          sizes: [ 441, 441 ]
           children: 
             - 
               type: pane
@@ -581,12 +585,12 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 641, 256 ]
+          sizes: [ 630, 252 ]
           children: 
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 673, 849 ]
+              sizes: [ 551, 695 ]
               children: 
                 - 
                   type: pane

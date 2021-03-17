@@ -13,7 +13,7 @@ items:
       data: 
         collisionDetection: false
         collisionDetector: AISTCollisionDetector
-        materialTableFile: "${SHARE}/default/materials.yaml"
+        default_material_table_file: "${SHARE}/default/materials.yaml"
       children: 
         - 
           id: 2
@@ -78,6 +78,7 @@ items:
                     std_dev: 0.1
                     salt: 0
                     pepper: 0
+                    flip: false
         - 
           id: 5
           name: "FluidDynamicsSimulator"
@@ -97,6 +98,7 @@ items:
                 recording: "full"
                 timeRangeMode: "Unlimited"
                 timeLength: 180
+                active_control_time_range_mode: false
                 allLinkPositionOutputMode: true
                 deviceStateOutput: true
                 controllerThreads: true
@@ -105,8 +107,8 @@ items:
                 dynamicsMode: "Forward dynamics"
                 integrationMode: "Runge Kutta"
                 gravity: [ 0, 0, -9.80665 ]
-                staticFriction: 1
-                dynamicFriction: 1
+                min_friction_coefficient: 0
+                max_friction_coefficient: 100
                 cullingThresh: 0.005
                 contactCullingDepth: 0.05
                 errorCriterion: 0.001
@@ -126,7 +128,6 @@ items:
                     enabled: true
                     record: true
                     cycleTime: 0.1
-                    exportCsv: false
                 - 
                   id: 8
                   name: "TCSimulator"
@@ -163,18 +164,18 @@ items:
           data: 
             translation: [ 0, 0, 0 ]
             rotation: [ 0, 0, 0 ]
-            density: 1.2
-            viscosity: 0.00002
-            type: "Box"
+            type: 0
             size: [ 20, 20, 20 ]
             radius: 1
             height: 1
-            flow: [ 0, 0, 0 ]
             diffuseColor: [ 1, 1, 1 ]
             emissiveColor: [ 0, 0, 0 ]
             specularColor: [ 0, 0, 0 ]
             shininess: 0
             transparency: 0.7
+            density: 1.2
+            viscosity: 0.00002
+            flow: [ 0, 0, 0 ]
         - 
           id: 11
           name: "TCArea"
@@ -184,10 +185,15 @@ items:
           data: 
             translation: [ 0, -1.5, 2 ]
             rotation: [ 0, 0, 0 ]
-            type: "Box"
+            type: 0
             size: [ 3, 3, 1 ]
             radius: 1
             height: 1
+            diffuseColor: [ 1, 1, 0 ]
+            emissiveColor: [ 0, 0, 0 ]
+            specularColor: [ 0, 0, 0 ]
+            shininess: 0
+            transparency: 0.8
             inboundDelay: 50
             inboundRate: 0
             inboundLoss: 0
@@ -196,11 +202,6 @@ items:
             outboundLoss: 0
             source: ""
             destination: ""
-            diffuseColor: [ 1, 1, 0 ]
-            emissiveColor: [ 0, 0, 0 ]
-            specularColor: [ 0, 0, 0 ]
-            shininess: 0
-            transparency: 0.8
         - 
           id: 12
           name: "TCArea2"
@@ -210,10 +211,15 @@ items:
           data: 
             translation: [ 0, 1.5, 2 ]
             rotation: [ 0, 0, 0 ]
-            type: "Box"
+            type: 0
             size: [ 3, 3, 1 ]
             radius: 1
             height: 1
+            diffuseColor: [ 1, 0, 0 ]
+            emissiveColor: [ 0, 0, 0 ]
+            specularColor: [ 0, 0, 0 ]
+            shininess: 0
+            transparency: 0.8
             inboundDelay: 100
             inboundRate: 0
             inboundLoss: 0
@@ -222,11 +228,6 @@ items:
             outboundLoss: 0
             source: ""
             destination: ""
-            diffuseColor: [ 1, 0, 0 ]
-            emissiveColor: [ 0, 0, 0 ]
-            specularColor: [ 0, 0, 0 ]
-            shininess: 0
-            transparency: 0.8
         - 
           id: 13
           name: "Labo1"
@@ -264,18 +265,18 @@ items:
           data: 
             translation: [ 0, 0, 2 ]
             rotation: [ 0, 0, -90 ]
-            density: 1.2
-            viscosity: 0.00002
-            type: "Cylinder"
+            type: 1
             size: [ 1, 1, 1 ]
             radius: 1
             height: 3
-            flow: [ 1, 0, 0 ]
             diffuseColor: [ 0, 1, 1 ]
             emissiveColor: [ 0, 0, 0 ]
             specularColor: [ 0, 0, 0 ]
             shininess: 0
             transparency: 0.8
+            density: 1.2
+            viscosity: 0.00002
+            flow: [ 1, 0, 0 ]
 views: 
   - 
     id: 0
@@ -284,7 +285,7 @@ views:
     class: ImageView
     mounted: true
     state: 
-      ImageableItem: [ 4, "FrontCamera" ]
+      imageable_item: [ 4, "FrontCamera" ]
   - 
     id: 1
     plugin: Base
@@ -320,7 +321,9 @@ views:
     mounted: true
     state: 
       editMode: false
-      viewpointControlMode: thirdPerson
+      viewpointOperationMode: thirdPerson
+      visible_polygon_elements: [ face ]
+      highlighting: false
       collisionLines: false
       restrictCameraRoll: true
       verticalAxis: Z
@@ -403,8 +406,8 @@ views:
     class: LinkDeviceListView
     mounted: true
     state: 
-      mode: list
       element_type: link
+      listingMode: list
   - 
     id: 10
     name: "Link Position"
@@ -439,6 +442,8 @@ toolbars:
     speedScale: 1
     syncToOngoingUpdates: true
     autoExpansion: true
+  "LeggedBodyBar": 
+    stanceWidth: 0.15
   "KinematicsBar": 
     forward_kinematics: true
     inverse_kinematics: true
@@ -482,14 +487,12 @@ toolbars:
     waistHeightRelaxation: false
     gravity: 9.8
     dynamicsTimeRatio: 1
-  "LeggedBodyBar": 
-    stanceWidth: 0.15
 Body: 
   "BodyMotionEngine": 
     updateJointVelocities: false
   "BodySelectionManager": 
-    currentBodyItem: 2
-    currentLink: "CHASSIS"
+    current_body_item: 2
+    current_link: "CHASSIS"
   "EditableSceneBody": 
     editableSceneBodies: 
       - 
@@ -523,12 +526,12 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 323, 1526 ]
+      sizes: [ 265, 1250 ]
       children: 
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 449, 448 ]
+          sizes: [ 441, 441 ]
           children: 
             - 
               type: pane
@@ -540,12 +543,12 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 641, 256 ]
+          sizes: [ 630, 252 ]
           children: 
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 673, 849 ]
+              sizes: [ 551, 695 ]
               children: 
                 - 
                   type: pane
