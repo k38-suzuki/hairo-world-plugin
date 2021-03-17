@@ -1,5 +1,6 @@
 
 set(sources
+    AreaItem.cpp
     FDBody.cpp
     FDLink.cpp
     FluidAreaItem.cpp
@@ -10,6 +11,7 @@ set(sources
     )
 
 set(headers
+    AreaItem.h
     FDBody.h
     FDLink.h
     FluidAreaItem.h

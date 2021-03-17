@@ -309,7 +309,7 @@ FluidAreaItem* FluidDynamicsSimulatorItemImpl::isCollided(const Link* link)
         Vector3 rpy = item->rotation() * TO_RADIAN;
         Matrix3 m = rotFromRpy(rpy);
 
-        if(item->type() == "Box") {
+        if(item->type() == AreaItem::BOX) {
             Vector3 size = item->size();
             Vector3 minRange = translation - size / 2.0;
             Vector3 maxRange = translation + size / 2.0;
@@ -319,7 +319,7 @@ FluidAreaItem* FluidDynamicsSimulatorItemImpl::isCollided(const Link* link)
                     ) {
                 targetItem = item;
             }
-        } else if(item->type() == "Cylinder") {
+        } else if(item->type() == AreaItem::CYLINDER) {
             Vector3 a = m * (Vector3(0.0, 1.0, 0.0) * item->height() / 2.0) + translation;
             Vector3 b = m * (Vector3(0.0, 1.0, 0.0) * item->height() / 2.0 * -1.0) + translation;
             Vector3 c = a - b;
@@ -332,7 +332,7 @@ FluidAreaItem* FluidDynamicsSimulatorItemImpl::isCollided(const Link* link)
                     targetItem = item;
                 }
             }
-        } else if(item->type() == "Sphere") {
+        } else if(item->type() == AreaItem::SPHERE) {
             Vector3 r = translation - p;
             if(r.norm() <= item->radius()) {
                 targetItem = item;

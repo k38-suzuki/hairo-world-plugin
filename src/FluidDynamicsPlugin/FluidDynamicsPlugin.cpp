@@ -6,6 +6,7 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
+#include "AreaItem.h"
 #include "FluidAreaItem.h"
 #include "FluidDynamicsSimulatorItem.h"
 
@@ -24,6 +25,7 @@ public:
 
     virtual bool initialize() override
     {
+        AreaItem::initializeClass(this);
         FluidAreaItem::initializeClass(this);
         FluidDynamicsSimulatorItem::initializeClass(this);
         return true;

@@ -287,7 +287,7 @@ void TCSimulatorItemImpl::onPreDynamicsFunction()
 
                 WorldItem* worldItem = item->findOwnerItem<WorldItem>();
                 if(worldItem) {
-                    if(item->type() == "Box") {
+                    if(item->type() == AreaItem::BOX) {
                         Vector3 size = item->size();
                         Vector3 minRange = translation - size / 2.0;
                         Vector3 maxRange = translation + size / 2.0;
@@ -297,7 +297,7 @@ void TCSimulatorItemImpl::onPreDynamicsFunction()
                                 ) {
                             currentItem = item;
                         }
-                    } else if(item->type() == "Cylinder") {
+                    } else if(item->type() == AreaItem::CYLINDER) {
                         Vector3 a = s * (Vector3(0.0, 1.0, 0.0) * item->height() / 2.0) + translation;
                         Vector3 b = s * (Vector3(0.0, 1.0, 0.0) * item->height() / 2.0 * -1.0) + translation;
                         Vector3 c = a - b;
@@ -310,7 +310,7 @@ void TCSimulatorItemImpl::onPreDynamicsFunction()
                                 currentItem = item;
                             }
                         }
-                    } else if(item->type() == "Sphere") {
+                    } else if(item->type() == AreaItem::SPHERE) {
                         Vector3 r = translation - p;
                         if(r.norm() <= item->radius()) {
                             currentItem = item;
