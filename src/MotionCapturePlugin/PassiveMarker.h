@@ -36,6 +36,8 @@ public:
     Vector3 color() const { return color_; }
     void setTransparency(const double& transparency) { transparency_ = transparency; }
     double transparency() const { return transparency_; }
+    void setSymbol(const bool& symbol) { symbol_ = symbol; }
+    bool symbol() const { return symbol_; }
 
 protected:
     virtual Referenced* doClone(CloneMap* cloneMap) const override;
@@ -45,6 +47,7 @@ private:
     double radius_;
     Vector3 color_;
     double transparency_;
+    bool symbol_;
 };
 
 typedef ref_ptr<PassiveMarker> PassiveMarkerPtr;

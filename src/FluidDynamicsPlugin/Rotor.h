@@ -46,6 +46,8 @@ public:
     double& voltage() { return voltage_; }
     void setReverse(const bool& reverse) { reverse_ = reverse; }
     bool reverse() const { return reverse_; }
+    void setSymbol(const bool& symbol) { symbol_ = symbol; }
+    bool symbol() const { return symbol_; }
 
 protected:
     virtual Referenced* doClone(CloneMap* cloneMap) const override;
@@ -62,6 +64,7 @@ private:
     double pitch_;
     double voltage_;
     bool reverse_;
+    bool symbol_;
 };
 
 typedef ref_ptr<Rotor> RotorPtr;

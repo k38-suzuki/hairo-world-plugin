@@ -34,6 +34,8 @@ public:
     double forceOffset() const { return forceOffset_; }
     void setTorqueOffset(const double& torqueOffset) { torqueOffset_ = torqueOffset; }
     double torqueOffset() const { return torqueOffset_; }
+    void setSymbol(const bool& symbol) { symbol_ = symbol; }
+    bool symbol() const { return symbol_; }
 
 protected:
     virtual Referenced* doClone(CloneMap* cloneMap) const override;
@@ -44,6 +46,7 @@ private:
     double torque_;
     double forceOffset_;
     double torqueOffset_;
+    bool symbol_;
 };
 
 typedef ref_ptr<Thruster> ThrusterPtr;

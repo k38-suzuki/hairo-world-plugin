@@ -97,18 +97,21 @@ links:
       -
         type: PassiveMarker
         name: GreenMarker
-        translation: [ -0.15, 0.0, 0.0 ]
+        translation: [ 0, 0, 0 ]
         radius: 0.03
         color: [ 0.0, 1.0, 0.0 ]
         transparency: 0.3
+        symbol: false
       -
         type: Thruster
         name: Thruster_R
         translation: [ 0.0, -0.1, 0.0 ]
+        symbol: false
       -
         type: Thruster
         name: Thruster_L
         translation: [ 0.0, 0.1, 0.0 ]
+        symbol: false
   -
     name: THRUSTER_RF
     translation: [ 0.1, -0.1, 0.035 ]
@@ -120,6 +123,7 @@ links:
         type: Thruster
         name: Thruster_RF
         rotation: [ 0, 1, 0, -90 ]
+        symbol: false
   -
     name: THRUSTER_LF
     translation: [ 0.1, 0.1, 0.035 ]
@@ -131,6 +135,7 @@ links:
         type: Thruster
         name: Thruster_LF
         rotation: [ 0, 1, 0, -90 ]
+        symbol: false
   -
     name: THRUSTER_LR
     translation: [ -0.1, 0.1, 0.035 ]
@@ -142,6 +147,7 @@ links:
         type: Thruster
         name: Thruster_LR
         rotation: [ 0, 1, 0, -90 ]
+        symbol: false
   -
     name: THRUSTER_RR
     translation: [ -0.1, -0.1, 0.035 ]
@@ -153,4 +159,4 @@ links:
         type: Thruster
         name: Thruster_RR
         rotation: [ 0, 1, 0, -90 ]
-
+        symbol: false

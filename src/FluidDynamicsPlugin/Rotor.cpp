@@ -27,6 +27,7 @@ bool readRotor(YAMLBodyLoader& loader, Mapping& node)
     if(node.read("diameter", f)) rotor->setDiameter(f);
     if(node.read("pitch", f)) rotor->setPitch(f);
     if(node.read("reverse", r)) rotor->setReverse(r);
+    if(node.read("symbol", r)) rotor->setSymbol(r);
     return loader.readDevice(rotor, node);
 }
 
@@ -75,7 +76,8 @@ SceneRotor::SceneRotor(Device* device)
 void SceneRotor::updateScene()
 {
     bool on = rotorDevice->on();
-    if(on != isRotorAttached) {
+    bool symbol = rotorDevice->symbol();
+    if(on != isRotorAttached && symbol) {
         if(on) {
             addChildOnce(scene);
         } else {
@@ -116,6 +118,7 @@ Rotor::Rotor()
     pitch_ = 0.0;
     voltage_ = 0.0;
     reverse_ = false;
+    symbol_ = true;
 }
 
 
@@ -145,6 +148,7 @@ void Rotor::copyStateFrom(const Rotor& other)
     pitch_ = other.pitch_;
     voltage_ = other.voltage_;
     reverse_ = other.reverse_;
+    symbol_ = other.symbol_;
 }
 
 
@@ -217,6 +221,7 @@ const double* Rotor::readState(const double* buf)
     pitch_ = buf[i++];
     voltage_ = buf[i++];
     reverse_= buf[i++];
+    symbol_ = buf[i++];
     return buf + i;
 }
 
@@ -235,5 +240,6 @@ double* Rotor::writeState(double* out_buf) const
     out_buf[i++] = pitch_;
     out_buf[i++] = voltage_;
     out_buf[i++] = reverse_;
+    out_buf[i++] = symbol_ ? 1.0 : 0.0;
     return out_buf + i;
 }

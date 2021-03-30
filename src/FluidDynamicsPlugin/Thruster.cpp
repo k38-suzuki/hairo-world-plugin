@@ -19,8 +19,10 @@ bool readThruster(YAMLBodyLoader& loader, Mapping& node)
 {
     ThrusterPtr thruster = new Thruster;
     double f;
+    bool b;
     if(node.read("forceOffset", f)) thruster->setForceOffset(f);
     if(node.read("torqueOffset", f)) thruster->setTorqueOffset(f);
+    if(node.read("symbol", b)) thruster->setSymbol(b);
     return loader.readDevice(thruster, node);
 }
 
@@ -69,7 +71,8 @@ SceneThruster::SceneThruster(Device* device)
 void SceneThruster::updateScene()
 {
     bool on = thrusterDevice->on();
-    if(on != isThrusterAttached) {
+    bool symbol = thrusterDevice->symbol();
+    if(on != isThrusterAttached && symbol) {
         if(on) {
             addChildOnce(scene);
         } else {
@@ -104,6 +107,7 @@ Thruster::Thruster()
     torque_ = 0.0;
     forceOffset_ = 0.0;
     torqueOffset_ = 0.0;
+    symbol_ = true;
 }
 
 
@@ -127,6 +131,7 @@ void Thruster::copyStateFrom(const Thruster& other)
     torque_ = other.torque_;
     forceOffset_ = other.forceOffset_;
     torqueOffset_ = other.torqueOffset_;
+    symbol_ = other.symbol_;
 }
 
 
@@ -192,6 +197,7 @@ const double* Thruster::readState(const double* buf)
     torque_ = buf[i++];
     forceOffset_ = buf[i++];
     torqueOffset_ = buf[i++];
+    symbol_ = buf[i++];
     return buf + i;
 }
 
@@ -204,5 +210,6 @@ double* Thruster::writeState(double* out_buf) const
     out_buf[i++] = torque_;
     out_buf[i++] = forceOffset_;
     out_buf[i++] = torqueOffset_;
+    out_buf[i++] = symbol_ ? 1.0 : 0.0;
     return out_buf + i;
 }

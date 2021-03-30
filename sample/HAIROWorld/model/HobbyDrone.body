@@ -104,10 +104,11 @@ links:
       -
         type: PassiveMarker
         name: GreenMarker
-        translation: [ 0.0, 0.0, 0.1 ]
+        translation: [ 0, 0, 0 ]
         radius: 0.03
         color: [ 0.0, 1.0, 0.0 ]
         transparency: 0.3
+        symbol: false
   -
     name: ROTOR_RF
     translation: [ 0.075, -0.075, 0.035 ]
@@ -118,6 +119,7 @@ links:
       -
         type: Rotor
         name: Rotor_RF
+        symbol: false
   -
     name: ROTOR_LF
     translation: [ 0.075, 0.075, 0.035 ]
@@ -128,6 +130,7 @@ links:
       -
         type: Rotor
         name: Rotor_LF
+        symbol: false
   -
     name: ROTOR_LR
     translation: [ -0.075, 0.075, 0.035 ]
@@ -138,6 +141,7 @@ links:
       -
         type: Rotor
         name: Rotor_LR
+        symbol: false
   -
     name: ROTOR_RR
     translation: [ -0.075, -0.075, 0.035 ]
@@ -148,4 +152,4 @@ links:
       -
         type: Rotor
         name: Rotor_RR
-
+        symbol: false

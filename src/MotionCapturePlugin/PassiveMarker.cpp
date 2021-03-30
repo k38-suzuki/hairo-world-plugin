@@ -18,6 +18,7 @@ bool readPassiveMarker(YAMLBodyLoader& loader, Mapping& node)
 {
     PassiveMarkerPtr marker = new PassiveMarker;
     double t;
+    bool b;
     if(node.read("radius", t)) marker->setRadius(t);
     auto& c = *node.findListing("color");
     if(c.size() == 3) {
@@ -25,6 +26,7 @@ bool readPassiveMarker(YAMLBodyLoader& loader, Mapping& node)
         marker->setColor(color);
     }
     if(node.read("transparency", t)) marker->setTransparency(t);
+    if(node.read("symbol", b)) marker->setSymbol(b);
     return loader.readDevice(marker, node);
 }
 
@@ -64,7 +66,8 @@ ScenePassiveMarker::ScenePassiveMarker(Device* device)
 void ScenePassiveMarker::updateScene()
 {
     bool on = passiveMarker->on();
-    if(on != isPassiveMarkerAttached) {
+    bool symbol = passiveMarker->symbol();
+    if(on != isPassiveMarkerAttached && symbol) {
         if(on) {
             addChildOnce(shape);
         } else {
@@ -105,6 +108,7 @@ PassiveMarker::PassiveMarker()
     radius_ = 1.0;
     color_ << 1.0, 0.0, 0.0;
     transparency_ = 0.0;
+    symbol_ = true;
 }
 
 
@@ -127,6 +131,7 @@ void PassiveMarker::copyStateFrom(const PassiveMarker& other)
     radius_ = other.radius_;
     color_ = other.color_;
     transparency_ = other.transparency_;
+    symbol_ = other.symbol_;
 }
 
 
@@ -192,6 +197,7 @@ const double* PassiveMarker::readState(const double* buf)
     color_[1] = buf[i++];
     color_[2] = buf[i++];
     transparency_ = buf[i++];
+    symbol_ = buf[i++];
     return buf + i;
 }
 
@@ -205,5 +211,6 @@ double* PassiveMarker::writeState(double* out_buf) const
     out_buf[i++] = color_[1];
     out_buf[i++] = color_[2];
     out_buf[i++] = transparency_;
+    out_buf[i++] = symbol_ ? 1.0 : 0.0;
     return out_buf + i;
 }
