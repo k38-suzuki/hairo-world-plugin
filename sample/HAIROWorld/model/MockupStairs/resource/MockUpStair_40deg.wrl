@@ -1,0 +1,191 @@
+######################################################################
+# Copyright (C) 2017 Japan Atomic Energy Agency All Rights Reserved. #
+# E-mail : suzuki.kenta38@jaea.go.jp   Tel : 0240-26-1054            #
+######################################################################
+#VRML V2.0 utf8
+
+Transform {
+  scale 1 1 1
+  translation 0 0 0
+  children
+  [
+     
+     Inline {
+        url ["bs/base.wrl"]
+     }
+     Transform {
+        children
+        [
+           Inline { url ["bs/base_hr.wrl"] }
+        ]
+     }
+     
+     #2FL
+     Transform {
+        translation 1.485 -0.014 1.793
+        rotation 1 0 0 0
+        children
+        [
+           Inline { url ["bs/2fl.wrl"] }
+           
+           Transform {
+              translation 0.686 1.334 0.065
+              rotation 0 0 1 0
+              children [
+                 Inline { url ["fl/2f/2fl_1-1_assem.wrl"] }
+              ]
+           }
+           Transform {
+              translation -0.3522 -1.353 0.071
+              rotation 0 0 1 -1.570796327
+              children [
+                 Inline { url ["fl/2f/2fl_1-5_assem.wrl"] }
+              ]
+           }
+           Transform {
+              translation -0.3522 1.131 0.071
+              rotation 0 0 1 -1.570796327
+              children [
+                 Inline { url ["fl/2f/2fl_1-6_assem.wrl"] }
+              ]
+           }
+
+           
+        ]
+     }
+
+     #3FL
+     Transform {
+        translation -1.57 0 3.642
+        rotation 1 0 0 0
+        children
+        [
+           Inline { url ["bs/3fl.wrl"] }
+           
+           Transform {
+              translation -0.5995 -1.19 0.0797
+              rotation 0 0 1 0
+              children [
+                 Inline { url ["fl/3f/3fl_2-1_assem.wrl"] }
+              ]
+           }
+           Transform {
+              translation 0.2895 -1.117 0.0797
+              rotation 0 0 1 0
+              children [
+                 Inline { url ["fl/3f/3fl_2-2_assem.wrl"] }
+              ]
+           }
+           Transform {
+              translation 0.2895 1.117 0.0797
+              rotation 0 0 1 0
+              children [
+                 Inline { url ["fl/3f/3fl_2-3_assem.wrl"] }
+              ]
+           }
+           Transform {
+              translation 0.439 -1.067 0.0797
+              rotation 0 0 1 -1.570796327
+              children [
+                 Inline { url ["fl/3f/3fl_2-4_assem.wrl"] }
+              ]
+           }
+           Transform {
+              translation -0.6 -1.1646 1.1267
+              rotation 0 0 1 0
+              children [
+                 Inline { url ["fl/3f/3fl_t32a_assem.wrl"] }
+              ]
+           }
+
+           Transform {
+              translation -0.6 -1.1646 0.2606
+              rotation 0 0 1 0
+              children [
+                 Inline { url ["fl/3f/3fl_t32a_assem.wrl"] }
+              ]
+           }
+           Transform {
+              translation -0.6 1.0695 1.1267
+              rotation 0 0 1 0
+              children [
+                 Inline { url ["fl/3f/3fl_t32a_assem.wrl"] }
+              ]
+           }
+
+           Transform {
+              translation -0.6 1.0695 0.2606
+              rotation 0 0 1 0
+              children [
+                 Inline { url ["fl/3f/3fl_t32a_assem.wrl"] }
+              ]
+           }
+
+           
+        ]
+     }
+
+          ### STEP S1
+     Transform {
+        translation 1.65 3.541 0
+        rotation 0 0 1 3.141592654
+        children
+        [
+           Inline { url ["sp/step_d40_assem.wrl"] }
+           
+           Transform {
+              children [
+                 Inline { url ["sp/handrail_r_w1000_d40.wrl"] }
+              ]
+           }
+        ]
+     }
+     ### STEP S3
+     Transform {
+        translation -1.2412 -0.599 0
+        rotation 0 0 1 -1.570796327
+        children
+        [
+           Inline { url ["sp/step_d40_assem.wrl"] }
+           
+           Transform {
+              children [
+                 Inline { url ["sp/handrail_l_w1000_d40.wrl"] }
+              ]
+           }
+        ]
+     }
+     ### STEP S4
+     Transform {
+        translation 1.65 -3.541 0
+        rotation 0 0 1 0
+        children
+        [
+           Inline { url ["sp/step_d40_assem.wrl"] }
+           
+           Transform {
+              children [
+                 Inline { url ["sp/handrail_l_w1000_d40.wrl"] }
+              ]
+           }
+        ]
+     }
+     ### STEP S5
+     Transform {
+        translation 0.9548 0.601 1.858
+        rotation 0 0 1 1.570796327
+        children
+        [
+           Inline { url ["sp/step_d40_assem.wrl"] }
+           
+           Transform {
+              children [
+                 Inline { url ["sp/handrail_r_w1000_d40.wrl"] }
+              ]
+           }
+        ]
+     }
+
+
+  ]
+}

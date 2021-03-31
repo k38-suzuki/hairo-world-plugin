@@ -1,0 +1,84 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+name: TrainingStage
+
+links:
+  -
+    name: TRAINING_STAGE
+    translation: [ 0, 0, 0 ]
+    jointType: fixed
+  -
+    type: SubBody
+    parent: TRAINING_STAGE
+    translation: [ 0, 0, 0 ]
+    uri: resource/stage.body
+    jointType: fixed
+  -
+    type: SubBody
+    parent: TRAINING_STAGE
+    translation: [ -3.0, 0.3, -0.075 ]
+    uri: resource/slope.body
+    jointType: fixed
+  -
+    type: SubBody
+    parent: TRAINING_STAGE
+    prefix: A0_
+    translation: [ 3.0, -0.9, 0 ]
+    uri: resource/step.body
+    jointType: fixed
+  -
+    type: SubBody
+    parent: TRAINING_STAGE
+    prefix: A0_
+    translation: [ 4.2, -0.6, 0 ]
+    uri: resource/pallet.body
+    jointType: fixed
+  -
+    type: SubBody
+    parent: TRAINING_STAGE
+    prefix: A1_
+    translation: [ 4.2, -1.2, 0 ]
+    uri: resource/pallet.body
+    jointType: fixed
+  -
+    type: SubBody
+    parent: TRAINING_STAGE
+    prefix: B0_
+    translation: [ 4.2, -0.6, 0.15 ]
+    uri: resource/pallet.body
+    jointType: fixed
+  -
+    type: SubBody
+    parent: TRAINING_STAGE
+    prefix: B1_
+    translation: [ 4.2, -1.2, 0.15 ]
+    uri: resource/pallet.body
+    jointType: fixed
+  -
+    type: SubBody
+    parent: TRAINING_STAGE
+    prefix: C0_
+    translation: [ 4.2, -0.6, 0.3 ]
+    uri: resource/pallet.body
+    jointType: fixed
+  -
+    type: SubBody
+    parent: TRAINING_STAGE
+    prefix: C1_
+    translation: [ 4.2, -1.2, 0.3 ]
+    uri: resource/pallet.body
+    jointType: fixed
+  -
+    type: SubBody
+    parent: TRAINING_STAGE
+    translation: [ 2.4, -1.2, 0.45 ]
+    uri: resource/landing.body
+    jointType: fixed
+  -
+    type: SubBody
+    parent: TRAINING_STAGE
+    prefix: A1_
+    translation: [ 4.2, 0.3, 0 ]
+    rotation: [ 0, 0, 1, -90 ]
+    uri: resource/step.body
+    jointType: fixed

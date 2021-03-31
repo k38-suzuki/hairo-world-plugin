@@ -1,0 +1,16 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+name: Grating
+links:
+  -
+    name: GRATING
+    translation: [ 0, 0, 0.075 ]
+    jointType: fixed
+    material: Ground
+    AMOR: true
+    elements:
+      Shape:
+        geometry: { type: Box, size: [ 1.2, 0.6, 0.15 ] }
+        appearance:
+          material: { diffuseColor: [ 1, 1, 1 ] }
+#          texture: { url: ../textures/grating.jpg }

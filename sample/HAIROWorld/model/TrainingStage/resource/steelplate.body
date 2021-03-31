@@ -1,0 +1,17 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+name: SteelPlate
+
+links:
+  -
+    name: STEEL_PLATE
+    translation: [ 0, 0, 0 ]
+    jointType: fixed
+    material: Ground
+    AMOR: true
+    elements:
+      Shape:
+        geometry: { type: Box, size: [ 0.295, 0.595, 0.006 ] }
+        appearance:
+          material: { diffuseColor: [ 1, 1, 1 ] }
+#          texture: { url: ../textures/steelplate.jpg }

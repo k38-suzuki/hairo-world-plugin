@@ -1,0 +1,21 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+name: Slope
+links:
+  -
+    name: SLOPE
+    translation: [ 0, 0, 0 ]
+    jointType: fixed
+    material: Ground
+    AMOR: true
+    elements:
+      Shape:
+        geometry:
+          type: Extrusion
+          crossSection: [
+            -0.6, 0,
+             0.6, 0,
+             0.6, 0.15,
+            -0.6, 0 ]
+          spine: [ 0, -0.6, 0, 0, 0.6, 0 ]
+        appearance: &App { material: { diffuseColor: [ 0.5, 0.5, 0.5 ] } }

@@ -1,0 +1,31 @@
+#ifndef OPERATION_REVIEW_PLUGIN_EXPORTDECL_H_INCLUDED
+# define OPERATION_REVIEW_PLUGIN_EXPORTDECL_H_INCLUDED
+
+# if defined _WIN32 || defined __CYGWIN__
+#  define OPERATION_REVIEW_PLUGIN_DLLIMPORT __declspec(dllimport)
+#  define OPERATION_REVIEW_PLUGIN_DLLEXPORT __declspec(dllexport)
+#  define OPERATION_REVIEW_PLUGIN_DLLLOCAL
+# else
+#  if __GNUC__ >= 4
+#   define OPERATION_REVIEW_PLUGIN_DLLIMPORT __attribute__ ((visibility("default")))
+#   define OPERATION_REVIEW_PLUGIN_DLLEXPORT __attribute__ ((visibility("default")))
+#   define OPERATION_REVIEW_PLUGIN_DLLLOCAL  __attribute__ ((visibility("hidden")))
+#  else
+#   define OPERATION_REVIEW_PLUGIN_DLLIMPORT
+#   define OPERATION_REVIEW_PLUGIN_DLLEXPORT
+#   define OPERATION_REVIEW_PLUGIN_DLLLOCAL
+#  endif
+# endif
+
+#ifdef CnoidOperationReviewPlugin_EXPORTS
+#   define OPERATION_REVIEW_PLUGIN_DLLAPI OPERATION_REVIEW_PLUGIN_DLLEXPORT
+#else
+#   define OPERATION_REVIEW_PLUGIN_DLLAPI OPERATION_REVIEW_PLUGIN_DLLIMPORT
+#endif
+
+#endif
+
+#ifdef CNOID_EXPORT
+# undef CNOID_EXPORT
+#endif
+#define CNOID_EXPORT OPERATION_REVIEW_PLUGIN_DLLAPI

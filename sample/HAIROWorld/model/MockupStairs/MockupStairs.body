@@ -1,0 +1,23 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: MockupStairs
+
+COMMON_MOCKUPSTEP_VRML: &COMMON_MOCKUPSTEP_VRML
+  resource:
+    uri: "resource/MockUpStair_40deg.wrl"
+
+links:
+  -
+    name: MockupStairs
+    translation: [ 0, 0, 0 ]
+    jointType: fixed
+    material: Ground
+    AMOR: true
+    elements:
+      -
+        type: Visual
+        <<: *COMMON_MOCKUPSTEP_VRML
+      - type: Collision
+        <<: *COMMON_MOCKUPSTEP_VRML
+

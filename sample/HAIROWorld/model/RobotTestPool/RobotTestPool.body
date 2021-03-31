@@ -1,0 +1,13 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+name: RobotTestPool
+angleUnit: degree
+
+links:
+  -
+    name: BASE
+    jointType: fixed
+    material: Ground
+    elements:
+      Visual: { rotation: [ 0, 0, 1, 90 ], resource: { uri: "resource/wp_anark.wrl" } }
+      Collision: { rotation: [ 0, 0, 1, 90 ], resource: { uri: "resource/wp_anark.wrl" } }

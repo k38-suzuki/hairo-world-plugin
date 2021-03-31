@@ -1,0 +1,211 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+name: Step
+
+COMMON_SETTINGS: &CommonSettings
+  jointType: fixed
+  material: Ground
+  AMOR: true
+
+COMMON_BRACKET: &CommonBracket
+  uri: bracket.body
+  jointType: fixed
+
+COMMON_STEEL_PLATE: &CommonSteelPlate
+  uri: steelplate.body
+  jointType: fixed
+
+COMMON_HANDRAIL: &CommonHandRail
+  uri: handrail-s.body
+  jointType: fixed
+
+links:
+# Step-A
+  -
+    name: STEP_A
+    translation: [ 0, 0, 0.075 ]
+    <<: *CommonSettings
+    elements:
+      Shape:
+        geometry: { type: Box, size: [ 1.2, 1.2, 0.15 ] }
+        appearance: &App { material: { diffuseColor: [ 0.5, 0.5, 0.5 ] } }
+  -
+    type: SubBody
+    parent: STEP_A
+    prefix: STEP_A0_
+    translation: [ -0.535, 0.62, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STEP_A
+    prefix: STEP_A1_
+    translation: [ -0.2975, 0.62, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STEP_A
+    prefix: STEP_A2_
+    translation: [ -0.535, -0.62, 0 ]
+    rotation: [ 0, 0, 1, -180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STEP_A
+    prefix: STEP_A3_
+    translation: [ -0.2975, -0.62, 0 ]
+    rotation: [ 0, 0, 1, -180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STEP_A
+    prefix: STEP_A0_
+    translation: [ -0.45, 0.3, 0.0765 ]
+    <<: *CommonSteelPlate
+  -
+    type: SubBody
+    parent: STEP_A
+    prefix: STEP_A1_
+    translation: [ -0.45, -0.3, 0.0765 ]
+    <<: *CommonSteelPlate
+  -
+    type: SubBody
+    parent: STEP_A
+    prefix: STEP_A0_
+    translation: [ -0.2975, 0.62, -0.072 ]
+    <<: *CommonHandRail
+  -
+    type: SubBody
+    parent: STEP_A
+    prefix: STEP_A1_
+    translation: [ -0.2975, -0.62, -0.072 ]
+    <<: *CommonHandRail
+# Step-B
+  -
+    name: STEP_B
+    parent: STEP_A
+    translation: [ 0.15, 0, 0.15 ]
+    <<: *CommonSettings
+    elements:
+      Shape:
+        geometry: { type: Box, size: [ 0.9, 1.2, 0.15 ] }
+        appearance: *App
+  -
+    type: SubBody
+    parent: STEP_B
+    prefix: STEP_B0_
+    translation: [ -0.21, 0.62, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STEP_B
+    prefix: STEP_B1_
+    translation: [ -0.21, -0.62, 0 ]
+    rotation: [ 0, 0, 1, -180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STEP_B
+    prefix: STEP_B0_
+    translation: [ -0.30, 0.3, 0.0765 ]
+    <<: *CommonSteelPlate
+  -
+    type: SubBody
+    parent: STEP_B
+    prefix: STEP_B1_
+    translation: [ -0.30, -0.3, 0.0765 ]
+    <<: *CommonSteelPlate
+# Step-C
+  -
+    name: STEP_C
+    parent: STEP_B
+    translation: [ 0.15, 0, 0.15 ]
+    <<: *CommonSettings
+    elements:
+      Shape:
+        geometry: { type: Box, size: [ 0.6, 1.2, 0.15 ] }
+        appearance: *App
+  -
+    type: SubBody
+    parent: STEP_C
+    prefix: STEP_C0_
+    translation: [ -0.237.5, 0.62, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STEP_C
+    prefix: STEP_C1_
+    translation: [ 0, 0.62, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STEP_C
+    prefix: STEP_C2_
+    translation: [ -0.237.5, -0.62, 0 ]
+    rotation: [ 0, 0, 1, -180]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STEP_C
+    prefix: STEP_C3_
+    translation: [ 0, -0.62, 0 ]
+    rotation: [ 0, 0, 1, -180]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STEP_C
+    prefix: STEP_C0_
+    translation: [ -0.15, 0.3, 0.0765 ]
+    <<: *CommonSteelPlate
+  -
+    type: SubBody
+    parent: STEP_C
+    prefix: STEP_C1_
+    translation: [ -0.15, -0.3, 0.0765 ]
+    <<: *CommonSteelPlate
+  -
+    type: SubBody
+    parent: STEP_C
+    prefix: STEP_C0_
+    translation: [ 0, 0.62, -0.072 ]
+    <<: *CommonHandRail
+  -
+    type: SubBody
+    parent: STEP_C
+    prefix: STEP_C1_
+    translation: [ 0, -0.62, -0.072 ]
+    <<: *CommonHandRail
+# Step-D
+  -
+    name: STEP_D
+    parent: STEP_C
+    translation: [ 0.15, 0, 0.15 ]
+    <<: *CommonSettings
+    elements:
+      Shape:
+        geometry: { type: Box, size: [ 0.3, 1.2, 0.15 ] }
+        appearance: *App
+  -
+    type: SubBody
+    parent: STEP_D
+    prefix: STEP_D0_
+    translation: [ 0.085, 0.62, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STEP_D
+    prefix: STEP_D1_
+    translation: [ 0.085, -0.62, 0 ]
+    rotation: [ 0, 0, 1, -180]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STEP_D
+    prefix: STEP_D0_
+    translation: [ 0, 0.3, 0.0765 ]
+    <<: *CommonSteelPlate
+  -
+    type: SubBody
+    parent: STEP_D
+    prefix: STEP_D1_
+    translation: [ 0, -0.3, 0.0765 ]
+    <<: *CommonSteelPlate

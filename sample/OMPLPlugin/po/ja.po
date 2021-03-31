@@ -1,0 +1,98 @@
+# Japanese translations for PACKAGE package.
+# Copyright (C) 2020 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# suzuki <suzuki.kenta38@jaea.go.jp>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-02-05 22:34+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../MotionPlannerDialog.cpp:128 ../MotionPlannerDialog.cpp:421
+msgid "Motion Planner"
+msgstr "モーションプランナ"
+
+#: ../MotionPlannerDialog.cpp:184
+msgid "Target Body"
+msgstr "対象ボディ"
+
+#: ../MotionPlannerDialog.cpp:190
+msgid "Body"
+msgstr "ボディ"
+
+#: ../MotionPlannerDialog.cpp:192
+msgid "Base Link"
+msgstr "ベースリンク"
+
+#: ../MotionPlannerDialog.cpp:194
+msgid "End Link"
+msgstr "エンドリンク"
+
+#: ../MotionPlannerDialog.cpp:198
+msgid "Bounding Box"
+msgstr "バウンディングボックス"
+
+#: ../MotionPlannerDialog.cpp:233
+msgid "Cubic BB"
+msgstr "立方BB"
+
+#: ../MotionPlannerDialog.cpp:235
+msgid "min[x, y, z]"
+msgstr "最小[x, y, z]"
+
+#: ../MotionPlannerDialog.cpp:239
+msgid "max[x, y, z]"
+msgstr "最大[x, y, z]"
+
+#: ../MotionPlannerDialog.cpp:245
+msgid "Path Generation"
+msgstr "経路生成"
+
+#: ../MotionPlannerDialog.cpp:257
+msgid "Show states"
+msgstr "状態を表示"
+
+#: ../MotionPlannerDialog.cpp:260
+msgid "Show solution"
+msgstr "結果を表示"
+
+#: ../MotionPlannerDialog.cpp:265
+msgid "Start[x, y, z]"
+msgstr "始点[x, y, z]"
+
+#: ../MotionPlannerDialog.cpp:284
+msgid "Goal[x, y, z]"
+msgstr "終点[x, y, z]"
+
+#: ../MotionPlannerDialog.cpp:301
+msgid "Geometric planner"
+msgstr "プランナ"
+
+#: ../MotionPlannerDialog.cpp:311
+msgid "Calculation time"
+msgstr "計算時間"
+
+#: ../MotionPlannerDialog.cpp:315 ../MotionPlannerDialog.cpp:319
+msgid "Preview"
+msgstr "プレビュー"
+
+#: ../MotionPlannerDialog.cpp:318
+msgid "Generate"
+msgstr "生成"
+
+#: ../MotionPlannerDialog.cpp:328
+msgid "Time length"
+msgstr "時間長"
+
+#: ../MotionPlannerDialog.cpp:335
+msgid "&Ok"
+msgstr ""

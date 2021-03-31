@@ -1,0 +1,102 @@
+# Japanese translations for PACKAGE package.
+# Copyright (C) 2020 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# suzuki <suzuki.kenta38@jaea.go.jp>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-01 11:01-0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../ObjectBuilderDialog.cpp:49 ../ObjectBuilderDialog.cpp:94
+msgid "ObjectBuilder"
+msgstr "オブジェクトビルダ"
+
+#: ../ObjectBuilderDialog.cpp:54
+msgid "Pipe"
+msgstr "パイプ"
+
+#: ../ObjectBuilderDialog.cpp:56
+msgid "Shape"
+msgstr "形状"
+
+#: ../ObjectBuilderDialog.cpp:65
+msgid "&Ok"
+msgstr "&Ok"
+
+#: ../ObjectBuilderDialog.cpp:72
+msgid "Configuration"
+msgstr "設定"
+
+#: ../PipeBuilderWidget.cpp:93
+msgid "Generate"
+msgstr "生成"
+
+#: ../PipeBuilderWidget.cpp:94
+msgid "Overwrite"
+msgstr "上書き保存"
+
+#: ../PipeBuilderWidget.cpp:97
+msgid "Mass [kg]"
+msgstr "質量 [kg]"
+
+#: ../PipeBuilderWidget.cpp:99
+msgid "Inner diameter [m]"
+msgstr "内径 [m]"
+
+#: ../PipeBuilderWidget.cpp:101
+msgid "Outer diameter [m]"
+msgstr "外径 [m]"
+
+#: ../PipeBuilderWidget.cpp:103
+msgid "Length [m]"
+msgstr "長さ [m]"
+
+#: ../PipeBuilderWidget.cpp:105
+msgid "Opening angle [deg]"
+msgstr "開口角度 [deg]"
+
+#: ../PipeBuilderWidget.cpp:107
+msgid "Step angle [deg]"
+msgstr "きざみ角度 [deg]"
+
+#: ../PipeBuilderWidget.cpp:109
+msgid "Color [-]"
+msgstr "色 [-]"
+
+#: ../PipeBuilderWidget.cpp:113
+msgid "File"
+msgstr "ファイル"
+
+#: ../PipeBuilderWidget.cpp:262
+msgid "Save a Body file"
+msgstr "ボディを保存"
+
+#: ../PipeBuilderWidget.cpp:266
+msgid "Save"
+msgstr "保存"
+
+#: ../PipeBuilderWidget.cpp:267
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: ../PipeBuilderWidget.cpp:271
+msgid "Body files (*.body)"
+msgstr "ボディファイル (*.body)"
+
+#: ../PipeBuilderWidget.cpp:272
+msgid "Any files (*)"
+msgstr "全てのファイル (*)"
+
+#: ../PipeBuilderWidget.cpp:297
+msgid "Select a color"
+msgstr "色の選択"

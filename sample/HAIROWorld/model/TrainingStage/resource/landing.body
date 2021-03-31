@@ -1,0 +1,143 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+name: Landing
+
+COMMON_PALLET: &CommonPallet
+  uri: pallet.body
+  jointType: fixed
+
+COMMON_BRACKET: &CommonBracket
+  uri: bracket.body
+  jointType: fixed
+
+COMMON_HANDRAIL: &CommonHandrail
+  uri: handrail-p.body
+  jointType: fixed
+
+links:
+  -
+    name: LANDING
+    translation: [ 0, 0, 0 ]
+    jointType: fixed
+  -
+    type: SubBody
+    parent: LANDING
+    prefix: LANDING_A0_
+    translation: [ 1.8, 0.6, 0 ]
+    <<: *CommonPallet
+  -
+    type: SubBody
+    parent: LANDING_A0_PALLET
+    prefix: PALLET_A06_
+    translation: [ 0.62, 0.2375, 0 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: LANDING_A0_PALLET
+    prefix: PALLET_A07_
+    translation: [ 0.62, 0, 0 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: LANDING_A0_PALLET
+    prefix: PALLET_A08_
+    translation: [ 0.62, -0.2375, 0 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: LANDING_A0_PALLET
+    prefix: HANDRAIL_A02_
+    translation: [ 0.62, 0, -0.072 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: LANDING
+    prefix: LANDING_A1_
+    translation: [ 1.8, 0, 0 ]
+    <<: *CommonPallet
+  -
+    type: SubBody
+    parent: LANDING_A1_PALLET
+    prefix: PALLET_A10_
+    translation: [ -0.535, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: LANDING_A1_PALLET
+    prefix: PALLET_A11_
+    translation: [ -0.297, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: LANDING_A1_PALLET
+    prefix: PALLET_A12_
+    translation: [ -0.06, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: LANDING_A1_PALLET
+    prefix: PALLET_A13_
+    translation: [ 0.06, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: LANDING_A1_PALLET
+    prefix: PALLET_A14_
+    translation: [ 0.297, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: LANDING_A1_PALLET
+    prefix: PALLET_A15_
+    translation: [ 0.535, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: LANDING_A1_PALLET
+    prefix: PALLET_A16_
+    translation: [ 0.62, 0.2375, 0 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: LANDING_A1_PALLET
+    prefix: PALLET_A17_
+    translation: [ 0.62, 0, 0 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: LANDING_A1_PALLET
+    prefix: PALLET_A18_
+    translation: [ 0.62, -0.2375, 0 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: LANDING_A1_PALLET
+    prefix: HANDRAIL_A10_
+    translation: [ -0.297, -0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: LANDING_A1_PALLET
+    prefix: HANDRAIL_A11_
+    translation: [ 0.297, -0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: LANDING_A1_PALLET
+    prefix: HANDRAIL_A12_
+    translation: [ 0.62, 0, -0.072 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonHandrail

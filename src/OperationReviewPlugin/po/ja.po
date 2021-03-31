@@ -1,0 +1,38 @@
+# Japanese translations for PACKAGE package.
+# Copyright (C) 2021 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# suzuki <suzuki.kenta38@jaea.go.jp>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-05 05:43-0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../CollisionVisualizerItem.cpp:129
+msgid "CollisionVisualizerItem"
+msgstr "コリジョンビジュアライザアイテム"
+
+#: ../CollisionVisualizerItem.cpp:289
+msgid "Target bodies"
+msgstr "対象ボディ"
+
+#: ../OperationReviewCollectorItem.cpp:99
+msgid "OperationReviewCollectorItem"
+msgstr "オペレーションレビューコレクタアイテム"
+
+#: ../OperationReviewCollectorItem.cpp:230
+msgid "Record joystick states"
+msgstr "ジョイスティック状態の記録"
+
+#: ../OperationReviewCollectorItem.cpp:231
+msgid "Record collision states"
+msgstr "干渉状態の記録"

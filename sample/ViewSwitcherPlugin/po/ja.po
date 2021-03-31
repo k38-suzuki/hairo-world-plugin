@@ -1,0 +1,87 @@
+# Japanese translations for PACKAGE package.
+# Copyright (C) 2020 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# suzuki <suzuki.kenta38@jaea.go.jp>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-31 16:38+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+
+#: ../ViewSwitcherDialog.cpp:80
+msgid "Switcher Config"
+msgstr "スイッチャの設定"
+
+#: ../ViewSwitcherDialog.cpp:89
+msgid "Scene"
+msgstr "シーン"
+
+#: ../ViewSwitcherDialog.cpp:89
+msgid "Image"
+msgstr "画像"
+
+#: ../ViewSwitcherDialog.cpp:93
+msgid "DIRECTIONAL_V"
+msgstr "十字キーV"
+
+#: ../ViewSwitcherDialog.cpp:93
+msgid "A_BUTTON"
+msgstr "Aボタン"
+
+#: ../ViewSwitcherDialog.cpp:93
+msgid "B_BUTTON"
+msgstr "Bボタン"
+
+#: ../ViewSwitcherDialog.cpp:93
+msgid "X_BUTTON"
+msgstr "Xボタン"
+
+#: ../ViewSwitcherDialog.cpp:94
+msgid "Y_BUTTON"
+msgstr "Yボタン"
+
+#: ../ViewSwitcherDialog.cpp:94
+msgid "L_BUTTON"
+msgstr "Lボタン"
+
+#: ../ViewSwitcherDialog.cpp:94
+msgid "R_BUTTON"
+msgstr "Rボタン"
+
+#: ../ViewSwitcherDialog.cpp:100
+msgid "View type"
+msgstr "ビューの種類"
+
+#: ../ViewSwitcherDialog.cpp:102
+msgid "Button"
+msgstr "ボタン"
+
+#: ../ViewSwitcherDialog.cpp:105
+msgid "&Ok"
+msgstr "&了解"
+
+#: ../ViewSwitcherDialog.cpp:131
+msgid "View Switcher"
+msgstr "ビュースイッチャ"
+
+#: ../ViewSwitcherDialog.cpp:132
+msgid "Switcher"
+msgstr "スイッチャ"
+
+#: ../ViewSwitcherDialog.cpp:136
+msgid "ViewSwitcher"
+msgstr "ビュースイッチャ"
+
+#: ../ViewSwitcherDialog.cpp:138
+msgid "Use ViewSwitcher"
+msgstr "ビュースイッチャを使用"

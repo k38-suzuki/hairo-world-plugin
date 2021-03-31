@@ -1,0 +1,619 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+name: Stage
+
+COMMON_PALLET: &CommonPallet
+  uri: pallet.body
+  jointType: fixed
+
+COMMON_BRACKET: &CommonBracket
+  uri: bracket.body
+  jointType: fixed
+
+COMMON_HANDRAIL: &CommonHandrail
+  uri: handrail-p.body
+  jointType: fixed
+
+links:
+  -
+    name: STAGE
+    translation: [ 0, 0, 0 ]
+    jointType: fixed
+  -
+    type: SubBody
+    parent: STAGE
+    prefix: STAGE_D0_
+    translation: [ 1.8, 0.6, 0 ]
+    <<: *CommonPallet
+  -
+    type: SubBody
+    parent: STAGE_D0_PALLET
+    prefix: PALLET_D00_
+    translation: [ -0.535, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D0_PALLET
+    prefix: PALLET_D01_
+    translation: [ -0.297, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D0_PALLET
+    prefix: PALLET_D02_
+    translation: [ -0.06, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D0_PALLET
+    prefix: PALLET_D03_
+    translation: [ 0.06, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D0_PALLET
+    prefix: PALLET_D04_
+    translation: [ 0.297, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D0_PALLET
+    prefix: PALLET_D05_
+    translation: [ 0.535, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D0_PALLET
+    prefix: PALLET_D06_
+    translation: [ 0.62, 0.2375, 0 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D0_PALLET
+    prefix: PALLET_D07_
+    translation: [ 0.62, 0, 0 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D0_PALLET
+    prefix: PALLET_D08_
+    translation: [ 0.62, -0.2375, 0 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D0_PALLET
+    prefix: HANDRAIL_D00_
+    translation: [ -0.297, 0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE_D0_PALLET
+    prefix: HANDRAIL_D01_
+    translation: [ 0.297, 0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE_D0_PALLET
+    prefix: HANDRAIL_D02_
+    translation: [ 0.62, 0, -0.072 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE
+    prefix: STAGE_C0_
+    translation: [ 0.6, 0.6, 0 ]
+    <<: *CommonPallet
+  -
+    type: SubBody
+    parent: STAGE_C0_PALLET
+    prefix: PALLET_C00_
+    translation: [ -0.535, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_C0_PALLET
+    prefix: PALLET_C01_
+    translation: [ -0.297, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_C0_PALLET
+    prefix: PALLET_C02_
+    translation: [ -0.06, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_C0_PALLET
+    prefix: PALLET_C03_
+    translation: [ 0.06, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_C0_PALLET
+    prefix: PALLET_C04_
+    translation: [ 0.297, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_C0_PALLET
+    prefix: PALLET_C05_
+    translation: [ 0.535, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_C0_PALLET
+    prefix: HANDRAIL_C00_
+    translation: [ -0.297, 0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE_C0_PALLET
+    prefix: HANDRAIL_C01_
+    translation: [ 0.297, 0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE
+    prefix: STAGE_B0_
+    translation: [ -0.6, 0.6, 0 ]
+    <<: *CommonPallet
+  -
+    type: SubBody
+    parent: STAGE_B0_PALLET
+    prefix: PALLET_B00_
+    translation: [ -0.535, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_B0_PALLET
+    prefix: PALLET_B01_
+    translation: [ -0.297, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_B0_PALLET
+    prefix: PALLET_B02_
+    translation: [ -0.06, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_B0_PALLET
+    prefix: PALLET_B03_
+    translation: [ 0.06, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_B0_PALLET
+    prefix: PALLET_B04_
+    translation: [ 0.297, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_B0_PALLET
+    prefix: PALLET_B05_
+    translation: [ 0.535, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_B0_PALLET
+    prefix: HANDRAIL_B00_
+    translation: [ -0.297, 0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE_B0_PALLET
+    prefix: HANDRAIL_B01_
+    translation: [ 0.297, 0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE
+    prefix: STAGE_A0_
+    translation: [ -1.8, 0.6, 0 ]
+    <<: *CommonPallet
+  -
+    type: SubBody
+    parent: STAGE_A0_PALLET
+    prefix: PALLET_A00_
+    translation: [ -0.535, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_A0_PALLET
+    prefix: PALLET_A01_
+    translation: [ -0.297, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_A0_PALLET
+    prefix: PALLET_A02_
+    translation: [ -0.06, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_A0_PALLET
+    prefix: PALLET_A03_
+    translation: [ 0.06, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_A0_PALLET
+    prefix: PALLET_A04_
+    translation: [ 0.297, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_A0_PALLET
+    prefix: PALLET_A05_
+    translation: [ 0.535, 0.32, 0 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_A0_PALLET
+    prefix: HANDRAIL_A00_
+    translation: [ -0.297, 0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE_A0_PALLET
+    prefix: HANDRAIL_A01_
+    translation: [ 0.297, 0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE
+    prefix: STAGE_D1_
+    translation: [ 1.8, 0, 0 ]
+    <<: *CommonPallet
+  -
+    type: SubBody
+    parent: STAGE_D1_PALLET
+    prefix: PALLET_D16_
+    translation: [ 0.62, 0.2375, 0 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D1_PALLET
+    prefix: PALLET_D17_
+    translation: [ 0.62, 0, 0 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D1_PALLET
+    prefix: PALLET_D18_
+    translation: [ 0.62, -0.2375, 0 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D1_PALLET
+    prefix: HANDRAIL_D12_
+    translation: [ 0.62, 0, -0.072 ]
+    rotation: [ 0, 0, 1, -90 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE
+    prefix: STAGE_C1_
+    translation: [ 0.6, 0, 0 ]
+    <<: *CommonPallet
+  -
+    type: SubBody
+    parent: STAGE
+    prefix: STAGE_B1_
+    translation: [ -0.6, 0, 0 ]
+    <<: *CommonPallet
+  -
+    type: SubBody
+    parent: STAGE
+    prefix: STAGE_A1_
+    translation: [ -1.8, 0, 0 ]
+    <<: *CommonPallet
+  -
+    type: SubBody
+    parent: STAGE
+    prefix: STAGE_D2_
+    translation: [ 1.8, -0.6, 0 ]
+    <<: *CommonPallet
+  -
+    type: SubBody
+    parent: STAGE
+    prefix: STAGE_C2_
+    translation: [ 0.6, -0.6, 0 ]
+    <<: *CommonPallet
+  -
+    type: SubBody
+    parent: STAGE_C2_PALLET
+    prefix: PALLET_C20_
+    translation: [ -0.535, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_C2_PALLET
+    prefix: PALLET_C21_
+    translation: [ -0.297, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_C2_PALLET
+    prefix: PALLET_C22_
+    translation: [ -0.06, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_C2_PALLET
+    prefix: PALLET_C23_
+    translation: [ 0.06, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_C2_PALLET
+    prefix: PALLET_C24_
+    translation: [ 0.297, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_C2_PALLET
+    prefix: PALLET_C25_
+    translation: [ 0.535, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_C2_PALLET
+    prefix: HANDRAIL_C20_
+    translation: [ -0.297, -0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE_C2_PALLET
+    prefix: HANDRAIL_C21_
+    translation: [ 0.297, -0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE
+    prefix: STAGE_B2_
+    translation: [ -0.6, -0.6, 0 ]
+    <<: *CommonPallet
+  -
+    type: SubBody
+    parent: STAGE_B2_PALLET
+    prefix: PALLET_AB0_
+    translation: [ -0.535, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_B2_PALLET
+    prefix: PALLET_B21_
+    translation: [ -0.297, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_B2_PALLET
+    prefix: PALLET_B22_
+    translation: [ -0.06, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_B2_PALLET
+    prefix: PALLET_B23_
+    translation: [ 0.06, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_B2_PALLET
+    prefix: PALLET_B24_
+    translation: [ 0.297, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_B2_PALLET
+    prefix: PALLET_B25_
+    translation: [ 0.535, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_B2_PALLET
+    prefix: HANDRAIL_B20_
+    translation: [ -0.297, -0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE_B2_PALLET
+    prefix: HANDRAIL_B21_
+    translation: [ 0.297, -0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE
+    prefix: STAGE_A2_
+    translation: [ -1.8, -0.6, 0 ]
+    <<: *CommonPallet
+  -
+    type: SubBody
+    parent: STAGE_A2_PALLET
+    prefix: PALLET_A20_
+    translation: [ -0.535, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_A2_PALLET
+    prefix: PALLET_A21_
+    translation: [ -0.297, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_A2_PALLET
+    prefix: PALLET_A22_
+    translation: [ -0.06, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_A2_PALLET
+    prefix: PALLET_A23_
+    translation: [ 0.06, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_A2_PALLET
+    prefix: PALLET_A24_
+    translation: [ 0.297, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_A2_PALLET
+    prefix: PALLET_A25_
+    translation: [ 0.535, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_A2_PALLET
+    prefix: PALLET_A26_
+    translation: [ -0.62, 0.2375, 0 ]
+    rotation: [ 0, 0, 1, 90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_A2_PALLET
+    prefix: PALLET_A27_
+    translation: [ -0.62, 0, 0 ]
+    rotation: [ 0, 0, 1, 90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_A2_PALLET
+    prefix: PALLET_A28_
+    translation: [ -0.62, -0.2375, 0 ]
+    rotation: [ 0, 0, 1, 90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_A2_PALLET
+    prefix: HANDRAIL_A20_
+    translation: [ -0.297, -0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE_A2_PALLET
+    prefix: HANDRAIL_A21_
+    translation: [ 0.297, -0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE_A2_PALLET
+    prefix: HANDRAIL_A22_
+    translation: [ -0.62, 0, -0.072 ]
+    rotation: [ 0, 0, 1, 90 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE
+    prefix: STAGE_D3_
+    translation: [ 1.8, -1.2, 0 ]
+    <<: *CommonPallet
+  -
+    type: SubBody
+    parent: STAGE_D3_PALLET
+    prefix: PALLET_D30_
+    translation: [ -0.535, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D3_PALLET
+    prefix: PALLET_D31_
+    translation: [ -0.297, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D3_PALLET
+    prefix: PALLET_D32_
+    translation: [ -0.06, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D3_PALLET
+    prefix: PALLET_D33_
+    translation: [ 0.06, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D3_PALLET
+    prefix: PALLET_D34_
+    translation: [ 0.297, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D3_PALLET
+    prefix: PALLET_D35_
+    translation: [ 0.535, -0.32, 0 ]
+    rotation: [ 0, 0, 1, 180 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D3_PALLET
+    prefix: PALLET_D36_
+    translation: [ -0.62, 0.2375, 0 ]
+    rotation: [ 0, 0, 1, 90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D3_PALLET
+    prefix: PALLET_D37_
+    translation: [ -0.62, 0, 0 ]
+    rotation: [ 0, 0, 1, 90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D3_PALLET
+    prefix: PALLET_D38_
+    translation: [ -0.62, -0.2375, 0 ]
+    rotation: [ 0, 0, 1, 90 ]
+    <<: *CommonBracket
+  -
+    type: SubBody
+    parent: STAGE_D3_PALLET
+    prefix: HANDRAIL_D30_
+    translation: [ -0.297, -0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE_D3_PALLET
+    prefix: HANDRAIL_D31_
+    translation: [ 0.297, -0.32, -0.072 ]
+    <<: *CommonHandrail
+  -
+    type: SubBody
+    parent: STAGE_D3_PALLET
+    prefix: HANDRAIL_D32_
+    translation: [ -0.62, 0, -0.072 ]
+    rotation: [ 0, 0, 1, 90 ]
+    <<: *CommonHandrail

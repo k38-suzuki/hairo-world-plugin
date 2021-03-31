@@ -1,0 +1,15 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+name: Pallet
+links:
+  -
+    name: PALLET
+    translation: [ 0, 0, 0.075 ]
+    jointType: fixed
+    material: Ground
+    AMOR: true
+    elements:
+      Shape:
+        geometry: { type: Box, size: [ 1.2, 0.6, 0.15 ] }
+        appearance:
+          material: { diffuseColor: [ 0.5, 0.5, 0.5 ] }
