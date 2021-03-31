@@ -1,13 +1,13 @@
 format: ChoreonoidBody
 formatVersion: 1.0
 angleUnit: degree
-name: HobbyDrone
+name: HobbyDrone2
 
-PURPLE_APP: &PurpleApp
+PURPLE_APP: &BlackApp
   appearance:
     material:
-      diffuseColor: [ 0.5, 0, 1 ]
-      specularColor: [ 0.5, 0, 1 ]
+      diffuseColor: [ 0.3, 0.3, 0.3 ]
+      specularColor: [ 0.3, 0.3, 0.3 ]
       shininess: 0.6
 
 WHITE_APP: &WhiteApp
@@ -37,13 +37,15 @@ ROTOR_COMMON: &RotorCommon
   jointType: fixed
   centerOfMass: [ 0, 0, 0 ]
   mass: 0.1
-  inertia: [ 2.83333e-05, 0, 0, 0, 2.83333e-05, 0, 0, 0, 4.16667e-05 ]
+  inertia: [ 0.0002575, 0, 0, 0, 0.0002575, 0, 0, 0, 0.0005 ]
 
 ROTOR_COMMON_SHAPE: &RotorCommonShape
   type: Shape
+  rotation: [ 1, 0, 0, -90 ]
   geometry:
-    type: Box
-    size: [ 0.05, 0.05, 0.03 ]
+    type: Cylinder
+    radius: 0.10
+    height: 0.03
 
 CAMERA_COMMON: &CameraCommon
   type: Camera
@@ -74,9 +76,9 @@ links:
     jointType: free
     centerOfMass: [ 0, 0, 0 ]
     mass: 1.0
-    inertia: [ 0.00228333, 0, 0, 0, 0.00228333, 0, 0, 0, 0.00375 ]
+    inertia: [ 0.00790833, 0, 0, 0, 0.00790833, 0, 0, 0, 0.015 ]
     density: 500.0
-    surface: [ 0.0105, 0.0105, 0.0105, 0.0105, 0.0225, 0.0225 ]
+    surface: [ 0.021, 0.021, 0.021, 0.021, 0.09, 0.09 ]
     cda: 0.25
     tw: 0.2
     cv: 10.0
@@ -85,18 +87,16 @@ links:
         type: Shape
         geometry:
           type: Box
-          size: [ 0.15, 0.15, 0.07 ]
-        <<: *PurpleApp
-      -
-        type: Shape
-        geometry:
-          type: Sphere
-          radius: 0.20
-        <<: *WhiteApp
+          size: [ 0.30, 0.30, 0.07 ]
+        <<: *BlackApp
       - <<: *CameraCommon
         name: FrontCamera
-        translation: [ 0.08, 0, 0 ]
+        translation: [ 0.16, 0, 0 ]
         rotation: [ [ 1, 0, 0, 90 ], [ 0, 1, 0, -90 ] ]
+      - <<: *CameraCommon
+        name: BottomCamera
+        translation: [ 0, 0, -0.03 ]
+        rotation: [ 0, 0, 1, -90]
       -
         type: RateGyroSensor
         name: GyroSensor
@@ -115,7 +115,7 @@ links:
         symbol: false
   -
     name: ROTOR_RF
-    translation: [ 0.075, -0.075, 0.035 ]
+    translation: [ 0.15, -0.15, 0.035 ]
     <<: *RotorCommon
     elements:
       - <<: *RotorCommonShape
@@ -126,7 +126,7 @@ links:
         symbol: false
   -
     name: ROTOR_LF
-    translation: [ 0.075, 0.075, 0.035 ]
+    translation: [ 0.15, 0.15, 0.035 ]
     <<: *RotorCommon
     elements:
       - <<: *RotorCommonShape
@@ -137,7 +137,7 @@ links:
         symbol: false
   -
     name: ROTOR_LR
-    translation: [ -0.075, 0.075, 0.035 ]
+    translation: [ -0.15, 0.15, 0.035 ]
     <<: *RotorCommon
     elements:
       - <<: *RotorCommonShape
@@ -148,7 +148,7 @@ links:
         symbol: false
   -
     name: ROTOR_RR
-    translation: [ -0.075, -0.075, 0.035 ]
+    translation: [ -0.15, -0.15, 0.035 ]
     <<: *RotorCommon
     elements:
       - <<: *RotorCommonShape

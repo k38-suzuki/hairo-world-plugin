@@ -3,9 +3,10 @@
    @author Kenta Suzuki
 */
 
+#include <cnoid/AccelerationSensor>
+#include <cnoid/EigenUtil>
 #include <cnoid/SimpleController>
 #include <cnoid/SharedJoystick>
-#include <cnoid/EigenUtil>
 #include <cnoid/RateGyroSensor>
 #include <cnoid/Rotor>
 
@@ -20,6 +21,7 @@ public:
     BodyPtr ioBody;
     DeviceList<Rotor> rotors;
     RateGyroSensor* gyroSensor;
+    AccelerationSensor* accSensor;
     double dt;
 
     Vector4 zref;
@@ -43,6 +45,7 @@ public:
         dt = io->timeStep();
         rotors = io->body()->devices();
         gyroSensor = ioBody->findDevice<RateGyroSensor>("GyroSensor");
+        accSensor = ioBody->findDevice<AccelerationSensor>("AccSensor");
         on = true;
         manualMode = false;
         mode1 = true;
@@ -63,6 +66,7 @@ public:
 
         io->enableInput(ioBody->rootLink(), LINK_POSITION);
         io->enableInput(gyroSensor);
+        io->enableInput(accSensor);
 
         for(size_t i = 0; i < rotors.size(); i++) {
             Rotor* rotor = rotors[i];
@@ -161,6 +165,11 @@ public:
             dz[3] = w[2];
         }
 
+        Vector3 dv(0.0, 0.0, 9.80665);
+        if(accSensor) {
+//            dv = accSensor->dv();
+        }
+
         Vector4 ddz = (dz - dzprev) / dt;
 
         Vector2 xy = getXY();
@@ -170,7 +179,7 @@ public:
         Vector2 ddxy_local = Eigen::Rotation2Dd(-z[3]) * ddxy;
 
         double cc = cos(z[1]) * cos(z[2]);
-        double gfcoef = ioBody->mass() * 9.80665 / 4.0 / cc ;
+        double gfcoef = ioBody->mass() * dv[2] / 4.0 / cc ;
 
         if(!on) {
             zref[0] = 0.0;
