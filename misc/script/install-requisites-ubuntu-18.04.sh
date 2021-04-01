@@ -1,9 +1,7 @@
 #!/bin/sh
 
 sudo apt-get -y install \
-gedit \
-libompl-dev \
-ompl-demos
+gedit
 
 LOGNAME=$(logname)
 
