@@ -168,6 +168,10 @@ public:
         Vector2 dxy_local = Eigen::Rotation2Dd(-z[3]) * dxy;
         Vector2 ddxy_local = Eigen::Rotation2Dd(-z[3]) * ddxy;
 
+        if((fabs(degree(z[1])) > 45.0) || (fabs(degree(z[2])) > 45.0)) {
+            on = false;
+        }
+
         if(!on) {
             zref[0] = z[0];
             dzref[0] = dz[0];
