@@ -181,6 +181,10 @@ public:
         double cc = cos(z[1]) * cos(z[2]);
         double gfcoef = ioBody->mass() * dv[2] / 4.0 / cc ;
 
+        if((fabs(degree(z[1])) > 45.0) || (fabs(degree(z[2])) > 45.0)) {
+            on = false;
+        }
+
         if(!on) {
             zref[0] = 0.0;
             dzref[0] = 0.0;
