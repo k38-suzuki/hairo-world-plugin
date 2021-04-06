@@ -7,6 +7,7 @@
 #define CNOID_MOTION_CAPTURE_PLUGIN_MOTION_CAPTURE_CAMERA_H
 
 #include <cnoid/Device>
+#include <cnoid/ValueTree>
 
 namespace cnoid {
 
@@ -20,12 +21,15 @@ public:
     virtual void copyStateFrom(const DeviceState& other) override;
     virtual DeviceState* cloneState() const override;
     virtual void forEachActualType(std::function<bool(const std::type_info& type)> func) override;
+    virtual void on(const bool on) override;
+    virtual bool on() const override;
     virtual int stateSize() const override;
     virtual const double* readState(const double* buf) override;
     virtual double* writeState(double* out_buf) const override;
 
-    virtual void on(const bool on) override;
-    virtual bool on() const override;
+    bool readSpecifications(const Mapping* info);
+    bool writeSpecifications(Mapping* info) const;
+
     void setFieldOfView(const int& fieldOfView) { fieldOfView_ = fieldOfView; }
     int fieldOfView() const { return fieldOfView_; }
     void setFocalLength(const double& focalLength) { focalLength_ = focalLength; }

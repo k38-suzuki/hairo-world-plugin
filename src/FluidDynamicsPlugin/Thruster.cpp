@@ -11,21 +11,10 @@
 #include <cnoid/SceneDevice>
 #include <cnoid/SceneMarkers>
 #include <cnoid/SceneShape>
-#include <cnoid/YAMLBodyLoader>
+#include <cnoid/StdBodyLoader>
+#include <cnoid/StdBodyWriter>
 
 using namespace cnoid;
-
-bool readThruster(YAMLBodyLoader& loader, Mapping& node)
-{
-    ThrusterPtr thruster = new Thruster;
-    double f;
-    bool b;
-    if(node.read("forceOffset", f)) thruster->setForceOffset(f);
-    if(node.read("torqueOffset", f)) thruster->setTorqueOffset(f);
-    if(node.read("symbol", b)) thruster->setSymbol(b);
-    return loader.readDevice(thruster, node);
-}
-
 
 namespace cnoid {
 
@@ -89,15 +78,6 @@ SceneDevice* createSceneThruster(Device* device)
 {
     return new SceneThruster(device);
 }
-
-
-struct ThrusterRegistration
-{
-    ThrusterRegistration() {
-        YAMLBodyLoader::addNodeType("Thruster", readThruster);
-        SceneDevice::registerSceneDeviceFactory<Thruster>(createSceneThruster);
-    }
-} registrationThruster;
 
 
 Thruster::Thruster()
@@ -212,4 +192,59 @@ double* Thruster::writeState(double* out_buf) const
     out_buf[i++] = torqueOffset_;
     out_buf[i++] = symbol_ ? 1.0 : 0.0;
     return out_buf + i;
+}
+
+
+bool Thruster::readSpecifications(const Mapping* info)
+{
+    info->read("on", on_);
+    info->read("forceOffset", forceOffset_);
+    info->read("torqueOffset", torqueOffset_);
+    info->read("symbol", symbol_);
+
+    return true;
+}
+
+
+bool Thruster::writeSpecifications(Mapping* info) const
+{
+    info->write("on", on_);
+    info->write("forceOffset", forceOffset_);
+    info->write("torqueOffset", torqueOffset_);
+    info->write("symbol", symbol_);
+
+    return true;
+}
+
+
+namespace {
+
+bool readThruster(StdBodyLoader* loader, const Mapping* info)
+{
+    ThrusterPtr thruster = new Thruster;
+    if(!thruster->readSpecifications(info)) {
+        thruster.reset();
+    }
+
+    bool result = false;
+    if(thruster) {
+        result = loader->readDevice(thruster, info);
+    }
+    return result;
+}
+
+
+struct ThrusterRegistration
+{
+    ThrusterRegistration() {
+        StdBodyLoader::registerNodeType("Thruster", readThruster);
+        StdBodyWriter::registerDeviceWriter<Thruster>(
+                    "Thruster",
+                    [](StdBodyWriter* /* writer */, Mapping* info, const Thruster* thruster){
+            return thruster->writeSpecifications(info);
+        });
+        SceneDevice::registerSceneDeviceFactory<Thruster>(createSceneThruster);
+    }
+} registrationThruster;
+
 }

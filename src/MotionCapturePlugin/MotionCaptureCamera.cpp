@@ -4,44 +4,15 @@
 */
 
 #include "MotionCaptureCamera.h"
+#include <cnoid/EigenArchive>
 #include <cnoid/EigenUtil>
 #include <cnoid/SceneDevice>
 #include <cnoid/SceneShape>
-#include <cnoid/YAMLBodyLoader>
+#include <cnoid/StdBodyLoader>
+#include <cnoid/StdBodyWriter>
 #include <cnoid/YAMLReader>
 
 using namespace cnoid;
-
-bool readMotionCaptureCamera(YAMLBodyLoader& loader, Mapping& node)
-{
-    MotionCaptureCameraPtr camera = new MotionCaptureCamera;
-    int f;
-    if(node.read("fieldOfView", f)) camera->setFieldOfView(f);
-    double fl;
-    if(node.read("focalLength", fl)) camera->setFocalLength(fl);
-    auto& a = *node.findListing("aspectRatio");
-    if(a.size() == 2) {
-        camera->setAspectRatio(Vector2(a[0].toDouble(), a[1].toDouble()));
-    }
-    auto& b = *node.findListing("diffuseColor");
-    if(b.size() == 3) {
-        camera->setDiffuseColor(Vector3(b[0].toDouble(), b[1].toDouble(), b[2].toDouble()));
-    }
-    auto& c = *node.findListing("emissiceColor");
-    if(c.size() == 3) {
-        camera->setEmissiveColor(Vector3(c[0].toDouble(), c[1].toDouble(), c[2].toDouble()));
-    }
-    auto& d = *node.findListing("specularColor");
-    if(d.size() == 3) {
-        camera->setSpecularColor(Vector3(d[0].toDouble(), d[1].toDouble(), d[2].toDouble()));
-    }
-    float s;
-    if(node.read("ambientIntensity", s)) camera->setAmbientIntensity(s);
-    if(node.read("shininess", s)) camera->setShininess(s);
-    if(node.read("transparency", s)) camera->setTransparency(s);
-    return loader.readDevice(camera, node);
-}
-
 
 namespace cnoid {
 
@@ -121,15 +92,6 @@ SceneDevice* createSceneMotionCaptureCamera(Device* device)
 }
 
 
-struct MotionCaptureCameraRegistration
-{
-    MotionCaptureCameraRegistration() {
-        YAMLBodyLoader::addNodeType("MotionCaptureCamera", readMotionCaptureCamera);
-        SceneDevice::registerSceneDeviceFactory<MotionCaptureCamera>(createSceneMotionCaptureCamera);
-    }
-} registrationMotionCaptureCamera;
-
-
 MotionCaptureCamera::MotionCaptureCamera()
 {
     on_ = true;
@@ -205,6 +167,18 @@ void MotionCaptureCamera::forEachActualType(std::function<bool(const std::type_i
 }
 
 
+void MotionCaptureCamera::on(const bool on)
+{
+    on_ = on;
+}
+
+
+bool MotionCaptureCamera::on() const
+{
+    return on_;
+}
+
+
 int MotionCaptureCamera::stateSize() const
 {
     return 4;
@@ -241,13 +215,65 @@ double* MotionCaptureCamera::writeState(double* out_buf) const
 }
 
 
-void MotionCaptureCamera::on(const bool on)
+bool MotionCaptureCamera::readSpecifications(const Mapping* info)
 {
-    on_ = on;
+    info->read("fieldOfView", fieldOfView_);
+    info->read("focalLength", focalLength_);
+    read(info, "aspectRatio", aspectRatio_);
+    read(info, "diffuseColor", diffuseColor_);
+    read(info, "emissiceColor", emissiveColor_);
+    read(info, "specularColor", specularColor_);
+    info->read("ambientIntensity", ambientIntensity_);
+    info->read("shininess", shininess_);
+    info->read("transparency", transparency_);
+
+    return true;
 }
 
 
-bool MotionCaptureCamera::on() const
+bool MotionCaptureCamera::writeSpecifications(Mapping* info) const
 {
-    return on_;
+    info->write("fieldOfView", fieldOfView_);
+    info->write("focalLength", focalLength_);
+    write(info, "aspectRatio", aspectRatio_);
+    write(info, "diffuseColor", diffuseColor_);
+    write(info, "emissiceColor", emissiveColor_);
+    write(info, "specularColor", specularColor_);
+    info->write("ambientIntensity", ambientIntensity_);
+    info->write("shininess", shininess_);
+    info->write("transparency", transparency_);
+
+    return true;
+}
+
+
+namespace {
+
+bool readMotionCaptureCamera(StdBodyLoader* loader, const Mapping* info)
+{
+    MotionCaptureCameraPtr camera = new MotionCaptureCamera;
+    if(!camera->readSpecifications(info)) {
+        camera.reset();
+    }
+
+    bool result = false;
+    if(camera) {
+        result = loader->readDevice(camera, info);
+    }
+    return result;
+}
+
+
+struct MotionCaptureCameraRegistration
+{
+    MotionCaptureCameraRegistration() {
+        StdBodyLoader::registerNodeType("MotionCaptureCamera", readMotionCaptureCamera);
+        StdBodyWriter::registerDeviceWriter<MotionCaptureCamera>("MotionCaptureCamera",
+                                                                 [](StdBodyWriter* /* writer */, Mapping* info, const MotionCaptureCamera* camera){
+            return camera->writeSpecifications(info);
+        });
+        SceneDevice::registerSceneDeviceFactory<MotionCaptureCamera>(createSceneMotionCaptureCamera);
+    }
+} registrationMotionCaptureCamera;
+
 }

@@ -4,32 +4,17 @@
 */
 
 #include "PassiveMarker.h"
+#include <cnoid/EigenArchive>
 #include <cnoid/EigenUtil>
 #include <cnoid/MeshGenerator>
 #include <cnoid/SceneDevice>
 #include <cnoid/SceneMarkers>
 #include <cnoid/SceneShape>
-#include <cnoid/YAMLBodyLoader>
+#include <cnoid/StdBodyLoader>
+#include <cnoid/StdBodyWriter>
 #include <cnoid/YAMLReader>
 
 using namespace cnoid;
-
-bool readPassiveMarker(YAMLBodyLoader& loader, Mapping& node)
-{
-    PassiveMarkerPtr marker = new PassiveMarker;
-    double t;
-    bool b;
-    if(node.read("radius", t)) marker->setRadius(t);
-    auto& c = *node.findListing("color");
-    if(c.size() == 3) {
-        Vector3 color(c[0].toDouble(), c[1].toDouble(), c[2].toDouble());
-        marker->setColor(color);
-    }
-    if(node.read("transparency", t)) marker->setTransparency(t);
-    if(node.read("symbol", b)) marker->setSymbol(b);
-    return loader.readDevice(marker, node);
-}
-
 
 namespace cnoid {
 
@@ -91,15 +76,6 @@ SceneDevice* createScenePassiveMarker(Device* device)
 {
     return new ScenePassiveMarker(device);
 }
-
-
-struct PassiveMarkerRegistration
-{
-    PassiveMarkerRegistration() {
-        YAMLBodyLoader::addNodeType("PassiveMarker", readPassiveMarker);
-        SceneDevice::registerSceneDeviceFactory<PassiveMarker>(createScenePassiveMarker);
-    }
-} registrationPassiveMarker;
 
 
 PassiveMarker::PassiveMarker()
@@ -213,4 +189,60 @@ double* PassiveMarker::writeState(double* out_buf) const
     out_buf[i++] = transparency_;
     out_buf[i++] = symbol_ ? 1.0 : 0.0;
     return out_buf + i;
+}
+
+
+bool PassiveMarker::readSpecifications(const Mapping* info)
+{
+    info->read("on", on_);
+    info->read("radius", radius_);
+    read(info, "color", color_);
+    info->read("transparency", transparency_);
+    info->read("symbol", symbol_);
+
+    return true;
+}
+
+
+bool PassiveMarker::writeSpecifications(Mapping* info) const
+{
+    info->write("on", on_);
+    info->write("radius", radius_);
+    write(info, "color", color_);
+    info->write("transparency", transparency_);
+    info->write("symbol", symbol_);
+
+    return true;
+}
+
+
+namespace {
+
+bool readPassiveMarker(StdBodyLoader* loader, const Mapping* info)
+{
+    PassiveMarkerPtr marker = new PassiveMarker;
+    if(!marker->readSpecifications(info)) {
+            marker.reset();
+    }
+
+    bool result = false;
+    if(marker) {
+        result = loader->readDevice(marker, info);
+    }
+    return result;
+}
+
+
+struct PassiveMarkerRegistration
+{
+    PassiveMarkerRegistration() {
+        StdBodyLoader::registerNodeType("PassiveMarker", readPassiveMarker);
+        StdBodyWriter::registerDeviceWriter<PassiveMarker>("PassiveMarker",
+                                                           [](StdBodyWriter* /* writer */, Mapping* info, const PassiveMarker* marker){
+            return marker->writeSpecifications(info);
+        });
+        SceneDevice::registerSceneDeviceFactory<PassiveMarker>(createScenePassiveMarker);
+    }
+} registrationPassiveMarker;
+
 }

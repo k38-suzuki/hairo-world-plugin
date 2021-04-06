@@ -7,6 +7,7 @@
 #define CNOID_FLUID_DYNAMICS_PLUGIN_ROTOR_H
 
 #include <cnoid/Device>
+#include <cnoid/ValueTree>
 #include "exportdecl.h"
 
 namespace cnoid {
@@ -27,6 +28,9 @@ public:
     virtual int stateSize() const override;
     virtual const double* readState(const double* buf) override;
     virtual double* writeState(double* out_buf) const override;
+
+    bool readSpecifications(const Mapping* info);
+    bool writeSpecifications(Mapping* info) const;
 
     double& force() { return force_; }
     double& torque() { return torque_; }

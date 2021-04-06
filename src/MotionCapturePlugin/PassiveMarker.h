@@ -8,6 +8,7 @@
 
 #include <cnoid/Device>
 #include <cnoid/SceneMarkers>
+#include <cnoid/ValueTree>
 #include <memory>
 #include "exportdecl.h"
 
@@ -29,6 +30,9 @@ public:
     virtual int stateSize() const override;
     virtual const double* readState(const double* buf) override;
     virtual double* writeState(double* out_buf) const override;
+
+    bool readSpecifications(const Mapping* info);
+    bool writeSpecifications(Mapping* info) const;
 
     void setRadius(const double& radius) { radius_ = radius; }
     double radius() const { return radius_; }

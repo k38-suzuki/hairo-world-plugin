@@ -11,26 +11,10 @@
 #include <cnoid/SceneDevice>
 #include <cnoid/SceneMarkers>
 #include <cnoid/SceneShape>
-#include <cnoid/YAMLBodyLoader>
+#include <cnoid/StdBodyLoader>
+#include <cnoid/StdBodyWriter>
 
 using namespace cnoid;
-
-bool readRotor(YAMLBodyLoader& loader, Mapping& node)
-{
-    RotorPtr rotor = new Rotor;
-    double f;
-    bool r;
-    if(node.read("forceOffset", f)) rotor->setForceOffset(f);
-    if(node.read("torqueOffset", f)) rotor->setTorqueOffset(f);
-    if(node.read("k", f)) rotor->setK(f);
-    if(node.read("kv", f)) rotor->setKv(f);
-    if(node.read("diameter", f)) rotor->setDiameter(f);
-    if(node.read("pitch", f)) rotor->setPitch(f);
-    if(node.read("reverse", r)) rotor->setReverse(r);
-    if(node.read("symbol", r)) rotor->setSymbol(r);
-    return loader.readDevice(rotor, node);
-}
-
 
 namespace cnoid {
 
@@ -94,15 +78,6 @@ SceneDevice* createSceneRotor(Device* device)
 {
     return new SceneRotor(device);
 }
-
-
-struct RotorRegistration
-{
-    RotorRegistration() {
-        YAMLBodyLoader::addNodeType("Rotor", readRotor);
-        SceneDevice::registerSceneDeviceFactory<Rotor>(createSceneRotor);
-    }
-} registrationRotor;
 
 
 Rotor::Rotor()
@@ -242,4 +217,70 @@ double* Rotor::writeState(double* out_buf) const
     out_buf[i++] = reverse_;
     out_buf[i++] = symbol_ ? 1.0 : 0.0;
     return out_buf + i;
+}
+
+
+bool Rotor::readSpecifications(const Mapping* info)
+{
+    info->read("on", on_);
+    info->read("forceOffset", forceOffset_);
+    info->read("torqueOffset", torqueOffset_);
+    info->read("symbol", symbol_);
+
+    info->read("k", k_);
+    info->read("kv", kv_);
+    info->read("diameter", diameter_);
+    info->read("pitch", pitch_);
+    info->read("reverse", reverse_);
+
+    return true;
+}
+
+
+bool Rotor::writeSpecifications(Mapping* info) const
+{
+    info->write("on", on_);
+    info->write("forceOffset", forceOffset_);
+    info->write("torqueOffset", torqueOffset_);
+    info->write("symbol", symbol_);
+
+    info->write("k", k_);
+    info->write("kv", kv_);
+    info->write("diameter", diameter_);
+    info->write("pitch", pitch_);
+    info->write("reverse", reverse_);
+
+    return true;
+}
+
+
+namespace {
+
+bool readRotor(StdBodyLoader* loader, const Mapping* info)
+{
+    RotorPtr rotor = new Rotor;
+    if(!rotor->readSpecifications(info)) {
+        rotor.reset();
+    }
+
+    bool result = false;
+    if(rotor) {
+        result = loader->readDevice(rotor, info);
+    }
+    return result;
+}
+
+
+struct RotorRegistration
+{
+    RotorRegistration() {
+        StdBodyLoader::registerNodeType("Rotor", readRotor);
+        StdBodyWriter::registerDeviceWriter<Rotor>("Rotor",
+                                                   [](StdBodyWriter* /* writer */, Mapping* info, const Rotor* rotor){
+            return rotor->writeSpecifications(info);
+        });
+        SceneDevice::registerSceneDeviceFactory<Rotor>(createSceneRotor);
+    }
+} registrationRotor;
+
 }
