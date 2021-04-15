@@ -26,6 +26,7 @@ public:
     void filteredImage(Image& image, const double& m_scalex, const double& m_scaley);
     void flippedImage(Image& image);
     void gaussianFilter(Image& image);
+    void medianFilter(Image& image);
 
 private:
     ImageGeneratorImpl* impl;

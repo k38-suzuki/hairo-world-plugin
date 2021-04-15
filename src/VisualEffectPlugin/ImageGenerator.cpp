@@ -4,9 +4,10 @@
 */
 
 #include "ImageGenerator.h"
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 #include <random>
+#include <vector>
 #include <QColor>
 
 using namespace std;
@@ -32,6 +33,7 @@ public:
     void filteredImage(Image& image, const double& m_scalex, const double& m_scaley);
     void flippedImage(Image& image);
     void gaussianFilter(Image& image);
+    void medianFilter(Image& image);
 };
 
 }
@@ -434,6 +436,52 @@ void ImageGeneratorImpl::gaussianFilter(Image& image)
                 image.pixels()[index + k] += kernel[6] * (double)cloneImage.pixels()[nc * i + nc * (j + 2) * (width + 2) + k];
                 image.pixels()[index + k] += kernel[7] * (double)cloneImage.pixels()[nc * (i + 1) + nc * (j + 2) * (width + 2) + k];
                 image.pixels()[index + k] += kernel[8] * (double)cloneImage.pixels()[nc * (i + 2) + nc * (j + 2) * (width + 2) + k];
+            }
+        }
+    }
+}
+
+
+void ImageGenerator::medianFilter(Image& image)
+{
+    impl->medianFilter(image);
+}
+
+
+void ImageGeneratorImpl::medianFilter(Image& image)
+{
+    Image cloneImage;
+    int width = image.width();
+    int height = image.height();
+    int numComp = image.numComponents();
+    cloneImage.setSize(width + 2, height + 2, numComp);
+
+    int nc = numComp;
+    for(int j = 0; j < height; ++j) {
+        for(int i = 0; i < width; ++i) {
+            int index = nc * (i + 1) + nc * (j + 1) * (width + 2);
+            cloneImage.pixels()[index] = image.pixels()[nc * i + nc * j * width];
+            cloneImage.pixels()[index + 1] = image.pixels()[nc * (i + 1) + nc * j * width];
+            cloneImage.pixels()[index + 2] = image.pixels()[nc * (i + 2) + nc * j * width];
+        }
+    }
+
+    for(int j = 0; j < height; ++j) {
+        for(int i = 0; i < width; ++i) {
+            int index = nc * i + nc * j * width;
+            for(int k = 0; k < nc; ++k) {
+                vector<double> values;
+                values.push_back((double)cloneImage.pixels()[nc * i + nc * j * (width + 2) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * (i + 1) + nc * j * (width + 2) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * (i + 2) + nc * j * (width + 2) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * i + nc * (j + 1) * (width + 2) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * (i + 1) + nc * (j + 1) * (width + 2) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * (i + 2) + nc * (j + 1) * (width + 2) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * i + nc * (j + 2) * (width + 2) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * (i + 1) + nc * (j + 2) * (width + 2) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * (i + 2) + nc * (j + 2) * (width + 2) + k]);
+                sort(values.begin(), values.end());
+                image.pixels()[index + k] = values[5];
             }
         }
     }
