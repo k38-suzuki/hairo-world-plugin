@@ -38,7 +38,8 @@ public:
     double pepper() const { return pepper_; }
     void setFlip(const bool& flip) { flip_ = flip; }
     bool flip() const { return flip_; }
-
+    void setGaussianFilter(const bool& gaussianFilter) { gaussianFilter_ = gaussianFilter; }
+    bool gaussianFilter() const { return gaussianFilter_; }
 
 private:
     double hue_;
@@ -53,6 +54,7 @@ private:
     double salt_;
     double pepper_;
     bool flip_;
+    bool gaussianFilter_;
 };
 
 }

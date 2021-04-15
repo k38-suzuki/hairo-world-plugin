@@ -41,6 +41,7 @@ public:
     DoubleSpinBox* saltSpin;
     DoubleSpinBox* pepperSpin;
     CheckBox* flipCheck;
+    CheckBox* gaussianCheck;
 
     void onAccepted();
     void onRejected();
@@ -80,6 +81,7 @@ VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
     saltSpin = new DoubleSpinBox();
     pepperSpin = new DoubleSpinBox();
     flipCheck = new CheckBox();
+    gaussianCheck = new CheckBox();
 
     vector<DoubleSpinBox*> dspins;
     dspins.push_back(hueSpin);
@@ -102,6 +104,8 @@ VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
     coefDSpin->setValue(1.0);
     flipCheck->setText(_("Flip"));
     flipCheck->setChecked(false);
+    gaussianCheck->setText(_("Gaussian filter(3x3)"));
+    gaussianCheck->setChecked(false);
 
     QGridLayout* gbox = new QGridLayout();
     int index = 0;
@@ -127,7 +131,8 @@ VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
     gbox->addWidget(saltSpin, index, 3);
     gbox->addWidget(new QLabel(_("Pepper")), index, 4);
     gbox->addWidget(pepperSpin, index++, 5);
-    gbox->addWidget(flipCheck, index++, 0);
+    gbox->addWidget(flipCheck, index, 0);
+    gbox->addWidget(gaussianCheck, index++, 1);
 
     PushButton* resetButton = new PushButton(_("&Reset"));
     QPushButton* okButton = new QPushButton(_("&Ok"));
@@ -187,6 +192,7 @@ void VisualEffectDialog::setVisualEffect(const VisualEffect& effect)
     setSalt(effect.salt());
     setPepper(effect.pepper());
     setFlip(effect.flip());
+    setGaussianFilter(effect.gaussianFilter());
 }
 
 
@@ -334,6 +340,18 @@ bool VisualEffectDialog::flip() const
 }
 
 
+void VisualEffectDialog::setGaussianFilter(const bool& gaussianFilter)
+{
+    impl->gaussianCheck->setChecked(gaussianFilter);
+}
+
+
+bool VisualEffectDialog::gaussianFilter() const
+{
+    return impl->gaussianCheck->isChecked();
+}
+
+
 void VisualEffectDialogImpl::onResetButtonClicked()
 {
     hueSpin->setValue(0.0);
@@ -348,6 +366,7 @@ void VisualEffectDialogImpl::onResetButtonClicked()
     saltSpin->setValue(0.0);
     pepperSpin->setValue(0.0);
     flipCheck->setChecked(false);
+    gaussianCheck->setChecked(false);
 }
 
 

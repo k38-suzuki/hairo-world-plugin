@@ -31,6 +31,7 @@ public:
     void saltPepperNoise(Image& image, const double& m_salt, const double& m_pepper);
     void filteredImage(Image& image, const double& m_scalex, const double& m_scaley);
     void flippedImage(Image& image);
+    void gaussianFilter(Image& image);
 };
 
 }
@@ -384,8 +385,107 @@ void ImageGeneratorImpl::flippedImage(Image& image)
 
     for(int i = 0; i < length; i += 3) {
         for(int j = 0; j < 3; j++) {
-            cloneImage.pixels()[i + j] = image.pixels()[ length - i + j ];
+            cloneImage.pixels()[i + j] = image.pixels()[length - i + j];
         }
     }
     image = cloneImage;
+}
+
+
+void ImageGenerator::gaussianFilter(Image& image)
+{
+    impl->gaussianFilter(image);
+}
+
+
+void ImageGeneratorImpl::gaussianFilter(Image& image)
+{
+    Image cloneImage;
+    int width = image.width();
+    int height = image.height();
+    int numComp = image.numComponents();
+    cloneImage.setSize(width + 2, height + 2, numComp);
+
+    const double kernel[9] = { 1.0 / 16.0, 2.0 / 16.0, 1.0 / 16.0,
+                         2.0 / 16.0, 4.0 / 16.0, 2.0 / 16.0,
+                         1.0 / 16.0, 2.0 / 16.0, 1.0 / 16.0 };
+
+    if(numComp == 3) {
+        for(int j = 0; j < height; ++j) {
+            for(int i = 0; i < width; ++i) {
+                int index = 3 * (i + 1) + 3 * (j + 1) * (width + 2);
+                cloneImage.pixels()[index] = image.pixels()[3 * i + 3 * j * width];
+                cloneImage.pixels()[index + 1] = image.pixels()[3 * (i + 1) + 3 * j * width];
+                cloneImage.pixels()[index + 2] = image.pixels()[3 * (i + 2) + 3 * j * width];
+            }
+        }
+
+        for(int j = 0; j < height; ++j) {
+            for(int i = 0; i < width; ++i) {
+                int index = 3 * i + 3 * j * width;
+                image.pixels()[index] = 0;
+                image.pixels()[index + 1] = 0;
+                image.pixels()[index + 2] = 0;
+
+                image.pixels()[index] += kernel[0] * (double)cloneImage.pixels()[3 * i + 3 * j * (width + 2)];
+                image.pixels()[index + 1] += kernel[0] * (double)cloneImage.pixels()[3 * i + 3 * j * (width + 2) + 1];
+                image.pixels()[index + 2] += kernel[0] * (double)cloneImage.pixels()[3 * i + 3 * j * (width + 2) + 2];
+
+                image.pixels()[index] += kernel[1] * (double)cloneImage.pixels()[3 * (i + 1) + 3 * j * (width + 2)];
+                image.pixels()[index + 1] += kernel[1] * (double)cloneImage.pixels()[3 * (i + 1) + 3 * j * (width + 2) + 1];
+                image.pixels()[index + 2] += kernel[1] * (double)cloneImage.pixels()[3 * (i + 1) + 3 * j * (width + 2) + 2];
+
+                image.pixels()[index] += kernel[2] * (double)cloneImage.pixels()[3 * (i + 2) + 3 * j * (width + 2)];
+                image.pixels()[index + 1] += kernel[2] * (double)cloneImage.pixels()[3 * (i + 2) + 3 * j * (width + 2) + 1];
+                image.pixels()[index + 2] += kernel[2] * (double)cloneImage.pixels()[3 * (i + 2) + 3 * j * (width + 2) + 2];
+
+                image.pixels()[index] += kernel[3] * (double)cloneImage.pixels()[3 * i + 3 * (j + 1) * (width + 2)];
+                image.pixels()[index + 1] += kernel[3] * (double)cloneImage.pixels()[3 * i + 3 * (j + 1) * (width + 2) + 1];
+                image.pixels()[index + 2] += kernel[3] * (double)cloneImage.pixels()[3 * i + 3 * (j + 1) * (width + 2) + 2];
+
+                image.pixels()[index] += kernel[4] * (double)cloneImage.pixels()[3 * (i + 1) + 3 * (j + 1) * (width + 2)];
+                image.pixels()[index + 1] += kernel[4] * (double)cloneImage.pixels()[3 * (i + 1) + 3 * (j + 1) * (width + 2) + 1];
+                image.pixels()[index + 2] += kernel[4] * (double)cloneImage.pixels()[3 * (i + 1) + 3 * (j + 1) * (width + 2) + 2];
+
+                image.pixels()[index] += kernel[5] * (double)cloneImage.pixels()[3 * (i + 2) + 3 * (j + 1) * (width + 2)];
+                image.pixels()[index + 1] += kernel[5] * (double)cloneImage.pixels()[3 * (i + 2) + 3 * (j + 1) * (width + 2) + 1];
+                image.pixels()[index + 2] += kernel[5] * (double)cloneImage.pixels()[3 * (i + 2) + 3 * (j + 1) * (width + 2) + 2];
+
+                image.pixels()[index] += kernel[6] * (double)cloneImage.pixels()[3 * i + 3 * (j + 2) * (width + 2)];
+                image.pixels()[index + 1] += kernel[6] * (double)cloneImage.pixels()[3 * i + 3 * (j + 2) * (width + 2) + 1];
+                image.pixels()[index + 2] += kernel[6] * (double)cloneImage.pixels()[3 * i + 3 * (j + 2) * (width + 2) + 2];
+
+                image.pixels()[index] += kernel[7] * (double)cloneImage.pixels()[3 * (i + 1) + 3 * (j + 2) * (width + 2)];
+                image.pixels()[index + 1] += kernel[7] * (double)cloneImage.pixels()[3 * (i + 1) + 3 * (j + 2) * (width + 2) + 1];
+                image.pixels()[index + 2] += kernel[7] * (double)cloneImage.pixels()[3 * (i + 1) + 3 * (j + 2) * (width + 2) + 2];
+
+                image.pixels()[index] += kernel[8] * (double)cloneImage.pixels()[3 * (i + 2) + 3 * (j + 2) * (width + 2)];
+                image.pixels()[index + 1] += kernel[8] * (double)cloneImage.pixels()[3 * (i + 2) + 3 * (j + 2) * (width + 2) + 1];
+                image.pixels()[index + 2] += kernel[8] * (double)cloneImage.pixels()[3 * (i + 2) + 3 * (j + 2) * (width + 2) + 2];
+            }
+        }
+    } else if(numComp == 1) {
+        for(int j = 0; j < height; ++j) {
+            for(int i = 0; i < width; ++i) {
+                int index = (i + 1) + (j + 1) * (width + 2);
+                cloneImage.pixels()[index] = image.pixels()[i + j * width];
+            }
+        }
+
+        for(int j = 0; j < height; ++j) {
+            for(int i = 0; i < width; ++i) {
+                int index = i + j * width;
+                image.pixels()[index] = 0;
+                image.pixels()[index] += kernel[0] * (double)cloneImage.pixels()[i + j * (width + 2)];
+                image.pixels()[index] += kernel[1] * (double)cloneImage.pixels()[(i + 1) + j * (width + 2)];
+                image.pixels()[index] += kernel[2] * (double)cloneImage.pixels()[(i + 2) + j * (width + 2)];
+                image.pixels()[index] += kernel[3] * (double)cloneImage.pixels()[i + (j + 1) * (width + 2)];
+                image.pixels()[index] += kernel[4] * (double)cloneImage.pixels()[(i + 1) + (j + 1) * (width + 2)];
+                image.pixels()[index] += kernel[5] * (double)cloneImage.pixels()[(i + 2) + (j + 1) * (width + 2)];
+                image.pixels()[index] += kernel[6] * (double)cloneImage.pixels()[i + (j + 2) * (width + 2)];
+                image.pixels()[index] += kernel[7] * (double)cloneImage.pixels()[(i + 1) + (j + 2) * (width + 2)];
+                image.pixels()[index] += kernel[8] * (double)cloneImage.pixels()[(i + 2) + (j + 2) * (width + 2)];
+            }
+        }
+    }
 }

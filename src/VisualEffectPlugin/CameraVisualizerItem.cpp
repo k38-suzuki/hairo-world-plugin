@@ -233,6 +233,7 @@ bool CameraVisualizerItem::store(Archive& archive)
             subArchive->write("salt", vitem->effect.salt());
             subArchive->write("pepper", vitem->effect.pepper());
             subArchive->write("flip", vitem->effect.flip());
+            subArchive->write("gaussian", vitem->effect.gaussianFilter());
         }
         item->store(*subArchive);
 
@@ -334,6 +335,9 @@ bool CameraVisualizerItem::restore(const Archive& archive)
                         bool flip;
                         subArchive->read("flip", flip);
                         vitem->effect.setFlip(flip);
+                        bool gaussian;
+                        subArchive->read("gaussian", gaussian);
+                        vitem->effect.setGaussianFilter(gaussian);
                     }
                 }
                 impl->restoredSubItems.push_back(item);
@@ -440,6 +444,7 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
                 effect.setSalt(effectDialog->salt());
                 effect.setPepper(effectDialog->pepper());
                 effect.setFlip(effectDialog->flip());
+                effect.setGaussianFilter(effectDialog->gaussianFilter());
                 pitem = this;
             }
         }
@@ -459,6 +464,7 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
         double stdDev = effect.stdDev();
         double salt = effect.salt();
         double pepper = effect.pepper();
+        bool gaussianFilter = effect.gaussianFilter();
 
         if(hue > 0.0 || saturation > 0.0 || value > 0.0) {
             generator.hsv(orgImage, hue, saturation, value);
@@ -477,6 +483,9 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
         }
         if(salt > 0.0 || pepper > 0.0) {
             generator.saltPepperNoise(orgImage, salt, pepper);
+        }
+        if(gaussianFilter) {
+            generator.gaussianFilter(orgImage);
         }
 
         image = make_shared<Image>(orgImage);
