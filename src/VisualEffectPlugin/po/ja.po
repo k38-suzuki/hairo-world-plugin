@@ -41,6 +41,14 @@ msgstr "設定"
 msgid "Flip"
 msgstr "反転"
 
+#: ../VisualEffectDialog.cpp:108
+msgid "No filter"
+msgstr "フィルタなし"
+
+#: ../VisualEffectDialog.cpp:108
+msgid "Gaussian 3x3"
+msgstr "ガウシアン 3x3"
+
 #: ../VisualEffectDialog.cpp:105
 msgid "Hue"
 msgstr "色相"
@@ -84,6 +92,10 @@ msgstr "白色ノイズ"
 #: ../VisualEffectDialog.cpp:125
 msgid "Pepper"
 msgstr "黒色ノイズ"
+
+#: ../VisualEffectDialog.cpp:137
+msgid "Filter"
+msgstr "フィルタ"
 
 #: ../VisualEffectDialog.cpp:129
 msgid "&Reset"

@@ -6,6 +6,7 @@
 #include "VisualEffectDialog.h"
 #include <cnoid/Button>
 #include <cnoid/CheckBox>
+#include <cnoid/ComboBox>
 #include <cnoid/ImageView>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
@@ -41,7 +42,7 @@ public:
     DoubleSpinBox* saltSpin;
     DoubleSpinBox* pepperSpin;
     CheckBox* flipCheck;
-    CheckBox* gaussianCheck;
+    ComboBox* filterCombo;
 
     void onAccepted();
     void onRejected();
@@ -81,7 +82,7 @@ VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
     saltSpin = new DoubleSpinBox();
     pepperSpin = new DoubleSpinBox();
     flipCheck = new CheckBox();
-    gaussianCheck = new CheckBox();
+    filterCombo = new ComboBox();
 
     vector<DoubleSpinBox*> dspins;
     dspins.push_back(hueSpin);
@@ -104,8 +105,9 @@ VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
     coefDSpin->setValue(1.0);
     flipCheck->setText(_("Flip"));
     flipCheck->setChecked(false);
-    gaussianCheck->setText(_("Gaussian filter(3x3)"));
-    gaussianCheck->setChecked(false);
+    QStringList filters = { _("No filter"), _("Gaussian 3x3") };
+    filterCombo->addItems(filters);
+    filterCombo->setCurrentIndex(0);
 
     QGridLayout* gbox = new QGridLayout();
     int index = 0;
@@ -132,7 +134,8 @@ VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
     gbox->addWidget(new QLabel(_("Pepper")), index, 4);
     gbox->addWidget(pepperSpin, index++, 5);
     gbox->addWidget(flipCheck, index, 0);
-    gbox->addWidget(gaussianCheck, index++, 1);
+    gbox->addWidget(new QLabel(_("Filter")), index, 2);
+    gbox->addWidget(filterCombo, index++, 3);
 
     PushButton* resetButton = new PushButton(_("&Reset"));
     QPushButton* okButton = new QPushButton(_("&Ok"));
@@ -192,7 +195,7 @@ void VisualEffectDialog::setVisualEffect(const VisualEffect& effect)
     setSalt(effect.salt());
     setPepper(effect.pepper());
     setFlip(effect.flip());
-    setGaussianFilter(effect.gaussianFilter());
+    setFilter(effect.filter());
 }
 
 
@@ -340,15 +343,15 @@ bool VisualEffectDialog::flip() const
 }
 
 
-void VisualEffectDialog::setGaussianFilter(const bool& gaussianFilter)
+void VisualEffectDialog::setFilter(const int& filter)
 {
-    impl->gaussianCheck->setChecked(gaussianFilter);
+    impl->filterCombo->setCurrentIndex(filter);
 }
 
 
-bool VisualEffectDialog::gaussianFilter() const
+int VisualEffectDialog::filter() const
 {
-    return impl->gaussianCheck->isChecked();
+    return impl->filterCombo->currentIndex();
 }
 
 
@@ -366,7 +369,7 @@ void VisualEffectDialogImpl::onResetButtonClicked()
     saltSpin->setValue(0.0);
     pepperSpin->setValue(0.0);
     flipCheck->setChecked(false);
-    gaussianCheck->setChecked(false);
+    filterCombo->setCurrentIndex(0);
 }
 
 

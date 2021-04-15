@@ -49,8 +49,8 @@ public:
     double pepper() const;
     void setFlip(const double& flip);
     bool flip() const;
-    void setGaussianFilter(const bool& gaussianFilter);
-    bool gaussianFilter() const;
+    void setFilter(const int& filter);
+    int filter() const;
 
 protected:
     virtual void onAccepted() override;

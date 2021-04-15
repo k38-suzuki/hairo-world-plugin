@@ -16,7 +16,7 @@ VisualEffect::VisualEffect()
     salt_ = 0.0;
     pepper_ = 0.0;
     flip_ = false;
-    gaussianFilter_ = false;
+    filter_ = 0;
 }
 
 
