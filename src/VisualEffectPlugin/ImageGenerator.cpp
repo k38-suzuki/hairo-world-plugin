@@ -73,8 +73,7 @@ void ImageGeneratorImpl::barrelDistortion(Image& image, const double& m_coefb, c
     cloneImage.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
     int height = image.height();
-    int numComp = image.numComponents();
-    int length = width * height * numComp;
+    int nc = image.numComponents();
 
     double coefa = 0.0;
     double coefb = m_coefb;
@@ -96,13 +95,9 @@ void ImageGeneratorImpl::barrelDistortion(Image& image, const double& m_coefb, c
             int srcx = (int)srcxd;
             int srcy = (int)srcyd;
             if((srcx >= 0) && (srcy >= 0) && (srcx < width) && (srcy < height)) {
-                int index = j * width + i;
-                if(numComp == 3) {
-                    for(int k = 0; k < 3; k++) {
-                        cloneImage.pixels()[3 * index + k] = image.pixels()[3 * (srcy * width + srcx) + k];
-                    }
-                } else if(numComp == 1) {
-                    cloneImage.pixels()[3 * index] = image.pixels()[3 * (srcy * width + srcx)];
+                int index =  nc * (j * width + i);
+                for(int k = 0; k < nc; ++k) {
+                    cloneImage.pixels()[index + k] = image.pixels()[nc * (srcy * width + srcx) + k];
                 }
             }
         }
@@ -122,34 +117,21 @@ void ImageGeneratorImpl::gaussianNoise(Image& image, const double& m_std_dev)
     image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
     int height = image.height();
-    int numComp = image.numComponents();
-    int length = width * height * numComp;
+    int nc = image.numComponents();
 
-    if(numComp == 3) {
-        for(int i = 0; i < length; i += 3) {
-            double addLumi = dist(engine) * m_std_dev * 255.0;
-            int pixel[3];
-
-            for(int j = 0; j < 3; j++) {
-                pixel[j] = image.pixels()[i + j] + (int)addLumi;
-                if(pixel[j] > 255) {
-                    pixel[j] = 255;
-                } else if(pixel[j] < 0) {
-                    pixel[j] = 0;
+    for(int j = 0; j < height; ++j) {
+        for(int i = 0; i < width; ++i) {
+            int index = nc * (i + j * width);
+            double color = dist(engine) * m_std_dev * 255.0;
+            for(int k = 0; k < nc; ++k) {
+                int pixel = image.pixels()[index + k] + (int)color;
+                if(pixel > 255) {
+                    pixel = 255;
+                } else if(pixel < 0) {
+                    pixel = 0;
                 }
-                image.pixels()[i + j] = pixel[j];
+                image.pixels()[index + k] = pixel;
             }
-        }
-    } else if(numComp == 1) {
-        for(int i = 0; i < length; i++) {
-            double addLumi = dist(engine) * m_std_dev * 255.0;
-            int pixel = image.pixels()[i] + (int)addLumi;
-            if(pixel > 255) {
-                pixel = 255;
-            } else if(pixel < 0) {
-                pixel = 0;
-            }
-            image.pixels()[i] = pixel;
         }
     }
 }
@@ -166,41 +148,44 @@ void ImageGeneratorImpl::hsv(Image& image, const double& m_hue, const double& m_
     image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
     int height = image.height();
-    int numComp = image.numComponents();
-    int length = width * height * numComp;
+    int nc = image.numComponents();
 
-    for(int i = 0; i < length; i += 3) {
-        int red = (int)image.pixels()[i];
-        int green = (int)image.pixels()[i + 1];
-        int blue = (int)image.pixels()[i + 2];
+    for(int j = 0; j < height; ++j) {
+        for(int i = 0; i < width; ++i) {
+            int index = nc * (i + j * width);
+            int colors[] = { 0, 0, 0 };
+            for(int k = 0; k < nc; ++k) {
+                colors[k] = (int)image.pixels()[index + k];
+            }
+            QColor rgbColor = QColor::fromRgb(colors[0], colors[1], colors[2]);
+            int h = rgbColor.hue() + m_hue * 360.0;
+            int s = rgbColor.saturation() + m_saturation * 255.0;
+            int v = rgbColor.value() + m_value * 255.0;
 
-        QColor rgbColor = QColor::fromRgb(red, green, blue);
-        int h = rgbColor.hue() + m_hue * 360.0;
-        int s = rgbColor.saturation() + m_saturation * 255.0;
-        int v = rgbColor.value() + m_value * 255.0;
+            if(h > 359) {
+                h -= 360;
+            } else if(h < 0) {
+                h = 0;
+            }
 
-        if(h > 359) {
-            h -= 360;
-        } else if(h < 0) {
-            h = 0;
+            if(s > 255) {
+                s = 255;
+            } else if(s < 0) {
+                s = 0;
+            }
+
+            if(v > 255) {
+                v = 255;
+            } else if(v < 0) {
+                v = 0;
+            }
+
+            QColor hsvColor = QColor::fromHsv(h, s, v);
+            int rgb[] = { hsvColor.red(), hsvColor.green(), hsvColor.blue() };
+            for(int k = 0; k < nc; ++k) {
+                image.pixels()[index + k] = rgb[k];
+            }
         }
-
-        if(s > 255) {
-            s = 255;
-        } else if(s < 0) {
-            s = 0;
-        }
-
-        if(v > 255) {
-            v = 255;
-        } else if(v < 0) {
-            v = 0;
-        }
-
-        QColor hsvColor = QColor::fromHsv(h, s, v);
-        image.pixels()[i] = hsvColor.red();
-        image.pixels()[i + 1] = hsvColor.green();
-        image.pixels()[i + 2] = hsvColor.blue();
     }
 }
 
@@ -216,22 +201,21 @@ void ImageGeneratorImpl::rgb(Image& image, const double& m_red, const double& m_
     image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
     int height = image.height();
-    int numComp = image.numComponents();
-    int length = width * height * numComp;
+    int nc = image.numComponents();
 
-    for(int i = 0; i < length; i += 3) {
-        int red = (int)image.pixels()[i] + m_red * 255.0;
-        int green = (int)image.pixels()[i + 1] + m_green * 255.0;
-        int blue = (int)image.pixels()[i + 2] + m_blue * 255.0;
-
-        int rgb[] = { red, green, blue };
-        for(int j = 0; j < 3; j++) {
-            if(rgb[j] > 255) {
-                rgb[j] = 255;
-            } else if(rgb[j] < 0) {
-                rgb[j] = 0;
+    double colors[] = { m_red * 255.0,  m_green * 255.0, m_blue * 255.0};
+    for(int j = 0; j < height; ++j) {
+        for(int i = 0; i < width; ++i) {
+            int index = nc * (i + j * width);
+            for(int k = 0; k < nc; ++k) {
+                int pixel = (double)image.pixels()[index + k] + colors[k];
+                if(pixel > 255) {
+                    pixel = 255;
+                } else if(pixel < 0) {
+                    pixel = 0;
+                }
+                image.pixels()[index + k] = pixel;
             }
-            image.pixels()[i + j] = rgb[j];
         }
     }
 }
@@ -248,33 +232,20 @@ void ImageGeneratorImpl::saltPepperNoise(Image& image, const double& m_salt, con
     image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
     int height = image.height();
-    int numComp = image.numComponents();
-    int length = width * height * numComp;
+    int nc = image.numComponents();
 
-    if(numComp == 3) {
-        for(int i = 0; i < length; i += 3) {
+    for(int j = 0; j < height; ++j) {
+        for(int i = 0; i < width; ++i) {
+            int index = nc * (i + j * width);
             double salt = (double)(rand() % 101) / 100.0;
-            if(salt < m_salt) {
-                image.pixels()[i] = 255;
-                image.pixels()[i + 1] = 255;
-                image.pixels()[i + 2] = 255;
-            }
             double pepper = (double)(rand() % 101) / 100.0;
-            if(pepper < m_pepper) {
-                image.pixels()[i] = 0;
-                image.pixels()[i + 1] = 0;
-                image.pixels()[i + 2] = 0;
-            }
-        }
-    } else if(numComp == 1) {
-        for(int i = 0; i < length; i++) {
-            double salt = (double)(rand() % 101) / 100.0;
-            if(salt < m_salt) {
-                image.pixels()[i] = 255;
-            }
-            double pepper = (double)(rand() % 101) / 100.0;
-            if(pepper < m_pepper) {
-                image.pixels()[i] = 0;
+            for(int k = 0; k < nc; ++k) {
+                if(salt < m_salt) {
+                    image.pixels()[index + k] = 255;
+                }
+                if(pepper < m_pepper) {
+                    image.pixels()[index + k] = 0;
+                }
             }
         }
     }
@@ -294,8 +265,7 @@ void ImageGeneratorImpl::filteredImage(Image& image, const double& m_scalex, con
     cloneImage.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
     int height = image.height();
-    int numComp = image.numComponents();
-    int length = width * height * numComp;
+    int nc = image.numComponents();
     double scalex = m_scalex;
     double scaley = m_scaley;
     int xs = width / 2;
@@ -327,32 +297,13 @@ void ImageGeneratorImpl::filteredImage(Image& image, const double& m_scalex, con
                 n++;
             }
 
-            if(numComp == 3) {
-                for(int k = 0; k < 3; k++) {
-                    int d;
-                    if((m > -ys) && (m < ys) && (n >= -xs) && (n < xs)) {
-                        d = (int)((1.0 - q) * ((1.0 - p) * image.pixels()[3 * ((m  + ys) * width + (n  + xs)) + k]
-                                + p * image.pixels()[3 * ((m  + ys) * width + (n + 1 + xs)) + k])
-                                + q * ((1.0 - p) * image.pixels()[3 * ((m + 1 + ys) * width + (n + xs)) + k]
-                                + p * image.pixels()[3 * ((m + 1 + ys) * width + (n + 1 + xs)) + k]));
-                    } else {
-                        d = 0;
-                    }
-                    if(d < 0) {
-                        d = 0;
-                    }
-                    if(d > 255) {
-                        d = 255;
-                    }
-                    cloneImage.pixels()[3 * ((i + ys) * width + (j + xs)) + k] = d;
-                }
-            } else if(numComp == 1) {
+            for(int k = 0; k < nc; k++) {
                 int d;
                 if((m > -ys) && (m < ys) && (n >= -xs) && (n < xs)) {
-                    d = (int)((1.0 - q) * ((1.0 - p) * image.pixels()[3 * ((m  + ys) * width + (n  + xs))]
-                            + p * image.pixels()[3 * ((m  + ys) * width + (n + 1 + xs))])
-                            + q * ((1.0 - p) * image.pixels()[3 * ((m + 1 + ys) * width + (n + xs))]
-                            + p * image.pixels()[3 * ((m + 1 + ys) * width + (n + 1 + xs))]));
+                    d = (int)((1.0 - q) * ((1.0 - p) * image.pixels()[3 * ((m  + ys) * width + (n  + xs)) + k]
+                            + p * image.pixels()[3 * ((m  + ys) * width + (n + 1 + xs)) + k])
+                            + q * ((1.0 - p) * image.pixels()[3 * ((m + 1 + ys) * width + (n + xs)) + k]
+                            + p * image.pixels()[3 * ((m + 1 + ys) * width + (n + 1 + xs)) + k]));
                 } else {
                     d = 0;
                 }
@@ -362,7 +313,7 @@ void ImageGeneratorImpl::filteredImage(Image& image, const double& m_scalex, con
                 if(d > 255) {
                     d = 255;
                 }
-                cloneImage.pixels()[3 * ((i + ys) * width + (j + xs))] = d;
+                cloneImage.pixels()[3 * ((i + ys) * width + (j + xs)) + k] = d;
             }
         }
     }
@@ -382,12 +333,14 @@ void ImageGeneratorImpl::flippedImage(Image& image)
     cloneImage.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
     int height = image.height();
-    int numComp = image.numComponents();
-    int length = width * height * numComp;
+    int nc = image.numComponents();
 
-    for(int i = 0; i < length; i += 3) {
-        for(int j = 0; j < 3; j++) {
-            cloneImage.pixels()[i + j] = image.pixels()[length - i + j];
+    for(int j = 0; j < height; ++j) {
+        for(int i = 0; i < width; ++i) {
+            int index = nc * (i + j * width);
+            for(int k = 0; k < nc; ++k) {
+                cloneImage.pixels()[index + k] = image.pixels()[nc * ((width - 1 - i) + (height - 1 - j) * width) + k];
+            }
         }
     }
     image = cloneImage;
@@ -405,37 +358,36 @@ void ImageGeneratorImpl::gaussianFilter(Image& image)
     Image cloneImage;
     int width = image.width();
     int height = image.height();
-    int numComp = image.numComponents();
-    cloneImage.setSize(width + 2, height + 2, numComp);
+    int nc = image.numComponents();
+    cloneImage.setSize(width + 2, height + 2, nc);
 
     const double kernel[9] = { 1.0 / 16.0, 2.0 / 16.0, 1.0 / 16.0,
                          2.0 / 16.0, 4.0 / 16.0, 2.0 / 16.0,
                          1.0 / 16.0, 2.0 / 16.0, 1.0 / 16.0 };
 
-    int nc = numComp;
     for(int j = 0; j < height; ++j) {
         for(int i = 0; i < width; ++i) {
-            int index = nc * (i + 1) + nc * (j + 1) * (width + 2);
-            cloneImage.pixels()[index] = image.pixels()[nc * i + nc * j * width];
-            cloneImage.pixels()[index + 1] = image.pixels()[nc * (i + 1) + nc * j * width];
-            cloneImage.pixels()[index + 2] = image.pixels()[nc * (i + 2) + nc * j * width];
+            int index = nc * ((i + 1) + (j + 1) * (width + 2));
+            for(int k = 0; k < nc; ++k) {
+                cloneImage.pixels()[index + k] = image.pixels()[nc * (i + j * width) + k];
+            }
         }
     }
 
     for(int j = 0; j < height; ++j) {
         for(int i = 0; i < width; ++i) {
-            int index = nc * i + nc * j * width;
+            int index = nc * (i + j * width);
             for(int k = 0; k < nc; ++k) {
                 image.pixels()[index + k] = 0;
-                image.pixels()[index + k] += kernel[0] * (double)cloneImage.pixels()[nc * i + nc * j * (width + 2) + k];
-                image.pixels()[index + k] += kernel[1] * (double)cloneImage.pixels()[nc * (i + 1) + nc * j * (width + 2) + k];
-                image.pixels()[index + k] += kernel[2] * (double)cloneImage.pixels()[nc * (i + 2) + nc * j * (width + 2) + k];
-                image.pixels()[index + k] += kernel[3] * (double)cloneImage.pixels()[nc * i + nc * (j + 1) * (width + 2) + k];
-                image.pixels()[index + k] += kernel[4] * (double)cloneImage.pixels()[nc * (i + 1) + nc * (j + 1) * (width + 2) + k];
-                image.pixels()[index + k] += kernel[5] * (double)cloneImage.pixels()[nc * (i + 2) + nc * (j + 1) * (width + 2) + k];
-                image.pixels()[index + k] += kernel[6] * (double)cloneImage.pixels()[nc * i + nc * (j + 2) * (width + 2) + k];
-                image.pixels()[index + k] += kernel[7] * (double)cloneImage.pixels()[nc * (i + 1) + nc * (j + 2) * (width + 2) + k];
-                image.pixels()[index + k] += kernel[8] * (double)cloneImage.pixels()[nc * (i + 2) + nc * (j + 2) * (width + 2) + k];
+                image.pixels()[index + k] += kernel[0] * (double)cloneImage.pixels()[nc * (i + j * (width + 2)) + k];
+                image.pixels()[index + k] += kernel[1] * (double)cloneImage.pixels()[nc * ((i + 1) + j * (width + 2)) + k];
+                image.pixels()[index + k] += kernel[2] * (double)cloneImage.pixels()[nc * ((i + 2) + j * (width + 2)) + k];
+                image.pixels()[index + k] += kernel[3] * (double)cloneImage.pixels()[nc * (i + (j + 1) * (width + 2)) + k];
+                image.pixels()[index + k] += kernel[4] * (double)cloneImage.pixels()[nc * ((i + 1) + (j + 1) * (width + 2)) + k];
+                image.pixels()[index + k] += kernel[5] * (double)cloneImage.pixels()[nc * ((i + 2) + (j + 1) * (width + 2)) + k];
+                image.pixels()[index + k] += kernel[6] * (double)cloneImage.pixels()[nc * (i + (j + 2) * (width + 2)) + k];
+                image.pixels()[index + k] += kernel[7] * (double)cloneImage.pixels()[nc * ((i + 1) + (j + 2) * (width + 2)) + k];
+                image.pixels()[index + k] += kernel[8] * (double)cloneImage.pixels()[nc * ((i + 2) + (j + 2) * (width + 2)) + k];
             }
         }
     }
@@ -453,33 +405,32 @@ void ImageGeneratorImpl::medianFilter(Image& image)
     Image cloneImage;
     int width = image.width();
     int height = image.height();
-    int numComp = image.numComponents();
-    cloneImage.setSize(width + 2, height + 2, numComp);
+    int nc = image.numComponents();
+    cloneImage.setSize(width + 2, height + 2, nc);
 
-    int nc = numComp;
     for(int j = 0; j < height; ++j) {
         for(int i = 0; i < width; ++i) {
-            int index = nc * (i + 1) + nc * (j + 1) * (width + 2);
-            cloneImage.pixels()[index] = image.pixels()[nc * i + nc * j * width];
-            cloneImage.pixels()[index + 1] = image.pixels()[nc * (i + 1) + nc * j * width];
-            cloneImage.pixels()[index + 2] = image.pixels()[nc * (i + 2) + nc * j * width];
+            int index = nc * ((i + 1) + (j + 1) * (width + 2));
+            for(int k = 0; k < nc; ++k) {
+                cloneImage.pixels()[index + k] = image.pixels()[nc * (i + j * width) + k];
+            }
         }
     }
 
     for(int j = 0; j < height; ++j) {
         for(int i = 0; i < width; ++i) {
-            int index = nc * i + nc * j * width;
+            int index = nc * (i + j * width);
             for(int k = 0; k < nc; ++k) {
                 vector<double> values;
-                values.push_back((double)cloneImage.pixels()[nc * i + nc * j * (width + 2) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * (i + 1) + nc * j * (width + 2) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * (i + 2) + nc * j * (width + 2) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * i + nc * (j + 1) * (width + 2) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * (i + 1) + nc * (j + 1) * (width + 2) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * (i + 2) + nc * (j + 1) * (width + 2) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * i + nc * (j + 2) * (width + 2) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * (i + 1) + nc * (j + 2) * (width + 2) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * (i + 2) + nc * (j + 2) * (width + 2) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * (i + j * (width + 2)) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * ((i + 1) + j * (width + 2)) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * ((i + 2) + j * (width + 2)) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * (i + (j + 1) * (width + 2)) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * ((i + 1) + (j + 1) * (width + 2)) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * ((i + 2) + (j + 1) * (width + 2)) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * (i + (j + 2) * (width + 2)) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * ((i + 1) + (j + 2) * (width + 2)) + k]);
+                values.push_back((double)cloneImage.pixels()[nc * ((i + 2) + (j + 2) * (width + 2)) + k]);
                 sort(values.begin(), values.end());
                 image.pixels()[index + k] = values[5];
             }
