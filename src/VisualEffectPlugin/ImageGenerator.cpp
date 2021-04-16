@@ -13,6 +13,20 @@
 using namespace std;
 using namespace cnoid;
 
+namespace {
+
+const double matrix3[] = { 1.0 / 16.0, 2.0 / 16.0, 1.0 / 16.0,
+                           2.0 / 16.0, 4.0 / 16.0, 2.0 / 16.0,
+                           1.0 / 16.0, 2.0 / 16.0, 1.0 / 16.0 };
+
+const double matrix5[] = { 1.0 / 256.0, 4.0 / 256.0, 6.0 / 256.0, 4.0 / 256.0, 1.0 / 256.0,
+                           4.0 / 256.0, 16.0 / 256.0, 24.0 / 256.0, 16.0 / 256.0, 4.0 / 256.0,
+                           6.0 / 256.0, 24.0 / 256.0, 36.0 / 256.0, 24.0 / 256.0, 6.0 / 256.0,
+                           4.0 / 256.0, 16.0 / 256.0, 24.0 / 256.0, 16.0 / 256.0, 4.0 / 256.0,
+                           1.0 / 256.0, 4.0 / 256.0, 6.0 / 256.0, 4.0 / 256.0, 1.0 / 256.0 };
+
+}
+
 namespace cnoid {
 
 class ImageGeneratorImpl
@@ -32,8 +46,8 @@ public:
     void saltPepperNoise(Image& image, const double& m_salt, const double& m_pepper);
     void filteredImage(Image& image, const double& m_scalex, const double& m_scaley);
     void flippedImage(Image& image);
-    void gaussianFilter(Image& image);
-    void medianFilter(Image& image);
+    void gaussianFilter(Image& image, const int& matrix);
+    void medianFilter(Image& image, const int& matrix);
 };
 
 }
@@ -347,27 +361,33 @@ void ImageGeneratorImpl::flippedImage(Image& image)
 }
 
 
-void ImageGenerator::gaussianFilter(Image& image)
+void ImageGenerator::gaussianFilter(Image& image, const int& matrix)
 {
-    impl->gaussianFilter(image);
+    impl->gaussianFilter(image, matrix);
 }
 
 
-void ImageGeneratorImpl::gaussianFilter(Image& image)
+void ImageGeneratorImpl::gaussianFilter(Image& image,  const int& matrix)
 {
     Image cloneImage;
     int width = image.width();
     int height = image.height();
     int nc = image.numComponents();
-    cloneImage.setSize(width + 2, height + 2, nc);
+    int margin = matrix - 1;
+    cloneImage.setSize(width + margin, height + margin, nc);
 
-    const double kernel[9] = { 1.0 / 16.0, 2.0 / 16.0, 1.0 / 16.0,
-                         2.0 / 16.0, 4.0 / 16.0, 2.0 / 16.0,
-                         1.0 / 16.0, 2.0 / 16.0, 1.0 / 16.0 };
+    vector<double> kernel;
+    for(int i = 0; i < matrix * matrix; ++i) {
+        if(matrix == 3) {
+            kernel.push_back(matrix3[i]);
+        } else if(matrix == 5) {
+            kernel.push_back(matrix5[i]);
+        }
+    }
 
     for(int j = 0; j < height; ++j) {
         for(int i = 0; i < width; ++i) {
-            int index = nc * ((i + 1) + (j + 1) * (width + 2));
+            int index = nc * ((i + 1) + (j + 1) * (width + margin));
             for(int k = 0; k < nc; ++k) {
                 cloneImage.pixels()[index + k] = image.pixels()[nc * (i + j * width) + k];
             }
@@ -379,38 +399,39 @@ void ImageGeneratorImpl::gaussianFilter(Image& image)
             int index = nc * (i + j * width);
             for(int k = 0; k < nc; ++k) {
                 image.pixels()[index + k] = 0;
-                image.pixels()[index + k] += kernel[0] * (double)cloneImage.pixels()[nc * (i + j * (width + 2)) + k];
-                image.pixels()[index + k] += kernel[1] * (double)cloneImage.pixels()[nc * ((i + 1) + j * (width + 2)) + k];
-                image.pixels()[index + k] += kernel[2] * (double)cloneImage.pixels()[nc * ((i + 2) + j * (width + 2)) + k];
-                image.pixels()[index + k] += kernel[3] * (double)cloneImage.pixels()[nc * (i + (j + 1) * (width + 2)) + k];
-                image.pixels()[index + k] += kernel[4] * (double)cloneImage.pixels()[nc * ((i + 1) + (j + 1) * (width + 2)) + k];
-                image.pixels()[index + k] += kernel[5] * (double)cloneImage.pixels()[nc * ((i + 2) + (j + 1) * (width + 2)) + k];
-                image.pixels()[index + k] += kernel[6] * (double)cloneImage.pixels()[nc * (i + (j + 2) * (width + 2)) + k];
-                image.pixels()[index + k] += kernel[7] * (double)cloneImage.pixels()[nc * ((i + 1) + (j + 2) * (width + 2)) + k];
-                image.pixels()[index + k] += kernel[8] * (double)cloneImage.pixels()[nc * ((i + 2) + (j + 2) * (width + 2)) + k];
+                for(int p = j; p < j + matrix; ++p) {
+                    for(int q = i; q < i + matrix; ++q) {
+                        int r = p - j;
+                        int s = q - i;
+                        int t = matrix * r + s;
+                        image.pixels()[index + k] += kernel[t] * (double)cloneImage.pixels()[nc * (q + p * (width + margin)) + k];
+                    }
+                }
             }
         }
     }
 }
 
 
-void ImageGenerator::medianFilter(Image& image)
+void ImageGenerator::medianFilter(Image& image, const int& matrix)
 {
-    impl->medianFilter(image);
+    impl->medianFilter(image, matrix);
 }
 
 
-void ImageGeneratorImpl::medianFilter(Image& image)
+void ImageGeneratorImpl::medianFilter(Image& image, const int& matrix)
 {
     Image cloneImage;
     int width = image.width();
     int height = image.height();
     int nc = image.numComponents();
-    cloneImage.setSize(width + 2, height + 2, nc);
+    int margin = matrix - 1;
+    int median = (matrix * matrix + 1) / 2;
+    cloneImage.setSize(width + margin, height + margin, nc);
 
     for(int j = 0; j < height; ++j) {
         for(int i = 0; i < width; ++i) {
-            int index = nc * ((i + 1) + (j + 1) * (width + 2));
+            int index = nc * ((i + 1) + (j + 1) * (width + margin));
             for(int k = 0; k < nc; ++k) {
                 cloneImage.pixels()[index + k] = image.pixels()[nc * (i + j * width) + k];
             }
@@ -422,17 +443,13 @@ void ImageGeneratorImpl::medianFilter(Image& image)
             int index = nc * (i + j * width);
             for(int k = 0; k < nc; ++k) {
                 vector<double> values;
-                values.push_back((double)cloneImage.pixels()[nc * (i + j * (width + 2)) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * ((i + 1) + j * (width + 2)) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * ((i + 2) + j * (width + 2)) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * (i + (j + 1) * (width + 2)) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * ((i + 1) + (j + 1) * (width + 2)) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * ((i + 2) + (j + 1) * (width + 2)) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * (i + (j + 2) * (width + 2)) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * ((i + 1) + (j + 2) * (width + 2)) + k]);
-                values.push_back((double)cloneImage.pixels()[nc * ((i + 2) + (j + 2) * (width + 2)) + k]);
+                for(int p = j; p < j + matrix; ++p) {
+                    for(int q = i; q < i + matrix; ++q) {
+                        values.push_back((double)cloneImage.pixels()[nc * (q + p * (width + margin)) + k]);
+                    }
+                }
                 sort(values.begin(), values.end());
-                image.pixels()[index + k] = values[5];
+                image.pixels()[index + k] = values[median];
             }
         }
     }

@@ -485,7 +485,9 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
             generator.saltPepperNoise(orgImage, salt, pepper);
         }
         if(filter == 1) {
-            generator.gaussianFilter(orgImage);
+            generator.gaussianFilter(orgImage, 3);
+        } else if(filter == 2) {
+            generator.gaussianFilter(orgImage, 5);
         }
 
         image = make_shared<Image>(orgImage);

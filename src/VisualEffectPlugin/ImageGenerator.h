@@ -25,8 +25,8 @@ public:
     void saltPepperNoise(Image& image, const double& m_salt, const double& m_pepper);
     void filteredImage(Image& image, const double& m_scalex, const double& m_scaley);
     void flippedImage(Image& image);
-    void gaussianFilter(Image& image);
-    void medianFilter(Image& image);
+    void gaussianFilter(Image& image, const int& matrix);
+    void medianFilter(Image& image, const int& matrix);
 
 private:
     ImageGeneratorImpl* impl;
