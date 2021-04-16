@@ -94,6 +94,8 @@ public:
     CheckBox* startCheck;
     CheckBox* goalCheck;
     ToggleButton* previewButton;
+    PushButton* startButton;
+    PushButton* goalButton;
     MessageView* messageView;
     vector<Vector3> solutions;
     Interpolator<VectorXd> interpolator;
@@ -101,6 +103,10 @@ public:
     double timeStep;
     double timeLength;
     Timer* timer;
+    bool isSolved;
+    void onTargetLinkChanged();
+    void onStartButtonClicked();
+    void onGoalButtonClicked();
     void onGenerateButtonClicked();
     void onPreviewButtonToggled(bool on);
     void onPreviewTimeout();
@@ -143,6 +149,7 @@ MotionPlannerDialogImpl::MotionPlannerDialogImpl(MotionPlannerDialog* self)
     timeLength = 1.0;
     timer = new Timer();
     timer->start(1);
+    isSolved = false;
 
     MeshGenerator generator;
     startScene = new SgSwitchableGroup();
@@ -302,8 +309,13 @@ MotionPlannerDialogImpl::MotionPlannerDialogImpl(MotionPlannerDialog* self)
     goalzSpin->setValue(0.0);
     goalzSpin->setAlignment(Qt::AlignCenter);
 
+    startButton = new PushButton(_("Set start"));
+    goalButton = new PushButton(_("Set goal"));
+
     pgbox->addWidget(new QLabel(_("Geometric planner")), 0, 0);
     pgbox->addWidget(plannerCombo, 0, 1);
+    pgbox->addWidget(startButton, 0, 2);
+    pgbox->addWidget(goalButton, 0, 3);
     pgbox->addWidget(startCheck, 1, 0);
     pgbox->addWidget(startxSpin, 1, 1);
     pgbox->addWidget(startySpin, 1, 2);
@@ -409,6 +421,8 @@ MotionPlannerDialogImpl::MotionPlannerDialogImpl(MotionPlannerDialog* self)
             sceneView->sceneWidget()->sceneRoot()->removeChild(solutionScene);
         }
     });
+    startButton->sigClicked().connect([&](){ onStartButtonClicked(); });
+    goalButton->sigClicked().connect([&](){ onGoalButtonClicked(); });
 
     self->setLayout(vbox);
 }
@@ -442,6 +456,38 @@ MotionPlannerDialog* MotionPlannerDialog::instance()
 }
 
 
+void MotionPlannerDialogImpl::onTargetLinkChanged()
+{
+    bodyItem = bodyItems[bodyCombo->currentIndex()];
+    body = bodyItem->body();
+    endLink = body->link(endCombo->currentIndex());
+}
+
+
+void MotionPlannerDialogImpl::onStartButtonClicked()
+{
+    onTargetLinkChanged();
+    if(endLink) {
+        Vector3 translation = endLink->T().translation();
+        startxSpin->setValue(translation[0]);
+        startySpin->setValue(translation[1]);
+        startzSpin->setValue(translation[2]);
+    }
+}
+
+
+void MotionPlannerDialogImpl::onGoalButtonClicked()
+{
+    onTargetLinkChanged();
+    if(endLink) {
+        Vector3 translation = endLink->T().translation();
+        goalxSpin->setValue(translation[0]);
+        goalySpin->setValue(translation[1]);
+        goalzSpin->setValue(translation[2]);
+    }
+}
+
+
 void MotionPlannerDialogImpl::onGenerateButtonClicked()
 {
     statesScene->clearChildren();
@@ -460,7 +506,7 @@ void MotionPlannerDialogImpl::onGenerateButtonClicked()
 
 void MotionPlannerDialogImpl::onPreviewButtonToggled(bool on)
 {
-    if(on) {
+    if(on && isSolved) {
         time = 0.0;
         interpolator.clear();
         int numPoints = solutions.size();
@@ -608,6 +654,7 @@ void MotionPlannerDialogImpl::planWithSimpleSetup()
 
     if(solved) {
         messageView->putln("Found solution:");
+        isSolved = true;
 
         og::PathGeometric pathes = ss.getSolutionPath();
         const int numPoints = pathes.getStateCount();
@@ -654,6 +701,7 @@ void MotionPlannerDialogImpl::planWithSimpleSetup()
 //        ss.getSolutionPath().print(messageView->cout());
     } else {
         messageView->putln("No solution found");
+        isSolved = false;
     }
 }
 

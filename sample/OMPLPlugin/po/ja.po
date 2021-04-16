@@ -73,6 +73,14 @@ msgstr "始点[x, y, z]"
 msgid "Goal[x, y, z]"
 msgstr "終点[x, y, z]"
 
+#: ../MotionPlannerDialog.cpp:310
+msgid "Set start"
+msgstr "始点をセット"
+
+#: ../MotionPlannerDialog.cpp:311
+msgid "Set goal"
+msgstr "終点をセット"
+
 #: ../MotionPlannerDialog.cpp:301
 msgid "Geometric planner"
 msgstr "プランナ"
