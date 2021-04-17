@@ -382,7 +382,9 @@ void ImageGeneratorImpl::gaussianFilter(Image& image,  const int& matrix)
             kernel.push_back(matrix3[i]);
         } else if(matrix == 5) {
             kernel.push_back(matrix5[i]);
-        }
+        } else {
+	  kernel.push_back(0.0);
+	}
     }
 
     for(int j = 0; j < height; ++j) {
