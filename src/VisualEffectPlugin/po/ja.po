@@ -53,6 +53,10 @@ msgstr "ガウシアン 3x3"
 msgid "Gaussian 5x5"
 msgstr "ガウシアン 5x5"
 
+#: ../VisualEffectDialog.cpp:108
+msgid "Sobel"
+msgstr "ソーベル"
+
 #: ../VisualEffectDialog.cpp:105
 msgid "Hue"
 msgstr "色相"

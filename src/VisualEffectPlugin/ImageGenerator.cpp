@@ -15,15 +15,18 @@ using namespace cnoid;
 
 namespace {
 
-const double matrix3[] = { 1.0 / 16.0, 2.0 / 16.0, 1.0 / 16.0,
+const double gaussian3[] = { 1.0 / 16.0, 2.0 / 16.0, 1.0 / 16.0,
                            2.0 / 16.0, 4.0 / 16.0, 2.0 / 16.0,
                            1.0 / 16.0, 2.0 / 16.0, 1.0 / 16.0 };
 
-const double matrix5[] = { 1.0 / 256.0, 4.0 / 256.0, 6.0 / 256.0, 4.0 / 256.0, 1.0 / 256.0,
+const double gaussian5[] = { 1.0 / 256.0, 4.0 / 256.0, 6.0 / 256.0, 4.0 / 256.0, 1.0 / 256.0,
                            4.0 / 256.0, 16.0 / 256.0, 24.0 / 256.0, 16.0 / 256.0, 4.0 / 256.0,
                            6.0 / 256.0, 24.0 / 256.0, 36.0 / 256.0, 24.0 / 256.0, 6.0 / 256.0,
                            4.0 / 256.0, 16.0 / 256.0, 24.0 / 256.0, 16.0 / 256.0, 4.0 / 256.0,
                            1.0 / 256.0, 4.0 / 256.0, 6.0 / 256.0, 4.0 / 256.0, 1.0 / 256.0 };
+
+const double sobel3[2][9] = { { -1.0, 0.0, 1.0, -2.0, 0.0, 2.0, -1.0, 0.0, 1.0 },
+                                    { 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0 } }; // [0]-horizontal, [1]-vertical
 
 }
 
@@ -48,6 +51,7 @@ public:
     void flippedImage(Image& image);
     void gaussianFilter(Image& image, const int& matrix);
     void medianFilter(Image& image, const int& matrix);
+    void sobelFilter(Image& image);
 };
 
 }
@@ -379,9 +383,9 @@ void ImageGeneratorImpl::gaussianFilter(Image& image,  const int& matrix)
     vector<double> kernel;
     for(int i = 0; i < matrix * matrix; ++i) {
         if(matrix == 3) {
-            kernel.push_back(matrix3[i]);
+            kernel.push_back(gaussian3[i]);
         } else if(matrix == 5) {
-            kernel.push_back(matrix5[i]);
+            kernel.push_back(gaussian5[i]);
         } else {
             kernel.push_back(0.0);
         }
@@ -452,6 +456,74 @@ void ImageGeneratorImpl::medianFilter(Image& image, const int& matrix)
                 }
                 sort(values.begin(), values.end());
                 image.pixels()[index + k] = values[median];
+            }
+        }
+    }
+}
+
+
+void ImageGenerator::sobelFilter(Image& image)
+{
+    impl->sobelFilter(image);
+}
+
+
+void ImageGeneratorImpl::sobelFilter(Image& image)
+{
+    Image cloneImage;
+    int width = image.width();
+    int height = image.height();
+    int nc = image.numComponents();
+    int matrix = 3;
+    int margin = matrix - 1;
+    cloneImage.setSize(width + margin, height + margin, nc);
+
+    vector<double> hkernel;
+    vector<double> vkernel;
+    for(int i = 0; i < matrix * matrix; ++i) {
+        hkernel.push_back(sobel3[0][i]);
+        vkernel.push_back(sobel3[1][i]);
+    }
+
+    for(int j = 0; j < height; ++j) {
+        for(int i = 0; i < width; ++i) {
+            int index = nc * ((i + 1) + (j + 1) * (width + margin));
+            for(int k = 0; k < nc; ++k) {
+                cloneImage.pixels()[index + k] = image.pixels()[nc * (i + j * width) + k];
+            }
+        }
+    }
+
+    for(int j = 0; j < height; ++j) {
+        for(int i = 0; i < width; ++i) {
+            int index = nc * (i + j * width);
+            for(int k = 0; k < nc; ++k) {
+                image.pixels()[index + k] = 0;
+                for(int p = j; p < j + matrix; ++p) {
+                    for(int q = i; q < i + matrix; ++q) {
+                        int r = p - j;
+                        int s = q - i;
+                        int t = matrix * r + s;
+                        image.pixels()[index + k] += hkernel[t] * (double)cloneImage.pixels()[nc * (q + p * (width + margin)) + k];
+                    }
+                }
+            }
+        }
+    }
+
+    for(int i = 0; i < width; ++i) {
+        for(int j = 0; j < height; ++j) {
+            int index = nc * (i + j * width);
+            for(int k = 0; k < nc; ++k) {
+                image.pixels()[index + k] = 0;
+                for(int p = j; p < j + matrix; ++p) {
+                    for(int q = i; q < i + matrix; ++q) {
+                        int r = p - j;
+                        int s = q - i;
+                        int t = matrix * r + s;
+                        image.pixels()[index + k] += vkernel[t] * (double)cloneImage.pixels()[nc * (q + p * (width + margin)) + k];
+                    }
+                }
             }
         }
     }

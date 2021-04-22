@@ -27,6 +27,7 @@ public:
     void flippedImage(Image& image);
     void gaussianFilter(Image& image, const int& matrix);
     void medianFilter(Image& image, const int& matrix);
+    void sobelFilter(Image& image);
 
 private:
     ImageGeneratorImpl* impl;
