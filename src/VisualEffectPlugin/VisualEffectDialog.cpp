@@ -105,7 +105,7 @@ VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
     coefDSpin->setValue(1.0);
     flipCheck->setText(_("Flip"));
     flipCheck->setChecked(false);
-    QStringList filters = { _("No filter"), _("Gaussian 3x3"), _("Gaussian 5x5"), _("Sobel") };
+    QStringList filters = { _("No filter"), _("Gaussian 3x3"), _("Gaussian 5x5"), _("Sobel"), _("Prewitt") };
     filterCombo->addItems(filters);
     filterCombo->setCurrentIndex(0);
 

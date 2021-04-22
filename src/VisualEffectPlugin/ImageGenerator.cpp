@@ -16,17 +16,20 @@ using namespace cnoid;
 namespace {
 
 const double gaussian3[] = { 1.0 / 16.0, 2.0 / 16.0, 1.0 / 16.0,
-                           2.0 / 16.0, 4.0 / 16.0, 2.0 / 16.0,
-                           1.0 / 16.0, 2.0 / 16.0, 1.0 / 16.0 };
+                             2.0 / 16.0, 4.0 / 16.0, 2.0 / 16.0,
+                             1.0 / 16.0, 2.0 / 16.0, 1.0 / 16.0 };
 
 const double gaussian5[] = { 1.0 / 256.0, 4.0 / 256.0, 6.0 / 256.0, 4.0 / 256.0, 1.0 / 256.0,
-                           4.0 / 256.0, 16.0 / 256.0, 24.0 / 256.0, 16.0 / 256.0, 4.0 / 256.0,
-                           6.0 / 256.0, 24.0 / 256.0, 36.0 / 256.0, 24.0 / 256.0, 6.0 / 256.0,
-                           4.0 / 256.0, 16.0 / 256.0, 24.0 / 256.0, 16.0 / 256.0, 4.0 / 256.0,
-                           1.0 / 256.0, 4.0 / 256.0, 6.0 / 256.0, 4.0 / 256.0, 1.0 / 256.0 };
+                             4.0 / 256.0, 16.0 / 256.0, 24.0 / 256.0, 16.0 / 256.0, 4.0 / 256.0,
+                             6.0 / 256.0, 24.0 / 256.0, 36.0 / 256.0, 24.0 / 256.0, 6.0 / 256.0,
+                             4.0 / 256.0, 16.0 / 256.0, 24.0 / 256.0, 16.0 / 256.0, 4.0 / 256.0,
+                             1.0 / 256.0, 4.0 / 256.0, 6.0 / 256.0, 4.0 / 256.0, 1.0 / 256.0 };
 
 const double sobel3[2][9] = { { -1.0, 0.0, 1.0, -2.0, 0.0, 2.0, -1.0, 0.0, 1.0 },
-                                    { 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0 } }; // [0]-horizontal, [1]-vertical
+                              { 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0 } }; // [0]-horizontal, [1]-vertical
+
+const double prewitt3[2][9] = { { -1.0, 0.0, 1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0 },
+                                { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, -1.0, -1.0, -1.0 } }; // [0]-horizontal, [1]-vertical
 
 }
 
@@ -52,6 +55,8 @@ public:
     void gaussianFilter(Image& image, const int& matrix);
     void medianFilter(Image& image, const int& matrix);
     void sobelFilter(Image& image);
+    void prewittFilter(Image& image);
+    void differentialFilter(Image& image, const double kernel[2][9]);
 };
 
 }
@@ -470,6 +475,24 @@ void ImageGenerator::sobelFilter(Image& image)
 
 void ImageGeneratorImpl::sobelFilter(Image& image)
 {
+    differentialFilter(image, sobel3);
+}
+
+
+void ImageGenerator::prewittFilter(Image& image)
+{
+    impl->prewittFilter(image);
+}
+
+
+void ImageGeneratorImpl::prewittFilter(Image& image)
+{
+    differentialFilter(image, prewitt3);
+}
+
+
+void ImageGeneratorImpl::differentialFilter(Image& image, const double kernel[2][9])
+{
     Image cloneImage;
     int width = image.width();
     int height = image.height();
@@ -481,8 +504,8 @@ void ImageGeneratorImpl::sobelFilter(Image& image)
     vector<double> hkernel;
     vector<double> vkernel;
     for(int i = 0; i < matrix * matrix; ++i) {
-        hkernel.push_back(sobel3[0][i]);
-        vkernel.push_back(sobel3[1][i]);
+        hkernel.push_back(kernel[0][i]);
+        vkernel.push_back(kernel[1][i]);
     }
 
     for(int j = 0; j < height; ++j) {
@@ -515,7 +538,6 @@ void ImageGeneratorImpl::sobelFilter(Image& image)
         for(int j = 0; j < height; ++j) {
             int index = nc * (i + j * width);
             for(int k = 0; k < nc; ++k) {
-                image.pixels()[index + k] = 0;
                 for(int p = j; p < j + matrix; ++p) {
                     for(int q = i; q < i + matrix; ++q) {
                         int r = p - j;

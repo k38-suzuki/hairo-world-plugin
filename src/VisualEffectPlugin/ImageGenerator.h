@@ -28,6 +28,7 @@ public:
     void gaussianFilter(Image& image, const int& matrix);
     void medianFilter(Image& image, const int& matrix);
     void sobelFilter(Image& image);
+    void prewittFilter(Image& image);
 
 private:
     ImageGeneratorImpl* impl;

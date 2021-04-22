@@ -490,6 +490,8 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
             generator.gaussianFilter(orgImage, 5);
         } else if(filter == 3) {
             generator.sobelFilter(orgImage);
+        } else if(filter == 4) {
+            generator.prewittFilter(orgImage);
         }
 
         image = make_shared<Image>(orgImage);
