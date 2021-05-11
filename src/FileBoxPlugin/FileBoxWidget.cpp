@@ -30,7 +30,9 @@ void loadBody(const string& fileName)
     if(bodyItem->load(fileName, "CHOREONOID-BODY")) {
         bodyItem->setChecked(true);
 
-        ItemList<Item> items = ItemTreeView::instance()->selectedItems();
+        RootItem* rootItem = RootItem::instance();
+        ItemList<Item> items = rootItem->selectedItems();
+
         if(items.size()) {
             for(int j = 0; j < items.size(); ++j) {
                 Item* item = items[j];
@@ -52,7 +54,8 @@ void loadScene(const string& fileName)
     if(sceneItem->load(fileName)) {
         sceneItem->setChecked(true);
 
-        ItemList<Item> items = ItemTreeView::instance()->selectedItems();
+        RootItem* rootItem = RootItem::instance();
+        ItemList<Item> items = rootItem->selectedItems();
         if(items.size()) {
             for(int j = 0; j < items.size(); ++j) {
                 Item* item = items[j];

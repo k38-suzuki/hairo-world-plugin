@@ -9,7 +9,6 @@
 #include <cnoid/ExecutablePath>
 #include <cnoid/FileDialog>
 #include <cnoid/FileUtil>
-#include <cnoid/ItemTreeView>
 #include <cnoid/Joystick>
 #include <cnoid/JoystickCapture>
 #include <cnoid/MainWindow>
@@ -157,7 +156,8 @@ void SimulationManagerImpl::pauseSimulation(SimulatorItem* simulatorItem)
 void SimulationManagerImpl::forEachSimulator(std::function<void(SimulatorItem* simulatorItem)> callback, bool doSelect)
 {
     MessageView* mv = MessageView::instance();
-    ItemList<SimulatorItem> simulatorItems = ItemTreeView::mainInstance()->selectedItems<SimulatorItem>();
+    RootItem* rootItem = RootItem::instance();
+    ItemList<SimulatorItem> simulatorItems = rootItem->selectedItems();
 
     if(simulatorItems.empty()) {
         simulatorItems.extractChildItems(RootItem::instance());
@@ -168,7 +168,7 @@ void SimulationManagerImpl::forEachSimulator(std::function<void(SimulatorItem* s
             mv->notify(_("Please select a simulator item to simulate."));
         } else {
             if(doSelect) {
-                ItemTreeView::instance()->selectItem(simulatorItems.front());
+                rootItem->selectItem(simulatorItems.front());
             }
         }
     }
