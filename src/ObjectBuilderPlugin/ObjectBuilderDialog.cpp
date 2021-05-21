@@ -19,6 +19,7 @@
 #include <QStackedLayout>
 #include <QVBoxLayout>
 #include "gettext.h"
+#include "GratingBuilderWidget.h"
 #include "PipeBuilderWidget.h"
 
 using namespace cnoid;
@@ -38,10 +39,12 @@ public:
     QStackedLayout* sbox;
     ComboBox* shapeCombo;
     LineEdit* fileLine;
+    GratingBuilderWidget* gratingWidget;
     PipeBuilderWidget* pipeWidget;
 
     enum Shape {
         PIPE,
+        GRATING,
         NUM_SHAPE
     };
 
@@ -71,7 +74,7 @@ ObjectBuilderDialogImpl::ObjectBuilderDialogImpl(ObjectBuilderDialog* self)
 
     QHBoxLayout* hbox = new QHBoxLayout();
     shapeCombo = new ComboBox();
-    QStringList shapes = { _("Pipe") };
+    QStringList shapes = { _("Pipe"), _("Grating") };
     shapeCombo->addItems(shapes);
     hbox->addWidget(new QLabel(_("Shape")));
     hbox->addWidget(shapeCombo);
@@ -81,6 +84,8 @@ ObjectBuilderDialogImpl::ObjectBuilderDialogImpl(ObjectBuilderDialog* self)
     pipeWidget = new PipeBuilderWidget();
     sbox->addWidget(pipeWidget);
     sbox->setCurrentWidget(pipeWidget);
+    gratingWidget = new GratingBuilderWidget();
+    sbox->addWidget(gratingWidget);
 
     QHBoxLayout* fhbox = new QHBoxLayout();
     fileLine = new LineEdit();
@@ -184,6 +189,9 @@ void ObjectBuilderDialogImpl::writeYaml(const bool &overwrite)
     switch (index) {
     case PIPE:
         pipeWidget->save(filename);
+        break;
+    case GRATING:
+        gratingWidget->save(filename);
         break;
     default:
         break;

@@ -8,15 +8,13 @@
 #include <cnoid/EigenTypes>
 #include <cnoid/MainWindow>
 #include <cnoid/SpinBox>
-#include <cnoid/stdx/filesystem>
 #include <cnoid/YAMLWriter>
+#include <cnoid/stdx/filesystem>
 #include <QColorDialog>
 #include <QGridLayout>
-#include <QHBoxLayout>
 #include <QLabel>
 #include <QVBoxLayout>
 #include "gettext.h"
-
 using namespace cnoid;
 using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
@@ -30,10 +28,13 @@ public:
     GratingBuilderWidget* self;
 
     DoubleSpinBox* massSpin;
-    SpinBox* mainHeightSpin;
-    SpinBox* mainPitchSpin;
-    SpinBox* mainThicknessSpin;
-    SpinBox* twistPitchSpin;
+    DoubleSpinBox* frameWidthSpin;
+    DoubleSpinBox* frameHeightSpin;
+    DoubleSpinBox* gridWidthSpin;
+    DoubleSpinBox* gridHeightSpin;
+    SpinBox* horizontalGridSpin;
+    SpinBox* verticalGridSpin;
+    DoubleSpinBox* heightSpin;
     PushButton* colorButton;
 
     void writeYaml(const string& filename);
@@ -57,39 +58,55 @@ GratingBuilderWidgetImpl::GratingBuilderWidgetImpl(GratingBuilderWidget* self)
     QGridLayout* gbox = new QGridLayout();
 
     massSpin = new DoubleSpinBox();
-    mainHeightSpin = new SpinBox();
-    mainPitchSpin = new SpinBox();
-    mainThicknessSpin = new SpinBox();
-    twistPitchSpin = new SpinBox();
+    massSpin->setRange(0.001, 1000.0);
+    massSpin->setSingleStep(0.01);
+    frameWidthSpin = new DoubleSpinBox();
+    frameWidthSpin->setRange(0.001, 1000.0);
+    frameWidthSpin->setSingleStep(0.01);
+    frameHeightSpin = new DoubleSpinBox();
+    frameHeightSpin->setRange(0.001, 1000.0);
+    frameHeightSpin->setSingleStep(0.01);
+    gridWidthSpin = new DoubleSpinBox();
+    gridWidthSpin->setRange(0.001, 1000.0);
+    gridWidthSpin->setSingleStep(0.01);
+    gridHeightSpin = new DoubleSpinBox();
+    gridHeightSpin->setRange(0.001, 1000.0);
+    gridHeightSpin->setSingleStep(0.01);
+    horizontalGridSpin = new SpinBox();
+    horizontalGridSpin->setRange(0, 1000);
+    verticalGridSpin = new SpinBox();
+    verticalGridSpin->setRange(0, 1000);
+    heightSpin = new DoubleSpinBox();
+    heightSpin->setRange(0.001, 1000.0);
+    heightSpin->setSingleStep(0.01);
     colorButton = new PushButton();
 
     massSpin->setValue(1.0);
-    massSpin->setRange(0.001, 1000.0);
-    massSpin->setSingleStep(0.01);
-    mainHeightSpin->setValue(1.0);
-    mainHeightSpin->setRange(1, 1000);
-    mainHeightSpin->setSingleStep(1);
-    mainPitchSpin->setValue(1.0);
-    mainPitchSpin->setRange(1, 1000);
-    mainPitchSpin->setSingleStep(1);
-    mainThicknessSpin->setValue(1.0);
-    mainThicknessSpin->setRange(1, 1000);
-    mainThicknessSpin->setSingleStep(1);
-    twistPitchSpin->setValue(1.0);
-    twistPitchSpin->setRange(1, 1000);
-    twistPitchSpin->setSingleStep(1);
+    frameWidthSpin->setValue(0.005);
+    frameHeightSpin->setValue(0.006);
+    gridWidthSpin->setValue(0.01);
+    gridHeightSpin->setValue(0.1);
+    horizontalGridSpin->setValue(50);
+    verticalGridSpin->setValue(5);
+    heightSpin->setValue(0.038);
 
     int index = 0;
     gbox->addWidget(new QLabel(_("Mass [kg]")), index, 0);
     gbox->addWidget(massSpin, index, 1);
-    gbox->addWidget(new QLabel(_("Height [mm]")), index, 2);
-    gbox->addWidget(mainHeightSpin, index++, 3);
-    gbox->addWidget(new QLabel(_("Main-bar pitch [mm]")), index, 0);
-    gbox->addWidget(mainPitchSpin, index, 1);
-    gbox->addWidget(new QLabel(_("Main-bar thickness [mm]")), index, 2);
-    gbox->addWidget(mainThicknessSpin, index++, 3);
-    gbox->addWidget(new QLabel(_("Twist-bar pitch [mm]")), index, 0);
-    gbox->addWidget(twistPitchSpin, index++, 1);
+    gbox->addWidget(new QLabel(_("Height [m]")), index, 2);
+    gbox->addWidget(heightSpin, index++, 3);
+    gbox->addWidget(new QLabel(_("Horizontal grid [-]")), index, 0);
+    gbox->addWidget(horizontalGridSpin, index, 1);
+    gbox->addWidget(new QLabel(_("Vertical grid [-]")), index, 2);
+    gbox->addWidget(verticalGridSpin, index++, 3);
+    gbox->addWidget(new QLabel(_("Frame width [m]")), index, 0);
+    gbox->addWidget(frameWidthSpin, index, 1);
+    gbox->addWidget(new QLabel(_("Frame height [m]")), index, 2);
+    gbox->addWidget(frameHeightSpin, index++, 3);
+    gbox->addWidget(new QLabel(_("Grid width [m]")), index, 0);
+    gbox->addWidget(gridWidthSpin, index, 1);
+    gbox->addWidget(new QLabel(_("Grid height [m]")), index, 2);
+    gbox->addWidget(gridHeightSpin, index++, 3);
     gbox->addWidget(new QLabel(_("Color [-]")), index, 0);
     gbox->addWidget(colorButton, index++, 1);
 
@@ -117,10 +134,16 @@ void GratingBuilderWidgetImpl::writeYaml(const string& filename)
     filesystem::path path(filename);
 
     double mass = massSpin->value();
-    double mainHeight = mainHeightSpin->value() * 0.001;
-    double mainPitch = mainPitchSpin->value() * 0.001;
-    double mainThickness = mainThicknessSpin->value() * 0.001;
-    double twistPitch = twistPitchSpin->value() * 0.001;
+    double frameWidth = frameWidthSpin->value();
+    double frameHeight = frameHeightSpin->value();
+    double gridWidth = gridWidthSpin->value();
+    double gridHeight = gridHeightSpin->value();
+    int horizontalGrid = horizontalGridSpin->value();
+    int verticalGrid = verticalGridSpin->value();
+    double height = heightSpin->value();
+
+    double w = frameWidth * (horizontalGrid + 1) + gridWidth * horizontalGrid;
+    double h = frameHeight * (verticalGrid + 1) + gridHeight * verticalGrid;
 
     if(!filename.empty()) {
         YAMLWriter writer(filename);
@@ -155,24 +178,65 @@ void GratingBuilderWidgetImpl::writeYaml(const string& filename)
         writer.putKey("elements");
         writer.startMapping(); // start of elements map
         writer.putKey("Visual");
+        writer.startMapping(); // start of Visual map
+        writer.putKey("elements");
+        writer.startMapping(); // start of elements map
+        writer.putKey("Shape");
         writer.startMapping(); // start of Shape map
         writer.putKey("geometry");
         writer.startMapping(); // start of geometry map
         writer.putKeyValue("type", "Extrusion");
         writer.putKey("crossSection");
         writer.startFlowStyleListing(); // start of crossSection list
+        double sx = -1.0 * w / 2.0;
+        double sy = -1.0 * h / 2.0;
+        writer.putScalar(sx);
+        writer.putScalar(sy);
 
-        writer.putScalar(0); writer.putScalar(0);
-        writer.putScalar(1); writer.putScalar(0);
-        writer.putScalar(1); writer.putScalar(1);
-        writer.putScalar(0); writer.putScalar(1);
-        writer.putScalar(0); writer.putScalar(0);
+        for(int i = 0; i < horizontalGrid; ++i) {
+            double x = sx + frameWidth + (frameWidth + gridWidth) * i;
+            writer.putScalar(x);
+            writer.putScalar(sy);
+            for(int j = 0; j < verticalGrid; ++j) {
+                double y = sy + (frameHeight + gridHeight) * j;
+                writer.putScalar(x + gridWidth - 0.000001);
+                writer.putScalar(y);
+                writer.putScalar(x + gridWidth - 0.000001);
+                writer.putScalar(y + frameHeight);
+                writer.putScalar(x);
+                writer.putScalar(y + frameHeight);
+                writer.putScalar(x);
+                writer.putScalar(y + frameHeight + gridHeight);
+            }
+            writer.putScalar(x + gridWidth);
+            writer.putScalar(sy + (frameHeight + gridHeight) * (verticalGrid - 1) + frameHeight + gridHeight);
+            writer.putScalar(x + gridWidth);
+            writer.putScalar(sy);
+        }
 
+        writer.putScalar(-sx);
+        writer.putScalar(sy);
+        writer.putScalar(-sx);
+        writer.putScalar(-sy);
+        writer.putScalar(sx);
+        writer.putScalar(-sy);
+
+        writer.putScalar(sx);
+        writer.putScalar(-sy - frameHeight + 0.000002);
+        writer.putScalar(-sx - 0.000001);
+        writer.putScalar(-sy - frameHeight + 0.000002);
+        writer.putScalar(-sx - 0.000001);
+        writer.putScalar(-sy - frameHeight + 0.000001);
+        writer.putScalar(sx);
+        writer.putScalar(-sy - frameHeight + 0.000001);
+
+        writer.putScalar(sx);
+        writer.putScalar(sy);
         writer.endListing(); // end of crossSection list
         writer.putKey("spine");
         writer.startFlowStyleListing(); // start of spine list
         Vector6 spine;
-        spine << 0.0, 0.0, -mainHeight / 2.0, 0.0, 0.0, mainHeight / 2.0;
+        spine << 0.0, 0.0, -height / 2.0, 0.0, 0.0, height / 2.0;
         for(int i = 0; i < 6; ++i) {
             writer.putScalar(spine[i]);
         }
@@ -197,6 +261,45 @@ void GratingBuilderWidgetImpl::writeYaml(const string& filename)
         writer.endMapping(); // end of material map
         writer.endMapping(); // end of appearance map
         writer.endMapping(); // end of Shape map
+        writer.endMapping(); // end of elements map
+        writer.endMapping(); // end of Visual map
+
+        writer.putKey("Collision");
+        writer.startMapping(); // start of Visual map
+        writer.putKey("elements");
+        writer.startMapping(); // start of elements map
+        writer.putKey("Shape");
+        writer.startMapping(); // start of Shape map
+        writer.putKey("geometry");
+        writer.startMapping(); // start of geometry map
+        writer.putKeyValue("type", "Extrusion");
+        writer.putKey("crossSection");
+        writer.startFlowStyleListing(); // start of crossSection list
+
+        writer.putScalar(sx);
+        writer.putScalar(sy);
+        writer.putScalar(-sx);
+        writer.putScalar(sy);
+        writer.putScalar(-sx);
+        writer.putScalar(-sy);
+        writer.putScalar(sx);
+        writer.putScalar(-sy);
+        writer.putScalar(sx);
+        writer.putScalar(sy);
+
+        writer.endListing(); // end of crossSection list
+        writer.putKey("spine");
+        writer.startFlowStyleListing(); // start of spine list
+
+        for(int i = 0; i < 6; ++i) {
+            writer.putScalar(spine[i]);
+        }
+        writer.endListing(); // end of spine list
+        writer.endMapping(); // end of geometry map
+
+        writer.endMapping(); // end of Shape map
+        writer.endMapping(); // end of elements map
+        writer.endMapping(); // end of Collision map
         writer.endMapping(); // end of elements map
         writer.endMapping(); // end of links map
         writer.endListing(); // end of links list
@@ -229,6 +332,26 @@ VectorXd GratingBuilderWidgetImpl::calcInertia()
 {
     VectorXd inertia;
     inertia.resize(9);
+    inertia << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+
+    double mass = massSpin->value();
+    double frameWidth = frameWidthSpin->value();
+    double frameHeight = frameHeightSpin->value();
+    double gridWidth = gridWidthSpin->value();
+    double gridHeight = gridHeightSpin->value();
+    int horizontalGrid = horizontalGridSpin->value();
+    int verticalGrid = verticalGridSpin->value();
+
+    double x = frameWidth * (horizontalGrid + 1) + gridWidth * horizontalGrid;
+    double y = frameHeight * (verticalGrid + 1) + gridHeight * verticalGrid;
+    double z = heightSpin->value();
+
+    double ix = mass / 12.0 * (y * y + z * z);
+    double iy = mass / 12.0 * (z * z + x * x);
+    double iz = mass / 12.0 * (x * x + y * y);
+
+    inertia << ix, 0.0, 0.0, 0.0, iy, 0.0, 0.0, 0.0, iz;
 
     return inertia;
 }
+

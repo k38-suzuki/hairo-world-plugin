@@ -1,11 +1,13 @@
 
 set(sources
+    GratingBuilderWidget.cpp
     ObjectBuilderDialog.cpp
     ObjectBuilderPlugin.cpp
     PipeBuilderWidget.cpp
     )
 
 set(headers
+    GratingBuilderWidget.h
     ObjectBuilderDialog.h
     PipeBuilderWidget.h
     gettext.h

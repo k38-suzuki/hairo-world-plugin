@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-01 11:01-0800\n"
+"POT-Creation-Date: 2021-05-21 09:03+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
 "Language-Team: Japanese\n"
@@ -17,86 +17,118 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../ObjectBuilderDialog.cpp:49 ../ObjectBuilderDialog.cpp:94
-msgid "ObjectBuilder"
-msgstr "オブジェクトビルダ"
-
-#: ../ObjectBuilderDialog.cpp:54
-msgid "Pipe"
-msgstr "パイプ"
-
-#: ../ObjectBuilderDialog.cpp:56
-msgid "Shape"
-msgstr "形状"
-
-#: ../ObjectBuilderDialog.cpp:65
-msgid "&Ok"
-msgstr "&Ok"
-
-#: ../ObjectBuilderDialog.cpp:72
-msgid "Configuration"
-msgstr "設定"
-
-#: ../PipeBuilderWidget.cpp:93
-msgid "Generate"
-msgstr "生成"
-
-#: ../PipeBuilderWidget.cpp:94
-msgid "Overwrite"
-msgstr "上書き保存"
-
-#: ../PipeBuilderWidget.cpp:97
+#: ../GratingBuilderWidget.cpp:94 ../PipeBuilderWidget.cpp:87
 msgid "Mass [kg]"
 msgstr "質量 [kg]"
 
-#: ../PipeBuilderWidget.cpp:99
-msgid "Inner diameter [m]"
-msgstr "内径 [m]"
+#: ../GratingBuilderWidget.cpp:96
+msgid "Height [m]"
+msgstr "高さ [m]"
 
-#: ../PipeBuilderWidget.cpp:101
-msgid "Outer diameter [m]"
-msgstr "外径 [m]"
+#: ../GratingBuilderWidget.cpp:98
+msgid "Horizontal grid [-]"
+msgstr "横方向の格子数 [-]"
 
-#: ../PipeBuilderWidget.cpp:103
-msgid "Length [m]"
-msgstr "長さ [m]"
+#: ../GratingBuilderWidget.cpp:100
+msgid "Vertical grid [-]"
+msgstr "縦方向の格子数 [-]"
 
-#: ../PipeBuilderWidget.cpp:105
-msgid "Opening angle [deg]"
-msgstr "開口角度 [deg]"
+#: ../GratingBuilderWidget.cpp:102
+msgid "Frame width [m]"
+msgstr "フレームの横幅 [m]"
 
-#: ../PipeBuilderWidget.cpp:107
-msgid "Step angle [deg]"
-msgstr "きざみ角度 [deg]"
+#: ../GratingBuilderWidget.cpp:104
+msgid "Frame height [m]"
+msgstr "フレームの縦幅 [m]"
 
-#: ../PipeBuilderWidget.cpp:109
+#: ../GratingBuilderWidget.cpp:106
+msgid "Grid width [m]"
+msgstr "格子の横幅 [m]"
+
+#: ../GratingBuilderWidget.cpp:108
+msgid "Grid height [m]"
+msgstr "格子の縦幅 [m]"
+
+#: ../GratingBuilderWidget.cpp:110 ../PipeBuilderWidget.cpp:99
 msgid "Color [-]"
 msgstr "色 [-]"
 
-#: ../PipeBuilderWidget.cpp:113
+#: ../GratingBuilderWidget.cpp:316 ../PipeBuilderWidget.cpp:236
+msgid "Select a color"
+msgstr "色の選択"
+
+#: ../ObjectBuilderDialog.cpp:72 ../ObjectBuilderDialog.cpp:134
+msgid "ObjectBuilder"
+msgstr "オブジェクトビルダ"
+
+#: ../ObjectBuilderDialog.cpp:77
+msgid "Pipe"
+msgstr "パイプ"
+
+#: ../ObjectBuilderDialog.cpp:77
+msgid "Grating"
+msgstr "グレーチング"
+
+#: ../ObjectBuilderDialog.cpp:79
+msgid "Shape"
+msgstr "形状"
+
+#: ../ObjectBuilderDialog.cpp:92
+msgid "Generate"
+msgstr "生成"
+
+#: ../ObjectBuilderDialog.cpp:93
+msgid "Overwrite"
+msgstr "上書き保存"
+
+#: ../ObjectBuilderDialog.cpp:95
 msgid "File"
 msgstr "ファイル"
 
-#: ../PipeBuilderWidget.cpp:262
+#: ../ObjectBuilderDialog.cpp:100
+msgid "&Ok"
+msgstr "&Ok"
+
+#: ../ObjectBuilderDialog.cpp:111
+msgid "Configuration"
+msgstr "設定"
+
+#: ../ObjectBuilderDialog.cpp:142
 msgid "Save a Body file"
 msgstr "ボディを保存"
 
-#: ../PipeBuilderWidget.cpp:266
+#: ../ObjectBuilderDialog.cpp:146
 msgid "Save"
 msgstr "保存"
 
-#: ../PipeBuilderWidget.cpp:267
+#: ../ObjectBuilderDialog.cpp:147
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: ../PipeBuilderWidget.cpp:271
+#: ../ObjectBuilderDialog.cpp:151
 msgid "Body files (*.body)"
 msgstr "ボディファイル (*.body)"
 
-#: ../PipeBuilderWidget.cpp:272
+#: ../ObjectBuilderDialog.cpp:152
 msgid "Any files (*)"
 msgstr "全てのファイル (*)"
 
-#: ../PipeBuilderWidget.cpp:297
-msgid "Select a color"
-msgstr "色の選択"
+#: ../PipeBuilderWidget.cpp:89
+msgid "Length [m]"
+msgstr "長さ [m]"
+
+#: ../PipeBuilderWidget.cpp:91
+msgid "Inner diameter [m]"
+msgstr "内径 [m]"
+
+#: ../PipeBuilderWidget.cpp:93
+msgid "Outer diameter [m]"
+msgstr "外径 [m]"
+
+#: ../PipeBuilderWidget.cpp:95
+msgid "Opening angle [deg]"
+msgstr "開口角度 [deg]"
+
+#: ../PipeBuilderWidget.cpp:97
+msgid "Step angle [deg]"
+msgstr "きざみ角度 [deg]"
