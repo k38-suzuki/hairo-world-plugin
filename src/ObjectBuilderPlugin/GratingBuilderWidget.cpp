@@ -217,6 +217,16 @@ void GratingBuilderWidgetImpl::writeYaml(const string& filename)
             double x = sx + frameWidth + (frameWidth + gridWidth) * i;
             writer.putScalar(x);
             writer.putScalar(sy);
+
+            writer.putScalar(x - 0.0002);
+            writer.putScalar(sy);
+            writer.putScalar(x - 0.0002);
+            writer.putScalar(sy + (frameHeight + gridHeight) * verticalGrid);
+            writer.putScalar(x - 0.0001);
+            writer.putScalar(sy + (frameHeight + gridHeight) * verticalGrid);
+            writer.putScalar(x - 0.0001);
+            writer.putScalar(sy);
+
             for(int j = 0; j < verticalGrid; ++j) {
                 double y = sy + (frameHeight + gridHeight) * j;
                 writer.putScalar(x + gridWidth - 0.0001);
@@ -229,7 +239,7 @@ void GratingBuilderWidgetImpl::writeYaml(const string& filename)
                 writer.putScalar(y + frameHeight + gridHeight);
             }
             writer.putScalar(x + gridWidth);
-            writer.putScalar(sy + (frameHeight + gridHeight) * (verticalGrid - 1) + frameHeight + gridHeight);
+            writer.putScalar(sy + (frameHeight + gridHeight) * verticalGrid);
             writer.putScalar(x + gridWidth);
             writer.putScalar(sy);
         }
