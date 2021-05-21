@@ -35,10 +35,12 @@ public:
     SpinBox* horizontalGridSpin;
     SpinBox* verticalGridSpin;
     DoubleSpinBox* heightSpin;
+    QLabel* sizeLabel;
     PushButton* colorButton;
 
     void writeYaml(const string& filename);
     void onColorButtonClicked();
+    void onValueChanged();
     VectorXd calcInertia();
 };
 
@@ -60,18 +62,23 @@ GratingBuilderWidgetImpl::GratingBuilderWidgetImpl(GratingBuilderWidget* self)
     massSpin = new DoubleSpinBox();
     massSpin->setRange(0.001, 1000.0);
     massSpin->setSingleStep(0.01);
+    massSpin->setDecimals(3);
     frameWidthSpin = new DoubleSpinBox();
     frameWidthSpin->setRange(0.001, 1000.0);
     frameWidthSpin->setSingleStep(0.01);
+    frameWidthSpin->setDecimals(3);
     frameHeightSpin = new DoubleSpinBox();
     frameHeightSpin->setRange(0.001, 1000.0);
     frameHeightSpin->setSingleStep(0.01);
+    frameHeightSpin->setDecimals(3);
     gridWidthSpin = new DoubleSpinBox();
     gridWidthSpin->setRange(0.001, 1000.0);
     gridWidthSpin->setSingleStep(0.01);
+    gridWidthSpin->setDecimals(3);
     gridHeightSpin = new DoubleSpinBox();
     gridHeightSpin->setRange(0.001, 1000.0);
     gridHeightSpin->setSingleStep(0.01);
+    gridHeightSpin->setDecimals(3);
     horizontalGridSpin = new SpinBox();
     horizontalGridSpin->setRange(0, 1000);
     verticalGridSpin = new SpinBox();
@@ -79,6 +86,8 @@ GratingBuilderWidgetImpl::GratingBuilderWidgetImpl(GratingBuilderWidget* self)
     heightSpin = new DoubleSpinBox();
     heightSpin->setRange(0.001, 1000.0);
     heightSpin->setSingleStep(0.01);
+    heightSpin->setDecimals(3);
+    sizeLabel = new QLabel(_(" "));
     colorButton = new PushButton();
 
     massSpin->setValue(1.0);
@@ -109,11 +118,22 @@ GratingBuilderWidgetImpl::GratingBuilderWidgetImpl(GratingBuilderWidget* self)
     gbox->addWidget(gridHeightSpin, index++, 3);
     gbox->addWidget(new QLabel(_("Color [-]")), index, 0);
     gbox->addWidget(colorButton, index++, 1);
+    gbox->addWidget(new QLabel(_("Size [m, m, m]")), index, 0);
+    gbox->addWidget(sizeLabel, index++, 1, 1, 3);
 
     vbox->addLayout(gbox);
     self->setLayout(vbox);
 
+    onValueChanged();
+
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
+    frameWidthSpin->sigValueChanged().connect([&](double value){ onValueChanged(); });
+    frameHeightSpin->sigValueChanged().connect([&](double value){ onValueChanged(); });
+    gridWidthSpin->sigValueChanged().connect([&](double value){ onValueChanged(); });
+    gridHeightSpin->sigValueChanged().connect([&](double value){ onValueChanged(); });
+    horizontalGridSpin->sigValueChanged().connect([&](double value){ onValueChanged(); });
+    verticalGridSpin->sigValueChanged().connect([&](double value){ onValueChanged(); });
+    heightSpin->sigValueChanged().connect([&](double value){ onValueChanged(); });
 }
 
 
@@ -199,9 +219,9 @@ void GratingBuilderWidgetImpl::writeYaml(const string& filename)
             writer.putScalar(sy);
             for(int j = 0; j < verticalGrid; ++j) {
                 double y = sy + (frameHeight + gridHeight) * j;
-                writer.putScalar(x + gridWidth - 0.000001);
+                writer.putScalar(x + gridWidth - 0.0001);
                 writer.putScalar(y);
-                writer.putScalar(x + gridWidth - 0.000001);
+                writer.putScalar(x + gridWidth - 0.0001);
                 writer.putScalar(y + frameHeight);
                 writer.putScalar(x);
                 writer.putScalar(y + frameHeight);
@@ -325,6 +345,26 @@ void GratingBuilderWidgetImpl::onColorButtonClicked()
     QPalette palette;
     palette.setColor(QPalette::Button, selectedColor);
     colorButton->setPalette(palette);
+}
+
+
+void GratingBuilderWidgetImpl::onValueChanged()
+{
+    double frameWidth = frameWidthSpin->value();
+    double frameHeight = frameHeightSpin->value();
+    double gridWidth = gridWidthSpin->value();
+    double gridHeight = gridHeightSpin->value();
+    int horizontalGrid = horizontalGridSpin->value();
+    int verticalGrid = verticalGridSpin->value();
+    double height = heightSpin->value();
+
+    double w = frameWidth * (horizontalGrid + 1) + gridWidth * horizontalGrid;
+    double h = frameHeight * (verticalGrid + 1) + gridHeight * verticalGrid;
+
+    QString size = QString::number(w, 'f', 3)
+            + ", " + QString::number(h, 'f', 3)
+            + ", " + QString::number(height, 'f', 3);
+    sizeLabel->setText(size);
 }
 
 

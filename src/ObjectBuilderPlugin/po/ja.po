@@ -53,6 +53,10 @@ msgstr "格子の縦幅 [m]"
 msgid "Color [-]"
 msgstr "色 [-]"
 
+#: ../GratingBuilderWidget.cpp:121
+msgid "Size [m, m, m]"
+msgstr "大きさ [m, m, m]"
+
 #: ../GratingBuilderWidget.cpp:316 ../PipeBuilderWidget.cpp:236
 msgid "Select a color"
 msgstr "色の選択"
