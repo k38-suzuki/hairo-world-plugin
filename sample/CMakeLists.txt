@@ -1,5 +1,3 @@
 add_subdirectory(HAIROWorld)
 add_subdirectory(OMPLPlugin)
-add_subdirectory(Tutorial)
-add_subdirectory(ViewSpacerPlugin)
-add_subdirectory(ViewSwitcherPlugin)
+add_subdirectory(tutorial)
