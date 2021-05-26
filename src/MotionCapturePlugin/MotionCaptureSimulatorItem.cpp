@@ -9,7 +9,6 @@
 #include <cnoid/EigenUtil>
 #include <cnoid/Item>
 #include <cnoid/ItemManager>
-#include <cnoid/ItemTreeView>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SimulatorItem>
 #include <QDateTime>
@@ -136,7 +135,7 @@ bool MotionCaptureSimulatorItemImpl::initializeSimulation(SimulatorItem* simulat
         item = new MarkerPointItem();
         item->setName(date);
         self->addChildItem(item);
-        ItemTreeView::instance()->checkItem(item, false);
+        item->setChecked(false);
         int numParts = markers.size();
         shared_ptr<MultiSE3Seq> markerPosSeq = item->seq();
         markerPosSeq->setSeqContentName("MarkerPosSeq");
@@ -167,7 +166,7 @@ void MotionCaptureSimulatorItem::finalizeSimulation()
 
 void MotionCaptureSimulatorItemImpl::finalizeSimulation()
 {
-    ItemTreeView::instance()->checkItem(item, true);
+    item->setChecked(true);
 }
 
 

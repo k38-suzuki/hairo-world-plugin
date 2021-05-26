@@ -9,7 +9,7 @@
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenUtil>
 #include <cnoid/ItemManager>
-#include <cnoid/ItemTreeView>
+#include <cnoid/RootItem>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
 #include <vector>
@@ -121,7 +121,8 @@ bool FluidDynamicsSimulatorItemImpl::initializeSimulation(SimulatorItem* simulat
     }
 
     if(fdBodies.size()) {
-        items = ItemTreeView::instance()->checkedItems<FluidAreaItem>();
+        RootItem* rootItem = RootItem::instance();
+        items = rootItem->checkedItems<FluidAreaItem>();
         simulatorItem->addPreDynamicsFunction([&](){ onPreDynamicsFunction(); });
     }
     return true;

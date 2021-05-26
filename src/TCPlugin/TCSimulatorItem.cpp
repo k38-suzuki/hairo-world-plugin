@@ -8,9 +8,9 @@
 #include <cnoid/Body>
 #include <cnoid/EigenUtil>
 #include <cnoid/ItemManager>
-#include <cnoid/ItemTreeView>
 #include <cnoid/Process>
 #include <cnoid/PutPropertyFunction>
+#include <cnoid/RootItem>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
 #include <fmt/format.h>
@@ -191,7 +191,8 @@ bool TCSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
         simulatorItem->addPreDynamicsFunction([&](){ onPreDynamicsFunction(); });
     }
 
-    items = ItemTreeView::instance()->checkedItems<TCAreaItem>();
+    RootItem* rootItem = RootItem::instance();
+    items = rootItem->checkedItems<TCAreaItem>();
     for(size_t i = 0; i < items.size(); i++) {
         TCAreaItem* item = items[i];
         item->setId(i);
