@@ -1,13 +1,13 @@
 # Japanese translations for PACKAGE package.
-# Copyright (C) 2020 THE PACKAGE'S COPYRIGHT HOLDER
+# Copyright (C) 2021 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# suzuki <suzuki.kenta38@jaea.go.jp>, 2020.
+# suzuki <suzuki.kenta38@jaea.go.jp>, 2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-05 22:34+0900\n"
+"POT-Creation-Date: 2021-05-27 09:59+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
 "Language-Team: Japanese\n"
@@ -17,6 +17,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#: ../JoystickLoggerItem.cpp:85
+msgid "JoystickLoggerItem"
+msgstr "ジョイスティックロガーアイテム"
+
+#: ../JoystickLoggerItem.cpp:169
+msgid "Record joystick states"
+msgstr "ジョイスティック状態の記録"
+
 #: ../JoystickStatusView.cpp:141
 msgid "Joystick Status"
-msgstr "ジョイスティックステータス"
+msgstr "ジョイスティック状態"

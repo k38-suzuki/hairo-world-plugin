@@ -7,6 +7,8 @@
 #include <cnoid/Archive>
 #include <cnoid/ItemManager>
 #include <cnoid/MeshExtractor>
+#include <cnoid/MultiValueSeq>
+#include <cnoid/MultiValueSeqItem>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SceneDrawables>
 #include <cnoid/SimulatorItem>
@@ -69,8 +71,14 @@ public:
     map<string, SgMaterial*> materialMap;
     vector<string> bodyNames;
     string bodyNameListString;
+    SimulatorItem* simulatorItem_;
+
+    vector<MultiValueSeqItem*> collisionStaSeqItems;
+    bool isCollisionStatesRecordingEnabled;
+    int frame;
 
     void onPostDynamicsFunction();
+    void initializeBody(Body* body);
     void extractMaterial(Link* link);
     void injectMaterial(Link* link);
     void initilizeMaterial(Body* body);
@@ -97,6 +105,11 @@ CollisionVisualizerItemImpl::CollisionVisualizerItemImpl(CollisionVisualizerItem
 {
     bodies.clear();
     materialMap.clear();
+    bodyNameListString.clear();
+    simulatorItem_ = nullptr;
+    collisionStaSeqItems.clear();
+    isCollisionStatesRecordingEnabled = false;
+    frame = 0;
 }
 
 
@@ -115,6 +128,10 @@ CollisionVisualizerItemImpl::CollisionVisualizerItemImpl(CollisionVisualizerItem
     bodies = org.bodies;
     materialMap = org.materialMap;
     bodyNameListString = getNameListString(bodyNames);
+    simulatorItem_ = org.simulatorItem_;
+    collisionStaSeqItems = org.collisionStaSeqItems;
+    isCollisionStatesRecordingEnabled = org.isCollisionStatesRecordingEnabled;
+    frame = org.frame;
 }
 
 
@@ -142,6 +159,10 @@ bool CollisionVisualizerItemImpl::initializeSimulation(SimulatorItem* simulatorI
 {
     bodies.clear();
     materialMap.clear();
+    simulatorItem_ = simulatorItem;
+    collisionStaSeqItems.clear();
+    frame = 0;
+
     vector<SimulationBody*> simulationBodies = simulatorItem->simulationBodies();
     for(size_t i = 0; i < simulationBodies.size(); ++i) {
         Body* body = simulationBodies[i]->body();
@@ -149,10 +170,12 @@ bool CollisionVisualizerItemImpl::initializeSimulation(SimulatorItem* simulatorI
             if(bodyNames.size()) {
                 for(auto& bodyName : bodyNames) {
                     if(body->name() == bodyName) {
+                        initializeBody(body);
                         initilizeMaterial(body);
                     }
                 }
             } else {
+                initializeBody(body);
                 initilizeMaterial(body);
             }
         }
@@ -204,6 +227,44 @@ void CollisionVisualizerItemImpl::onPostDynamicsFunction()
 //                    const Vector3& p = contact.position();
 //                }
 //            }
+        }
+
+        if(isCollisionStatesRecordingEnabled) {
+            Body* body = bodies[i];
+            std::shared_ptr<MultiValueSeq> collisionStaSeq = collisionStaSeqItems[i]->seq();
+            collisionStaSeq->setNumFrames(frame + 1);
+            MultiValueSeq::Frame p = collisionStaSeq->frame(frame);
+            for(int j = 0; j < body->numLinks(); ++j) {
+                Link* link = body->link(j);
+                auto& contacts = link->contactPoints();
+                p[j] = !contacts.empty() ? 1 : 0;
+            }
+        }
+    }
+
+    frame++;
+}
+
+
+void CollisionVisualizerItemImpl::initializeBody(Body* body)
+{
+    if(isCollisionStatesRecordingEnabled) {
+        MultiValueSeqItem* collisionStaSeqItem = new MultiValueSeqItem();
+        string name = "Collision States - " + body->name();
+        collisionStaSeqItem->setName(name);
+        self->addSubItem(collisionStaSeqItem);
+        collisionStaSeqItems.push_back(collisionStaSeqItem);
+
+        int numParts = body->numLinks();
+        std::shared_ptr<MultiValueSeq> collisionStaSeq = collisionStaSeqItem->seq();
+        collisionStaSeq->setSeqContentName("CollisionStaSeq");
+        collisionStaSeq->setNumParts(numParts);
+        collisionStaSeq->setDimension(0, numParts, 1);
+        collisionStaSeq->setFrameRate(1.0 / simulatorItem_->worldTimeStep());
+
+        for(int j = 0; j < body->numLinks(); ++j) {
+            Link* link = body->link(j);
+            link->mergeSensingMode(Link::LinkContactState);
         }
     }
 }
@@ -288,6 +349,7 @@ void CollisionVisualizerItemImpl::doPutProperties(PutPropertyFunction& putProper
 {
     putProperty(_("Target bodies"), bodyNameListString,
                 [&](const string& names){ return updateNames(names, bodyNameListString, bodyNames); });
+    putProperty(_("Record collision states"), isCollisionStatesRecordingEnabled, changeProperty(isCollisionStatesRecordingEnabled));
 }
 
 
@@ -301,6 +363,7 @@ bool CollisionVisualizerItem::store(Archive& archive)
 bool CollisionVisualizerItemImpl::store(Archive& archive)
 {
     writeElements(archive, "targetBodies", bodyNames, true);
+    archive.write("recordCollisionStates", isCollisionStatesRecordingEnabled);
     return true;
 }
 
@@ -316,5 +379,6 @@ bool CollisionVisualizerItemImpl::restore(const Archive& archive)
 {
     readElements(archive, "targetBodies", bodyNames);
     bodyNameListString = getNameListString(bodyNames);
+    archive.read("recordCollisionStates", isCollisionStatesRecordingEnabled);
     return true;
 }

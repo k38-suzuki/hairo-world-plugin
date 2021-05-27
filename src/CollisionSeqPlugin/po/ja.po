@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-05 05:43-0800\n"
+"POT-Creation-Date: 2021-05-27 09:57+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
 "Language-Team: Japanese\n"
@@ -17,22 +17,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../CollisionVisualizerItem.cpp:129
+#: ../CollisionVisualizerItem.cpp:146
 msgid "CollisionVisualizerItem"
-msgstr "コリジョンビジュアライザアイテム"
+msgstr "干渉可視化"
 
-#: ../CollisionVisualizerItem.cpp:289
+#: ../CollisionVisualizerItem.cpp:350
 msgid "Target bodies"
 msgstr "対象ボディ"
 
-#: ../OperationReviewCollectorItem.cpp:99
-msgid "OperationReviewCollectorItem"
-msgstr "オペレーションレビューコレクタアイテム"
-
-#: ../OperationReviewCollectorItem.cpp:230
-msgid "Record joystick states"
-msgstr "ジョイスティック状態の記録"
-
-#: ../OperationReviewCollectorItem.cpp:231
+#: ../CollisionVisualizerItem.cpp:352
 msgid "Record collision states"
-msgstr "干渉状態の記録"
+msgstr "干渉の記録"

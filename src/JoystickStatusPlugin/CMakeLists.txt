@@ -1,10 +1,12 @@
 
 set(sources
+    JoystickLoggerItem.cpp
     JoystickStatusPlugin.cpp
     JoystickStatusView.cpp
     )
 
 set(headers
+    JoystickLoggerItem.h
     JoystickStatusView.h
     exportdecl.h
     gettext.h

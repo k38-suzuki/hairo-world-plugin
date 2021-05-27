@@ -4,6 +4,7 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
+#include "JoystickLoggerItem.h"
 #include "JoystickStatusView.h"
 
 using namespace cnoid;
@@ -21,6 +22,7 @@ public:
 
     virtual bool initialize() override
     {
+        JoystickLoggerItem::initializeClass(this);
         JoystickStatusView::initializeClass(this);
         return true;
     }

@@ -6,16 +6,15 @@
 #include <cnoid/Plugin>
 #include <fmt/format.h>
 #include "CollisionVisualizerItem.h"
-#include "OperationReviewCollectorItem.h"
 using namespace cnoid;
 
 namespace {
 
-class OperationReviewPlugin : public Plugin
+class CollisionSeqPlugin : public Plugin
 {
 public:
 
-    OperationReviewPlugin() : Plugin("OperationReview")
+    CollisionSeqPlugin() : Plugin("CollisionSeq")
     {
         require("Body");
     }
@@ -23,14 +22,13 @@ public:
     virtual bool initialize()
     {
         CollisionVisualizerItem::initializeClass(this);
-        OperationReviewCollectorItem::initializeClass(this);
         return true;
     }
 
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("OperationReview Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            fmt::format("CollisionSeq Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyright (c) 2021 Japan Atomic Energy Agency.\n"
             "\n" +
@@ -41,4 +39,4 @@ public:
 
 }
 
-CNOID_IMPLEMENT_PLUGIN_ENTRY(OperationReviewPlugin)
+CNOID_IMPLEMENT_PLUGIN_ENTRY(CollisionSeqPlugin)
