@@ -4,12 +4,14 @@ set(sources
     ObjectBuilderDialog.cpp
     ObjectBuilderPlugin.cpp
     PipeBuilderWidget.cpp
+    SlopeBuilderWidget.cpp
     )
 
 set(headers
     GratingBuilderWidget.h
     ObjectBuilderDialog.h
     PipeBuilderWidget.h
+    SlopeBuilderWidget.h
     gettext.h
     )
 

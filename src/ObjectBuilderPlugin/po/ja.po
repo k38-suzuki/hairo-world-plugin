@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-21 09:03+0900\n"
+"POT-Creation-Date: 2021-06-18 11:49+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
 "Language-Team: Japanese\n"
@@ -17,11 +17,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../GratingBuilderWidget.cpp:94 ../PipeBuilderWidget.cpp:87
+#: ../GratingBuilderWidget.cpp:103 ../PipeBuilderWidget.cpp:91
+#: ../SlopeBuilderWidget.cpp:61
 msgid "Mass [kg]"
 msgstr "質量 [kg]"
 
-#: ../GratingBuilderWidget.cpp:96
+#: ../GratingBuilderWidget.cpp:105 ../SlopeBuilderWidget.cpp:62
 msgid "Height [m]"
 msgstr "高さ [m]"
 
@@ -49,7 +50,8 @@ msgstr "格子の横幅 [m]"
 msgid "Grid height [m]"
 msgstr "格子の縦幅 [m]"
 
-#: ../GratingBuilderWidget.cpp:110 ../PipeBuilderWidget.cpp:99
+#: ../GratingBuilderWidget.cpp:119 ../PipeBuilderWidget.cpp:103
+#: ../SlopeBuilderWidget.cpp:83
 msgid "Color [-]"
 msgstr "色 [-]"
 
@@ -57,7 +59,8 @@ msgstr "色 [-]"
 msgid "Size [m, m, m]"
 msgstr "大きさ [m, m, m]"
 
-#: ../GratingBuilderWidget.cpp:316 ../PipeBuilderWidget.cpp:236
+#: ../GratingBuilderWidget.cpp:346 ../PipeBuilderWidget.cpp:240
+#: ../SlopeBuilderWidget.cpp:209
 msgid "Select a color"
 msgstr "色の選択"
 
@@ -72,6 +75,10 @@ msgstr "パイプ"
 #: ../ObjectBuilderDialog.cpp:77
 msgid "Grating"
 msgstr "グレーチング"
+
+#: ../ObjectBuilderDialog.cpp:80
+msgid "Slope"
+msgstr "スロープ"
 
 #: ../ObjectBuilderDialog.cpp:79
 msgid "Shape"
@@ -117,7 +124,7 @@ msgstr "ボディファイル (*.body)"
 msgid "Any files (*)"
 msgstr "全てのファイル (*)"
 
-#: ../PipeBuilderWidget.cpp:89
+#: ../PipeBuilderWidget.cpp:93 ../SlopeBuilderWidget.cpp:62
 msgid "Length [m]"
 msgstr "長さ [m]"
 
@@ -136,3 +143,7 @@ msgstr "開口角度 [deg]"
 #: ../PipeBuilderWidget.cpp:97
 msgid "Step angle [deg]"
 msgstr "きざみ角度 [deg]"
+
+#: ../SlopeBuilderWidget.cpp:61
+msgid "Width [m]"
+msgstr "幅 [m]"

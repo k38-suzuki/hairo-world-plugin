@@ -21,6 +21,7 @@
 #include "gettext.h"
 #include "GratingBuilderWidget.h"
 #include "PipeBuilderWidget.h"
+#include "SlopeBuilderWidget.h"
 
 using namespace cnoid;
 using namespace std;
@@ -41,10 +42,12 @@ public:
     LineEdit* fileLine;
     GratingBuilderWidget* gratingWidget;
     PipeBuilderWidget* pipeWidget;
+    SlopeBuilderWidget* slopeWidget;
 
     enum Shape {
         PIPE,
         GRATING,
+        SLOPE,
         NUM_SHAPE
     };
 
@@ -74,7 +77,7 @@ ObjectBuilderDialogImpl::ObjectBuilderDialogImpl(ObjectBuilderDialog* self)
 
     QHBoxLayout* hbox = new QHBoxLayout();
     shapeCombo = new ComboBox();
-    QStringList shapes = { _("Pipe"), _("Grating") };
+    QStringList shapes = { _("Pipe"), _("Grating"), _("Slope") };
     shapeCombo->addItems(shapes);
     hbox->addWidget(new QLabel(_("Shape")));
     hbox->addWidget(shapeCombo);
@@ -86,6 +89,8 @@ ObjectBuilderDialogImpl::ObjectBuilderDialogImpl(ObjectBuilderDialog* self)
     sbox->setCurrentWidget(pipeWidget);
     gratingWidget = new GratingBuilderWidget();
     sbox->addWidget(gratingWidget);
+    slopeWidget = new SlopeBuilderWidget();
+    sbox->addWidget(slopeWidget);
 
     QHBoxLayout* fhbox = new QHBoxLayout();
     fileLine = new LineEdit();
@@ -193,6 +198,8 @@ void ObjectBuilderDialogImpl::writeYaml(const bool &overwrite)
     case GRATING:
         gratingWidget->save(filename);
         break;
+    case SLOPE:
+        slopeWidget->save(filename);
     default:
         break;
     }
