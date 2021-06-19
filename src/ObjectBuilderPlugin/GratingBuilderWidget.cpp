@@ -167,7 +167,7 @@ void GratingBuilderWidgetImpl::writeYaml(const string& filename)
 
     if(!filename.empty()) {
         YAMLWriter writer(filename);
-        string name = path.stem();
+        string name = path.stem().string();
 
         writer.startMapping(); // start of body map
         writer.putKeyValue("format", "ChoreonoidBody");
