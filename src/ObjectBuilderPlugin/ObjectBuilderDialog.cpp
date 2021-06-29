@@ -162,7 +162,7 @@ void ObjectBuilderDialogImpl::openSaveDialog()
     ProjectManager* pm = ProjectManager::instance();
     string currentProjectFile = pm->currentProjectFile();
     filesystem::path path(currentProjectFile);
-    string currentProjectName = path.stem();
+    string currentProjectName = path.stem().string();
     if(!dialog.selectFilePath(currentProjectFile)) {
         dialog.selectFile(currentProjectName);
     }
@@ -184,7 +184,7 @@ void ObjectBuilderDialogImpl::writeYaml(const bool &overwrite)
 
     filename = fileLine->text().toStdString();
     filesystem::path path(filename);
-    string extension = path.extension();
+    string extension = path.extension().string();
     if(extension.empty()) {
        filename += ".body";
        fileLine->setText(QString::fromStdString(filename));

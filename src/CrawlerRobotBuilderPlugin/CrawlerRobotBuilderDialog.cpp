@@ -737,7 +737,7 @@ void CrawlerRobotBuilderDialogImpl::onImportYamlButtonClicked()
 
     if(!filename.empty()) {
         filesystem::path path(filename);
-        string ext = path.extension();
+        string ext = path.extension().string();
         if(ext.empty()) {
             filename += ".yaml";
         }
@@ -852,7 +852,7 @@ void CrawlerRobotBuilderDialogImpl::onExportYamlButtonClicked()
     ProjectManager* pm = ProjectManager::instance();
     string currentProjectFile = pm->currentProjectFile();
     filesystem::path cpfpath(currentProjectFile);
-    string currentProjectName = cpfpath.stem();
+    string currentProjectName = cpfpath.stem().string();
     if(!dialog.selectFilePath(currentProjectFile)) {
         dialog.selectFile(currentProjectName);
     }
@@ -865,7 +865,7 @@ void CrawlerRobotBuilderDialogImpl::onExportYamlButtonClicked()
 
     if(!filename.empty()) {
         filesystem::path path(filename);
-        string bodyName = path.stem();
+        string bodyName = path.stem().string();
 
         YAMLWriter writer(filename);
 
@@ -1026,7 +1026,7 @@ void CrawlerRobotBuilderDialogImpl::onExportBodyButtonClicked()
     ProjectManager* pm = ProjectManager::instance();
     string currentProjectFile = pm->currentProjectFile();
     filesystem::path path(currentProjectFile);
-    string currentProjectName = path.stem();
+    string currentProjectName = path.stem().string();
     if(!dialog.selectFilePath(currentProjectFile)) {
         dialog.selectFile(currentProjectName);
     }
@@ -1050,7 +1050,7 @@ void CrawlerRobotBuilderDialogImpl::onExportBodyButtonClicked()
 void CrawlerRobotBuilderDialogImpl::onExportBody(const string& fileName)
 {
     filesystem::path path(fileName);
-    string bodyName = path.stem();
+    string bodyName = path.stem().string();
 
     FILE* fp = fopen(fileName.c_str(), "w");
     if(fp == NULL) {
@@ -1300,7 +1300,7 @@ void CrawlerRobotBuilderDialogImpl::onExportBody(const string& fileName)
 void CrawlerRobotBuilderDialogImpl::onExportAGXBody(const string& fileName)
 {
     filesystem::path path(fileName);
-    string bodyName = path.stem();
+    string bodyName = path.stem().string();
 
     FILE* fp = fopen(fileName.c_str(), "w");
     if(fp == NULL) {

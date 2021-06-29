@@ -97,7 +97,7 @@ void FileBoxWidget::dragEnterEvent(QDragEnterEvent* event)
 void FileBoxWidget::dropEvent(QDropEvent* event)
 {
     const QMimeData* mime = event->mimeData();
-    QList urls = mime->urls();
+    QList<QUrl> urls = mime->urls();
 
     for(int i = 0; i < urls.size(); ++i) {
         QString fileName = urls[i].toLocalFile();

@@ -389,7 +389,7 @@ void BoxTerrainBuilderDialogImpl::onSaveButtonClicked()
     ProjectManager* pm = ProjectManager::instance();
     string currentProjectFile = pm->currentProjectFile();
     filesystem::path path(currentProjectFile);
-    string currentProjectName = path.stem();
+    string currentProjectName = path.stem().string();
     if(!dialog.selectFilePath(currentProjectFile)) {
         dialog.selectFile(currentProjectName);
     }
@@ -447,7 +447,7 @@ void BoxTerrainBuilderDialogImpl::onExportBody()
                 qCritical().noquote() << "cannot csv body file." << endl;
             } else {
                 filesystem::path path(outputFileName.toStdString());
-                string bodyName = path.stem();
+                string bodyName = path.stem().string();
 
                 fprintf(fp, "format: ChoreonoidBody\n");
                 fprintf(fp, "formatVersion: 1.0\n");

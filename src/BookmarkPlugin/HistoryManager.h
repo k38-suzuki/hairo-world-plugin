@@ -7,6 +7,7 @@
 #define CNOID_BOOKMARK_PLUGIN_HISTORY_MANAGER_H
 
 #include <cnoid/ExtensionManager>
+#include <vector>
 
 namespace cnoid {
 
