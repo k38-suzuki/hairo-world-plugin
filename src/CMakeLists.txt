@@ -15,4 +15,6 @@ if(ENABLE_GUI)
     add_subdirectory(InertiaCalculatorPlugin)
     add_subdirectory(JoystickStatusPlugin)
     add_subdirectory(ObjectBuilderPlugin)
+
+    add_subdirectory(StartupPlugin)
 endif()
