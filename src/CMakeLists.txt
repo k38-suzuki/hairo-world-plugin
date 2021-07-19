@@ -11,7 +11,6 @@ if(ENABLE_GUI)
 
     add_subdirectory(BookmarkPlugin)
     add_subdirectory(CollisionSeqPlugin)
-    add_subdirectory(FileBoxPlugin)
     add_subdirectory(InertiaCalculatorPlugin)
     add_subdirectory(JoystickStatusPlugin)
     add_subdirectory(ObjectBuilderPlugin)

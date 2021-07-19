@@ -1,4 +1,9 @@
 
+option(BUILD_FILEBOX_PLUGIN "Building FileBoxPlugin" OFF)
+if(NOT BUILD_FILEBOX_PLUGIN)
+  return()
+endif()
+
 set(sources
     FileBoxPlugin.cpp
     FileBoxView.cpp
