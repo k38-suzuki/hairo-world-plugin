@@ -29,6 +29,23 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 ObjectBuilderDialog* builderDialog = nullptr;
 
+namespace {
+
+struct DialogButtonInfo {
+    QDialogButtonBox::ButtonRole role;
+    char* label;
+};
+
+
+DialogButtonInfo dialogButtonInfo[] = {
+    { QDialogButtonBox::ActionRole,        _("&Save") },
+    { QDialogButtonBox::ActionRole,  _("&Save As...") },
+    { QDialogButtonBox::AcceptRole,         _ ("&Ok") }
+};
+
+}
+
+
 namespace cnoid {
 
 class ObjectBuilderDialogImpl
@@ -51,11 +68,15 @@ public:
         NUM_SHAPE
     };
 
+    enum DialogButtonId { SAVE, SAVEAS, OK, NUM_DBUTTONS };
+
+    PushButton* dialogButtons[NUM_DBUTTONS];
+
     void openSaveDialog();
     void writeYaml(const bool& overwrite);
     void onCurrentIndexChanged(const int& index);
-    void onGenerateButtonClicked();
-    void onOverwriteButtonClicked();
+    void onSaveAsButtonClicked();
+    void onSaveButtonClicked();
     void onAccepted();
     void onRejected();
 };
@@ -94,23 +115,26 @@ ObjectBuilderDialogImpl::ObjectBuilderDialogImpl(ObjectBuilderDialog* self)
 
     QHBoxLayout* fhbox = new QHBoxLayout();
     fileLine = new LineEdit();
-    PushButton* generateButton = new PushButton(_("Generate"));
-    PushButton* overwriteButton = new PushButton(_("Overwrite"));
     fileLine->setEnabled(false);
     fhbox->addWidget(new QLabel(_("File")));
     fhbox->addWidget(fileLine);
-    fhbox->addWidget(generateButton);
-    fhbox->addWidget(overwriteButton);
 
-    QPushButton* okButton = new QPushButton(_("&Ok"));
-    okButton->setDefault(true);
     QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
-    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
+    for(int i = 0; i < NUM_DBUTTONS; ++i) {
+        DialogButtonInfo info = dialogButtonInfo[i];
+        dialogButtons[i] = new PushButton(info.label);
+        PushButton* dialogButton = dialogButtons[i];
+        buttonBox->addButton(dialogButton, info.role);
+        if(i == OK) {
+            dialogButton->setDefault(true);
+        }
+    }
+
     self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
 
     shapeCombo->sigCurrentIndexChanged().connect([&](int index){ onCurrentIndexChanged(index); });
-    generateButton->sigClicked().connect([&](){ onGenerateButtonClicked(); });
-    overwriteButton->sigClicked().connect([&](){ onOverwriteButtonClicked(); });
+    dialogButtons[SAVE]->sigClicked().connect([&](){ onSaveButtonClicked(); });
+    dialogButtons[SAVEAS]->sigClicked().connect([&](){ onSaveAsButtonClicked(); });
 
     vbox->addLayout(hbox);
     vbox->addLayout(new HSeparatorBox(new QLabel(_("Configuration"))));
@@ -212,13 +236,13 @@ void ObjectBuilderDialogImpl::onCurrentIndexChanged(const int& index)
 }
 
 
-void ObjectBuilderDialogImpl::onGenerateButtonClicked()
+void ObjectBuilderDialogImpl::onSaveAsButtonClicked()
 {
     writeYaml(false);
 }
 
 
-void ObjectBuilderDialogImpl::onOverwriteButtonClicked()
+void ObjectBuilderDialogImpl::onSaveButtonClicked()
 {
     writeYaml(true);
 }

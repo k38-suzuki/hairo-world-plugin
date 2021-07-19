@@ -22,6 +22,22 @@ using namespace cnoid;
 
 InertiaCalculatorDialog* dialog = nullptr;
 
+namespace {
+
+struct DialogButtonInfo {
+    QDialogButtonBox::ButtonRole role;
+    char* label;
+};
+
+
+DialogButtonInfo dialogButtonInfo[] = {
+    { QDialogButtonBox::ActionRole, _("&Calc") },
+    { QDialogButtonBox::AcceptRole,  _ ("&Ok") }
+};
+
+}
+
+
 namespace cnoid {
 
 class InertiaCalculatorDialogImpl
@@ -32,7 +48,6 @@ public:
     InertiaCalculatorDialog* self;
     ComboBox* shapeCombo;
     QStackedLayout* stbox;
-    PushButton* calcButton;
     MessageView* messageView;
     ComboBox* cylinderAxisCombo;
     ComboBox* coneAxisCombo;
@@ -52,6 +67,10 @@ public:
         Z,
         NUM_AXIS
     };
+
+    enum DialogButtonId { CALC, OK, NUM_DBUTTONS };
+
+    PushButton* dialogButtons[NUM_DBUTTONS];
 
     void onAccepted();
     void onRejected();
@@ -83,8 +102,6 @@ InertiaCalculatorDialogImpl::InertiaCalculatorDialogImpl(InertiaCalculatorDialog
     sbox->addWidget(new QLabel(_("Shape")));
     sbox->addWidget(shapeCombo);
     sbox->addStretch();
-    calcButton = new PushButton(_("Calc"));
-    sbox->addWidget(calcButton);
 
     stbox = new QStackedLayout();
     messageView = new MessageView();
@@ -154,7 +171,26 @@ InertiaCalculatorDialogImpl::InertiaCalculatorDialogImpl(InertiaCalculatorDialog
     stbox->addWidget(cylinderWidget);
     stbox->addWidget(coneWidget);
 
-    calcButton->sigClicked().connect([&](){
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    for(int i = 0; i < NUM_DBUTTONS; ++i) {
+        DialogButtonInfo info = dialogButtonInfo[i];
+        dialogButtons[i] = new PushButton(info.label);
+        PushButton* dialogButton = dialogButtons[i];
+        buttonBox->addButton(dialogButton, info.role);
+        if(i == OK) {
+            dialogButton->setDefault(true);
+        }
+    }
+    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
+
+    QVBoxLayout* vbox = new QVBoxLayout();
+    vbox->addLayout(sbox);
+    vbox->addLayout(stbox);
+    vbox->addWidget(messageView);
+    vbox->addWidget(buttonBox);
+    self->setLayout(vbox);
+
+    dialogButtons[CALC]->sigClicked().connect([&](){
         int index = shapeCombo->currentIndex();
         switch (index) {
         case Shape::BOX:
@@ -175,19 +211,6 @@ InertiaCalculatorDialogImpl::InertiaCalculatorDialogImpl(InertiaCalculatorDialog
     });
 
     shapeCombo->sigCurrentIndexChanged().connect([&](int index){ stbox->setCurrentIndex(index); });
-
-    QPushButton* okButton = new QPushButton(_("&Ok"));
-    okButton->setDefault(true);
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
-    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
-    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
-
-    QVBoxLayout* vbox = new QVBoxLayout();
-    vbox->addLayout(sbox);
-    vbox->addLayout(stbox);
-    vbox->addWidget(messageView);
-    vbox->addWidget(buttonBox);
-    self->setLayout(vbox);
 }
 
 

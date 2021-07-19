@@ -22,20 +22,20 @@ msgid "CrawlerRobotBuilder"
 msgstr "クローラロボットビルダ"
 
 #: ../CrawlerRobotBuilderDialog.cpp:189
-msgid "New Body"
-msgstr "新規作成"
+msgid "&Reset"
+msgstr "リセット"
 
 #: ../CrawlerRobotBuilderDialog.cpp:190
-msgid "Export Body"
-msgstr "ボディを保存"
+msgid "&Export"
+msgstr "ボディの保存"
 
 #: ../CrawlerRobotBuilderDialog.cpp:191
-msgid "Import YAML"
+msgid "&Load"
 msgstr "YAMLの読み込み"
 
 #: ../CrawlerRobotBuilderDialog.cpp:192
-msgid "Export YAML"
-msgstr "YAMLを保存"
+msgid "&Save As..."
+msgstr "YAMLの保存"
 
 #: ../CrawlerRobotBuilderDialog.cpp:311
 msgid "Chassis"

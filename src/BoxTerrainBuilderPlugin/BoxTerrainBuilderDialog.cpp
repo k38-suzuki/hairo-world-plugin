@@ -34,6 +34,24 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 BoxTerrainBuilderDialog* stepFieldBuilderDialog = nullptr;
 
+namespace {
+
+struct DialogButtonInfo {
+    QDialogButtonBox::ButtonRole role;
+    char* label;
+};
+
+
+DialogButtonInfo dialogButtonInfo[] = {
+    { QDialogButtonBox::ResetRole,       _("&Reset") },
+    { QDialogButtonBox::ActionRole,       _("&Save") },
+    { QDialogButtonBox::ActionRole, _("&Save As...") },
+    { QDialogButtonBox::ActionRole,       _("&Load") },
+    { QDialogButtonBox::AcceptRole,         _("&Ok") }
+};
+
+}
+
 namespace cnoid {
 
 class BoxTerrainBuilderDialogImpl
@@ -46,12 +64,15 @@ public:
     LineEdit* inputFileLine;
     LineEdit* outputFileLine;
 
+    enum DialogButtonId { RESET, SAVE, SAVEAS, LOAD, OK, NUM_DBUTTONS };
+    PushButton* dialogButtons[NUM_DBUTTONS];
+
     void onAccepted();
     void onRejected();
-    void onSaveButtonClicked();
+    void onSaveAsButtonClicked();
     void onLoadButtonClicked();
-    void onClearButtonClicked();
-    void onExportBody();
+    void onResetButtonClicked();
+    void onSaveButtonClicked();
     string getSaveFilename(FileDialog& dialog);
 };
 
@@ -280,42 +301,41 @@ BoxTerrainBuilderDialogImpl::BoxTerrainBuilderDialogImpl(BoxTerrainBuilderDialog
     scaleSpin->setSingleStep(0.1);
     scaleSpin->setValue(1.0);
     scaleSpin->setRange(0.1, 10.0);
-    PushButton* clearButton = new PushButton(_("Clear"));
     gbox->addWidget(new QLabel(_("scale[0.1-10.0]")), index, 0);
-    gbox->addWidget(scaleSpin, index, 1);
-    gbox->addWidget(clearButton, index++, 2);
+    gbox->addWidget(scaleSpin, index++, 1);
 
     inputFileLine = new LineEdit();
     inputFileLine->setEnabled(false);
-    PushButton* loadButton = new PushButton(_("Load"));
     gbox->addWidget(new QLabel(_("Input File (.csv)")), index, 0);
-    gbox->addWidget(inputFileLine, index, 1);
-    gbox->addWidget(loadButton, index++, 2);
+    gbox->addWidget(inputFileLine, index++, 1);
 
     outputFileLine = new LineEdit();
     outputFileLine->setEnabled(false);
-    PushButton* saveButton = new PushButton(_("Save"));
     gbox->addWidget(new QLabel(_("Output File (.body)")), index, 0);
-    gbox->addWidget(outputFileLine, index, 1);
-    gbox->addWidget(saveButton, index++, 2);
+    gbox->addWidget(outputFileLine, index++, 1);
 
-    PushButton* overwriteButton = new PushButton(_("Overwrite"));
-    gbox->addWidget(overwriteButton, index, 2);
     vbox->addLayout(gbox);
 
-    QPushButton* okButton = new QPushButton(_("&Ok"));
-    okButton->setDefault(true);
     QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
-    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
+    for(int i = 0; i < NUM_DBUTTONS; ++i) {
+        DialogButtonInfo info = dialogButtonInfo[i];
+        dialogButtons[i] = new PushButton(info.label);
+        PushButton* dialogButton = dialogButtons[i];
+        buttonBox->addButton(dialogButton, info.role);
+        if(i == OK) {
+            dialogButton->setDefault(true);
+        }
+    }
+
+
     self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
     vbox->addWidget(buttonBox);
 
     self->setLayout(vbox);
-
-    clearButton->sigClicked().connect([&](){ onClearButtonClicked(); });
-    loadButton->sigClicked().connect([&](){ onLoadButtonClicked(); });
-    saveButton->sigClicked().connect([&](){ onSaveButtonClicked(); });
-    overwriteButton->sigClicked().connect([&](){ onExportBody(); });
+    dialogButtons[RESET]->sigClicked().connect([&](){ onResetButtonClicked(); });
+    dialogButtons[SAVE]->sigClicked().connect([&](){ onSaveButtonClicked(); });
+    dialogButtons[SAVEAS]->sigClicked().connect([&](){ onSaveAsButtonClicked(); });
+    dialogButtons[LOAD]->sigClicked().connect([&](){ onLoadButtonClicked(); });
 }
 
 
@@ -368,7 +388,7 @@ void BoxTerrainBuilderDialogImpl::onRejected()
 }
 
 
-void BoxTerrainBuilderDialogImpl::onSaveButtonClicked()
+void BoxTerrainBuilderDialogImpl::onSaveAsButtonClicked()
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Save a Body file"));
@@ -397,7 +417,7 @@ void BoxTerrainBuilderDialogImpl::onSaveButtonClicked()
     if(dialog.exec() == QDialog::Accepted) {
         QString fileName = QString::fromStdString(getSaveFilename(dialog));
         outputFileLine->setText(fileName);
-        onExportBody();
+        onSaveButtonClicked();
     }
 }
 
@@ -425,7 +445,7 @@ void BoxTerrainBuilderDialogImpl::onLoadButtonClicked()
 }
 
 
-void BoxTerrainBuilderDialogImpl::onClearButtonClicked()
+void BoxTerrainBuilderDialogImpl::onResetButtonClicked()
 {
     inputFileLine->clear();
     outputFileLine->clear();
@@ -433,7 +453,7 @@ void BoxTerrainBuilderDialogImpl::onClearButtonClicked()
 }
 
 
-void BoxTerrainBuilderDialogImpl::onExportBody()
+void BoxTerrainBuilderDialogImpl::onSaveButtonClicked()
 {
     QString inputFileName = inputFileLine->text();
     QString outputFileName = outputFileLine->text();

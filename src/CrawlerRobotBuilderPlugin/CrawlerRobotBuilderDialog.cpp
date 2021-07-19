@@ -143,6 +143,21 @@ SpinInfo spinInfo[] = {
     {  6, 0, 9999, false }, { 100, 0, 9999, false }, { 10, 0, 9999, false },
 };
 
+
+struct DialogButtonInfo {
+    QDialogButtonBox::ButtonRole role;
+    char* label;
+};
+
+
+DialogButtonInfo dialogButtonInfo[] = {
+    { QDialogButtonBox::ResetRole,       _("&Reset") },
+    { QDialogButtonBox::ActionRole, _("&Save As...") },
+    { QDialogButtonBox::ActionRole,       _("&Load") },
+    { QDialogButtonBox::ActionRole,     _("&Export") },
+    { QDialogButtonBox::AcceptRole,         _("&Ok") }
+};
+
 }
 
 
@@ -175,23 +190,24 @@ public:
         NUM_SPINS
     };
 
-    enum ButtonId {
-        CHS_CLR, TRK_CLR, FFL_CLR, RFL_CLR, SPC_CLR, NUM_BUTTONS
+    enum ButtonId { CHS_CLR, TRK_CLR, FFL_CLR,
+                    RFL_CLR, SPC_CLR, NUM_BUTTONS
     };
 
-    enum CheckId {
-        FFL_CHK, RFL_CHK, TRK_CHK, NUM_CHECKS
-    };
+    enum CheckId { FFL_CHK, RFL_CHK, TRK_CHK, NUM_CHECKS };
+
+    enum DialogButtonId { RESET, SAVEAS, LOAD, EXPORT, OK, NUM_DBUTTONS };
 
     CheckBox* checks[NUM_CHECKS];
     PushButton* buttons[NUM_BUTTONS];
     DoubleSpinBox* dspins[NUM_DSPINS];
     SpinBox* spins[NUM_SPINS];
+    PushButton* dialogButtons[NUM_DBUTTONS];
 
     void onAccepted();
     void onRejected();
     void initialize();
-    void onNewBodyButtonClicked();
+    void onResetButtonClicked();
     void onExportYamlButtonClicked();
     void onImportYamlButtonClicked();
     void onExportBodyButtonClicked();
@@ -217,27 +233,6 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
     : self(self)
 {
     self->setWindowTitle(_("CrawlerRobotBuilder"));
-    //menu layout
-    QHBoxLayout* menuHbox = new QHBoxLayout();
-    QVBoxLayout* menuVbox = new QVBoxLayout();
-    PushButton* newBodyButton = new PushButton(_("New Body"));
-    PushButton* exportBodyButton = new PushButton(_("Export Body"));
-    PushButton* importYamlButton = new PushButton(_("Import YAML"));
-    PushButton* exportYamlButton = new PushButton(_("Export YAML"));
-    menuHbox->addWidget(newBodyButton);
-    menuHbox->addWidget(exportBodyButton);
-    menuHbox->addWidget(new VSeparator());
-    menuHbox->addWidget(importYamlButton);
-    menuHbox->addWidget(exportYamlButton);
-    menuVbox->addLayout(menuHbox);
-
-    for(int i = 0; i < NUM_CHECKS; ++i) {
-        checks[i] = new CheckBox();
-    }
-
-    for(int i = 0; i < NUM_BUTTONS; ++i) {
-        buttons[i] = new PushButton();
-    }
 
     for(int i = 0; i < NUM_DSPINS; ++i) {
         dspins[i] = new DoubleSpinBox();
@@ -245,6 +240,14 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
 
     for(int i = 0; i < NUM_SPINS; ++i) {
         spins[i] = new SpinBox();
+    }
+
+    for(int i = 0; i < NUM_BUTTONS; ++i) {
+        buttons[i] = new PushButton();
+    }
+
+    for(int i = 0; i < NUM_CHECKS; ++i) {
+        checks[i] = new CheckBox();
     }
 
     //chassis
@@ -462,10 +465,18 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
     trackBeltHbox->addWidget(checks[TRK_CHK]);
     trackBeltHbox->addStretch();
 
-    QPushButton* okButton = new QPushButton(_("&Ok"));
-    okButton->setDefault(true);
     QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
-    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
+    for(int i = 0; i < NUM_DBUTTONS; ++i) {
+        DialogButtonInfo info = dialogButtonInfo[i];
+        dialogButtons[i] = new PushButton(info.label);
+        PushButton* dialogButton = dialogButtons[i];
+        buttonBox->addButton(dialogButton, info.role);
+        if(i == OK) {
+            dialogButtons[i]->setDefault(true);
+        }
+    }
+
+    self->connect(buttonBox,SIGNAL(rejected()), self, SLOT(reject()));
     self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
 
     //main layout
@@ -486,15 +497,14 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
     mainHbox->addLayout(mainLeftVbox);
     mainHbox->addSpacing(5);
 //    mainHbox->addLayout(mainRightVbox);
-    mainVbox->addLayout(menuVbox);
     mainVbox->addLayout(trackBeltHbox);
     mainVbox->addLayout(mainHbox);
 
     initialize();
-    newBodyButton->sigClicked().connect([&](){ onNewBodyButtonClicked(); });
-    exportBodyButton->sigClicked().connect([&](){ onExportBodyButtonClicked(); });
-    importYamlButton->sigClicked().connect([&](){ onImportYamlButtonClicked(); });
-    exportYamlButton->sigClicked().connect([&](){ onExportYamlButtonClicked(); });
+    dialogButtons[RESET]->sigClicked().connect([&](){ onResetButtonClicked(); });
+    dialogButtons[SAVEAS]->sigClicked().connect([&](){ onExportYamlButtonClicked(); });
+    dialogButtons[LOAD]->sigClicked().connect([&](){ onImportYamlButtonClicked(); });
+    dialogButtons[EXPORT]->sigClicked().connect([&](){ onExportBodyButtonClicked(); });
     checks[TRK_CHK]->sigToggled().connect([&](bool on){ onEnableAgxCheckToggled(on); });
     self->setLayout(mainVbox);
 }
@@ -545,17 +555,6 @@ void CrawlerRobotBuilderDialogImpl::onRejected()
 
 void CrawlerRobotBuilderDialogImpl::initialize()
 {
-    for(int i = 0; i < NUM_CHECKS; ++i) {
-        CheckInfo info = checkInfo[i];
-        checks[i]->setChecked(info.checked);
-    }
-
-    for(int i = 0; i < NUM_BUTTONS; ++i) {
-        ButtonInfo info = buttonInfo[i];
-        PushButton* button = buttons[i];
-        setColor(button, Vector3(info.red, info.green, info.blue));
-    }
-
     for(int i = 0; i < NUM_DSPINS; ++i) {
         DoubleSpinInfo info = doubleSpinInfo[i];
         DoubleSpinBox* dspin = dspins[i];
@@ -572,10 +571,21 @@ void CrawlerRobotBuilderDialogImpl::initialize()
         spin->setRange(info.min, info.max);
         spin->setEnabled(info.enabled);
     }
+
+    for(int i = 0; i < NUM_BUTTONS; ++i) {
+        ButtonInfo info = buttonInfo[i];
+        PushButton* button = buttons[i];
+        setColor(button, Vector3(info.red, info.green, info.blue));
+    }
+
+    for(int i = 0; i < NUM_CHECKS; ++i) {
+        CheckInfo info = checkInfo[i];
+        checks[i]->setChecked(info.checked);
+    }
 }
 
 
-void CrawlerRobotBuilderDialogImpl::onNewBodyButtonClicked()
+void CrawlerRobotBuilderDialogImpl::onResetButtonClicked()
 {
     initialize();
 }
@@ -616,80 +626,37 @@ void CrawlerRobotBuilderDialogImpl::onImportYamlButtonClicked()
             if(configList->isValid()) {
                 for(int i = 0; i < configList->size(); i++) {
                     Mapping& node = *configList->at(i)->toMapping();
-                    string name;
-                    if(node.read("name", name)) {}
 
-                    double d;
-                    bool on;
-                    int v;
-                    Vector3 diffuseColor;
+                    Listing* doubleSpinList = node.findListing("doubleSpin");
+                    if(doubleSpinList->isValid()) {
+                        for(int j = 0; j < doubleSpinList->size(); ++j) {
+                            double value = doubleSpinList->at(j)->toDouble();
+                            dspins[j]->setValue(value);
+                        }
+                    }
 
-                    if(name == "CHASSIS") {
-                        if(node.read("mass", d)) dspins[CHS_MAS]->setValue(d);
-                        if(node.read("xSize", d)) dspins[CHS_XSZ]->setValue(d);
-                        if(node.read("ySize", d)) dspins[CHS_YSZ]->setValue(d);
-                        if(node.read("zSize", d)) dspins[CHS_ZSZ]->setValue(d);
-                        if(read(node, "diffuseColor", diffuseColor)) setColor(buttons[CHS_CLR], diffuseColor);
-                    } else if(name == "TRACK") {
-                        if(node.read("mass", d)) dspins[TRK_MAS]->setValue(d);
-                        if(node.read("radius", d)) dspins[TRK_RAD]->setValue(d);
-                        if(node.read("width", d)) dspins[TRK_WDT]->setValue(d);
-                        if(node.read("wheelBase", d)) dspins[TRK_WBS]->setValue(d);
-                        if(read(node, "diffuseColor", diffuseColor)) setColor(buttons[TRK_CLR], diffuseColor);
-                    } else if(name == "FRONTSUBTRACK") {
-                        if(node.read("mass", d)) dspins[FFL_MAS]->setValue(d);
-                        if(node.read("forwardRadius", d)) dspins[FFL_FRD]->setValue(d);
-                        if(node.read("backwardRadius", d)) dspins[FFL_RRD]->setValue(d);
-                        if(node.read("width", d)) dspins[FFL_WDT]->setValue(d);
-                        if(node.read("wheelBase", d)) dspins[FFL_WBS]->setValue(d);
-                        if(read(node, "diffuseColor", diffuseColor)) setColor(buttons[FFL_CLR], diffuseColor);
-                        if(node.read("on", on)) checks[FFL_CHK]->setChecked(on);
-                    } else if(name == "REARSUBTRACK") {
-                        if(node.read("mass", d)) dspins[RFL_MAS]->setValue(d);
-                        if(node.read("forwardRadius", d)) dspins[RFL_FRD]->setValue(d);
-                        if(node.read("backwardRadius", d)) dspins[RFL_RRD]->setValue(d);
-                        if(node.read("width", d)) dspins[RFL_WDT]->setValue(d);
-                        if(node.read("wheelBase", d)) dspins[RFL_WBS]->setValue(d);
-                        if(read(node, "diffuseColor", diffuseColor)) setColor(buttons[RFL_CLR], diffuseColor);
-                        if(node.read("on", on)) checks[RFL_CHK]->setChecked(on);
-                    } else if(name == "SPACER") {
-                        if(node.read("mass", d)) dspins[SPC_MAS]->setValue(d);
-                        if(node.read("radius", d)) dspins[SPC_RAD]->setValue(d);
-                        if(node.read("width", d)) dspins[SPC_WDT]->setValue(d);
-                        if(read(node, "diffuseColor", diffuseColor)) setColor(buttons[SPC_CLR], diffuseColor);
-                    } else if(name == "TRACKBELT") {
-                        if(node.read("numberOfNodes", v)) spins[TRK_BNN]->setValue(v);
-                        if(node.read("nodeThickness", d)) dspins[TRK_BNT]->setValue(d);
-                        if(node.read("nodeWidth", d)) dspins[TRK_BNW]->setValue(d);
-                        if(node.read("nodeThickerThickness", d)) dspins[TRK_BNTT]->setValue(d);
-                        if(node.read("useThickerNodeEvery", v)) spins[TRK_BUTNE]->setValue(v);
-                        if(node.read("nodeDistanceTensionMantissa", d)) dspins[TRK_BNDTM]->setValue(d);
-                        if(node.read("nodeDistanceTensionExponent", v)) spins[TRK_BNDTE]->setValue(v);
-                        if(node.read("stabilizingHingeFrictionParameterMantissa", d)) dspins[TRK_BSHFPM]->setValue(d);
-                        if(node.read("stabilizingHingeFrictionParameterExponent", v)) spins[TRK_BSHFPE]->setValue(v);
-                        if(node.read("minStabilizingHingeNormalForceSpin", v)) spins[TRK_BMSHNF]->setValue(v);
-                        if(node.read("hingeComplianceMantissa", d)) dspins[TRK_BHCM]->setValue(d);
-                        if(node.read("hingeComplianceExponent", v)) spins[TRK_BHCE]->setValue(v);
-                        if(node.read("hingeSpookDamping", d)) dspins[TRK_BHSD]->setValue(d);
-                        if(node.read("nodesToWheelsMergeThreshold", d)) dspins[TRK_BNWMT]->setValue(d);
-                        if(node.read("nodesToWheelsSplitThreshold", d)) dspins[TRK_BNWST]->setValue(d);
-                        if(node.read("on", on)) checks[TRK_CHK]->setChecked(on);
-                    } else if(name == "SUBTRACKBELT") {
-                        if(node.read("numberOfNodes", v)) spins[FLP_BNN]->setValue(v);
-                        if(node.read("nodeThickness", d)) dspins[FLP_BNT]->setValue(d);
-                        if(node.read("nodeWidth", d)) dspins[FLP_BNW]->setValue(d);
-                        if(node.read("nodeThickerThickness", d)) dspins[FLP_BNTT]->setValue(d);
-                        if(node.read("useThickerNodeEvery", v)) spins[FLP_BUTNE]->setValue(v);
-                        if(node.read("nodeDistanceTensionMantissa", d)) dspins[FLP_BNDTM]->setValue(d);
-                        if(node.read("nodeDistanceTensionExponent", v)) spins[FLP_BNDTE]->setValue(v);
-                        if(node.read("stabilizingHingeFrictionParameterMantissa", d)) dspins[FLP_BSHFPM]->setValue(d);
-                        if(node.read("stabilizingHingeFrictionParameterExponent", v)) spins[FLP_BSHFPE]->setValue(v);
-                        if(node.read("minStabilizingHingeNormalForceSpin", v)) spins[FLP_BMSHNF]->setValue(v);
-                        if(node.read("hingeComplianceMantissa", d)) dspins[FLP_BHCM]->setValue(d);
-                        if(node.read("hingeComplianceExponent", v)) spins[FLP_BHCE]->setValue(v);
-                        if(node.read("hingeSpookDamping", d)) dspins[FLP_BHSD]->setValue(d);
-                        if(node.read("nodesToWheelsMergeThreshold", d)) dspins[FLP_BNWMT]->setValue(d);
-                        if(node.read("nodesToWheelsSplitThreshold", d)) dspins[FLP_BNWST]->setValue(d);
+                    Listing* spinList = node.findListing("spin");
+                    if(spinList->isValid()) {
+                        for(int j = 0; j < spinList->size(); ++j) {
+                            int value = spinList->at(j)->toInt();
+                            spins[j]->setValue(value);
+                        }
+                    }
+
+                    for(int j = 0; j < NUM_BUTTONS; ++j) {
+                        Vector3 color;
+                        string key = "button" + to_string(j);
+                        if(read(node, key, color)) {
+                            setColor(buttons[j], color);
+                        }
+                    }
+
+                    Listing* checkList = node.findListing("check");
+                    if(checkList->isValid()) {
+                        for(int j = 0; j < checkList->size(); ++j) {
+                            bool checked = checkList->at(j)->toBool() ? true : false;
+                            checks[j]->setChecked(checked);
+                        }
                     }
                 }
             }
@@ -744,91 +711,31 @@ void CrawlerRobotBuilderDialogImpl::onExportYamlButtonClicked()
         writer.startListing();
 
         writer.startMapping();
-        writer.putKeyValue("name", "CHASSIS");
-        writer.putKeyValue("mass", dspins[CHS_MAS]->value());
-        writer.putKeyValue("xSize", dspins[CHS_XSZ]->value());
-        writer.putKeyValue("ySize", dspins[CHS_YSZ]->value());
-        writer.putKeyValue("zSize", dspins[CHS_ZSZ]->value());
-        putKeyVector3(&writer, "diffuseColor", getColor(buttons[CHS_CLR]));
-        writer.endMapping();
+        writer.putKey("doubleSpin");
+        writer.startFlowStyleListing();
+        for(int i = 0; i < NUM_DSPINS; ++i) {
+            writer.putScalar(dspins[i]->value());
+        }
+        writer.endListing();
 
-        writer.startMapping();
-        writer.putKeyValue("name", "TRACK");
-        writer.putKeyValue("mass", dspins[TRK_MAS]->value());
-        writer.putKeyValue("radius", dspins[TRK_RAD]->value());
-        writer.putKeyValue("width", dspins[TRK_WDT]->value());
-        writer.putKeyValue("wheelBase", dspins[TRK_WBS]->value());
-        putKeyVector3(&writer, "diffuseColor", getColor(buttons[TRK_CLR]));
-        writer.endMapping();
+        writer.putKey("spin");
+        writer.startFlowStyleListing();
+        for(int i = 0; i < NUM_SPINS; ++i) {
+            writer.putScalar(spins[i]->value());
+        }
+        writer.endListing();
 
-        writer.startMapping();
-        writer.putKeyValue("name", "FRONTSUBTRACK");
-        writer.putKeyValue("mass", dspins[FFL_MAS]->value());
-        writer.putKeyValue("forwardRadius", dspins[FFL_FRD]->value());
-        writer.putKeyValue("backwardRadius", dspins[FFL_RRD]->value());
-        writer.putKeyValue("width", dspins[FFL_WDT]->value());
-        writer.putKeyValue("wheelBase", dspins[FFL_WBS]->value());
-        writer.putKeyValue("on", checks[FFL_CHK]->isChecked());
-        putKeyVector3(&writer, "diffuseColor", getColor(buttons[FFL_CLR]));
-        writer.endMapping();
+        for(int i = 0; i < NUM_BUTTONS; ++i) {
+            string key = "button" + to_string(i);
+            putKeyVector3(&writer, key, getColor(buttons[i]));
+        }
 
-        writer.startMapping();
-        writer.putKeyValue("name", "REARSUBTRACK");
-        writer.putKeyValue("mass", dspins[RFL_MAS]->value());
-        writer.putKeyValue("forwardRadius", dspins[RFL_FRD]->value());
-        writer.putKeyValue("backwardRadius", dspins[RFL_RRD]->value());
-        writer.putKeyValue("width", dspins[RFL_WDT]->value());
-        writer.putKeyValue("wheelBase", dspins[RFL_WBS]->value());
-        writer.putKeyValue("on", checks[RFL_CHK]->isChecked());
-        putKeyVector3(&writer, "diffuseColor", getColor(buttons[RFL_CLR]));
-        writer.endMapping();
-
-        writer.startMapping();
-        writer.putKeyValue("name", "SPACER");
-        writer.putKeyValue("mass", dspins[SPC_MAS]->value());
-        writer.putKeyValue("radius", dspins[SPC_RAD]->value());
-        writer.putKeyValue("width", dspins[SPC_WDT]->value());
-        putKeyVector3(&writer, "diffuseColor", getColor(buttons[SPC_CLR]));
-        writer.endMapping();
-
-        writer.startMapping();
-        writer.putKeyValue("name", "TRACKBELT");
-        writer.putKeyValue("numberOfNodes", spins[TRK_BNN]->value());
-        writer.putKeyValue("nodeThickness", dspins[TRK_BNT]->value());
-        writer.putKeyValue("nodeWidth", dspins[TRK_BNW]->value());
-        writer.putKeyValue("nodeThickerThickness", dspins[TRK_BNTT]->value());
-        writer.putKeyValue("useThickerNodeEvery", spins[TRK_BUTNE]->value());
-        writer.putKeyValue("nodeDistanceTensionMantissa", dspins[TRK_BNDTM]->value());
-        writer.putKeyValue("nodeDistanceTensionExponent", spins[TRK_BNDTE]->value());
-        writer.putKeyValue("stabilizingHingeFrictionParameterMantissa", dspins[TRK_BSHFPM]->value());
-        writer.putKeyValue("stabilizingHingeFrictionParameterExponent", spins[TRK_BSHFPE]->value());
-        writer.putKeyValue("minStabilizingHingeNormalForce", spins[TRK_BMSHNF]->value());
-        writer.putKeyValue("hingeComplianceMantissa", dspins[TRK_BHCM]->value());
-        writer.putKeyValue("hingeComplianceExponent", spins[TRK_BHCE]->value());
-        writer.putKeyValue("hingeSpookDamping", dspins[TRK_BHSD]->value());
-        writer.putKeyValue("nodesToWheelsMergeThreshold", dspins[TRK_BNWMT]->value());
-        writer.putKeyValue("nodesToWheelsSplitThreshold", dspins[TRK_BNWST]->value());
-        writer.putKeyValue("on", checks[TRK_CHK]->isChecked());
-        writer.endMapping();
-
-        writer.startMapping();
-        writer.putKeyValue("name", "SUBTRACKBELT");
-        writer.putKeyValue("numberOfNodes", spins[FLP_BNN]->value());
-        writer.putKeyValue("nodeThickness", dspins[FLP_BNT]->value());
-        writer.putKeyValue("nodeWidth", dspins[FLP_BNW]->value());
-        writer.putKeyValue("nodeThickerThickness", dspins[FLP_BNTT]->value());
-        writer.putKeyValue("useThickerNodeEvery", spins[FLP_BUTNE]->value());
-        writer.putKeyValue("nodeDistanceTensionMantissa", dspins[FLP_BNDTM]->value());
-        writer.putKeyValue("nodeDistanceTensionExponent", spins[FLP_BNDTE]->value());
-        writer.putKeyValue("stabilizingHingeFrictionParameterMantissa", dspins[FLP_BSHFPM]->value());
-        writer.putKeyValue("stabilizingHingeFrictionParameteExponentr", spins[FLP_BSHFPE]->value());
-        writer.putKeyValue("minStabilizingHingeNormalForce", spins[FLP_BMSHNF]->value());
-        writer.putKeyValue("hingeComplianceMantissa", dspins[FLP_BHCM]->value());
-        writer.putKeyValue("hingeComplianceExponent", spins[FLP_BHCE]->value());
-        writer.putKeyValue("hingeSpookDamping", dspins[FLP_BHSD]->value());
-        writer.putKeyValue("nodesToWheelsMergeThreshold", dspins[FLP_BNWMT]->value());
-        writer.putKeyValue("nodesToWheelsSplitThreshold", dspins[FLP_BNWST]->value());
-        writer.endMapping();
+        writer.putKey("check");
+        writer.startFlowStyleListing();
+        for(int i = 0; i < NUM_CHECKS; ++i) {
+            writer.putScalar(checks[i]->isChecked());
+        }
+        writer.endListing();
 
         writer.endListing();
         writer.endMapping();

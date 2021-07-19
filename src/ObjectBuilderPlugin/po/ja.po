@@ -85,12 +85,12 @@ msgid "Shape"
 msgstr "形状"
 
 #: ../ObjectBuilderDialog.cpp:92
-msgid "Generate"
-msgstr "生成"
-
-#: ../ObjectBuilderDialog.cpp:93
-msgid "Overwrite"
+msgid "Save As..."
 msgstr "上書き保存"
+
+#: ../ObjectBuilderDialog.cpp:93 ../ObjectBuilderDialog.cpp:146
+msgid "Save"
+msgstr "保存"
 
 #: ../ObjectBuilderDialog.cpp:95
 msgid "File"
@@ -107,10 +107,6 @@ msgstr "設定"
 #: ../ObjectBuilderDialog.cpp:142
 msgid "Save a Body file"
 msgstr "ボディを保存"
-
-#: ../ObjectBuilderDialog.cpp:146
-msgid "Save"
-msgstr "保存"
 
 #: ../ObjectBuilderDialog.cpp:147
 msgid "Cancel"
