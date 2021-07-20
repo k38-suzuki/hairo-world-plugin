@@ -77,20 +77,18 @@ string cylinderInertia(double mass, double radius, double height)
 
 
 struct CheckInfo {
-    const char* label;
     bool checked;
 };
 
 
 CheckInfo checkInfo[] = {
-    { _("Front SubTrack"),   true },
-    {  _("Rear SubTrack"),   true },
-    {            _("AGX"),  false }
+    {  true },
+    {  true },
+    { false }
 };
 
 
 struct ButtonInfo {
-    const char* label;
     double red;
     double green;
     double blue;
@@ -98,11 +96,11 @@ struct ButtonInfo {
 
 
 ButtonInfo buttonInfo[] = {
-    { _("color"),   0.0 / 255.0, 153.0 / 255.0,  0.0 / 255.0 },
-    { _("color"),  51.0 / 255.0,  51.0 / 255.0, 51.0 / 255.0 },
-    { _("color"),  51.0 / 255.0,  51.0 / 255.0, 51.0 / 255.0 },
-    { _("color"),  51.0 / 255.0,  51.0 / 255.0, 51.0 / 255.0 },
-    { _("color"), 255.0 / 255.0,   0.0 / 255.0,  0.0 / 255.0 }
+    {   0.0 / 255.0, 153.0 / 255.0,  0.0 / 255.0 },
+    {  51.0 / 255.0,  51.0 / 255.0, 51.0 / 255.0 },
+    {  51.0 / 255.0,  51.0 / 255.0, 51.0 / 255.0 },
+    {  51.0 / 255.0,  51.0 / 255.0, 51.0 / 255.0 },
+    { 255.0 / 255.0,   0.0 / 255.0,  0.0 / 255.0 }
 };
 
 
@@ -193,7 +191,7 @@ public:
                     RFL_CLR, SPC_CLR, NUM_BUTTONS
     };
 
-    enum CheckId { FFL_CHK, RFL_CHK, TRK_CHK, NUM_CHECKS };
+    enum CheckId { FFL_CHK, RFL_CHK, AGX_CHK, NUM_CHECKS };
 
     enum DialogButtonId { RESET, SAVEAS, LOAD, EXPORT, OK, NUM_DBUTTONS };
 
@@ -233,6 +231,9 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
 {
     self->setWindowTitle(_("CrawlerRobotBuilder"));
 
+    const char* clabels[] = { _("Front SubTrack"), _("Rear SubTrack"), _("AGX") };
+    const char* blabels[] = { _("color"), _("color"), _("color"), _("color"), _("color") };
+
     for(int i = 0; i < NUM_DSPINS; ++i) {
         dspins[i] = new DoubleSpinBox();
     }
@@ -247,6 +248,7 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
 
     for(int i = 0; i < NUM_CHECKS; ++i) {
         checks[i] = new CheckBox();
+        checks[i]->setText(clabels[i]);
     }
 
     //chassis
@@ -460,11 +462,10 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
     subTrackBeltVbox->addLayout(option11Hbox);
 
     QHBoxLayout* trackBeltHbox = new QHBoxLayout();
-    trackBeltHbox->addWidget(new QLabel(_("AGX")));
-    trackBeltHbox->addWidget(checks[TRK_CHK]);
+    trackBeltHbox->addWidget(checks[AGX_CHK]);
     trackBeltHbox->addStretch();
 
-    const char* labels[] = {
+    const char* plabels[] = {
         _("&Reset"), _("&Save As..."), _("&Load"),
         _("&Export"), _("&Ok")
     };
@@ -472,7 +473,7 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
     QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
     for(int i = 0; i < NUM_DBUTTONS; ++i) {
         DialogButtonInfo info = dialogButtonInfo[i];
-        dialogButtons[i] = new PushButton(labels[i]);
+        dialogButtons[i] = new PushButton(plabels[i]);
         PushButton* dialogButton = dialogButtons[i];
         buttonBox->addButton(dialogButton, info.role);
         if(i == OK) {
@@ -509,7 +510,7 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
     dialogButtons[SAVEAS]->sigClicked().connect([&](){ onExportYamlButtonClicked(); });
     dialogButtons[LOAD]->sigClicked().connect([&](){ onImportYamlButtonClicked(); });
     dialogButtons[EXPORT]->sigClicked().connect([&](){ onExportBodyButtonClicked(); });
-    checks[TRK_CHK]->sigToggled().connect([&](bool on){ onEnableAgxCheckToggled(on); });
+    checks[AGX_CHK]->sigToggled().connect([&](bool on){ onEnableAgxCheckToggled(on); });
     self->setLayout(mainVbox);
 }
 
@@ -816,7 +817,7 @@ void CrawlerRobotBuilderDialogImpl::onExportBodyButtonClicked()
     }
 
     if(!filename.empty()) {
-        if(!checks[TRK_CHK]->isChecked()) {
+        if(!checks[AGX_CHK]->isChecked()) {
             onExportBody(filename);
         } else {
             onExportAGXBody(filename);
