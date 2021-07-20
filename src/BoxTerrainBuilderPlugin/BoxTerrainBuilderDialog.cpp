@@ -457,90 +457,94 @@ void BoxTerrainBuilderDialogImpl::onSaveButtonClicked()
 {
     QString inputFileName = inputFileLine->text();
     QString outputFileName = outputFileLine->text();
-    if(!inputFileName.isEmpty() && !outputFileName.isEmpty()) {
-        FILE* fp = fopen(outputFileName.toStdString().c_str(), "w");
-        if(fp == NULL) {
-            qCritical().noquote() << "cannot open body file." << endl;
+    if(!inputFileName.isEmpty()) {
+        if(outputFileName.isEmpty()) {
+            onSaveAsButtonClicked();
         } else {
-            CellManager cm;
-            if(!cm.read(inputFileName.toStdString())) {
-                qCritical().noquote() << "cannot csv body file." << endl;
+            FILE* fp = fopen(outputFileName.toStdString().c_str(), "w");
+            if(fp == NULL) {
+                qCritical().noquote() << "cannot open body file." << endl;
             } else {
-                filesystem::path path(outputFileName.toStdString());
-                string bodyName = path.stem().string();
+                CellManager cm;
+                if(!cm.read(inputFileName.toStdString())) {
+                    qCritical().noquote() << "cannot csv body file." << endl;
+                } else {
+                    filesystem::path path(outputFileName.toStdString());
+                    string bodyName = path.stem().string();
 
-                fprintf(fp, "format: ChoreonoidBody\n");
-                fprintf(fp, "formatVersion: 1.0\n");
-                fprintf(fp, "name: %s\n", bodyName.c_str());
-                fprintf(fp, "links:\n");
-                fprintf(fp, "  -\n");
-                fprintf(fp, "    name: STEPFIELD\n");
-                fprintf(fp, "#    parent: \n");
-                fprintf(fp, "    translation: [ 0, 0, 0 ]\n");
-                fprintf(fp, "    rotation: [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ] ]\n");
-                fprintf(fp, "    jointType: fixed\n");
-                fprintf(fp, "    material: Ground\n");
-                fprintf(fp, "    elements:\n");
-                fprintf(fp, "      Shape:\n");
-                fprintf(fp, "        geometry:\n");
-                fprintf(fp, "          type: IndexedFaceSet\n");
-                fprintf(fp, "          coordinate: [\n");
+                    fprintf(fp, "format: ChoreonoidBody\n");
+                    fprintf(fp, "formatVersion: 1.0\n");
+                    fprintf(fp, "name: %s\n", bodyName.c_str());
+                    fprintf(fp, "links:\n");
+                    fprintf(fp, "  -\n");
+                    fprintf(fp, "    name: STEPFIELD\n");
+                    fprintf(fp, "#    parent: \n");
+                    fprintf(fp, "    translation: [ 0, 0, 0 ]\n");
+                    fprintf(fp, "    rotation: [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ] ]\n");
+                    fprintf(fp, "    jointType: fixed\n");
+                    fprintf(fp, "    material: Ground\n");
+                    fprintf(fp, "    elements:\n");
+                    fprintf(fp, "      Shape:\n");
+                    fprintf(fp, "        geometry:\n");
+                    fprintf(fp, "          type: IndexedFaceSet\n");
+                    fprintf(fp, "          coordinate: [\n");
 
 
-                for(int k = 0; k < cm.getYsize(); k++) {
-                    for(int j = 0; j < cm.getXsize(); j++) {
-                        for(int i = 0; i < 4; i++) {
-                            fprintf(fp, "            %4.2f, %4.2f, %4.2f,\n", cm.getPointax(j, k, i), cm.getPointay(j, k, i), cm.getPointaz(j, k, i));
+                    for(int k = 0; k < cm.getYsize(); k++) {
+                        for(int j = 0; j < cm.getXsize(); j++) {
+                            for(int i = 0; i < 4; i++) {
+                                fprintf(fp, "            %4.2f, %4.2f, %4.2f,\n", cm.getPointax(j, k, i), cm.getPointay(j, k, i), cm.getPointaz(j, k, i));
+                            }
                         }
                     }
-                }
 
-                for(int k = 0; k < cm.getYsize(); k++) {
-                    for(int j = 0; j < cm.getXsize(); j++) {
-                        for(int i = 0; i < 4; i++) {
-                            fprintf(fp, "            %4.2f, %4.2f, %4.2f,\n", cm.getPointbx(j, k, i), cm.getPointby(j, k, i), cm.getPointbz(j, k, i));
+                    for(int k = 0; k < cm.getYsize(); k++) {
+                        for(int j = 0; j < cm.getXsize(); j++) {
+                            for(int i = 0; i < 4; i++) {
+                                fprintf(fp, "            %4.2f, %4.2f, %4.2f,\n", cm.getPointbx(j, k, i), cm.getPointby(j, k, i), cm.getPointbz(j, k, i));
+                            }
                         }
                     }
-                }
 
-                fprintf(fp, "          ]\n");
-                fprintf(fp, "          coordIndex: [\n");
+                    fprintf(fp, "          ]\n");
+                    fprintf(fp, "          coordIndex: [\n");
 
-                for(int j = 0; j < cm.getYsize(); j++) {
-                    for(int i = 0; i < cm.getXsize(); i++) {
-                        fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 0, 0), cm.getId(i, j, 1, 0), cm.getId(i, j, 2, 0), cm.getId(i, j, 3, 0));
-                        fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 0, 1), cm.getId(i, j, 3, 1), cm.getId(i, j, 2, 1), cm.getId(i, j, 1, 1));
-                        if(i != 0) {
-                            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i - 1, j, 3, 0), cm.getId(i - 1, j, 2, 0), cm.getId(i, j, 1, 0), cm.getId(i, j, 0, 0));
-                        } else {
-                            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 1, 1), cm.getId(i, j, 1, 0), cm.getId(i, j, 0, 0), cm.getId(i, j, 0, 1));
-                        }
+                    for(int j = 0; j < cm.getYsize(); j++) {
+                        for(int i = 0; i < cm.getXsize(); i++) {
+                            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 0, 0), cm.getId(i, j, 1, 0), cm.getId(i, j, 2, 0), cm.getId(i, j, 3, 0));
+                            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 0, 1), cm.getId(i, j, 3, 1), cm.getId(i, j, 2, 1), cm.getId(i, j, 1, 1));
+                            if(i != 0) {
+                                fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i - 1, j, 3, 0), cm.getId(i - 1, j, 2, 0), cm.getId(i, j, 1, 0), cm.getId(i, j, 0, 0));
+                            } else {
+                                fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 1, 1), cm.getId(i, j, 1, 0), cm.getId(i, j, 0, 0), cm.getId(i, j, 0, 1));
+                            }
 
-                        if(j != 0) {
-                            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j - 1, 1, 0), cm.getId(i, j, 0, 0), cm.getId(i, j, 3, 0), cm.getId(i, j - 1, 2, 0));
-                        } else {
-                            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 0, 1), cm.getId(i, j, 0, 0), cm.getId(i, j, 3, 0), cm.getId(i, j, 3, 1));
-                        }
+                            if(j != 0) {
+                                fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j - 1, 1, 0), cm.getId(i, j, 0, 0), cm.getId(i, j, 3, 0), cm.getId(i, j - 1, 2, 0));
+                            } else {
+                                fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 0, 1), cm.getId(i, j, 0, 0), cm.getId(i, j, 3, 0), cm.getId(i, j, 3, 1));
+                            }
 
-                        if(j == cm.getYsize() - 1) {
-                            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 1, 0), cm.getId(i, j, 1, 1), cm.getId(i, j, 2, 1), cm.getId(i, j, 2, 0));
-                        }
+                            if(j == cm.getYsize() - 1) {
+                                fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 1, 0), cm.getId(i, j, 1, 1), cm.getId(i, j, 2, 1), cm.getId(i, j, 2, 0));
+                            }
 
-                        if(i == cm.getXsize() - 1) {
-                            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 2, 1), cm.getId(i, j, 3, 1), cm.getId(i, j, 3, 0), cm.getId(i, j, 2, 0));
+                            if(i == cm.getXsize() - 1) {
+                                fprintf(fp,  "            %d, %d, %d, %d, -1,\n", cm.getId(i, j, 2, 1), cm.getId(i, j, 3, 1), cm.getId(i, j, 3, 0), cm.getId(i, j, 2, 0));
+                            }
                         }
                     }
-                }
 
-                fprintf(fp, "          ]\n");
-                fprintf(fp, "        appearance:\n");
-                fprintf(fp, "          material:\n");
-                fprintf(fp, "            diffuseColor: [ 1, 1, 1 ]\n");
-                fprintf(fp, "#          texture:\n");
-                fprintf(fp, "#            url: \"texture/oak.png\"\n");
+                    fprintf(fp, "          ]\n");
+                    fprintf(fp, "        appearance:\n");
+                    fprintf(fp, "          material:\n");
+                    fprintf(fp, "            diffuseColor: [ 1, 1, 1 ]\n");
+                    fprintf(fp, "#          texture:\n");
+                    fprintf(fp, "#            url: \"texture/oak.png\"\n");
+                }
             }
+            fclose(fp);
         }
-        fclose(fp);
     }
 }
 

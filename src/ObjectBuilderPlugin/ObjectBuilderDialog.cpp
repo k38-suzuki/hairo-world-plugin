@@ -201,31 +201,32 @@ void ObjectBuilderDialogImpl::openSaveDialog()
 void ObjectBuilderDialogImpl::writeYaml(const bool &overwrite)
 {
     string filename = fileLine->text().toStdString();
+
     if(!overwrite || filename.empty()) {
         openSaveDialog();
-
     }
 
-    filename = fileLine->text().toStdString();
-    filesystem::path path(filename);
-    string extension = path.extension().string();
-    if(extension.empty()) {
-       filename += ".body";
-       fileLine->setText(QString::fromStdString(filename));
-    }
+    if(!filename.empty()) {
+        filesystem::path path(filename);
+        string extension = path.extension().string();
+        if(extension.empty()) {
+           filename += ".body";
+           fileLine->setText(QString::fromStdString(filename));
+        }
 
-    int index = shapeCombo->currentIndex();
-    switch (index) {
-    case PIPE:
-        pipeWidget->save(filename);
-        break;
-    case GRATING:
-        gratingWidget->save(filename);
-        break;
-    case SLOPE:
-        slopeWidget->save(filename);
-    default:
-        break;
+        int index = shapeCombo->currentIndex();
+        switch (index) {
+        case PIPE:
+            pipeWidget->save(filename);
+            break;
+        case GRATING:
+            gratingWidget->save(filename);
+            break;
+        case SLOPE:
+            slopeWidget->save(filename);
+        default:
+            break;
+        }
     }
 }
 
