@@ -21,6 +21,47 @@ using namespace cnoid;
 using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
+namespace {
+
+struct DoubleSpinInfo
+{
+    int row;
+    int column;
+    double min;
+    double max;
+    double step;
+    double decimals;
+    double value;
+};
+
+
+DoubleSpinInfo doubleSpinInfo[] = {
+    { 0, 1, 0.01, 1000.0, 0.01, 3, 1.00 },
+    { 0, 3, 0.01, 1000.0, 0.01, 3, 1.00 },
+    { 1, 1, 0.01, 1000.0, 0.01, 3, 0.03 },
+    { 1, 3, 0.01, 1000.0, 0.01, 3, 0.05 }
+
+};
+
+
+struct SpinInfo
+{
+    int row;
+    int column;
+    int min;
+    int max;
+    int value;
+};
+
+
+SpinInfo spinInfo[] = {
+    { 2, 1, 0, 359,  0 },
+    { 2, 3, 1, 120, 30 }
+};
+
+}
+
+
 namespace cnoid {
 
 class PipeBuilderWidgetImpl
@@ -29,12 +70,12 @@ public:
     PipeBuilderWidgetImpl(PipeBuilderWidget* self);
     PipeBuilderWidget* self;
 
-    DoubleSpinBox* massSpin;
-    DoubleSpinBox* innerDiameterSpin;
-    DoubleSpinBox* outerDiameterSpin;
-    DoubleSpinBox* lengthSpin;
-    SpinBox* angleSpin;
-    SpinBox* stepSpin;
+    enum DoubleSpinId { MASS, LENGTH, IN_DIA, OUT_DIA, NUM_DSPINS };
+
+    enum SpinId { ANGLE, STEP, NUM_SPINS };
+
+    DoubleSpinBox* dspins[NUM_DSPINS];
+    SpinBox* spins[NUM_SPINS];
     PushButton* colorButton;
 
     void writeYaml(const string& filename);
@@ -57,58 +98,46 @@ PipeBuilderWidgetImpl::PipeBuilderWidgetImpl(PipeBuilderWidget* self)
     : self(self)
 {
     QVBoxLayout* vbox = new QVBoxLayout();
-    QGridLayout* pgbox = new QGridLayout();
-    massSpin = new DoubleSpinBox();
-    innerDiameterSpin = new DoubleSpinBox();
-    outerDiameterSpin = new DoubleSpinBox();
-    lengthSpin = new DoubleSpinBox();
-    angleSpin = new SpinBox();
-    stepSpin = new SpinBox();
+    QGridLayout* gbox = new QGridLayout();
+
+    const char* dlabels[] = { _("Mass [kg]"), _("Length [m]"),
+                              _("Inner diameter [m]"), _("Opening angle [deg]")
+                            };
+
+    const char* slabels[] = { _("Opening angle [deg]"), _("Step angle [deg]") };
+
+    for(int i = 0; i < NUM_DSPINS; ++i) {
+        DoubleSpinInfo info = doubleSpinInfo[i];
+        dspins[i] = new DoubleSpinBox();
+        DoubleSpinBox* dspin = dspins[i];
+        dspin->setRange(info.min, info.max);
+        dspin->setSingleStep(info.step);
+        dspin->setDecimals(info.decimals);
+        dspin->setValue(info.value);
+        gbox->addWidget(new QLabel(dlabels[i]), info.row, info.column - 1);
+        gbox->addWidget(dspin, info.row, info.column);
+    }
+
+    for(int i = 0; i < NUM_SPINS; ++i) {
+        SpinInfo info = spinInfo[i];
+        spins[i] = new SpinBox();
+        SpinBox* spin = spins[i];
+        spin->setRange(info.min, info.max);
+        spin->setValue(info.value);
+        gbox->addWidget(new QLabel(slabels[i]), info.row, info.column - 1);
+        gbox->addWidget(spin, info.row, info.column);
+    }
+
     colorButton = new PushButton();
+    gbox->addWidget(new QLabel(_("Color [-]")), 3, 0);
+    gbox->addWidget(colorButton, 3, 1);
 
-    massSpin->setValue(1.0);
-    massSpin->setRange(0.001, 1000.0);
-    massSpin->setSingleStep(0.01);
-    massSpin->setDecimals(3);
-    innerDiameterSpin->setValue(0.03);
-    innerDiameterSpin->setRange(0.001, 1000.0);
-    innerDiameterSpin->setSingleStep(0.01);
-    innerDiameterSpin->setDecimals(3);
-    outerDiameterSpin->setValue(0.05);
-    outerDiameterSpin->setRange(0.001, 1000.0);
-    outerDiameterSpin->setSingleStep(0.01);
-    outerDiameterSpin->setDecimals(3);
-    lengthSpin->setValue(1.0);
-    lengthSpin->setRange(0.001, 1000.0);
-    lengthSpin->setSingleStep(0.01);
-    lengthSpin->setDecimals(3);
-    angleSpin->setValue(0);
-    angleSpin->setRange(0, 359);
-    stepSpin->setValue(30);
-    stepSpin->setRange(1, 120);
-
-    int index = 0;
-    pgbox->addWidget(new QLabel(_("Mass [kg]")), index, 0);
-    pgbox->addWidget(massSpin, index, 1);
-    pgbox->addWidget(new QLabel(_("Length [m]")), index, 2);
-    pgbox->addWidget(lengthSpin, index++, 3);
-    pgbox->addWidget(new QLabel(_("Inner diameter [m]")), index, 0);
-    pgbox->addWidget(innerDiameterSpin, index, 1);
-    pgbox->addWidget(new QLabel(_("Outer diameter [m]")), index, 2);
-    pgbox->addWidget(outerDiameterSpin, index++, 3);
-    pgbox->addWidget(new QLabel(_("Opening angle [deg]")), index, 0);
-    pgbox->addWidget(angleSpin, index, 1);
-    pgbox->addWidget(new QLabel(_("Step angle [deg]")), index, 2);
-    pgbox->addWidget(stepSpin, index++, 3);
-    pgbox->addWidget(new QLabel(_("Color [-]")), index, 0);
-    pgbox->addWidget(colorButton, index++, 1);
-
-    vbox->addLayout(pgbox);
+    vbox->addLayout(gbox);
     self->setLayout(vbox);
 
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
-    innerDiameterSpin->sigValueChanged().connect([&](double value){ onInnerDiameterChanged(value); });
-    outerDiameterSpin->sigValueChanged().connect([&](double value){ onOuterDiameterChanged(value); });
+    dspins[IN_DIA]->sigValueChanged().connect([&](double value){ onInnerDiameterChanged(value); });
+    dspins[OUT_DIA]->sigValueChanged().connect([&](double value){ onOuterDiameterChanged(value); });
 }
 
 
@@ -128,12 +157,12 @@ void PipeBuilderWidgetImpl::writeYaml(const string& filename)
 {
     filesystem::path path(filename);
 
-    double mass = massSpin->value();
-    double innerDiameter = innerDiameterSpin->value();
-    double outerDiameter = outerDiameterSpin->value();
-    double length = lengthSpin->value();
-    int angle = angleSpin->value();
-    int step = stepSpin->value();
+    double mass = dspins[MASS]->value();
+    double innerDiameter = dspins[IN_DIA]->value();
+    double outerDiameter = dspins[OUT_DIA]->value();
+    double length = dspins[LENGTH]->value();
+    int angle = spins[ANGLE]->value();
+    int step = spins[STEP]->value();
 
     if(!filename.empty()) {
         YAMLWriter writer(filename);
@@ -254,20 +283,20 @@ void PipeBuilderWidgetImpl::onColorButtonClicked()
 
 void PipeBuilderWidgetImpl::onInnerDiameterChanged(const double& diameter)
 {
-    double outerDiameter = outerDiameterSpin->value();
+    double outerDiameter = dspins[OUT_DIA]->value();
     if(diameter >= outerDiameter) {
         double innerDiameter = outerDiameter - 0.01;
-        innerDiameterSpin->setValue(innerDiameter);
+        dspins[IN_DIA]->setValue(innerDiameter);
     }
 }
 
 
 void PipeBuilderWidgetImpl::onOuterDiameterChanged(const double& diameter)
 {
-    double innerDiameter = innerDiameterSpin->value();
+    double innerDiameter = dspins[IN_DIA]->value();
     if(diameter <= innerDiameter) {
         double outerDiameter = innerDiameter + 0.01;
-        outerDiameterSpin->setValue(outerDiameter);
+        dspins[OUT_DIA]->setValue(outerDiameter);
     }
 }
 
@@ -278,15 +307,15 @@ VectorXd PipeBuilderWidgetImpl::calcInertia()
     innerInertia.resize(9);
     outerInertia.resize(9);
 
-    double length = lengthSpin->value();
-    double innerRadius = innerDiameterSpin->value();
-    double outerRadius = outerDiameterSpin->value();
+    double length = dspins[LENGTH]->value();
+    double innerRadius = dspins[IN_DIA]->value();
+    double outerRadius = dspins[OUT_DIA]->value();
 
     double innerRate = innerRadius * innerRadius / outerRadius * outerRadius;
     double outerRate = 1.0 - innerRate;
 
     {
-        double mass = massSpin->value() * innerRate;
+        double mass = dspins[MASS]->value() * innerRate;
         double radius = innerRadius;
         double mainInertia = mass * radius * radius / 2.0;
         double subInertia = mass * (3.0 * radius * radius + length * length) / 12.0;
@@ -297,7 +326,7 @@ VectorXd PipeBuilderWidgetImpl::calcInertia()
     }
 
     {
-        double mass = massSpin->value() * outerRate;
+        double mass = dspins[MASS]->value() * outerRate;
         double radius = outerRadius;
         double mainInertia = mass * radius * radius / 2.0;
         double subInertia = mass * (3.0 * radius * radius + length * length) / 12.0;

@@ -33,14 +33,13 @@ namespace {
 
 struct DialogButtonInfo {
     QDialogButtonBox::ButtonRole role;
-    char* label;
 };
 
 
 DialogButtonInfo dialogButtonInfo[] = {
-    { QDialogButtonBox::ActionRole,        _("&Save") },
-    { QDialogButtonBox::ActionRole,  _("&Save As...") },
-    { QDialogButtonBox::AcceptRole,         _ ("&Ok") }
+    { QDialogButtonBox::ActionRole },
+    { QDialogButtonBox::ActionRole },
+    { QDialogButtonBox::AcceptRole }
 };
 
 }
@@ -98,6 +97,7 @@ ObjectBuilderDialogImpl::ObjectBuilderDialogImpl(ObjectBuilderDialog* self)
 
     QHBoxLayout* hbox = new QHBoxLayout();
     shapeCombo = new ComboBox();
+    shapeCombo->setCurrentIndex(0);
     QStringList shapes = { _("Pipe"), _("Grating"), _("Slope") };
     shapeCombo->addItems(shapes);
     hbox->addWidget(new QLabel(_("Shape")));
@@ -119,10 +119,12 @@ ObjectBuilderDialogImpl::ObjectBuilderDialogImpl(ObjectBuilderDialog* self)
     fhbox->addWidget(new QLabel(_("File")));
     fhbox->addWidget(fileLine);
 
+    const char* labels[] = { _("&Save"), _("&Save As..."), _ ("&Ok") };
+
     QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
     for(int i = 0; i < NUM_DBUTTONS; ++i) {
         DialogButtonInfo info = dialogButtonInfo[i];
-        dialogButtons[i] = new PushButton(info.label);
+        dialogButtons[i] = new PushButton(labels[i]);
         PushButton* dialogButton = dialogButtons[i];
         buttonBox->addButton(dialogButton, info.role);
         if(i == OK) {
@@ -192,8 +194,8 @@ void ObjectBuilderDialogImpl::openSaveDialog()
     }
 
     if(dialog.exec() == QDialog::Accepted) {
-        QString fileName = dialog.selectedFiles().front();
-        fileLine->setText(fileName);
+        QString filename = dialog.selectedFiles().front();
+        fileLine->setText(filename);
     }
 }
 
@@ -205,6 +207,8 @@ void ObjectBuilderDialogImpl::writeYaml(const bool &overwrite)
     if(!overwrite || filename.empty()) {
         openSaveDialog();
     }
+
+    filename = fileLine->text().toStdString();
 
     if(!filename.empty()) {
         filesystem::path path(filename);

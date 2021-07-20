@@ -77,20 +77,20 @@ string cylinderInertia(double mass, double radius, double height)
 
 
 struct CheckInfo {
-    char* label;
+    const char* label;
     bool checked;
 };
 
 
 CheckInfo checkInfo[] = {
-    { _("Front SubTrack"),  true },
-    { _("Rear SubTrack"),   true },
-    { _("AGX"),            false }
+    { _("Front SubTrack"),   true },
+    {  _("Rear SubTrack"),   true },
+    {            _("AGX"),  false }
 };
 
 
 struct ButtonInfo {
-    char* label;
+    const char* label;
     double red;
     double green;
     double blue;
@@ -124,7 +124,7 @@ DoubleSpinInfo doubleSpinInfo[] = {
     {  0.010, 0.0, 9999.999, 3, false }, {  0.090, 0.0, 9999.999, 3, false }, {  0.020, 0.0, 9999.999, 3, false }, {  2.000, 0.0, 9999.999, 3, false }, {  1.000, 0.0, 9999.999, 3, false },
     {  9.000, 0.0, 9999.999, 3, false }, {  0.010, 0.0, 9999.999, 3, false }, { -0.001, 0.0, 9999.999, 3, false }, { -0.009, 0.0, 9999.999, 3, false },
     {  0.010, 0.0, 9999.999, 3, false }, {  0.090, 0.0, 9999.999, 3, false }, {  0.020, 0.0, 9999.999, 3, false }, {  2.000, 0.0, 9999.999, 3, false }, {  1.000, 0.0, 9999.999, 3, false },
-    {  9.000, 0.0, 9999.999, 3, false }, {  0.010, 0.0, 9999.999, 3, false }, { -0.001, 0.0, 9999.999, 3, false }, { -0.009, 0.0, 9999.999, 3, false },
+    {  9.000, 0.0, 9999.999, 3, false }, {  0.010, 0.0, 9999.999, 3, false }, { -0.001, 0.0, 9999.999, 3, false }, { -0.009, 0.0, 9999.999, 3, false }
 };
 
 
@@ -140,22 +140,21 @@ SpinInfo spinInfo[] = {
     { 42, 0, 9999, false }, {   3, 0, 9999, false }, {  4, 0, 9999, false },
     {  6, 0, 9999, false }, { 100, 0, 9999, false }, { 10, 0, 9999, false },
     { 42, 0, 9999, false }, {   3, 0, 9999, false }, {  4, 0, 9999, false },
-    {  6, 0, 9999, false }, { 100, 0, 9999, false }, { 10, 0, 9999, false },
+    {  6, 0, 9999, false }, { 100, 0, 9999, false }, { 10, 0, 9999, false }
 };
 
 
 struct DialogButtonInfo {
     QDialogButtonBox::ButtonRole role;
-    char* label;
 };
 
 
 DialogButtonInfo dialogButtonInfo[] = {
-    { QDialogButtonBox::ResetRole,       _("&Reset") },
-    { QDialogButtonBox::ActionRole, _("&Save As...") },
-    { QDialogButtonBox::ActionRole,       _("&Load") },
-    { QDialogButtonBox::ActionRole,     _("&Export") },
-    { QDialogButtonBox::AcceptRole,         _("&Ok") }
+    {  QDialogButtonBox::ResetRole },
+    { QDialogButtonBox::ActionRole },
+    { QDialogButtonBox::ActionRole },
+    { QDialogButtonBox::ActionRole },
+    { QDialogButtonBox::AcceptRole }
 };
 
 }
@@ -465,10 +464,15 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
     trackBeltHbox->addWidget(checks[TRK_CHK]);
     trackBeltHbox->addStretch();
 
+    const char* labels[] = {
+        _("&Reset"), _("&Save As..."), _("&Load"),
+        _("&Export"), _("&Ok")
+    };
+
     QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
     for(int i = 0; i < NUM_DBUTTONS; ++i) {
         DialogButtonInfo info = dialogButtonInfo[i];
-        dialogButtons[i] = new PushButton(info.label);
+        dialogButtons[i] = new PushButton(labels[i]);
         PushButton* dialogButton = dialogButtons[i];
         buttonBox->addButton(dialogButton, info.role);
         if(i == OK) {

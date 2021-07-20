@@ -21,6 +21,29 @@ using namespace cnoid;
 using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
+namespace {
+
+struct DoubleSpinInfo
+{
+    int row;
+    int column;
+    double min;
+    double max;
+    double step;
+    int decimals;
+    double value;
+};
+
+
+DoubleSpinInfo doubleSpinInfo[] = {
+    { 0, 1, 0.001, 1000.0, 0.01, 3, 1.0 },
+    { 0, 3, 0.001, 1000.0, 0.01, 3, 1.0 },
+    { 1, 1, 0.001, 1000.0, 0.01, 3, 1.0 },
+    { 1, 3, 0.001, 1000.0, 0.01, 3, 1.0 }
+};
+
+}
+
 namespace cnoid {
 
 class SlopeBuilderWidgetImpl
@@ -29,12 +52,12 @@ public:
     SlopeBuilderWidgetImpl(SlopeBuilderWidget* self);
     SlopeBuilderWidget* self;
 
-    enum ParameterId {
+    enum DoubleSpinId {
         MASS, WIDTH, HEIGHT,
-        LENGTH, NUM_ID
+        LENGTH, NUM_DSPINS
     };
 
-    DoubleSpinBox* spins[NUM_ID];
+    DoubleSpinBox* dspins[NUM_DSPINS];
     PushButton* colorButton;
 
     void writeYaml(const string& filename);
@@ -57,26 +80,20 @@ SlopeBuilderWidgetImpl::SlopeBuilderWidgetImpl(SlopeBuilderWidget* self)
     QVBoxLayout* vbox = new QVBoxLayout();
     QGridLayout* gbox = new QGridLayout();
 
-    QStringList names = {
-        _("Mass [kg]"), _("Width [m]"),
-        _("Height [m]"),_("Length [m]")
+    const char* dlabels[] = {
+        _("Mass [kg]"),  _("Width [m]"),
+        _("Height [m]"), _("Length [m]")
     };
 
-    int indexes[5][2] = {
-        { 0, 1 }, { 0, 3 },
-        { 1, 1 }, { 1, 3 }
-    };
-
-    double values[] = { 1.0, 1.0, 1.0, 1.0 };
-
-    for(int i = 0; i < NUM_ID; ++i) {
-        spins[i] = new DoubleSpinBox();
-        spins[i]->setRange(0.001, 1000.0);
-        spins[i]->setSingleStep(0.01);
-        spins[i]->setDecimals(3);
-        spins[i]->setValue(values[i]);
-        gbox->addWidget(new QLabel(names[i]), indexes[i][0], indexes[i][1] - 1);
-        gbox->addWidget(spins[i], indexes[i][0], indexes[i][1]);
+    for(int i = 0; i < NUM_DSPINS; ++i) {
+        DoubleSpinInfo info = doubleSpinInfo[i];
+        dspins[i] = new DoubleSpinBox();
+        dspins[i]->setRange(info.min, info.max);
+        dspins[i]->setSingleStep(info.step);
+        dspins[i]->setDecimals(info.decimals);
+        dspins[i]->setValue(info.value);
+        gbox->addWidget(new QLabel(dlabels[i]), info.row, info.column - 1);
+        gbox->addWidget(dspins[i], info.row, info.column);
     }
 
     colorButton = new PushButton();
@@ -106,10 +123,10 @@ void SlopeBuilderWidgetImpl::writeYaml(const string& filename)
 {
     filesystem::path path(filename);
 
-    double mass = spins[MASS]->value();
-    double length = spins[LENGTH]->value();
-    double width = spins[WIDTH]->value();
-    double height = spins[HEIGHT]->value();
+    double mass = dspins[MASS]->value();
+    double length = dspins[LENGTH]->value();
+    double width = dspins[WIDTH]->value();
+    double height = dspins[HEIGHT]->value();
 
     if(!filename.empty()) {
         YAMLWriter writer(filename);
@@ -227,10 +244,10 @@ VectorXd SlopeBuilderWidgetImpl::calcInertia()
     inertia.resize(9);
     inertia << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
 
-    double mass = spins[MASS]->value();
-    double x = spins[LENGTH]->value();
-    double y = spins[WIDTH]->value();
-    double z = spins[HEIGHT]->value();
+    double mass = dspins[MASS]->value();
+    double x = dspins[LENGTH]->value();
+    double y = dspins[WIDTH]->value();
+    double z = dspins[HEIGHT]->value();
 
     double ix = mass / 12.0 * (y * y + z * z);
     double iy = mass / 12.0 * (z * z + x * x);

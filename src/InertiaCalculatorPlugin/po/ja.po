@@ -42,8 +42,12 @@ msgid "Shape"
 msgstr "形状"
 
 #: ../InertiaCalculatorDialog.cpp:85
-msgid "Calc"
-msgstr "計算"
+msgid "&Calc"
+msgstr "&計算"
+
+#: ../InertiaCalculatorDialog.cpp:85
+msgid "&Ok"
+msgstr "&Ｏｋ"
 
 #: ../InertiaCalculatorDialog.cpp:104 ../InertiaCalculatorDialog.cpp:117
 #: ../InertiaCalculatorDialog.cpp:126 ../InertiaCalculatorDialog.cpp:139

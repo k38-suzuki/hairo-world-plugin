@@ -38,16 +38,15 @@ namespace {
 
 struct DialogButtonInfo {
     QDialogButtonBox::ButtonRole role;
-    char* label;
 };
 
 
 DialogButtonInfo dialogButtonInfo[] = {
-    { QDialogButtonBox::ResetRole,       _("&Reset") },
-    { QDialogButtonBox::ActionRole,       _("&Save") },
-    { QDialogButtonBox::ActionRole, _("&Save As...") },
-    { QDialogButtonBox::ActionRole,       _("&Load") },
-    { QDialogButtonBox::AcceptRole,         _("&Ok") }
+    { QDialogButtonBox::ResetRole },
+    { QDialogButtonBox::ActionRole },
+    { QDialogButtonBox::ActionRole },
+    { QDialogButtonBox::ActionRole },
+    { QDialogButtonBox::AcceptRole }
 };
 
 }
@@ -316,10 +315,15 @@ BoxTerrainBuilderDialogImpl::BoxTerrainBuilderDialogImpl(BoxTerrainBuilderDialog
 
     vbox->addLayout(gbox);
 
+    const char* labels[] = {
+        _("&Reset"), _("&Save"), _("&Save As..."),
+        _("&Load"), _("&Ok")
+    };
+
     QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
     for(int i = 0; i < NUM_DBUTTONS; ++i) {
         DialogButtonInfo info = dialogButtonInfo[i];
-        dialogButtons[i] = new PushButton(info.label);
+        dialogButtons[i] = new PushButton(labels[i]);
         PushButton* dialogButton = dialogButtons[i];
         buttonBox->addButton(dialogButton, info.role);
         if(i == OK) {

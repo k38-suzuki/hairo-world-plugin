@@ -19,6 +19,48 @@ using namespace cnoid;
 using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
+namespace {
+
+struct DoubleSpinInfo
+{
+    int row;
+    int column;
+    double min;
+    double max;
+    double step;
+    double decimals;
+    double value;
+};
+
+
+DoubleSpinInfo doubleSpinInfo[] = {
+    { 0, 1, 0.01, 1000.0, 0.01, 3, 1.000 },
+    { 0, 3, 0.01, 1000.0, 0.01, 3, 0.038 },
+    { 2, 1, 0.01, 1000.0, 0.01, 3, 0.005 },
+    { 2, 3, 0.01, 1000.0, 0.01, 3, 0.006 },
+    { 3, 1, 0.01, 1000.0, 0.01, 3, 0.010 },
+    { 3, 3, 0.01, 1000.0, 0.01, 3, 0.100 }
+};
+
+
+struct SpinInfo
+{
+    int row;
+    int column;
+    int min;
+    int max;
+    int value;
+};
+
+
+SpinInfo spinInfo[] = {
+    { 1, 1, 0, 1000, 50 },
+    { 1, 3, 0, 1000,  5 }
+};
+
+}
+
+
 namespace cnoid {
 
 class GratingBuilderWidgetImpl
@@ -27,14 +69,17 @@ public:
     GratingBuilderWidgetImpl(GratingBuilderWidget* self);
     GratingBuilderWidget* self;
 
-    DoubleSpinBox* massSpin;
-    DoubleSpinBox* frameWidthSpin;
-    DoubleSpinBox* frameHeightSpin;
-    DoubleSpinBox* gridWidthSpin;
-    DoubleSpinBox* gridHeightSpin;
-    SpinBox* horizontalGridSpin;
-    SpinBox* verticalGridSpin;
-    DoubleSpinBox* heightSpin;
+    enum DoubleSpinId {
+        MASS, HEIGHT, FRAME_WDT,
+        FRAME_HGT, GRID_WDT, GRID_HGT,
+        NUM_DSPINS
+    };
+
+    enum SpinId { H_GRID, V_GRID, NUM_SPINS };
+
+    DoubleSpinBox* dspins[NUM_DSPINS];
+    SpinBox* spins[NUM_SPINS];
+
     QLabel* sizeLabel;
     PushButton* colorButton;
 
@@ -59,67 +104,51 @@ GratingBuilderWidgetImpl::GratingBuilderWidgetImpl(GratingBuilderWidget* self)
     QVBoxLayout* vbox = new QVBoxLayout();
     QGridLayout* gbox = new QGridLayout();
 
-    massSpin = new DoubleSpinBox();
-    massSpin->setRange(0.001, 1000.0);
-    massSpin->setSingleStep(0.01);
-    massSpin->setDecimals(3);
-    frameWidthSpin = new DoubleSpinBox();
-    frameWidthSpin->setRange(0.001, 1000.0);
-    frameWidthSpin->setSingleStep(0.01);
-    frameWidthSpin->setDecimals(3);
-    frameHeightSpin = new DoubleSpinBox();
-    frameHeightSpin->setRange(0.001, 1000.0);
-    frameHeightSpin->setSingleStep(0.01);
-    frameHeightSpin->setDecimals(3);
-    gridWidthSpin = new DoubleSpinBox();
-    gridWidthSpin->setRange(0.001, 1000.0);
-    gridWidthSpin->setSingleStep(0.01);
-    gridWidthSpin->setDecimals(3);
-    gridHeightSpin = new DoubleSpinBox();
-    gridHeightSpin->setRange(0.001, 1000.0);
-    gridHeightSpin->setSingleStep(0.01);
-    gridHeightSpin->setDecimals(3);
-    horizontalGridSpin = new SpinBox();
-    horizontalGridSpin->setRange(0, 1000);
-    verticalGridSpin = new SpinBox();
-    verticalGridSpin->setRange(0, 1000);
-    heightSpin = new DoubleSpinBox();
-    heightSpin->setRange(0.001, 1000.0);
-    heightSpin->setSingleStep(0.01);
-    heightSpin->setDecimals(3);
+    const char* dlabels[] = {
+        _("Mass [kg]"), _("Height [m]"), _("Frame width [m]"),
+        _("Frame height [m]"), _("Grid width [m]"), _("Grid height [m]")
+    };
+
+    const char* slabels[] = { _("Horizontal grid [-]"), _("Vertical grid [-]") };
+
+    for(int i = 0; i < NUM_DSPINS; ++i) {
+        DoubleSpinInfo info = doubleSpinInfo[i];
+        dspins[i] = new DoubleSpinBox();
+        DoubleSpinBox* dspin = dspins[i];
+        dspin->setRange(info.min, info.max);
+        dspin->setSingleStep(info.step);
+        dspin->setDecimals(info.decimals);
+        dspin->setValue(info.value);
+        gbox->addWidget(new QLabel(dlabels[i]), info.row, info.column - 1);
+        gbox->addWidget(dspin, info.row, info.column);
+    }
+
+    for(int i = 0; i < NUM_SPINS; ++i) {
+        SpinInfo info = spinInfo[i];
+        spins[i] = new SpinBox();
+        SpinBox* spin = spins[i];
+        spin->setRange(info.min, info.max);
+        spin->setValue(info.value);
+        gbox->addWidget(new QLabel(slabels[i]), info.row, info.column - 1);
+        gbox->addWidget(spin, info.row, info.column);
+    }
+
     sizeLabel = new QLabel(_(" "));
     colorButton = new PushButton();
 
-    massSpin->setValue(1.0);
-    frameWidthSpin->setValue(0.005);
-    frameHeightSpin->setValue(0.006);
-    gridWidthSpin->setValue(0.01);
-    gridHeightSpin->setValue(0.1);
-    horizontalGridSpin->setValue(50);
-    verticalGridSpin->setValue(5);
-    heightSpin->setValue(0.038);
+    dspins[MASS]->setValue(1.0);
+    dspins[FRAME_WDT]->setValue(0.005);
+    dspins[FRAME_HGT]->setValue(0.006);
+    dspins[GRID_WDT]->setValue(0.01);
+    dspins[GRID_HGT]->setValue(0.1);
+    spins[H_GRID]->setValue(50);
+    spins[V_GRID]->setValue(5);
+    dspins[HEIGHT]->setValue(0.038);
 
-    int index = 0;
-    gbox->addWidget(new QLabel(_("Mass [kg]")), index, 0);
-    gbox->addWidget(massSpin, index, 1);
-    gbox->addWidget(new QLabel(_("Height [m]")), index, 2);
-    gbox->addWidget(heightSpin, index++, 3);
-    gbox->addWidget(new QLabel(_("Horizontal grid [-]")), index, 0);
-    gbox->addWidget(horizontalGridSpin, index, 1);
-    gbox->addWidget(new QLabel(_("Vertical grid [-]")), index, 2);
-    gbox->addWidget(verticalGridSpin, index++, 3);
-    gbox->addWidget(new QLabel(_("Frame width [m]")), index, 0);
-    gbox->addWidget(frameWidthSpin, index, 1);
-    gbox->addWidget(new QLabel(_("Frame height [m]")), index, 2);
-    gbox->addWidget(frameHeightSpin, index++, 3);
-    gbox->addWidget(new QLabel(_("Grid width [m]")), index, 0);
-    gbox->addWidget(gridWidthSpin, index, 1);
-    gbox->addWidget(new QLabel(_("Grid height [m]")), index, 2);
-    gbox->addWidget(gridHeightSpin, index++, 3);
-    gbox->addWidget(new QLabel(_("Color [-]")), index, 0);
-    gbox->addWidget(colorButton, index++, 1);
-    gbox->addWidget(new QLabel(_("Size [m, m, m]")), index, 0);
-    gbox->addWidget(sizeLabel, index++, 1, 1, 3);
+    gbox->addWidget(new QLabel(_("Color [-]")), 4, 0);
+    gbox->addWidget(colorButton, 4, 1);
+    gbox->addWidget(new QLabel(_("Size [m, m, m]")), 5, 0);
+    gbox->addWidget(sizeLabel, 5, 1, 1, 3);
 
     vbox->addLayout(gbox);
     self->setLayout(vbox);
@@ -127,13 +156,13 @@ GratingBuilderWidgetImpl::GratingBuilderWidgetImpl(GratingBuilderWidget* self)
     onValueChanged();
 
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
-    frameWidthSpin->sigValueChanged().connect([&](double value){ onValueChanged(); });
-    frameHeightSpin->sigValueChanged().connect([&](double value){ onValueChanged(); });
-    gridWidthSpin->sigValueChanged().connect([&](double value){ onValueChanged(); });
-    gridHeightSpin->sigValueChanged().connect([&](double value){ onValueChanged(); });
-    horizontalGridSpin->sigValueChanged().connect([&](double value){ onValueChanged(); });
-    verticalGridSpin->sigValueChanged().connect([&](double value){ onValueChanged(); });
-    heightSpin->sigValueChanged().connect([&](double value){ onValueChanged(); });
+    dspins[FRAME_WDT]->sigValueChanged().connect([&](double value){ onValueChanged(); });
+    dspins[FRAME_HGT]->sigValueChanged().connect([&](double value){ onValueChanged(); });
+    dspins[GRID_WDT]->sigValueChanged().connect([&](double value){ onValueChanged(); });
+    dspins[GRID_HGT]->sigValueChanged().connect([&](double value){ onValueChanged(); });
+    spins[H_GRID]->sigValueChanged().connect([&](double value){ onValueChanged(); });
+    spins[V_GRID]->sigValueChanged().connect([&](double value){ onValueChanged(); });
+    dspins[HEIGHT]->sigValueChanged().connect([&](double value){ onValueChanged(); });
 }
 
 
@@ -153,14 +182,14 @@ void GratingBuilderWidgetImpl::writeYaml(const string& filename)
 {
     filesystem::path path(filename);
 
-    double mass = massSpin->value();
-    double frameWidth = frameWidthSpin->value();
-    double frameHeight = frameHeightSpin->value();
-    double gridWidth = gridWidthSpin->value();
-    double gridHeight = gridHeightSpin->value();
-    int horizontalGrid = horizontalGridSpin->value();
-    int verticalGrid = verticalGridSpin->value();
-    double height = heightSpin->value();
+    double mass = dspins[MASS]->value();
+    double frameWidth = dspins[FRAME_WDT]->value();
+    double frameHeight = dspins[FRAME_HGT]->value();
+    double gridWidth = dspins[GRID_WDT]->value();
+    double gridHeight = dspins[GRID_HGT]->value();
+    int horizontalGrid = spins[H_GRID]->value();
+    int verticalGrid = spins[V_GRID]->value();
+    double height = dspins[HEIGHT]->value();
 
     double w = frameWidth * (horizontalGrid + 1) + gridWidth * horizontalGrid;
     double h = frameHeight * (verticalGrid + 1) + gridHeight * verticalGrid;
@@ -360,13 +389,13 @@ void GratingBuilderWidgetImpl::onColorButtonClicked()
 
 void GratingBuilderWidgetImpl::onValueChanged()
 {
-    double frameWidth = frameWidthSpin->value();
-    double frameHeight = frameHeightSpin->value();
-    double gridWidth = gridWidthSpin->value();
-    double gridHeight = gridHeightSpin->value();
-    int horizontalGrid = horizontalGridSpin->value();
-    int verticalGrid = verticalGridSpin->value();
-    double height = heightSpin->value();
+    double frameWidth = dspins[FRAME_WDT]->value();
+    double frameHeight = dspins[FRAME_HGT]->value();
+    double gridWidth = dspins[GRID_WDT]->value();
+    double gridHeight = dspins[GRID_HGT]->value();
+    int horizontalGrid = spins[H_GRID]->value();
+    int verticalGrid = spins[V_GRID]->value();
+    double height = dspins[HEIGHT]->value();
 
     double w = frameWidth * (horizontalGrid + 1) + gridWidth * horizontalGrid;
     double h = frameHeight * (verticalGrid + 1) + gridHeight * verticalGrid;
@@ -384,17 +413,17 @@ VectorXd GratingBuilderWidgetImpl::calcInertia()
     inertia.resize(9);
     inertia << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
 
-    double mass = massSpin->value();
-    double frameWidth = frameWidthSpin->value();
-    double frameHeight = frameHeightSpin->value();
-    double gridWidth = gridWidthSpin->value();
-    double gridHeight = gridHeightSpin->value();
-    int horizontalGrid = horizontalGridSpin->value();
-    int verticalGrid = verticalGridSpin->value();
+    double mass = dspins[MASS]->value();
+    double frameWidth = dspins[FRAME_WDT]->value();
+    double frameHeight = dspins[FRAME_HGT]->value();
+    double gridWidth = dspins[GRID_WDT]->value();
+    double gridHeight = dspins[GRID_HGT]->value();
+    int horizontalGrid = spins[H_GRID]->value();
+    int verticalGrid = spins[V_GRID]->value();
 
     double x = frameWidth * (horizontalGrid + 1) + gridWidth * horizontalGrid;
     double y = frameHeight * (verticalGrid + 1) + gridHeight * verticalGrid;
-    double z = heightSpin->value();
+    double z = dspins[HEIGHT]->value();
 
     double ix = mass / 12.0 * (y * y + z * z);
     double iy = mass / 12.0 * (z * z + x * x);

@@ -26,13 +26,12 @@ namespace {
 
 struct DialogButtonInfo {
     QDialogButtonBox::ButtonRole role;
-    char* label;
 };
 
 
 DialogButtonInfo dialogButtonInfo[] = {
-    { QDialogButtonBox::ActionRole, _("&Calc") },
-    { QDialogButtonBox::AcceptRole,  _ ("&Ok") }
+    { QDialogButtonBox::ActionRole },
+    { QDialogButtonBox::AcceptRole }
 };
 
 }
@@ -51,22 +50,11 @@ public:
     MessageView* messageView;
     ComboBox* cylinderAxisCombo;
     ComboBox* coneAxisCombo;
-    DoubleSpinBox* dspinBox[12];
+    DoubleSpinBox* dspins[12];
 
-    enum Shape {
-        BOX,
-        SPHERE,
-        CYLINDER,
-        CONE,
-        NUM_SHAPE
-    };
+    enum Shape { BOX, SPHERE, CYLINDER, CONE, NUM_SHAPE };
 
-    enum Axis {
-        X,
-        Y,
-        Z,
-        NUM_AXIS
-    };
+    enum Axis { X, Y, Z, NUM_AXIS };
 
     enum DialogButtonId { CALC, OK, NUM_DBUTTONS };
 
@@ -107,10 +95,10 @@ InertiaCalculatorDialogImpl::InertiaCalculatorDialogImpl(InertiaCalculatorDialog
     messageView = new MessageView();
 
     for(int i = 0; i < 12; i++) {
-        dspinBox[i] = new DoubleSpinBox();
-        dspinBox[i]->setDecimals(4);
-        dspinBox[i]->setSingleStep(0.01);
-        dspinBox[i]->setRange(0.0000, 1000.0);
+        dspins[i] = new DoubleSpinBox();
+        dspins[i]->setDecimals(4);
+        dspins[i]->setSingleStep(0.01);
+        dspins[i]->setRange(0.0000, 1000.0);
     }
     cylinderAxisCombo = new ComboBox();
     coneAxisCombo = new ComboBox();
@@ -120,33 +108,33 @@ InertiaCalculatorDialogImpl::InertiaCalculatorDialogImpl(InertiaCalculatorDialog
 
     QHBoxLayout* bhbox = new QHBoxLayout();
     bhbox->addWidget(new QLabel(_("mass [kg]")));
-    bhbox->addWidget(dspinBox[0]);
+    bhbox->addWidget(dspins[0]);
     bhbox->addWidget(new QLabel(_("x [m]")));
-    bhbox->addWidget(dspinBox[1]);
+    bhbox->addWidget(dspins[1]);
     bhbox->addWidget(new QLabel(_("y [m]")));
-    bhbox->addWidget(dspinBox[2]);
+    bhbox->addWidget(dspins[2]);
     bhbox->addWidget(new QLabel(_("z [m]")));
-    bhbox->addWidget(dspinBox[3]);
+    bhbox->addWidget(dspins[3]);
     bhbox->addStretch();
     Widget* boxWidget = new Widget();
     boxWidget->setLayout(bhbox);
 
     QHBoxLayout* shbox = new QHBoxLayout();
     shbox->addWidget(new QLabel(_("mass [kg]")));
-    shbox->addWidget(dspinBox[4]);
+    shbox->addWidget(dspins[4]);
     shbox->addWidget(new QLabel(_("radius [m]")));
-    shbox->addWidget(dspinBox[5]);
+    shbox->addWidget(dspins[5]);
     shbox->addStretch();
     Widget* sphereWidget = new Widget();
     sphereWidget->setLayout(shbox);
 
     QHBoxLayout* cyhbox = new QHBoxLayout();
     cyhbox->addWidget(new QLabel(_("mass [kg]")));
-    cyhbox->addWidget(dspinBox[6]);
+    cyhbox->addWidget(dspins[6]);
     cyhbox->addWidget(new QLabel(_("radius [m]")));
-    cyhbox->addWidget(dspinBox[7]);
+    cyhbox->addWidget(dspins[7]);
     cyhbox->addWidget(new QLabel(_("height [m]")));
-    cyhbox->addWidget(dspinBox[8]);
+    cyhbox->addWidget(dspins[8]);
     cyhbox->addWidget(new QLabel(_("axis [-]")));
     cyhbox->addWidget(cylinderAxisCombo);
     cyhbox->addStretch();
@@ -155,11 +143,11 @@ InertiaCalculatorDialogImpl::InertiaCalculatorDialogImpl(InertiaCalculatorDialog
 
     QHBoxLayout* cnhbox = new QHBoxLayout();
     cnhbox->addWidget(new QLabel(_("mass [kg]")));
-    cnhbox->addWidget(dspinBox[9]);
+    cnhbox->addWidget(dspins[9]);
     cnhbox->addWidget(new QLabel(_("radius [m]")));
-    cnhbox->addWidget(dspinBox[10]);
+    cnhbox->addWidget(dspins[10]);
     cnhbox->addWidget(new QLabel(_("height [m]")));
-    cnhbox->addWidget(dspinBox[11]);
+    cnhbox->addWidget(dspins[11]);
     cnhbox->addWidget(new QLabel(_("axis [-]")));
     cnhbox->addWidget(coneAxisCombo);
     cnhbox->addStretch();
@@ -171,10 +159,12 @@ InertiaCalculatorDialogImpl::InertiaCalculatorDialogImpl(InertiaCalculatorDialog
     stbox->addWidget(cylinderWidget);
     stbox->addWidget(coneWidget);
 
+    const char* labels[] = { _("&Calc"), _ ("&Ok") };
+
     QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
     for(int i = 0; i < NUM_DBUTTONS; ++i) {
         DialogButtonInfo info = dialogButtonInfo[i];
-        dialogButtons[i] = new PushButton(info.label);
+        dialogButtons[i] = new PushButton(labels[i]);
         PushButton* dialogButton = dialogButtons[i];
         buttonBox->addButton(dialogButton, info.role);
         if(i == OK) {
@@ -259,10 +249,10 @@ void InertiaCalculatorDialogImpl::onRejected()
 
 void InertiaCalculatorDialogImpl::calcBoxInertia()
 {
-    double mass = dspinBox[0]->value();
-    double x = dspinBox[1]->value();
-    double y = dspinBox[2]->value();
-    double z = dspinBox[3]->value();
+    double mass = dspins[0]->value();
+    double x = dspins[1]->value();
+    double y = dspins[2]->value();
+    double z = dspins[3]->value();
     double ix = mass / 12.0 * (y * y + z * z);
     double iy = mass / 12.0 * (z * z + x * x);
     double iz = mass / 12.0 * (x * x + y * y);
@@ -275,8 +265,8 @@ void InertiaCalculatorDialogImpl::calcBoxInertia()
 
 void InertiaCalculatorDialogImpl::calcSphereInertia()
 {
-    double mass = dspinBox[4]->value();
-    double radius = dspinBox[5]->value();
+    double mass = dspins[4]->value();
+    double radius = dspins[5]->value();
     double ix, iy, iz;
     ix = iy = iz = mass * radius * radius / 5.0 * 2.0;
 
@@ -288,9 +278,9 @@ void InertiaCalculatorDialogImpl::calcSphereInertia()
 
 void InertiaCalculatorDialogImpl::calcCylinderInertia()
 {
-    double mass = dspinBox[6]->value();
-    double radius = dspinBox[7]->value();
-    double height = dspinBox[8]->value();
+    double mass = dspins[6]->value();
+    double radius = dspins[7]->value();
+    double height = dspins[8]->value();
     int index = cylinderAxisCombo->currentIndex();
     double mainInertia = mass * radius * radius / 2.0;
     double subInertia = mass * (3.0 * radius * radius + height * height) / 12.0;
@@ -321,9 +311,9 @@ void InertiaCalculatorDialogImpl::calcCylinderInertia()
 
 void InertiaCalculatorDialogImpl::calcConeInertia()
 {
-    double mass = dspinBox[9]->value();
-    double radius = dspinBox[10]->value();
-    double height = dspinBox[11]->value();
+    double mass = dspins[9]->value();
+    double radius = dspins[10]->value();
+    double height = dspins[11]->value();
     int index = coneAxisCombo->currentIndex();
     double mainInertia = mass * radius * radius * 3.0 / 10.0;
     double subInertia = mass * 3.0 / 80.0 * (4.0 * radius * radius + height * height);
