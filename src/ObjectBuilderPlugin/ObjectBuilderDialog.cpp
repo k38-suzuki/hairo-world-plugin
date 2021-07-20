@@ -206,9 +206,9 @@ void ObjectBuilderDialogImpl::writeYaml(const bool &overwrite)
 
     if(!overwrite || filename.empty()) {
         openSaveDialog();
+        filename = fileLine->text().toStdString();
     }
 
-    filename = fileLine->text().toStdString();
 
     if(!filename.empty()) {
         filesystem::path path(filename);
@@ -238,6 +238,7 @@ void ObjectBuilderDialogImpl::writeYaml(const bool &overwrite)
 void ObjectBuilderDialogImpl::onCurrentIndexChanged(const int& index)
 {
     sbox->setCurrentIndex(index);
+    fileLine->clear();
 }
 
 

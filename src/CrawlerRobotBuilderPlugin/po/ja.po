@@ -23,23 +23,23 @@ msgstr "クローラロボットビルダ"
 
 #: ../CrawlerRobotBuilderDialog.cpp:189
 msgid "&Reset"
-msgstr "&リセット"
+msgstr "リセット"
 
 #: ../CrawlerRobotBuilderDialog.cpp:190
 msgid "&Export"
-msgstr "&ボディの保存"
+msgstr "ボディの保存"
 
 #: ../CrawlerRobotBuilderDialog.cpp:190
 msgid "&Ok"
-msgstr "&Ｏｋ"
+msgstr "Ｏｋ"
 
 #: ../CrawlerRobotBuilderDialog.cpp:191
 msgid "&Load"
-msgstr "&YAMLの読み込み"
+msgstr "YAMLの読み込み"
 
 #: ../CrawlerRobotBuilderDialog.cpp:192
 msgid "&Save As..."
-msgstr "&YAMLの保存"
+msgstr "YAMLの保存"
 
 #: ../CrawlerRobotBuilderDialog.cpp:311
 msgid "Chassis"

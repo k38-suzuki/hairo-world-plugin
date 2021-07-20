@@ -23,7 +23,7 @@ msgstr "ボックステレインビルダ"
 
 #: ../BoxTerrainBuilderDialog.cpp:284
 msgid "&Reset"
-msgstr "&リセット"
+msgstr "リセット"
 
 #: ../BoxTerrainBuilderDialog.cpp:285
 msgid "scale[0.1-10.0]"
@@ -31,11 +31,11 @@ msgstr "スケール[0.1-10.0]"
 
 #: ../BoxTerrainBuilderDialog.cpp:291
 msgid "&Load"
-msgstr "&読み込み"
+msgstr "読み込み"
 
 #: ../BoxTerrainBuilderDialog.cpp:291
 msgid "&Ok"
-msgstr "&Ｏｋ"
+msgstr "Ｏｋ"
 
 #: ../BoxTerrainBuilderDialog.cpp:292
 msgid "Input File (.csv)"
@@ -43,7 +43,7 @@ msgstr "入力ファイル (.csv)"
 
 #: ../BoxTerrainBuilderDialog.cpp:298 ../BoxTerrainBuilderDialog.cpp:372
 msgid "&Save"
-msgstr "&上書き保存"
+msgstr "上書き保存"
 
 #: ../BoxTerrainBuilderDialog.cpp:299
 msgid "Output File (.body)"
@@ -51,7 +51,7 @@ msgstr "出力ファイル (.body)"
 
 #: ../BoxTerrainBuilderDialog.cpp:303
 msgid "&Save As..."
-msgstr "&保存"
+msgstr "保存"
 
 #: ../BoxTerrainBuilderDialog.cpp:368
 msgid "Save a Body file"
