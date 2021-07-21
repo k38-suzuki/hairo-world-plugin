@@ -18,7 +18,6 @@
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/stdx/filesystem>
-#include <cnoid/UTF8>
 #include <cnoid/Widget>
 #include <cnoid/YAMLReader>
 #include <cnoid/YAMLWriter>
@@ -77,18 +76,22 @@ string cylinderInertia(double mass, double radius, double height)
 
 
 struct CheckInfo {
+    int row;
+    int column;
     bool checked;
 };
 
 
 CheckInfo checkInfo[] = {
-    {  true },
-    {  true },
-    { false }
+    { 0, 0, false },
+    { 0, 1,  true },
+    { 0, 2,  true }
 };
 
 
 struct ButtonInfo {
+    int row;
+    int column;
     double red;
     double green;
     double blue;
@@ -96,15 +99,17 @@ struct ButtonInfo {
 
 
 ButtonInfo buttonInfo[] = {
-    {   0.0 / 255.0, 153.0 / 255.0,  0.0 / 255.0 },
-    {  51.0 / 255.0,  51.0 / 255.0, 51.0 / 255.0 },
-    {  51.0 / 255.0,  51.0 / 255.0, 51.0 / 255.0 },
-    {  51.0 / 255.0,  51.0 / 255.0, 51.0 / 255.0 },
-    { 255.0 / 255.0,   0.0 / 255.0,  0.0 / 255.0 }
+    {  2, 3,   0.0 / 255.0, 153.0 / 255.0,  0.0 / 255.0 },
+    {  5, 3,  51.0 / 255.0,  51.0 / 255.0, 51.0 / 255.0 },
+    {  9, 3,  51.0 / 255.0,  51.0 / 255.0, 51.0 / 255.0 },
+    { 13, 3,  51.0 / 255.0,  51.0 / 255.0, 51.0 / 255.0 },
+    { 17, 3, 255.0 / 255.0,   0.0 / 255.0,  0.0 / 255.0 }
 };
 
 
 struct DoubleSpinInfo {
+    int row;
+    int column;
     double value;
     double min;
     double max;
@@ -114,15 +119,15 @@ struct DoubleSpinInfo {
 
 
 DoubleSpinInfo doubleSpinInfo[] = {
-    {  8.000, 0.0, 9999.999, 3,  true }, {  0.450, 0.0, 9999.999, 3,  true }, {  0.300, 0.0, 9999.999, 3,  true }, {  0.100, 0.0, 9999.999, 3,  true },
-    {  1.000, 0.0, 9999.999, 3,  true }, {  0.080, 0.0, 9999.999, 3,  true }, {  0.100, 0.0, 9999.999, 3,  true }, {  0.420, 0.0, 9999.999, 3,  true },
-    {  0.250, 0.0, 9999.999, 3,  true }, {  0.080, 0.0, 9999.999, 3,  true }, {  0.080, 0.0, 9999.999, 3,  true }, {  0.080, 0.0, 9999.999, 3,  true }, {  0.130, 0.0, 9999.999, 3,  true },
-    {  0.250, 0.0, 9999.999, 3,  true }, {  0.080, 0.0, 9999.999, 3,  true }, {  0.080, 0.0, 9999.999, 3,  true }, {  0.080, 0.0, 9999.999, 3,  true }, {  0.130, 0.0, 9999.999, 3,  true },
-    {  0.200, 0.0, 9999.999, 3,  true }, {  0.060, 0.0, 9999.999, 3,  true }, {  0.013, 0.0, 9999.999, 3,  true },
-    {  0.010, 0.0, 9999.999, 3, false }, {  0.090, 0.0, 9999.999, 3, false }, {  0.020, 0.0, 9999.999, 3, false }, {  2.000, 0.0, 9999.999, 3, false }, {  1.000, 0.0, 9999.999, 3, false },
-    {  9.000, 0.0, 9999.999, 3, false }, {  0.010, 0.0, 9999.999, 3, false }, { -0.001, 0.0, 9999.999, 3, false }, { -0.009, 0.0, 9999.999, 3, false },
-    {  0.010, 0.0, 9999.999, 3, false }, {  0.090, 0.0, 9999.999, 3, false }, {  0.020, 0.0, 9999.999, 3, false }, {  2.000, 0.0, 9999.999, 3, false }, {  1.000, 0.0, 9999.999, 3, false },
-    {  9.000, 0.0, 9999.999, 3, false }, {  0.010, 0.0, 9999.999, 3, false }, { -0.001, 0.0, 9999.999, 3, false }, { -0.009, 0.0, 9999.999, 3, false }
+    { 2, 1,  8.000, 0.0, 9999.999, 3,  true }, { 3, 1,  0.450, 0.0, 9999.999, 3,  true }, { 3, 2,  0.300, 0.0, 9999.999, 3,  true }, { 3, 3,  0.100, 0.0, 9999.999, 3,  true },
+    { 5, 1,  1.000, 0.0, 9999.999, 3,  true }, { 6, 1,  0.080, 0.0, 9999.999, 3,  true }, { 7, 1,  0.100, 0.0, 9999.999, 3,  true }, { 7, 3,  0.420, 0.0, 9999.999, 3,  true },
+    { 9, 1,  0.250, 0.0, 9999.999, 3,  true }, { 10, 1,  0.080, 0.0, 9999.999, 3,  true }, { 10, 2,  0.080, 0.0, 9999.999, 3,  true }, { 11, 1,  0.080, 0.0, 9999.999, 3,  true }, { 11, 3,  0.130, 0.0, 9999.999, 3,  true },
+    { 13, 1,  0.250, 0.0, 9999.999, 3,  true }, { 14, 1,  0.080, 0.0, 9999.999, 3,  true }, { 14, 2,  0.080, 0.0, 9999.999, 3,  true }, { 15, 1,  0.080, 0.0, 9999.999, 3,  true }, { 15, 3,  0.130, 0.0, 9999.999, 3,  true },
+    { 17, 1,  0.200, 0.0, 9999.999, 3,  true }, { 18, 1,  0.060, 0.0, 9999.999, 3,  true }, { 19, 1,  0.013, 0.0, 9999.999, 3,  true },
+    { 9, 9,  0.010, 0.0, 9999.999, 3, false }, { 9, 9,  0.090, 0.0, 9999.999, 3, false }, { 9, 9,  0.020, 0.0, 9999.999, 3, false }, { 9, 9,  2.000, 0.0, 9999.999, 3, false }, { 9, 9,  1.000, 0.0, 9999.999, 3, false },
+    { 9, 9,  9.000, 0.0, 9999.999, 3, false }, { 9, 9,  0.010, 0.0, 9999.999, 3, false }, { 9, 9, -0.001, 0.0, 9999.999, 3, false }, { 9, 9, -0.009, 0.0, 9999.999, 3, false },
+    { 9, 9,  0.010, 0.0, 9999.999, 3, false }, { 9, 9,  0.090, 0.0, 9999.999, 3, false }, { 9, 9,  0.020, 0.0, 9999.999, 3, false }, { 9, 9,  2.000, 0.0, 9999.999, 3, false }, { 9, 9,  1.000, 0.0, 9999.999, 3, false },
+    { 9, 9,  9.000, 0.0, 9999.999, 3, false }, { 9, 9,  0.010, 0.0, 9999.999, 3, false }, { 9, 9, -0.001, 0.0, 9999.999, 3, false }, { 9, 9, -0.009, 0.0, 9999.999, 3, false }
 };
 
 
@@ -153,6 +158,32 @@ DialogButtonInfo dialogButtonInfo[] = {
     { QDialogButtonBox::ActionRole },
     { QDialogButtonBox::ActionRole },
     { QDialogButtonBox::AcceptRole }
+};
+
+
+struct LabelInfo {
+    int row;
+    int column;
+};
+
+
+LabelInfo labelInfo[] = {
+    {  2, 0 }, {  2, 2 }, {  3, 0 },
+    {  5, 0 }, {  5, 2 }, {  6, 0 }, {  7, 0 }, {  7, 2 },
+    {  9, 0 }, {  9, 2 }, { 10, 0 }, { 11, 0 }, { 11, 2 },
+    { 13, 0 }, { 13, 2 }, { 14, 0 }, { 15, 0 }, { 15, 2 },
+    { 17, 0 }, { 17, 2 }, { 18, 0 }, { 19, 0 }
+};
+
+
+struct Info {
+    int row;
+    int column;
+};
+
+
+Info separatorInfo[] = {
+    { 1, 0 }, { 4, 0 }, { 8, 0 }, { 12, 0 }, { 16, 0 }
 };
 
 }
@@ -187,11 +218,12 @@ public:
         NUM_SPINS
     };
 
-    enum ButtonId { CHS_CLR, TRK_CLR, FFL_CLR,
-                    RFL_CLR, SPC_CLR, NUM_BUTTONS
+    enum ButtonId {
+        CHS_CLR, TRK_CLR, FFL_CLR,
+        RFL_CLR, SPC_CLR, NUM_BUTTONS
     };
 
-    enum CheckId { FFL_CHK, RFL_CHK, AGX_CHK, NUM_CHECKS };
+    enum CheckId { AGX_CHK, FFL_CHK, RFL_CHK, NUM_CHECKS };
 
     enum DialogButtonId { RESET, SAVEAS, LOAD, EXPORT, OK, NUM_DBUTTONS };
 
@@ -213,7 +245,7 @@ public:
     void onExportAGXBody(const string& fileName);
     void onColorChanged(PushButton* pushbutton);
     void setColor(PushButton* pushbutton, const Vector3& color);
-    Vector3 getColor(PushButton* colorButton);
+    Vector3 extractColor(PushButton* colorButton);
     string getSaveFilename(FileDialog& dialog, const string& suffix);
 };
 
@@ -231,11 +263,15 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
 {
     self->setWindowTitle(_("CrawlerRobotBuilder"));
 
-    const char* clabels[] = { _("Front SubTrack"), _("Rear SubTrack"), _("AGX") };
-    const char* blabels[] = { _("color"), _("color"), _("color"), _("color"), _("color") };
+    QGridLayout* gbox = new QGridLayout();
 
     for(int i = 0; i < NUM_DSPINS; ++i) {
+        DoubleSpinInfo info = doubleSpinInfo[i];
         dspins[i] = new DoubleSpinBox();
+        DoubleSpinBox* dspin = dspins[i];
+        if(i < TRK_BNT) {
+            gbox->addWidget(dspin, info.row, info.column);
+        }
     }
 
     for(int i = 0; i < NUM_SPINS; ++i) {
@@ -243,124 +279,46 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
     }
 
     for(int i = 0; i < NUM_BUTTONS; ++i) {
+        ButtonInfo info = buttonInfo[i];
         buttons[i] = new PushButton();
+        PushButton* button = buttons[i];
+        gbox->addWidget(button, info.row, info.column);
+        button->sigClicked().connect([&, button](){ onColorChanged(button); });
     }
+
+    const char* clabels[] = { _("AGX"), _("Front SubTrack"), _("Rear SubTrack") };
 
     for(int i = 0; i < NUM_CHECKS; ++i) {
+        CheckInfo info = checkInfo[i];
         checks[i] = new CheckBox();
-        checks[i]->setText(clabels[i]);
+        CheckBox* check = checks[i];
+        check->setText(clabels[i]);
+        gbox->addWidget(check, info.row, info.column);
     }
 
-    //chassis
-    QVBoxLayout* chassisVbox = new QVBoxLayout();
-    QHBoxLayout* cmassHbox = new QHBoxLayout();
-    chassisVbox->addLayout(new HSeparatorBox(new QLabel(_("Chassis"))));
-    cmassHbox->addWidget(new QLabel(_("mass [kg]")));
-    cmassHbox->addWidget(dspins[CHS_MAS]);
-    cmassHbox->addWidget(new QLabel(_("color")));
-    buttons[CHS_CLR]->sigClicked().connect([&](){ onColorChanged(buttons[CHS_CLR]); });
-    cmassHbox->addWidget(buttons[CHS_CLR]);
-    chassisVbox->addLayout(cmassHbox);
-    QHBoxLayout* csizeHbox = new QHBoxLayout();
-    csizeHbox->addWidget(new QLabel(_("size(x-y-z) [m, m, m]")));
-    csizeHbox->addWidget(dspins[CHS_XSZ]);
-    csizeHbox->addWidget(dspins[CHS_YSZ]);
-    csizeHbox->addWidget(dspins[CHS_ZSZ]);
-    chassisVbox->addLayout(csizeHbox);
+    gbox->addWidget(checks[AGX_CHK], 0, 0);
 
-    //track
-    QVBoxLayout* trackVbox = new QVBoxLayout();
-    QHBoxLayout* tmassHbox = new QHBoxLayout();
-    trackVbox->addLayout(new HSeparatorBox(new QLabel(_("Track"))));
-    tmassHbox->addWidget(new QLabel(_("mass [kg]")));
-    tmassHbox->addWidget(dspins[TRK_MAS]);
-    tmassHbox->addWidget(new QLabel(_("color")));
-    buttons[TRK_CLR]->sigClicked().connect([&](){ onColorChanged(buttons[TRK_CLR]); });
-    tmassHbox->addWidget(buttons[TRK_CLR]);
-    trackVbox->addLayout(tmassHbox);
-    QHBoxLayout* tradiusHbox = new QHBoxLayout();
-    tradiusHbox->addWidget(new QLabel(_("radius [m]")));
-    tradiusHbox->addWidget(dspins[TRK_RAD]);
-    trackVbox->addLayout(tradiusHbox);
-    QHBoxLayout* twidthHbox = new QHBoxLayout();
-    twidthHbox->addWidget(new QLabel(_("width [m]")));
-    twidthHbox->addWidget(dspins[TRK_WDT]);
-    twidthHbox->addWidget(new QLabel(_("wheelbase [m]")));
-    twidthHbox->addWidget(dspins[TRK_WBS]);
-    trackVbox->addLayout(twidthHbox);
+    const char* hlabels[] = {
+        _("Chassis"), _("Track"), _("Front SubTrack"), _("Rear SubTrack"), _("Spacer")
+    };
 
-    //front subtrack
-    QVBoxLayout* frontSubTrackVbox = new QVBoxLayout();
-    QWidget* frontSubTrackWidget = new QWidget();
-    QHBoxLayout* frontSubTrackTitleHbox = new QHBoxLayout();
-    frontSubTrackTitleHbox->addWidget(new QLabel(_("Front SubTrack")));
-    frontSubTrackTitleHbox->addWidget(checks[FFL_CHK]);
-    frontSubTrackWidget->setLayout(frontSubTrackTitleHbox);
-    frontSubTrackVbox->addLayout(new HSeparatorBox(frontSubTrackWidget));
-    QHBoxLayout* frontSubTrackmassHbox = new QHBoxLayout();
-    frontSubTrackmassHbox->addWidget(new QLabel(_("mass [kg]")));
-    frontSubTrackmassHbox->addWidget(dspins[FFL_MAS]);
-    frontSubTrackmassHbox->addWidget(new QLabel(_("color")));
-    buttons[FFL_CLR]->sigClicked().connect([&](){ onColorChanged(buttons[FFL_CLR]); });
-    frontSubTrackmassHbox->addWidget(buttons[FFL_CLR]);
-    frontSubTrackVbox->addLayout(frontSubTrackmassHbox);
-    QHBoxLayout* frontSubTrackradiusHbox = new QHBoxLayout();
-    frontSubTrackradiusHbox->addWidget(new QLabel(_("radius(forward-backward) [m]")));
-    frontSubTrackradiusHbox->addWidget(dspins[FFL_FRD]);
-    frontSubTrackradiusHbox->addWidget(dspins[FFL_RRD]);
-    frontSubTrackVbox->addLayout(frontSubTrackradiusHbox);
-    QHBoxLayout* frontSubTrackwidthHbox = new QHBoxLayout();
-    frontSubTrackwidthHbox->addWidget(new QLabel(_("width [m]")));
-    frontSubTrackwidthHbox->addWidget(dspins[FFL_WDT]);
-    frontSubTrackwidthHbox->addWidget(new QLabel(_("wheelbase [m]")));
-    frontSubTrackwidthHbox->addWidget(dspins[FFL_WBS]);
-    frontSubTrackVbox->addLayout(frontSubTrackwidthHbox);
+    for(int i = 0; i < 5; ++i) {
+        Info info = separatorInfo[i];
+        gbox->addLayout(new HSeparatorBox(new QLabel(hlabels[i])), info.row, info.column, 1, 4);
+    }
 
-    //rear subtrack
-    QVBoxLayout* rearSubTrackVbox = new QVBoxLayout();
-    QHBoxLayout* rearSubTrackmassHbox = new QHBoxLayout();
-    QWidget* rearSubTrackWidget = new QWidget();
-    QHBoxLayout* rearSubTrackHbox = new QHBoxLayout();
-    rearSubTrackHbox->addWidget(new QLabel(_("Rear SubTrack")));
-    rearSubTrackHbox->addWidget(checks[RFL_CHK]);
-    rearSubTrackWidget->setLayout(rearSubTrackHbox);
-    rearSubTrackVbox->addLayout(new HSeparatorBox(rearSubTrackWidget));
-    rearSubTrackmassHbox->addWidget(new QLabel(_("mass [kg]")));
-    rearSubTrackmassHbox->addWidget(dspins[RFL_MAS]);
-    rearSubTrackmassHbox->addWidget(new QLabel(_("color")));
-    buttons[RFL_CLR]->sigClicked().connect([&](){ onColorChanged(buttons[RFL_CLR]); });
-    rearSubTrackmassHbox->addWidget(buttons[RFL_CLR]);
-    rearSubTrackVbox->addLayout(rearSubTrackmassHbox);
-    QHBoxLayout* rearSubTrackradiusHbox = new QHBoxLayout();
-    rearSubTrackradiusHbox->addWidget(new QLabel(_("radius(forward-backward) [m]")));
-    rearSubTrackradiusHbox->addWidget(dspins[RFL_FRD]);
-    rearSubTrackradiusHbox->addWidget(dspins[RFL_RRD]);
-    rearSubTrackVbox->addLayout(rearSubTrackradiusHbox);
-    QHBoxLayout* rearSubTrackwidthHbox = new QHBoxLayout();
-    rearSubTrackwidthHbox->addWidget(new QLabel(_("width [m]")));
-    rearSubTrackwidthHbox->addWidget(dspins[RFL_WDT]);
-    rearSubTrackwidthHbox->addWidget(new QLabel(_("wheelbase [m]")));
-    rearSubTrackwidthHbox->addWidget(dspins[RFL_WBS]);
-    rearSubTrackVbox->addLayout(rearSubTrackwidthHbox);
+    const char* dlabels[] = {
+        _("mass [kg]"), _("color"), _("size(x-y-z) [m, m, m]"),
+        _("mass [kg]"), _("color"), _("radius [m]"), _("width [m]"), _("wheelbase [m]"),
+        _("mass [kg]"), _("color"), _("radius(forward-backward) [m]"), _("width [m]"), _("wheelbase [m]"),
+        _("mass [kg]"), _("color"), _("radius(forward-backward) [m]"), _("width [m]"), _("wheelbase [m]"),
+        _("mass [kg]"), _("color"), _("radius [m]"), _("width [m]")
+    };
 
-    //spacer
-    QVBoxLayout* spacerVbox = new QVBoxLayout();
-    QHBoxLayout* smassHbox = new QHBoxLayout();
-    spacerVbox->addLayout(new HSeparatorBox(new QLabel(_("Spacer"))));
-    smassHbox->addWidget(new QLabel(_("mass [kg]")));
-    smassHbox->addWidget(dspins[SPC_MAS]);
-    smassHbox->addWidget(new QLabel(_("color")));
-    buttons[SPC_CLR]->sigClicked().connect([&](){ onColorChanged(buttons[SPC_CLR]); });
-    smassHbox->addWidget(buttons[SPC_CLR]);
-    spacerVbox->addLayout(smassHbox);
-    QHBoxLayout* sradiusHbox = new QHBoxLayout();
-    sradiusHbox->addWidget(new QLabel(_("radius [m]")));
-    sradiusHbox->addWidget(dspins[SPC_RAD]);
-    spacerVbox->addLayout(sradiusHbox);
-    QHBoxLayout* swidthHbox = new QHBoxLayout();
-    swidthHbox->addWidget(new QLabel(_("width [m]")));
-    swidthHbox->addWidget(dspins[SPC_WDT]);
-    spacerVbox->addLayout(swidthHbox);
+    for(int i = 0; i < 22; ++i) {
+        LabelInfo info = labelInfo[i];
+        gbox->addWidget(new QLabel(dlabels[i]), info.row, info.column);
+    }
 
     //track belt
     QVBoxLayout* trackBeltVbox = new QVBoxLayout();
@@ -461,10 +419,6 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
     subTrackBeltVbox->addLayout(option10Hbox);
     subTrackBeltVbox->addLayout(option11Hbox);
 
-    QHBoxLayout* trackBeltHbox = new QHBoxLayout();
-    trackBeltHbox->addWidget(checks[AGX_CHK]);
-    trackBeltHbox->addStretch();
-
     const char* plabels[] = {
         _("&Reset"), _("&Save As..."), _("&Load"),
         _("&Export"), _("&Ok")
@@ -481,19 +435,12 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
         }
     }
 
-    self->connect(buttonBox,SIGNAL(rejected()), self, SLOT(reject()));
-    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
-
     //main layout
     QVBoxLayout* mainVbox = new QVBoxLayout();
     QHBoxLayout* mainHbox = new QHBoxLayout();
     QVBoxLayout* mainLeftVbox = new QVBoxLayout();
     QVBoxLayout* mainRightVbox = new QVBoxLayout();
-    mainLeftVbox->addLayout(chassisVbox);
-    mainLeftVbox->addLayout(trackVbox);
-    mainLeftVbox->addLayout(frontSubTrackVbox);
-    mainLeftVbox->addLayout(rearSubTrackVbox);
-    mainLeftVbox->addLayout(spacerVbox);
+    mainLeftVbox->addLayout(gbox);
     mainLeftVbox->addWidget(buttonBox);
     mainLeftVbox->addStretch();
     mainRightVbox->addLayout(trackBeltVbox);
@@ -502,10 +449,12 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
     mainHbox->addLayout(mainLeftVbox);
     mainHbox->addSpacing(5);
 //    mainHbox->addLayout(mainRightVbox);
-    mainVbox->addLayout(trackBeltHbox);
     mainVbox->addLayout(mainHbox);
 
     initialize();
+
+    self->connect(buttonBox,SIGNAL(rejected()), self, SLOT(reject()));
+    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
     dialogButtons[RESET]->sigClicked().connect([&](){ onResetButtonClicked(); });
     dialogButtons[SAVEAS]->sigClicked().connect([&](){ onExportYamlButtonClicked(); });
     dialogButtons[LOAD]->sigClicked().connect([&](){ onImportYamlButtonClicked(); });
@@ -732,7 +681,7 @@ void CrawlerRobotBuilderDialogImpl::onExportYamlButtonClicked()
 
         for(int i = 0; i < NUM_BUTTONS; ++i) {
             string key = "button" + to_string(i);
-            putKeyVector3(&writer, key, getColor(buttons[i]));
+            putKeyVector3(&writer, key, extractColor(buttons[i]));
         }
 
         writer.putKey("check");
@@ -874,8 +823,8 @@ void CrawlerRobotBuilderDialogImpl::onExportBody(const string& fileName)
     fprintf(fp, "        spine: [ 0, %lf, 0, 0, %lf, 0 ]\n", -dspins[TRK_WDT]->value() / 2.0, dspins[TRK_WDT]->value() / 2.0);
     fprintf(fp, "      appearance:\n");
     fprintf(fp, "        material:\n");
-    fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", getColor(buttons[TRK_CLR])[0], getColor(buttons[TRK_CLR])[1], getColor(buttons[TRK_CLR])[2]);
-    fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", getColor(buttons[TRK_CLR])[0], getColor(buttons[TRK_CLR])[1], getColor(buttons[TRK_CLR])[2]);
+    fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[TRK_CLR])[0], extractColor(buttons[TRK_CLR])[1], extractColor(buttons[TRK_CLR])[2]);
+    fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[TRK_CLR])[0], extractColor(buttons[TRK_CLR])[1], extractColor(buttons[TRK_CLR])[2]);
     fprintf(fp, "          shininess: 0.6\n");
     fprintf(fp, "\n");
     fprintf(fp, "SPACER_BODY: &SpacerBody\n");
@@ -893,8 +842,8 @@ void CrawlerRobotBuilderDialogImpl::onExportBody(const string& fileName)
     fprintf(fp, "        height: %3.2lf\n", dspins[SPC_WDT]->value());
     fprintf(fp, "      appearance:\n");
     fprintf(fp, "        material:\n");
-    fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", getColor(buttons[SPC_CLR])[0], getColor(buttons[SPC_CLR])[1], getColor(buttons[SPC_CLR])[2]);
-    fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", getColor(buttons[SPC_CLR])[0], getColor(buttons[SPC_CLR])[1], getColor(buttons[SPC_CLR])[2]);
+    fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[SPC_CLR])[0], extractColor(buttons[SPC_CLR])[1], extractColor(buttons[SPC_CLR])[2]);
+    fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[SPC_CLR])[0], extractColor(buttons[SPC_CLR])[1], extractColor(buttons[SPC_CLR])[2]);
     fprintf(fp, "          shininess: 0.6\n");
     fprintf(fp, "\n");
     fprintf(fp, "TRACKF_BODY: &TrackFBody\n");
@@ -929,8 +878,8 @@ void CrawlerRobotBuilderDialogImpl::onExportBody(const string& fileName)
     fprintf(fp, "        spine: [ 0, %lf, 0, 0, %lf, 0 ]\n", -dspins[FFL_WDT]->value() / 2.0, dspins[FFL_WDT]->value() / 2.0);
     fprintf(fp, "      appearance:\n");
     fprintf(fp, "        material:\n");
-    fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", getColor(buttons[FFL_CLR])[0], getColor(buttons[FFL_CLR])[1], getColor(buttons[FFL_CLR])[2]);
-    fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", getColor(buttons[FFL_CLR])[0], getColor(buttons[FFL_CLR])[1], getColor(buttons[FFL_CLR])[2]);
+    fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[FFL_CLR])[0], extractColor(buttons[FFL_CLR])[1], extractColor(buttons[FFL_CLR])[2]);
+    fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[FFL_CLR])[0], extractColor(buttons[FFL_CLR])[1], extractColor(buttons[FFL_CLR])[2]);
     fprintf(fp, "          shininess: 0.6\n");
     fprintf(fp, "\n");
     fprintf(fp, "TRACKR_BODY: &TrackRBody\n");
@@ -965,8 +914,8 @@ void CrawlerRobotBuilderDialogImpl::onExportBody(const string& fileName)
     fprintf(fp, "        spine: [ 0, %lf, 0, 0, %lf, 0 ]\n", -dspins[RFL_WDT]->value() / 2.0, dspins[RFL_WDT]->value() / 2.0);
     fprintf(fp, "      appearance:\n");
     fprintf(fp, "        material:\n");
-    fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", getColor(buttons[RFL_CLR])[0], getColor(buttons[RFL_CLR])[1], getColor(buttons[RFL_CLR])[2]);
-    fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", getColor(buttons[RFL_CLR])[0], getColor(buttons[RFL_CLR])[1], getColor(buttons[RFL_CLR])[2]);
+    fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[RFL_CLR])[0], extractColor(buttons[RFL_CLR])[1], extractColor(buttons[RFL_CLR])[2]);
+    fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[RFL_CLR])[0], extractColor(buttons[RFL_CLR])[1], extractColor(buttons[RFL_CLR])[2]);
     fprintf(fp, "          shininess: 0.6\n");
     fprintf(fp, "\n");
     fprintf(fp, "links:\n");
@@ -989,13 +938,13 @@ void CrawlerRobotBuilderDialogImpl::onExportBody(const string& fileName)
     fprintf(fp, "        appearance:\n");
     fprintf(fp, "          material:\n");
     fprintf(fp, "            diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n",
-            getColor(buttons[CHS_CLR])[0],
-            getColor(buttons[CHS_CLR])[1],
-            getColor(buttons[CHS_CLR])[2]);
+            extractColor(buttons[CHS_CLR])[0],
+            extractColor(buttons[CHS_CLR])[1],
+            extractColor(buttons[CHS_CLR])[2]);
     fprintf(fp, "            specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n",
-            getColor(buttons[CHS_CLR])[0],
-            getColor(buttons[CHS_CLR])[1],
-            getColor(buttons[CHS_CLR])[2]);
+            extractColor(buttons[CHS_CLR])[0],
+            extractColor(buttons[CHS_CLR])[1],
+            extractColor(buttons[CHS_CLR])[2]);
     fprintf(fp, "            shininess: 0.6\n");
     fprintf(fp, "  -\n");
     fprintf(fp, "    name: TRACK_L\n");
@@ -1133,7 +1082,7 @@ void CrawlerRobotBuilderDialogImpl::onExportAGXBody(const string& fileName)
     fprintf(fp, "        height: %3.2lf\n", dspins[SPC_WDT]->value());
     fprintf(fp, "      appearance:\n");
     fprintf(fp, "        material:\n");
-    Vector3 spacerColor = getColor(buttons[SPC_CLR]);
+    Vector3 spacerColor = extractColor(buttons[SPC_CLR]);
     fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", spacerColor[0], spacerColor[1], spacerColor[2]);
     fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", spacerColor[0], spacerColor[1], spacerColor[2]);
     fprintf(fp, "          shininess: 0.6\n");
@@ -1194,7 +1143,7 @@ void CrawlerRobotBuilderDialogImpl::onExportAGXBody(const string& fileName)
     fprintf(fp, "        height: %3.2lf\n", dspins[TRK_WDT]->value());
     fprintf(fp, "      appearance: &WheelAppearance\n");
     fprintf(fp, "        material:\n");
-    Vector3 trackColor = getColor(buttons[TRK_CLR]);
+    Vector3 trackColor = extractColor(buttons[TRK_CLR]);
     fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", trackColor[0], trackColor[1], trackColor[2]);
     fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", trackColor[0], trackColor[1], trackColor[2]);
     fprintf(fp, "          shininess: 0.6\n");
@@ -1220,7 +1169,7 @@ void CrawlerRobotBuilderDialogImpl::onExportAGXBody(const string& fileName)
     fprintf(fp, "        height: %3.2lf\n", dspins[FFL_WDT]->value());
     fprintf(fp, "      appearance: &SubWheelFAppearance\n");
     fprintf(fp, "        material:\n");
-    Vector3 subtrackfColor = getColor(buttons[FFL_CLR]);
+    Vector3 subtrackfColor = extractColor(buttons[FFL_CLR]);
     fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", subtrackfColor[0], subtrackfColor[1], subtrackfColor[2]);
     fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", subtrackfColor[0], subtrackfColor[1], subtrackfColor[2]);
     fprintf(fp, "          shininess: 0.6\n");
@@ -1274,7 +1223,7 @@ void CrawlerRobotBuilderDialogImpl::onExportAGXBody(const string& fileName)
     fprintf(fp, "        height: %3.2lf\n", dspins[RFL_WDT]->value());
     fprintf(fp, "      appearance: &SubWheelRAppearance\n");
     fprintf(fp, "        material:\n");
-    Vector3 subtrackrColor = getColor(buttons[RFL_CLR]);
+    Vector3 subtrackrColor = extractColor(buttons[RFL_CLR]);
     fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", subtrackrColor[0], subtrackrColor[1], subtrackrColor[2]);
     fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", subtrackrColor[0], subtrackrColor[1], subtrackrColor[2]);
     fprintf(fp, "          shininess: 0.6\n");
@@ -1325,7 +1274,7 @@ void CrawlerRobotBuilderDialogImpl::onExportAGXBody(const string& fileName)
     fprintf(fp, "          size: [ %3.2lf, %3.2lf, %3.2lf ]\n", dspins[CHS_XSZ]->value(),dspins[CHS_YSZ]->value(), dspins[CHS_ZSZ]->value() );
     fprintf(fp, "        appearance:\n");
     fprintf(fp, "          material:\n");
-    Vector3 chassisColor = getColor(buttons[CHS_CLR]);
+    Vector3 chassisColor = extractColor(buttons[CHS_CLR]);
     fprintf(fp, "            diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", chassisColor[0], chassisColor[1], chassisColor[2]);
     fprintf(fp, "            specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", chassisColor[0], chassisColor[1], chassisColor[2]);
     fprintf(fp, "            shininess: 0.6\n");
@@ -1586,7 +1535,7 @@ void CrawlerRobotBuilderDialogImpl::setColor(PushButton* pushbutton, const Vecto
 }
 
 
-Vector3 CrawlerRobotBuilderDialogImpl::getColor(PushButton* colorButton)
+Vector3 CrawlerRobotBuilderDialogImpl::extractColor(PushButton* colorButton)
 {
     QColor selectedColor = colorButton->palette().color(QPalette::Button);
     return Vector3(selectedColor.red() / 255.0, selectedColor.green() / 255.0, selectedColor.blue() / 255.0);
@@ -1599,7 +1548,7 @@ string CrawlerRobotBuilderDialogImpl::getSaveFilename(FileDialog& dialog, const 
     auto filenames = dialog.selectedFiles();
     if(!filenames.isEmpty()){
         filename = filenames.front().toStdString();
-        filesystem::path path(fromUTF8(filename));
+        filesystem::path path(filename);
         string ext = path.extension().string();
         if(ext != suffix){
             filename += suffix;
