@@ -20,6 +20,8 @@ public:
     virtual ~BoxTerrainBuilderDialog();
 
     static void initialzeClass(ExtensionManager* ext);
+    static BoxTerrainBuilderDialog* instance();
+
     double scale() const;
 
 protected:

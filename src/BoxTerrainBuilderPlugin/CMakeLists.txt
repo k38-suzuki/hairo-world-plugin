@@ -2,10 +2,12 @@
 set(sources
     BoxTerrainBuilderDialog.cpp
     BoxTerrainBuilderPlugin.cpp
+    CellManager.cpp
     )
 
 set(headers
     BoxTerrainBuilderDialog.h
+    CellManager.h
     gettext.h
     )
 

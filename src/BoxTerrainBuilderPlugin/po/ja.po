@@ -57,6 +57,10 @@ msgstr "保存"
 msgid "Save a Body file"
 msgstr "ボディファイルの保存"
 
+#: ../BoxTerrainBuilderDialog.cpp:373 ../BoxTerrainBuilderDialog.cpp:372
+msgid "Save"
+msgstr "保存"
+
 #: ../BoxTerrainBuilderDialog.cpp:373 ../BoxTerrainBuilderDialog.cpp:406
 msgid "Cancel"
 msgstr "キャンセル"
