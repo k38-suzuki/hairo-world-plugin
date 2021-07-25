@@ -119,19 +119,25 @@ struct DoubleSpinInfo {
 
 
 DoubleSpinInfo doubleSpinInfo[] = {
-    { 2, 1,  8.000, 0.0, 9999.999, 3,  true }, { 3, 1,  0.450, 0.0, 9999.999, 3,  true }, { 3, 2,  0.300, 0.0, 9999.999, 3,  true }, { 3, 3,  0.100, 0.0, 9999.999, 3,  true },
-    { 5, 1,  1.000, 0.0, 9999.999, 3,  true }, { 6, 1,  0.080, 0.0, 9999.999, 3,  true }, { 7, 1,  0.100, 0.0, 9999.999, 3,  true }, { 7, 3,  0.420, 0.0, 9999.999, 3,  true },
-    { 9, 1,  0.250, 0.0, 9999.999, 3,  true }, { 10, 1,  0.080, 0.0, 9999.999, 3,  true }, { 10, 2,  0.080, 0.0, 9999.999, 3,  true }, { 11, 1,  0.080, 0.0, 9999.999, 3,  true }, { 11, 3,  0.130, 0.0, 9999.999, 3,  true },
-    { 13, 1,  0.250, 0.0, 9999.999, 3,  true }, { 14, 1,  0.080, 0.0, 9999.999, 3,  true }, { 14, 2,  0.080, 0.0, 9999.999, 3,  true }, { 15, 1,  0.080, 0.0, 9999.999, 3,  true }, { 15, 3,  0.130, 0.0, 9999.999, 3,  true },
-    { 17, 1,  0.200, 0.0, 9999.999, 3,  true }, { 18, 1,  0.060, 0.0, 9999.999, 3,  true }, { 19, 1,  0.013, 0.0, 9999.999, 3,  true },
-    { 9, 9,  0.010, 0.0, 9999.999, 3, false }, { 9, 9,  0.090, 0.0, 9999.999, 3, false }, { 9, 9,  0.020, 0.0, 9999.999, 3, false }, { 9, 9,  2.000, 0.0, 9999.999, 3, false }, { 9, 9,  1.000, 0.0, 9999.999, 3, false },
-    { 9, 9,  9.000, 0.0, 9999.999, 3, false }, { 9, 9,  0.010, 0.0, 9999.999, 3, false }, { 9, 9, -0.001, 0.0, 9999.999, 3, false }, { 9, 9, -0.009, 0.0, 9999.999, 3, false },
-    { 9, 9,  0.010, 0.0, 9999.999, 3, false }, { 9, 9,  0.090, 0.0, 9999.999, 3, false }, { 9, 9,  0.020, 0.0, 9999.999, 3, false }, { 9, 9,  2.000, 0.0, 9999.999, 3, false }, { 9, 9,  1.000, 0.0, 9999.999, 3, false },
-    { 9, 9,  9.000, 0.0, 9999.999, 3, false }, { 9, 9,  0.010, 0.0, 9999.999, 3, false }, { 9, 9, -0.001, 0.0, 9999.999, 3, false }, { 9, 9, -0.009, 0.0, 9999.999, 3, false }
+    {  2, 1,  8.000, 0.0, 1000.000, 3,  true }, {  3, 1,  0.450, 0.0, 1000.000, 3,  true }, {  3, 2,  0.300, 0.0, 1000.000, 3,  true }, {  3, 3,  0.100, 0.0, 1000.000, 3,  true },
+    {  5, 1,  1.000, 0.0, 1000.000, 3,  true }, {  6, 1,  0.080, 0.0, 1000.000, 3,  true }, {  7, 1,  0.100, 0.0, 1000.000, 3,  true }, {  7, 3,  0.420, 0.0, 1000.000, 3,  true },
+    {  9, 1,  0.250, 0.0, 1000.000, 3,  true }, { 10, 1,  0.080, 0.0, 1000.000, 3,  true }, { 10, 2,  0.080, 0.0, 1000.000, 3,  true }, { 11, 1,  0.080, 0.0, 1000.000, 3,  true }, { 11, 3,  0.130, 0.0, 1000.000, 3,  true },
+    { 13, 1,  0.250, 0.0, 1000.000, 3,  true }, { 14, 1,  0.080, 0.0, 1000.000, 3,  true }, { 14, 2,  0.080, 0.0, 1000.000, 3,  true }, { 15, 1,  0.080, 0.0, 1000.000, 3,  true }, { 15, 3,  0.130, 0.0, 1000.000, 3,  true },
+    { 17, 1,  0.200, 0.0, 1000.000, 3,  true }, { 18, 1,  0.060, 0.0, 1000.000, 3,  true }, { 19, 1,  0.013, 0.0, 1000.000, 3,  true },
+};
+
+
+DoubleSpinInfo agxdoubleSpinInfo[] = {
+    {  1, 4,  0.010, 0.0, 1000.000, 3, false }, {  2, 1,  0.090, 0.0, 1000.000, 3, false }, {  2, 4,  0.020,       0.0, 1000.000, 3, false }, {  3, 4,  2.000,       0.0, 1000.000, 3, false }, {  4, 1,  1.000, 0.0, 1000.000, 3, false },
+    {  5, 1,  9.000, 0.0, 1000.000, 3, false }, {  5, 4,  0.010, 0.0, 1000.000, 3, false }, {  6, 1, -0.001, -1000.000, 1000.000, 3, false }, {  6, 4, -0.009, -1000.000, 1000.000, 3, false },
+    {  8, 4,  0.010, 0.0, 1000.000, 3, false }, {  9, 1,  0.090, 0.0, 1000.000, 3, false }, {  9, 4,  0.020,       0.0, 1000.000, 3, false }, { 10, 4,  2.000,       0.0, 1000.000, 3, false }, { 11, 1,  1.000, 0.0, 1000.000, 3, false },
+    { 12, 1,  9.000, 0.0, 1000.000, 3, false }, { 12, 4,  0.010, 0.0, 1000.000, 3, false }, { 13, 1, -0.001, -1000.000, 1000.000, 3, false }, { 13, 4, -0.009, -1000.000, 1000.000, 3, false }
 };
 
 
 struct SpinInfo {
+    int row;
+    int column;
     double value;
     double min;
     double max;
@@ -140,10 +146,10 @@ struct SpinInfo {
 
 
 SpinInfo spinInfo[] = {
-    { 42, 0, 9999, false }, {   3, 0, 9999, false }, {  4, 0, 9999, false },
-    {  6, 0, 9999, false }, { 100, 0, 9999, false }, { 10, 0, 9999, false },
-    { 42, 0, 9999, false }, {   3, 0, 9999, false }, {  4, 0, 9999, false },
-    {  6, 0, 9999, false }, { 100, 0, 9999, false }, { 10, 0, 9999, false }
+    {  1, 1, 42, 0, 9999, false }, {  3, 1,   3, 0, 9999, false }, {  3, 5,  4, 0, 9999, false },
+    {  4, 2,  6, 0, 9999, false }, {  4, 4, 100, 0, 9999, false }, {  5, 2, 10, 0, 9999, false },
+    {  8, 1, 42, 0, 9999, false }, { 10, 1,   3, 0, 9999, false }, { 10, 5,  4, 0, 9999, false },
+    { 11, 2,  6, 0, 9999, false }, { 11, 4, 100, 0, 9999, false }, { 12, 2, 10, 0, 9999, false }
 };
 
 
@@ -176,6 +182,22 @@ LabelInfo labelInfo[] = {
 };
 
 
+LabelInfo agxlabelInfo[] = {
+    {  1, 0 }, {  1, 3 },
+    {  2, 0 }, {  2, 3 },
+    {  3, 0 }, {  3, 3 },
+    {  4, 0 }, {  4, 3 },
+    {  5, 0 }, {  5, 3 },
+    {  6, 0 }, {  6, 3 },
+    {  8, 0 }, {  8, 3 },
+    {  9, 0 }, {  9, 3 },
+    { 10, 0 }, { 10, 3 },
+    { 11, 0 }, { 11, 3 },
+    { 12, 0 }, { 12, 3 },
+    { 13, 0 }, { 13, 3 }
+};
+
+
 struct Info {
     int row;
     int column;
@@ -184,6 +206,11 @@ struct Info {
 
 Info separatorInfo[] = {
     { 1, 0 }, { 4, 0 }, { 8, 0 }, { 12, 0 }, { 16, 0 }
+};
+
+
+Info agxseparatorInfo[] = {
+    { 0, 0 }, { 7, 0 }
 };
 
 }
@@ -203,11 +230,15 @@ public:
         FFL_MAS, FFL_FRD, FFL_RRD, FFL_WDT, FFL_WBS,
         RFL_MAS, RFL_FRD, RFL_RRD, RFL_WDT, RFL_WBS,
         SPC_MAS, SPC_RAD, SPC_WDT,
+        NUM_DSPINS
+    };
+
+    enum AGXDoubleSpinId {
         TRK_BNT, TRK_BNW, TRK_BNTT, TRK_BNDTM, TRK_BSHFPM,
         TRK_BHCM, TRK_BHSD, TRK_BNWMT, TRK_BNWST,
         FLP_BNT, FLP_BNW, FLP_BNTT, FLP_BNDTM, FLP_BSHFPM,
         FLP_BHCM, FLP_BHSD, FLP_BNWMT, FLP_BNWST,
-        NUM_DSPINS
+        NUM_AGXDSPINS
     };
 
     enum SpinId {
@@ -230,6 +261,7 @@ public:
     CheckBox* checks[NUM_CHECKS];
     PushButton* buttons[NUM_BUTTONS];
     DoubleSpinBox* dspins[NUM_DSPINS];
+    DoubleSpinBox* agxdspins[NUM_AGXDSPINS];
     SpinBox* spins[NUM_SPINS];
     PushButton* dialogButtons[NUM_DBUTTONS];
 
@@ -264,18 +296,27 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
     self->setWindowTitle(_("CrawlerRobotBuilder"));
 
     QGridLayout* gbox = new QGridLayout();
+    QGridLayout* agbox = new QGridLayout();
 
     for(int i = 0; i < NUM_DSPINS; ++i) {
         DoubleSpinInfo info = doubleSpinInfo[i];
         dspins[i] = new DoubleSpinBox();
         DoubleSpinBox* dspin = dspins[i];
-        if(i < TRK_BNT) {
-            gbox->addWidget(dspin, info.row, info.column);
-        }
+        gbox->addWidget(dspin, info.row, info.column);
+    }
+
+    for(int i = 0; i < NUM_AGXDSPINS; ++i) {
+        DoubleSpinInfo info = agxdoubleSpinInfo[i];
+        agxdspins[i] = new DoubleSpinBox();
+        DoubleSpinBox* agxdspin = agxdspins[i];
+        agbox->addWidget(agxdspin, info.row, info.column);
     }
 
     for(int i = 0; i < NUM_SPINS; ++i) {
         spins[i] = new SpinBox();
+        SpinInfo info = spinInfo[i];
+        SpinBox* spin = spins[i];
+        agbox->addWidget(spin, info.row, info.column);
     }
 
     for(int i = 0; i < NUM_BUTTONS; ++i) {
@@ -320,104 +361,26 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
         gbox->addWidget(new QLabel(dlabels[i]), info.row, info.column);
     }
 
-    //track belt
-    QVBoxLayout* trackBeltVbox = new QVBoxLayout();
-    trackBeltVbox->addLayout(new HSeparatorBox(new QLabel(_("Track Belt"))));
-    QHBoxLayout* option0Hbox = new QHBoxLayout();
-    option0Hbox->addWidget(new QLabel(_("number of nodes [-]")));
-    option0Hbox->addWidget(spins[TRK_BNN]);
-    option0Hbox->addWidget(new QLabel(_("node thickness [m]")));
-    option0Hbox->addWidget(dspins[TRK_BNT]);
-    QHBoxLayout* option1Hbox = new QHBoxLayout();
-    option1Hbox->addWidget(new QLabel(_("node width [m]")));
-    option1Hbox->addWidget(dspins[TRK_BNW]);
-    option1Hbox->addWidget(new QLabel(_("node thickerthickness [m]")));
-    option1Hbox->addWidget(dspins[TRK_BNTT]);
-    QHBoxLayout* option2Hbox = new QHBoxLayout();
-    option2Hbox->addWidget(new QLabel(_("use thicker node every [-]")));
-    option2Hbox->addWidget(spins[TRK_BUTNE]);
-    option2Hbox->addStretch();
-    option2Hbox->addWidget(new QLabel(_("node distance tension [m]")));
-    option2Hbox->addWidget(dspins[TRK_BNDTM]);
-    option2Hbox->addWidget(new QLabel(_("e-")));
-    option2Hbox->addWidget(spins[TRK_BNDTE]);
-    QHBoxLayout* option3Hbox = new QHBoxLayout();
-    option3Hbox->addWidget(new QLabel(_("stabilizing hinge friction parameter [-]")));
-    option3Hbox->addWidget(dspins[TRK_BSHFPM]);
-    option3Hbox->addWidget(new QLabel(_("e-")));
-    option3Hbox->addWidget(spins[TRK_BSHFPE]);
-    option3Hbox->addStretch();
-    option3Hbox->addWidget(new QLabel(_("min stabilizing hinge normal force [N]")));
-    option3Hbox->addWidget(spins[TRK_BMSHNF]);
-    QHBoxLayout* option4Hbox = new QHBoxLayout();
-    option4Hbox->addWidget(new QLabel(_("hinge compliance [rad/Nm]")));
-    option4Hbox->addWidget(dspins[TRK_BHCM]);
-    option4Hbox->addWidget(new QLabel(_("e-")));
-    option4Hbox->addWidget(spins[TRK_BHCE]);
-    option4Hbox->addStretch();
-    option4Hbox->addWidget(new QLabel(_("hinge spook damping [s]")));
-    option4Hbox->addWidget(dspins[TRK_BHSD]);
-    QHBoxLayout* option5Hbox = new QHBoxLayout();
-    option5Hbox->addWidget(new QLabel(_("nodes to wheels merge threshold [-]")));
-    option5Hbox->addWidget(dspins[TRK_BNWMT]);
-    option5Hbox->addWidget(new QLabel(_("nodes to wheels split threshold [-]")));
-    option5Hbox->addWidget(dspins[TRK_BNWST]);
+    const char* agxhlabels[] = { _("Track Belt"), _("SubTrack Belt") };
 
-    trackBeltVbox->addLayout(option0Hbox);
-    trackBeltVbox->addLayout(option1Hbox);
-    trackBeltVbox->addLayout(option2Hbox);
-    trackBeltVbox->addLayout(option3Hbox);
-    trackBeltVbox->addLayout(option4Hbox);
-    trackBeltVbox->addLayout(option5Hbox);
+    for(int i = 0; i < 2; ++i) {
+        Info info = agxseparatorInfo[i];
+        agbox->addLayout(new HSeparatorBox(new QLabel(agxhlabels[i])), info.row, info.column, 1, 6);
+    }
 
-    //subtrack belt
-    QVBoxLayout* subTrackBeltVbox = new QVBoxLayout();
-    subTrackBeltVbox->addLayout(new HSeparatorBox(new QLabel(_("SubTrack Belt"))));
-    QHBoxLayout* option6Hbox = new QHBoxLayout();
-    option6Hbox->addWidget(new QLabel(_("number of nodes [-]")));
-    option6Hbox->addWidget(spins[FLP_BNN]);
-    option6Hbox->addWidget(new QLabel(_("node thickness [m]")));
-    option6Hbox->addWidget(dspins[FLP_BNT]);
-    QHBoxLayout* option7Hbox = new QHBoxLayout();
-    option7Hbox->addWidget(new QLabel(_("node width [m]")));
-    option7Hbox->addWidget(dspins[FLP_BNW]);
-    option7Hbox->addWidget(new QLabel(_("node thickerthickness [m]")));
-    option7Hbox->addWidget(dspins[FLP_BNTT]);
-    QHBoxLayout* option8Hbox = new QHBoxLayout();
-    option8Hbox->addWidget(new QLabel(_("use thicker node every [-]")));
-    option8Hbox->addWidget(spins[FLP_BUTNE]);
-    option8Hbox->addStretch();
-    option8Hbox->addWidget(new QLabel(_("node distance tension [m]")));
-    option8Hbox->addWidget(dspins[FLP_BNDTM]);
-    option8Hbox->addWidget(new QLabel(_("e-")));
-    option8Hbox->addWidget(spins[FLP_BNDTE]);
-    QHBoxLayout* option9Hbox = new QHBoxLayout();
-    option9Hbox->addWidget(new QLabel(_("stabilizing hinge friction parameter [-]")));
-    option9Hbox->addWidget(dspins[FLP_BSHFPM]);
-    option9Hbox->addWidget(new QLabel(_("e-")));
-    option9Hbox->addWidget(spins[FLP_BSHFPE]);
-    option9Hbox->addWidget(new QLabel(_("min stabilizing hinge normal force [N]")));
-    option9Hbox->addWidget(spins[FLP_BMSHNF]);
-    QHBoxLayout* option10Hbox = new QHBoxLayout();
-    option10Hbox->addWidget(new QLabel(_("hinge compliance [rad/Nm]")));
-    option10Hbox->addWidget(dspins[FLP_BHCM]);
-    option10Hbox->addWidget(new QLabel(_("e-")));
-    option10Hbox->addWidget(spins[FLP_BHCE]);
-    option10Hbox->addStretch();
-    option10Hbox->addWidget(new QLabel(_("hinge spook damping [s]")));
-    option10Hbox->addWidget(dspins[FLP_BHSD]);
-    QHBoxLayout* option11Hbox = new QHBoxLayout();
-    option11Hbox->addWidget(new QLabel(_("nodes to wheels merge threshold [-]")));
-    option11Hbox->addWidget(dspins[FLP_BNWMT]);
-    option11Hbox->addWidget(new QLabel(_("nodes to wheels split threshold [-]")));
-    option11Hbox->addWidget(dspins[FLP_BNWST]);
+    const char* agxdlabels[] = {
+        _("number of nodes [-]"), _("node thickness [m]"),
+        _("node width [m]"), _("node thickerthickness [m]"),
+        _("use thicker node every [-]"), _("node distance tension [m, e-]"),
+        _("stabilizing hinge friction parameter [-, e-]"), _("min stabilizing hinge normal force [N]"),
+        _("hinge compliance [rad/Nm, e-]"), _("hinge spook damping [s]"),
+        _("nodes to wheels merge threshold [-]"), _("nodes to wheels split threshold [-]")
+    };
 
-    subTrackBeltVbox->addLayout(option6Hbox);
-    subTrackBeltVbox->addLayout(option7Hbox);
-    subTrackBeltVbox->addLayout(option8Hbox);
-    subTrackBeltVbox->addLayout(option9Hbox);
-    subTrackBeltVbox->addLayout(option10Hbox);
-    subTrackBeltVbox->addLayout(option11Hbox);
+    for(int i = 0; i < 24; ++i) {
+        LabelInfo info = agxlabelInfo[i];
+        agbox->addWidget(new QLabel(agxdlabels[i % 12]), info.row, info.column);
+    }
 
     const char* plabels[] = {
         _("&Reset"), _("&Save As..."), _("&Load"),
@@ -435,21 +398,12 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
         }
     }
 
-    //main layout
-    QVBoxLayout* mainVbox = new QVBoxLayout();
-    QHBoxLayout* mainHbox = new QHBoxLayout();
-    QVBoxLayout* mainLeftVbox = new QVBoxLayout();
-    QVBoxLayout* mainRightVbox = new QVBoxLayout();
-    mainLeftVbox->addLayout(gbox);
-    mainLeftVbox->addWidget(buttonBox);
-    mainLeftVbox->addStretch();
-    mainRightVbox->addLayout(trackBeltVbox);
-    mainRightVbox->addLayout(subTrackBeltVbox);
-    mainRightVbox->addStretch();
-    mainHbox->addLayout(mainLeftVbox);
-    mainHbox->addSpacing(5);
-//    mainHbox->addLayout(mainRightVbox);
-    mainVbox->addLayout(mainHbox);
+    QVBoxLayout* vbox = new QVBoxLayout();
+    QHBoxLayout* hbox = new QHBoxLayout();
+    hbox->addLayout(gbox);
+//    hbox->addLayout(agbox);
+    vbox->addLayout(hbox);
+    vbox->addWidget(buttonBox);
 
     initialize();
 
@@ -460,7 +414,7 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
     dialogButtons[LOAD]->sigClicked().connect([&](){ onImportYamlButtonClicked(); });
     dialogButtons[EXPORT]->sigClicked().connect([&](){ onExportBodyButtonClicked(); });
     checks[AGX_CHK]->sigToggled().connect([&](bool on){ onEnableAgxCheckToggled(on); });
-    self->setLayout(mainVbox);
+    self->setLayout(vbox);
 }
 
 
@@ -516,6 +470,15 @@ void CrawlerRobotBuilderDialogImpl::initialize()
         dspin->setRange(info.min, info.max);
         dspin->setDecimals(info.decimals);
         dspin->setEnabled(info.enabled);
+    }
+
+    for(int i = 0; i < NUM_AGXDSPINS; ++i) {
+        DoubleSpinInfo info = agxdoubleSpinInfo[i];
+        DoubleSpinBox* agxdspin = agxdspins[i];
+        agxdspin->setValue(info.value);
+        agxdspin->setRange(info.min, info.max);
+        agxdspin->setDecimals(info.decimals);
+        agxdspin->setEnabled(info.enabled);
     }
 
     for(int i = 0; i < NUM_SPINS; ++i) {

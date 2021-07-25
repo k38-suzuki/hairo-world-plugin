@@ -120,26 +120,20 @@ msgid "use thicker node every [-]"
 msgstr "ノードの周期 [-]"
 
 #: ../CrawlerRobotBuilderDialog.cpp:443 ../CrawlerRobotBuilderDialog.cpp:493
-msgid "node distance tension [m]"
-msgstr "ノードのテンション [m]"
-
-#: ../CrawlerRobotBuilderDialog.cpp:445 ../CrawlerRobotBuilderDialog.cpp:450
-#: ../CrawlerRobotBuilderDialog.cpp:458 ../CrawlerRobotBuilderDialog.cpp:495
-#: ../CrawlerRobotBuilderDialog.cpp:500 ../CrawlerRobotBuilderDialog.cpp:507
-msgid "e-"
-msgstr ""
+msgid "node distance tension [m, e-]"
+msgstr "ノードのテンション [m, e-]"
 
 #: ../CrawlerRobotBuilderDialog.cpp:448 ../CrawlerRobotBuilderDialog.cpp:498
-msgid "stabilizing hinge friction parameter [-]"
-msgstr "ヒンジの摩擦 [-]"
+msgid "stabilizing hinge friction parameter [-, e-]"
+msgstr "ヒンジの摩擦 [-, e-]"
 
 #: ../CrawlerRobotBuilderDialog.cpp:453 ../CrawlerRobotBuilderDialog.cpp:502
 msgid "min stabilizing hinge normal force [N]"
 msgstr "ヒンジの法線力 [N]"
 
 #: ../CrawlerRobotBuilderDialog.cpp:456 ../CrawlerRobotBuilderDialog.cpp:505
-msgid "hinge compliance [rad/Nm]"
-msgstr "ヒンジコンプライアンス [rad/Nm]"
+msgid "hinge compliance [rad/Nm, e-]"
+msgstr "ヒンジコンプライアンス [rad/Nm, e-]"
 
 #: ../CrawlerRobotBuilderDialog.cpp:461 ../CrawlerRobotBuilderDialog.cpp:510
 msgid "hinge spook damping [s]"
