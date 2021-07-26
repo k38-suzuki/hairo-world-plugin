@@ -27,6 +27,10 @@ msgstr "リセット"
 
 #: ../CrawlerRobotBuilderDialog.cpp:190
 msgid "&Export"
+msgstr "ボディの上書き保存"
+
+#: ../CrawlerRobotBuilderDialog.cpp:190
+msgid "&Export As..."
 msgstr "ボディの保存"
 
 #: ../CrawlerRobotBuilderDialog.cpp:190

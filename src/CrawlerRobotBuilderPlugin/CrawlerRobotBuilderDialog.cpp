@@ -83,9 +83,9 @@ struct CheckInfo {
 
 
 CheckInfo checkInfo[] = {
-    { 0, 0, false },
+    { 0, 0,  true },
     { 0, 1,  true },
-    { 0, 2,  true }
+    { 0, 2, false }
 };
 
 
@@ -160,6 +160,7 @@ struct DialogButtonInfo {
 
 DialogButtonInfo dialogButtonInfo[] = {
     {  QDialogButtonBox::ResetRole },
+    { QDialogButtonBox::ActionRole },
     { QDialogButtonBox::ActionRole },
     { QDialogButtonBox::ActionRole },
     { QDialogButtonBox::ActionRole },
@@ -254,9 +255,9 @@ public:
         RFL_CLR, SPC_CLR, NUM_BUTTONS
     };
 
-    enum CheckId { AGX_CHK, FFL_CHK, RFL_CHK, NUM_CHECKS };
+    enum CheckId { FFL_CHK, RFL_CHK, AGX_CHK, NUM_CHECKS };
 
-    enum DialogButtonId { RESET, SAVEAS, LOAD, EXPORT, OK, NUM_DBUTTONS };
+    enum DialogButtonId { RESET, SAVEAS, LOAD, EXPORT, EXPORTAS, OK, NUM_DBUTTONS };
 
     CheckBox* checks[NUM_CHECKS];
     PushButton* buttons[NUM_BUTTONS];
@@ -264,6 +265,7 @@ public:
     DoubleSpinBox* agxdspins[NUM_AGXDSPINS];
     SpinBox* spins[NUM_SPINS];
     PushButton* dialogButtons[NUM_DBUTTONS];
+    string bodyname;
 
     void onAccepted();
     void onRejected();
@@ -271,7 +273,7 @@ public:
     void onResetButtonClicked();
     void onExportYamlButtonClicked();
     void onImportYamlButtonClicked();
-    void onExportBodyButtonClicked();
+    void onExportBodyButtonClicked(const bool& overwrite);
     void onEnableAgxCheckToggled(const bool& on);
     void onExportBody(const string& fileName);
     void onExportAGXBody(const string& fileName);
@@ -327,17 +329,17 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
         button->sigClicked().connect([&, button](){ onColorChanged(button); });
     }
 
-    const char* clabels[] = { _("AGX"), _("Front SubTrack"), _("Rear SubTrack") };
+    const char* clabels[] = { _("Front SubTrack"), _("Rear SubTrack"), _("AGX") };
 
+    QHBoxLayout* chbox = new QHBoxLayout();
     for(int i = 0; i < NUM_CHECKS; ++i) {
         CheckInfo info = checkInfo[i];
         checks[i] = new CheckBox();
         CheckBox* check = checks[i];
         check->setText(clabels[i]);
-        gbox->addWidget(check, info.row, info.column);
+        chbox->addWidget(check);
     }
-
-    gbox->addWidget(checks[AGX_CHK], 0, 0);
+    gbox->addLayout(chbox, 0, 0, 1, 4);
 
     const char* hlabels[] = {
         _("Chassis"), _("Track"), _("Front SubTrack"), _("Rear SubTrack"), _("Spacer")
@@ -384,7 +386,7 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
 
     const char* plabels[] = {
         _("&Reset"), _("&Save As..."), _("&Load"),
-        _("&Export"), _("&Ok")
+        _("&Export"), _("&Export As..."), _("&Ok")
     };
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
@@ -412,7 +414,8 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
     dialogButtons[RESET]->sigClicked().connect([&](){ onResetButtonClicked(); });
     dialogButtons[SAVEAS]->sigClicked().connect([&](){ onExportYamlButtonClicked(); });
     dialogButtons[LOAD]->sigClicked().connect([&](){ onImportYamlButtonClicked(); });
-    dialogButtons[EXPORT]->sigClicked().connect([&](){ onExportBodyButtonClicked(); });
+    dialogButtons[EXPORT]->sigClicked().connect([&](){ onExportBodyButtonClicked(true); });
+    dialogButtons[EXPORTAS]->sigClicked().connect([&](){ onExportBodyButtonClicked(false); });
     checks[AGX_CHK]->sigToggled().connect([&](bool on){ onEnableAgxCheckToggled(on); });
     self->setLayout(vbox);
 }
@@ -696,7 +699,7 @@ void CrawlerRobotBuilderDialogImpl::onEnableAgxCheckToggled(const bool& on)
 }
 
 
-void CrawlerRobotBuilderDialogImpl::onExportBodyButtonClicked()
+void CrawlerRobotBuilderDialogImpl::onExportBodyButtonClicked(const bool& overwrite)
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Save a Body file"));
@@ -722,17 +725,18 @@ void CrawlerRobotBuilderDialogImpl::onExportBodyButtonClicked()
         dialog.selectFile(currentProjectName);
     }
 
-    string filename;
-    if(dialog.exec() == QDialog::Accepted) {
-        string suffix = ".body";
-        filename = getSaveFilename(dialog, suffix);
+    if(bodyname.empty() || !overwrite) {
+        if(dialog.exec() == QDialog::Accepted) {
+            string suffix = ".body";
+            bodyname = getSaveFilename(dialog, suffix);
+        }
     }
 
-    if(!filename.empty()) {
+    if(!bodyname.empty()) {
         if(!checks[AGX_CHK]->isChecked()) {
-            onExportBody(filename);
+            onExportBody(bodyname);
         } else {
-            onExportAGXBody(filename);
+            onExportAGXBody(bodyname);
         }
     }
 }
