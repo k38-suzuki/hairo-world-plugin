@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_TC_PLUGIN_TC_AREA_ITEM_H
-#define CNOID_TC_PLUGIN_TC_AREA_ITEM_H
+#ifndef CNOID_TCPLUGIN_TCAREAITEM_H
+#define CNOID_TCPLUGIN_TCAREAITEM_H
 
 #include <src/FluidDynamicsPlugin/AreaItem.h>
 
@@ -58,4 +58,4 @@ typedef ref_ptr<TCAreaItem> TCAreaItemPtr;
 
 }
 
-#endif // CNOID_TC_PLUGIN_TC_AREA_ITEM_H
+#endif // CNOID_TCPLUGIN_TCAREAITEM_H

@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_FLUID_DYNAMICS_PLUGIN_ROTOR_H
-#define CNOID_FLUID_DYNAMICS_PLUGIN_ROTOR_H
+#ifndef CNOID_FLUIDDYNAMICSPLUGIN_ROTOR_H
+#define CNOID_FLUIDDYNAMICSPLUGIN_ROTOR_H
 
 #include <cnoid/Device>
 #include <cnoid/ValueTree>
@@ -75,4 +75,4 @@ typedef ref_ptr<Rotor> RotorPtr;
 
 }
 
-#endif // CNOID_FLUID_DYNAMICS_PLUGIN_ROTOR_H
+#endif // CNOID_FLUIDDYNAMICSPLUGIN_ROTOR_H

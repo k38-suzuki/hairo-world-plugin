@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_TC_PLUGIN_TC_SIMULATOR_ITEM_H
-#define CNOID_TC_PLUGIN_TC_SIMULATOR_ITEM_H
+#ifndef CNOID_TCPLUGIN_TCSIMULATORITEM_H
+#define CNOID_TCPLUGIN_TCSIMULATORITEM_H
 
 #include <cnoid/SubSimulatorItem>
 
@@ -38,4 +38,4 @@ typedef ref_ptr<TCSimulatorItem> TCSimulatorItemPtr;
 
 }
 
-#endif // CNOID_TC_PLUGIN_TC_SIMULATOR_ITEM_H
+#endif // CNOID_TCPLUGIN_TCSIMULATORITEM_H

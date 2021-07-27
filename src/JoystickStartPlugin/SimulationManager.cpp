@@ -86,9 +86,9 @@ SimulationManager::~SimulationManager()
 
 void SimulationManager::initializeClass(ExtensionManager* ext)
 {
-    SimulationManager* gameManager = new SimulationManager();
+    SimulationManager* simulationManager = new SimulationManager();
     joystick.setDevice("/dev/input/js0");
-    joystick.sigButton().connect([&, gameManager](int id, bool isPressed){ gameManager->onButtonClicked(id, isPressed); });
+    joystick.sigButton().connect([&, simulationManager](int id, bool isPressed){ simulationManager->onButtonClicked(id, isPressed); });
 
     MenuManager& manager = ext->menuManager().setPath("/Options").setPath(N_("JoystickStart"));
     Mapping* config = AppConfig::archive()->openMapping("JoystickStart");
@@ -157,7 +157,7 @@ void SimulationManagerImpl::forEachSimulator(std::function<void(SimulatorItem* s
 {
     MessageView* mv = MessageView::instance();
     RootItem* rootItem = RootItem::instance();
-    ItemList<SimulatorItem> simulatorItems = rootItem->selectedItems();
+    ItemList<SimulatorItem> simulatorItems = rootItem->selectedItems<SimulatorItem>();
 
     if(simulatorItems.empty()) {
         simulatorItems.extractChildItems(RootItem::instance());

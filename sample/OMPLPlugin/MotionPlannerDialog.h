@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_MOTION_PLANNER_DIALOG_H
-#define CNOID_MOTION_PLANNER_DIALOG_H
+#ifndef CNOID_OMPLPLUGIN_MOTIONPLANNERDIALOG_H
+#define CNOID_OMPLPLUGIN_MOTIONPLANNERDIALOG_H
 
 #include <cnoid/Dialog>
 #include <cnoid/ExtensionManager>
@@ -33,4 +33,4 @@ private:
 
 }
 
-#endif // CNOID_MOTION_PLANNER_DIALOG_H
+#endif // CNOID_OMPLPLUGIN_MOTIONPLANNERDIALOG_H

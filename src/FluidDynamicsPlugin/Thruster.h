@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_FLUID_DYNAMICS_PLUGIN_THRUSTER_H
-#define CNOID_FLUID_DYNAMICS_PLUGIN_THRUSTER_H
+#ifndef CNOID_FLUIDDYNAMICSPLUGIN_THRUSTER_H
+#define CNOID_FLUIDDYNAMICSPLUGIN_THRUSTER_H
 
 #include <cnoid/Device>
 #include <cnoid/ValueTree>
@@ -57,4 +57,4 @@ typedef ref_ptr<Thruster> ThrusterPtr;
 
 }
 
-#endif // CNOID_FLUID_DYNAMICS_PLUGIN_THRUSTER_H
+#endif // CNOID_FLUIDDYNAMICSPLUGIN_THRUSTER_H

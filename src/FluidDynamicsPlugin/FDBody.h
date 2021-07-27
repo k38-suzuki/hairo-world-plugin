@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_FLUID_DYNAMICS_PLUGIN_FD_BODY_H
-#define CNOID_FLUID_DYNAMICS_PLUGIN_FD_BODY_H
+#ifndef CNOID_FLUIDDYNAMICSPLUGIN_FDBODY_H
+#define CNOID_FLUIDDYNAMICSPLUGIN_FDBODY_H
 
 #include <cnoid/Body>
 #include "FDLink.h"
@@ -35,4 +35,4 @@ typedef ref_ptr<FDBody> FDBodyPtr;
 
 }
 
-#endif // CNOID_FLUID_DYNAMICS_PLUGIN_FD_BODY_H
+#endif // CNOID_FLUIDDYNAMICSPLUGIN_FDBODY_H
