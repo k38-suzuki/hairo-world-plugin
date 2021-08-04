@@ -6,7 +6,6 @@
 #include "CollisionVisualizerItem.h"
 #include <cnoid/Archive>
 #include <cnoid/ItemManager>
-#include <cnoid/MeshExtractor>
 #include <cnoid/MultiValueSeq>
 #include <cnoid/MultiValueSeqItem>
 #include <cnoid/PutPropertyFunction>
@@ -16,6 +15,7 @@
 #include <cnoid/Tokenizer>
 #include <cnoid/ValueTreeUtil>
 #include "gettext.h"
+#include "CollisionSensor.h"
 
 using namespace cnoid;
 using namespace std;
@@ -67,8 +67,6 @@ public:
     CollisionVisualizerItem* self;
 
     vector<Body*> bodies;
-    MeshExtractor extractor;
-    map<string, SgMaterial*> materialMap;
     vector<string> bodyNames;
     string bodyNameListString;
     SimulatorItem* simulatorItem_;
@@ -76,13 +74,18 @@ public:
     vector<MultiValueSeqItem*> collisionStaSeqItems;
     bool isCollisionStatesRecordingEnabled;
     int frame;
+    map<SgShape*, SgMaterial*> materials;
+    map<SgMaterial*, Link*> links;
+    map<Link*, Vector3> colors;
+    DeviceList<CollisionSensor> sensors;
 
     void onPostDynamicsFunction();
     void initializeBody(Body* body);
-    void extractMaterial(Link* link);
-    void injectMaterial(Link* link);
-    void initilizeMaterial(Body* body);
-    void finalizeMaterial(Link* link);
+
+    void initialize();
+    void extract(SgNode* node, Link* link, Vector3 collideColor);
+    void update();
+    void finalize();
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void finalizeSimulation();
@@ -104,12 +107,15 @@ CollisionVisualizerItemImpl::CollisionVisualizerItemImpl(CollisionVisualizerItem
     : self(self)
 {
     bodies.clear();
-    materialMap.clear();
     bodyNameListString.clear();
     simulatorItem_ = nullptr;
     collisionStaSeqItems.clear();
     isCollisionStatesRecordingEnabled = false;
     frame = 0;
+    materials.clear();
+    links.clear();
+    colors.clear();
+    sensors.clear();
 }
 
 
@@ -126,12 +132,15 @@ CollisionVisualizerItemImpl::CollisionVisualizerItemImpl(CollisionVisualizerItem
       bodyNames(org.bodyNames)
 {
     bodies = org.bodies;
-    materialMap = org.materialMap;
     bodyNameListString = getNameListString(bodyNames);
     simulatorItem_ = org.simulatorItem_;
     collisionStaSeqItems = org.collisionStaSeqItems;
     isCollisionStatesRecordingEnabled = org.isCollisionStatesRecordingEnabled;
     frame = org.frame;
+    materials = org.materials;
+    links = org.links;
+    colors = org.colors;
+    sensors = org.sensors;
 }
 
 
@@ -158,25 +167,27 @@ bool CollisionVisualizerItem::initializeSimulation(SimulatorItem* simulatorItem)
 bool CollisionVisualizerItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     bodies.clear();
-    materialMap.clear();
     simulatorItem_ = simulatorItem;
     collisionStaSeqItems.clear();
     frame = 0;
+    materials.clear();
+    links.clear();
+    colors.clear();
+    sensors.clear();
 
     vector<SimulationBody*> simulationBodies = simulatorItem->simulationBodies();
     for(size_t i = 0; i < simulationBodies.size(); ++i) {
         Body* body = simulationBodies[i]->body();
+        sensors << body->devices();
         if(!body->isStaticModel()) {
             if(bodyNames.size()) {
                 for(auto& bodyName : bodyNames) {
                     if(body->name() == bodyName) {
                         initializeBody(body);
-                        initilizeMaterial(body);
                     }
                 }
             } else {
                 initializeBody(body);
-                initilizeMaterial(body);
             }
         }
     }
@@ -184,6 +195,8 @@ bool CollisionVisualizerItemImpl::initializeSimulation(SimulatorItem* simulatorI
     if(bodies.size()) {
         simulatorItem->addPostDynamicsFunction([&](){ onPostDynamicsFunction(); });
     }
+
+    initialize();
     return true;
 }
 
@@ -196,17 +209,7 @@ void CollisionVisualizerItem::finalizeSimulation()
 
 void CollisionVisualizerItemImpl::finalizeSimulation()
 {
-    for(size_t i = 0; i < bodies.size(); ++i) {
-        Body* body = bodies[i];
-        for(int j = 0; j < body->numLinks(); ++j) {
-            Link* link = body->link(j);
-            link->mergeSensingMode(Link::LinkContactState);
-            SgGroup* group = link->collisionShape();
-            if(!extractor.extract(group, [&, link](){ finalizeMaterial(link); })) {
-
-            }
-        }
-    }
+    finalize();
 }
 
 
@@ -214,23 +217,7 @@ void CollisionVisualizerItemImpl::onPostDynamicsFunction()
 {
     for(size_t i = 0; i < bodies.size(); ++i) {
         Body* body = bodies[i];
-        for(int j = 0; j < body->numLinks(); ++j) {
-            Link* link = body->link(j);
-            SgGroup* group = link->collisionShape();
-            if(!extractor.extract(group, [&, link](){ injectMaterial(link); })) {
-
-            }
-
-//            auto& contacts = link->contactPoints();
-//            if(!contacts.empty()) {
-//                for(auto& contact : contacts) {
-//                    const Vector3& p = contact.position();
-//                }
-//            }
-        }
-
         if(isCollisionStatesRecordingEnabled) {
-            Body* body = bodies[i];
             std::shared_ptr<MultiValueSeq> collisionStaSeq = collisionStaSeqItems[i]->seq();
             collisionStaSeq->setNumFrames(frame + 1);
             MultiValueSeq::Frame p = collisionStaSeq->frame(frame);
@@ -241,13 +228,14 @@ void CollisionVisualizerItemImpl::onPostDynamicsFunction()
             }
         }
     }
-
+    update();
     frame++;
 }
 
 
 void CollisionVisualizerItemImpl::initializeBody(Body* body)
 {
+    bodies.push_back(body);
     if(isCollisionStatesRecordingEnabled) {
         MultiValueSeqItem* collisionStaSeqItem = new MultiValueSeqItem();
         string name = "Collision States - " + body->name();
@@ -270,65 +258,79 @@ void CollisionVisualizerItemImpl::initializeBody(Body* body)
 }
 
 
-void CollisionVisualizerItemImpl::extractMaterial(Link* link)
+void CollisionVisualizerItemImpl::initialize()
 {
-    SgShape* shape = extractor.currentShape();
-    string key = getKey(link);
-    SgMaterial* material = shape->material();
-    if(!material) {
-        material = new SgMaterial();
-    } else {
-        material = new SgMaterial(*shape->material());
-    }
-    materialMap[key] = material;
-}
-
-
-void CollisionVisualizerItemImpl::injectMaterial(Link* link)
-{
-    SgShape* shape = extractor.currentShape();
-    string key = getKey(link);
-    SgMaterial* material = materialMap[key];
-    if(!material) {
-        material = new SgMaterial();
-    } else {
-        material = new SgMaterial(*materialMap[key]);
-    }
-
-    auto& contacts = link->contactPoints();
-    if(!contacts.empty()) {
-        Vector3f color(1.0, 0.0, 0.0);
-        material->setDiffuseColor(color);
-    }
-    shape->setMaterial(material);
-}
-
-
-void CollisionVisualizerItemImpl::initilizeMaterial(Body* body)
-{
-    for(int j = 0; j < body->numLinks(); ++j) {
-        Link* link = body->link(j);
-        link->mergeSensingMode(Link::LinkContactState);
-        SgGroup* group = link->collisionShape();
-        if(!extractor.extract(group, [&, link](){ extractMaterial(link); })) {
-
+    for(size_t i = 0; i < sensors.size(); ++i) {
+        CollisionSensor* sensor = sensors[i];
+        if(sensor->on()) {
+            Link* link = sensor->link();
+            link->mergeSensingMode(Link::LinkContactState);
+            Vector3 collideColor = sensor->collideColor();
+            SgGroup* group = link->shape();
+            if(group) {
+                extract(group, link, collideColor);
+            }
         }
     }
-    bodies.push_back(body);
 }
 
 
-void CollisionVisualizerItemImpl::finalizeMaterial(Link* link)
+void CollisionVisualizerItemImpl::extract(SgNode* node, Link* link, Vector3 collideColor)
 {
-    SgShape* shape = extractor.currentShape();
-    string key = getKey(link);
-    SgMaterial* material = materialMap[key];
-    if(!material) {
-        material = new SgMaterial();
+    if(node->isGroupNode()) {
+        SgGroup* group = dynamic_cast<SgGroup*>(node);
+        if(group) {
+            for(int i = 0; i < group->numChildren(); ++i) {
+                SgNode* n = group->child(i);
+                extract(n, link, collideColor);
+            }
+        }
     } else {
-        material = new SgMaterial(*materialMap[key]);
+        SgShape* shape = dynamic_cast<SgShape*>(node);
+        if(shape) {
+            SgMaterial* material = new SgMaterial(*shape->material());
+            if(material && link) {
+                materials[shape] = material;
+                links[material] = link;
+                colors[link] = collideColor;
+            }
+        }
     }
-    shape->setMaterial(material);
+}
+
+
+void CollisionVisualizerItemImpl::update()
+{
+    for(auto itr = materials.begin(); itr != materials.end(); ++itr) {
+        SgShape* shape = itr->first;
+        SgMaterial* material = itr->second;
+        if(shape && material) {
+            Link* link = links[material];
+            SgMaterial* material2 = new SgMaterial(*material);
+            if(link && material2) {
+                Vector3 collideColor = colors[link];
+                auto& contacts = link->contactPoints();
+                if(!contacts.empty()) {
+                    material2->setDiffuseColor(collideColor);
+                    shape->setMaterial(material2);
+                    shape->notifyUpdate();
+                }
+            }
+        }
+    }
+}
+
+
+void CollisionVisualizerItemImpl::finalize()
+{
+    for(auto itr = materials.begin(); itr != materials.end(); ++itr) {
+        SgShape* shape = itr->first;
+        SgMaterial* material = itr->second;
+        if(shape && material) {
+            shape->setMaterial(material);
+            shape->notifyUpdate();
+        }
+    }
 }
 
 
