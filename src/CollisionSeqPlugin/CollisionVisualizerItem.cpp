@@ -312,9 +312,9 @@ void CollisionVisualizerItemImpl::update()
                 auto& contacts = link->contactPoints();
                 if(!contacts.empty()) {
                     material2->setDiffuseColor(collideColor);
-                    shape->setMaterial(material2);
-                    shape->notifyUpdate();
                 }
+                shape->setMaterial(material2);
+                shape->notifyUpdate();
             }
         }
     }
