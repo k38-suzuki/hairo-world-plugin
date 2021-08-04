@@ -14,7 +14,7 @@ using namespace std;
 
 CollisionSensor::CollisionSensor()
 {
-    collideColor_ << 1.0, 0.0, 0.0;
+    color_ << 1.0, 0.0, 0.0;
 }
 
 
@@ -49,7 +49,7 @@ void CollisionSensor::copyStateFrom(const CollisionSensor& other)
 
 void CollisionSensor::copyCollisionSensorStateFrom(const CollisionSensor& other)
 {
-    collideColor_ = other.collideColor_;
+    color_ = other.color_;
 }
 
 
@@ -89,9 +89,9 @@ int CollisionSensor::stateSize() const
 const double* CollisionSensor::readState(const double* buf)
 {
     int i = 0;
-    collideColor_[i++] = buf[0];
-    collideColor_[i++] = buf[1];
-    collideColor_[i++] = buf[2];
+    color_[i++] = buf[0];
+    color_[i++] = buf[1];
+    color_[i++] = buf[2];
     return buf + i;
 }
 
@@ -99,9 +99,9 @@ const double* CollisionSensor::readState(const double* buf)
 double* CollisionSensor::writeState(double* out_buf) const
 {
     int i = 0;
-    out_buf[i++] = collideColor_[0];
-    out_buf[i++] = collideColor_[1];
-    out_buf[i++] = collideColor_[2];
+    out_buf[i++] = color_[0];
+    out_buf[i++] = color_[1];
+    out_buf[i++] = color_[2];
     return out_buf + i;
 }
 
@@ -112,7 +112,7 @@ bool CollisionSensor::readSpecifications(const Mapping* info)
         return false;
     }
 
-    read(info, "collideColor", collideColor_);
+    read(info, "color", color_);
 
     return true;
 }
@@ -124,7 +124,7 @@ bool CollisionSensor::writeSpecifications(Mapping* info) const
         return false;
     }
 
-    write(info, "collideColor", collideColor_);
+    write(info, "color", color_);
 
     return true;
 }

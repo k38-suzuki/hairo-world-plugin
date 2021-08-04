@@ -98,7 +98,7 @@ links:
       -
         type: CollisionSensor
         name: CollisionSensor_L
-        collideColor: [ 1.0, 0.0, 0.0 ]
+        color: [ 1.0, 0.0, 0.0 ]
   -
     name: CRAWLER_TRACK_R
     parent: BODY
@@ -111,4 +111,4 @@ links:
       -
         type: CollisionSensor
         name: CollisionSensor_R
-        collideColor: [ 1.0, 0.0, 0.0 ]
+        color: [ 1.0, 0.0, 0.0 ]

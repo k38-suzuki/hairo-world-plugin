@@ -83,7 +83,7 @@ public:
     void initializeBody(Body* body);
 
     void initialize();
-    void extract(SgNode* node, Link* link, Vector3 collideColor);
+    void extract(SgNode* node, Link* link, Vector3 color);
     void update();
     void finalize();
 
@@ -265,24 +265,24 @@ void CollisionVisualizerItemImpl::initialize()
         if(sensor->on()) {
             Link* link = sensor->link();
             link->mergeSensingMode(Link::LinkContactState);
-            Vector3 collideColor = sensor->collideColor();
+            Vector3 color = sensor->color();
             SgGroup* group = link->shape();
             if(group) {
-                extract(group, link, collideColor);
+                extract(group, link, color);
             }
         }
     }
 }
 
 
-void CollisionVisualizerItemImpl::extract(SgNode* node, Link* link, Vector3 collideColor)
+void CollisionVisualizerItemImpl::extract(SgNode* node, Link* link, Vector3 color)
 {
     if(node->isGroupNode()) {
         SgGroup* group = dynamic_cast<SgGroup*>(node);
         if(group) {
             for(int i = 0; i < group->numChildren(); ++i) {
                 SgNode* n = group->child(i);
-                extract(n, link, collideColor);
+                extract(n, link, color);
             }
         }
     } else {
@@ -292,7 +292,7 @@ void CollisionVisualizerItemImpl::extract(SgNode* node, Link* link, Vector3 coll
             if(material && link) {
                 materials[shape] = material;
                 links[material] = link;
-                colors[link] = collideColor;
+                colors[link] = color;
             }
         }
     }
@@ -308,10 +308,10 @@ void CollisionVisualizerItemImpl::update()
             Link* link = links[material];
             SgMaterial* material2 = new SgMaterial(*material);
             if(link && material2) {
-                Vector3 collideColor = colors[link];
+                Vector3 color = colors[link];
                 auto& contacts = link->contactPoints();
                 if(!contacts.empty()) {
-                    material2->setDiffuseColor(collideColor);
+                    material2->setDiffuseColor(color);
                 }
                 shape->setMaterial(material2);
                 shape->notifyUpdate();

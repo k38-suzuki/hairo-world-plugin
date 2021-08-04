@@ -24,8 +24,8 @@ public:
     virtual void forEachActualType(std::function<bool(const std::type_info& type)> func) override;
     virtual void clearState() override;
 
-    Vector3 collideColor() const { return collideColor_; }
-    void setCollideColor(const Vector3 collideColor) { collideColor_ = collideColor; }
+    Vector3 color() const { return color_; }
+    void setColor(const Vector3 color) { color_ = color; }
 
     virtual int stateSize() const override;
     virtual const double* readState(const double* buf) override;
@@ -38,7 +38,7 @@ protected:
     virtual Referenced* doClone(CloneMap* cloneMap) const override;
 
 private:
-    Vector3 collideColor_;
+    Vector3 color_;
 
     void copyCollisionSensorStateFrom(const CollisionSensor& other);
 };

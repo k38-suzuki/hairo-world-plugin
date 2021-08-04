@@ -11,9 +11,9 @@ items:
       class: WorldItem
       is_checked: true
       data: 
-        collisionDetection: false
-        collisionDetector: AISTCollisionDetector
-        materialTableFile: "${SHARE}/default/materials.yaml"
+        collision_detection: false
+        collision_detector: AISTCollisionDetector
+        default_material_table_file: "${SHARE}/default/materials.yaml"
       children: 
         - 
           id: 2
@@ -29,7 +29,8 @@ items:
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            jointPositions: [  ]
+            jointDisplacements: [ 0, 0 ]
+            jointPositions: [ 0, 0 ]
             initialRootPosition: [ -1, 0, 0.1 ]
             initialRootAttitude: [ 
               1, 0, 0, 
@@ -51,10 +52,9 @@ items:
                 isNoDelayMode: false
                 controllerOptions: ""
                 controller: "SampleCrawlerController"
-                baseDirectory: "Controller directory"
+                base_directory: "Controller directory"
                 reloading: true
-                exportSymbols: false
-                isOldTargetVariableMode: false
+                export_symbols: false
         - 
           id: 4
           name: "floor"
@@ -92,6 +92,7 @@ items:
             recording: "full"
             timeRangeMode: "Specified time"
             timeLength: 15
+            active_control_time_range_mode: false
             allLinkPositionOutputMode: false
             deviceStateOutput: true
             controllerThreads: true
@@ -100,8 +101,8 @@ items:
             dynamicsMode: "Forward dynamics"
             integrationMode: "Runge Kutta"
             gravity: [ 0, 0, -9.80665 ]
-            staticFriction: 0.5
-            dynamicFriction: 0.5
+            min_friction_coefficient: 0
+            max_friction_coefficient: 100
             cullingThresh: 0.01
             contactCullingDepth: 0.05
             errorCriterion: 0.001
@@ -111,6 +112,15 @@ items:
             kinematicWalking: false
             2Dmode: false
             oldAccelSensorMode: false
+          children: 
+            - 
+              id: 6
+              name: "CollisionVisualizer"
+              plugin: CollisionSeq
+              class: CollisionVisualizerItem
+              data: 
+                enabled: true
+                recordCollisionStates: false
 views: 
   - 
     id: 0
@@ -126,7 +136,6 @@ views:
       expanded: [ 1, 2, 3, 5 ]
   - 
     id: 2
-    name: "Location"
     plugin: Base
     class: LocationView
     mounted: true
@@ -148,7 +157,9 @@ views:
     mounted: true
     state: 
       editMode: false
-      viewpointControlMode: thirdPerson
+      viewpointOperationMode: thirdPerson
+      visible_polygon_elements: [ face ]
+      highlighting: false
       collisionLines: false
       restrictCameraRoll: true
       verticalAxis: Z
@@ -220,16 +231,14 @@ views:
       show_phases: true
   - 
     id: 7
-    name: "Links / Devices"
     plugin: Body
     class: LinkDeviceListView
     mounted: true
     state: 
-      mode: list
       element_type: link
+      listingMode: list
   - 
     id: 8
-    name: "Link Position"
     plugin: Body
     class: LinkPositionView
     mounted: true
@@ -243,7 +252,6 @@ views:
       target_link_type: ik_link
   - 
     id: 9
-    name: "Link Properties"
     plugin: Body
     class: LinkPropertyView
     mounted: true
@@ -263,6 +271,18 @@ toolbars:
     speedScale: 1
     syncToOngoingUpdates: true
     autoExpansion: true
+  "LeggedBodyBar": 
+    stanceWidth: 0.15
+  "KinematicsBar": 
+    forward_kinematics: true
+    inverse_kinematics: false
+    preset_kinematics: false
+    enablePositionDragger: true
+    penetrationBlock: true
+    collisionLinkHighlight: false
+    snapDistance: 0.025
+    penetrationBlockDepth: 0.0005
+    lazyCollisionDetectionMode: true
   "BodyMotionGenerationBar": 
     autoGenerationForNewBody: true
     balancer: false
@@ -296,36 +316,24 @@ toolbars:
     waistHeightRelaxation: false
     gravity: 9.8
     dynamicsTimeRatio: 1
-  "LeggedBodyBar": 
-    stanceWidth: 0.15
-  "KinematicsBar": 
-    forward_kinematics: true
-    inverse_kinematics: false
-    preset_kinematics: false
-    enablePositionDragger: true
-    penetrationBlock: true
-    collisionLinkHighlight: false
-    snapDistance: 0.025
-    penetrationBlockDepth: 0.0005
-    lazyCollisionDetectionMode: true
 Body: 
   "BodyMotionEngine": 
     updateJointVelocities: false
   "BodySelectionManager": 
-    currentBodyItem: 2
-    currentLink: "BODY"
+    current_body_item: 2
+    current_link: "BODY"
   "EditableSceneBody": 
     editableSceneBodies: 
       - 
         bodyItem: 2
-        showCenterOfMass: false
-        showPpcom: false
-        showZmp: false
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
       - 
         bodyItem: 4
-        showCenterOfMass: false
-        showPpcom: false
-        showZmp: false
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
   "KinematicFaultChecker": 
     checkJointPositions: true
     angleMargin: 0
@@ -347,17 +355,17 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 1403, 446 ]
+      sizes: [ 1454, 462 ]
       children: 
         - 
           type: splitter
           orientation: horizontal
-          sizes: [ 363, 1036 ]
+          sizes: [ 376, 1074 ]
           children: 
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 449, 448 ]
+              sizes: [ 537, 535 ]
               children: 
                 - 
                   type: pane
@@ -369,7 +377,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 673, 224 ]
+              sizes: [ 804, 268 ]
               children: 
                 - 
                   type: pane
@@ -381,7 +389,7 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 164, 733 ]
+          sizes: [ 201, 871 ]
           children: 
             - 
               type: pane
@@ -389,7 +397,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 286, 443 ]
+              sizes: [ 340, 527 ]
               children: 
                 - 
                   type: pane
