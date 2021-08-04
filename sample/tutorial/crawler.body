@@ -3,7 +3,7 @@ formatVersion: 1.0
 angleUnit: degree
 name: Crawler
 
-TRACK_COMMON: &TrackCommon
+TRACK_BODY: &TrackBody
   parent: BODY
   jointType: fixed
   jointAxis: [ 0, 1, 0 ]
@@ -14,28 +14,27 @@ TRACK_COMMON: &TrackCommon
     0.02, 0, 0,
     0, 0.02, 0,
     0, 0, 0.02 ]
-  elements:
-    -
-      type: Shape
-      geometry:
-        type: Extrusion
-        crossSection: [
-          -0.18, -0.1,
-           0.18, -0.1,
-           0.3, 0.0,
-           0.18, 0.06,
-          -0.18, 0.06,
-          -0.3, 0.0,
-          -0.18, -0.1 ]
-        spine: [ 0, -0.05, 0, 0, 0.05, 0 ]
-      appearance:
-        material:
-          diffuseColor: [ 0.1, 0.1, 0.1 ]
-          ambientIntensity: 0.01
-          specularColor: [ 0.3, 0.3, 0.3 ]
-          emissiveColor: [ 0, 0, 0 ]
-          shininess: 0.01
-          transparency: 0
+
+TRACK_SHAPE: &TrackShape
+  geometry:
+    type: Extrusion
+    crossSection: [
+      -0.18, -0.1,
+       0.18, -0.1,
+       0.3, 0.0,
+       0.18, 0.06,
+      -0.18, 0.06,
+      -0.3, 0.0,
+      -0.18, -0.1 ]
+    spine: [ 0, -0.05, 0, 0, 0.05, 0 ]
+  appearance:
+    material:
+      diffuseColor: [ 0.1, 0.1, 0.1 ]
+      ambientIntensity: 0.01
+      specularColor: [ 0.3, 0.3, 0.3 ]
+      emissiveColor: [ 0, 0, 0 ]
+      shininess: 0.01
+      transparency: 0
 
 links:
   -
@@ -91,9 +90,25 @@ links:
   -
     name: CRAWLER_TRACK_L
     translation: [ 0.0, 0.2, 0 ]
-    <<: *TrackCommon
+    <<: *TrackBody
+    elements:
+      -
+        type: Shape
+        <<: *TrackShape
+      -
+        type: CollisionSensor
+        name: CollisionSensor_L
+        collideColor: [ 1.0, 0.0, 0.0 ]
   -
     name: CRAWLER_TRACK_R
     parent: BODY
     translation: [ 0.0, -0.2, 0 ]
-    <<: *TrackCommon
+    <<: *TrackBody
+    elements:
+      -
+        type: Shape
+        <<: *TrackShape
+      -
+        type: CollisionSensor
+        name: CollisionSensor_R
+        collideColor: [ 1.0, 0.0, 0.0 ]
