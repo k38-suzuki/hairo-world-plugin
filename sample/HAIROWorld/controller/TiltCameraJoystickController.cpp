@@ -3,6 +3,7 @@
    @author Kenta Suzuki
 */
 
+#include <cnoid/Camera>
 #include <cnoid/EigenUtil>
 #include <cnoid/Joystick>
 #include <cnoid/SimpleController>
@@ -16,6 +17,7 @@ class TiltCameraJoystickController : public SimpleController
     double qref;
     double qprev;
     double dt;
+    Camera* camera;
 
     Joystick joystick;
 
@@ -32,6 +34,8 @@ public:
         }
 
         dt = io->timeStep();
+        camera = body->findDevice<Camera>("Camera");
+
         return true;
     }
 
@@ -55,6 +59,31 @@ public:
         dqref = deltaq / dt;
         turret->u() = P * (qref - q) + D * (dqref - dq);
         qprev = q;
+
+        double p = 0.0;
+        bool changed = false;
+        bool pushed = joystick.getButtonState(Joystick::L_BUTTON);
+        if(!pushed) {
+            p = -joystick.getPosition(Joystick::L_TRIGGER_AXIS);
+        } else  {
+            p = 1.0;
+        }
+
+        if(fabs(p) < 0.15) {
+            p = 0.0;
+        }
+
+        if(camera) {
+            double fov = camera->fieldOfView();
+            fov += radian(1.0) * p * 0.02;
+            if((fov > radian(0.0)) && (fov < radian(90.0))) {
+                camera->setFieldOfView(fov);
+                changed = true;
+            }
+            if(changed) {
+                camera->notifyStateChange();
+            }
+        }
 
         return true;
     }
