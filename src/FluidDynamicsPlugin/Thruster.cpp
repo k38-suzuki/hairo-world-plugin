@@ -47,7 +47,6 @@ SceneThruster::SceneThruster(Device* device)
     material->setTransparency(0.5);
     shape->setMaterial(material);
     scene->addChild(shape);
-    Link* link = thrusterDevice->link();
     Vector3 translation(0.025, 0.0, 0.0);
     Matrix3 rotation = rotFromRpy(Vector3(0.0, 0.0, -90.0) * TO_RADIAN);
     scene->setTranslation(translation);
@@ -69,7 +68,6 @@ void SceneThruster::updateScene()
         }
         isThrusterAttached = on;
     }
-
 //    scene->notifyUpdate();
 }
 
@@ -85,6 +83,7 @@ Thruster::Thruster()
     on_ = true;
     force_ = 0.0;
     torque_ = 0.0;
+    direction_ << 1.0, 0.0, 0.0;
     forceOffset_ = 0.0;
     torqueOffset_ = 0.0;
     symbol_ = true;
@@ -94,7 +93,7 @@ Thruster::Thruster()
 Thruster::Thruster(const Thruster& org, bool copyStateOnly)
     : Device(org, copyStateOnly)
 {
-    copyStateFrom(org);
+    copyThrusterStateFrom(org);
 }
 
 
@@ -106,12 +105,7 @@ const char* Thruster::typeName() const
 
 void Thruster::copyStateFrom(const Thruster& other)
 {
-    on_ = other.on_;
-    force_ = other.force_;
-    torque_ = other.torque_;
-    forceOffset_ = other.forceOffset_;
-    torqueOffset_ = other.torqueOffset_;
-    symbol_ = other.symbol_;
+    copyThrusterStateFrom(other);
 }
 
 
@@ -121,6 +115,18 @@ void Thruster::copyStateFrom(const DeviceState& other)
         throw std::invalid_argument("Type mismatch in the Device::copyStateFrom function");
     }
     copyStateFrom(static_cast<const Thruster&>(other));
+}
+
+
+void Thruster::copyThrusterStateFrom(const Thruster& other)
+{
+    on_ = other.on_;
+    force_ = other.force_;
+    torque_ = other.torque_;
+    direction_ = other.direction_;
+    forceOffset_ = other.forceOffset_;
+    torqueOffset_ = other.torqueOffset_;
+    symbol_ = other.symbol_;
 }
 
 
@@ -165,7 +171,7 @@ void Thruster::on(bool on)
 
 int Thruster::stateSize() const
 {
-    return 3;
+    return 9;
 }
 
 
@@ -175,6 +181,9 @@ const double* Thruster::readState(const double* buf)
     on_ = buf[i++];
     force_ = buf[i++];
     torque_ = buf[i++];
+    direction_[0] = buf[i++];
+    direction_[1] = buf[i++];
+    direction_[2] = buf[i++];
     forceOffset_ = buf[i++];
     torqueOffset_ = buf[i++];
     symbol_ = buf[i++];
@@ -188,6 +197,9 @@ double* Thruster::writeState(double* out_buf) const
     out_buf[i++] = on_ ? 1.0 : 0.0;
     out_buf[i++] = force_;
     out_buf[i++] = torque_;
+    out_buf[i++] = direction_[0];
+    out_buf[i++] = direction_[1];
+    out_buf[i++] = direction_[2];
     out_buf[i++] = forceOffset_;
     out_buf[i++] = torqueOffset_;
     out_buf[i++] = symbol_ ? 1.0 : 0.0;

@@ -221,9 +221,10 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
             double density = item->density();
             if(density > 10.0) {
                 Matrix3 R = link->R() * thruster->R_local();
-                const Vector3 f = R * (Vector3::UnitX() * (thruster->force() + thruster->forceOffset()));
+                Vector3 direction = thruster->direction();
+                const Vector3 f = R * (direction * (thruster->force() + thruster->forceOffset()));
                 const Vector3 p = link->T() * thruster->p_local();
-                Vector3 tau_ext = R * (Vector3::UnitX() * (thruster->torque() + thruster->torqueOffset()));
+                Vector3 tau_ext = R * (direction * (thruster->torque() + thruster->torqueOffset()));
                 if(thruster->on()) {
                     link->f_ext() += f;
                     link->tau_ext() += p.cross(f) + tau_ext;
@@ -258,9 +259,10 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
                 double staticForce = k * d3 * d3 * d3 * p1 * n2 * n2 * g / 1000.0;
 
                 Matrix3 R = link->R() * rotor->R_local();
-                const Vector3 f = R * (Vector3::UnitZ() * (rotor->force() + rotor->forceOffset() + staticForce));
+                Vector3 direction = rotor->direction();
+                const Vector3 f = R * (direction * (rotor->force() + rotor->forceOffset() + staticForce));
                 const Vector3 p = link->T() * rotor->p_local();
-                Vector3 tau_ext = R * (Vector3::UnitZ() * (rotor->torque() + rotor->torqueOffset()));
+                Vector3 tau_ext = R * (direction * (rotor->torque() + rotor->torqueOffset()));
                 if(rotor->on()) {
                     link->f_ext() += f;
                     link->tau_ext() += p.cross(f) + tau_ext;

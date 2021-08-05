@@ -6,13 +6,13 @@
 #ifndef CNOID_FLUIDDYNAMICSPLUGIN_ROTOR_H
 #define CNOID_FLUIDDYNAMICSPLUGIN_ROTOR_H
 
-#include <cnoid/Device>
 #include <cnoid/ValueTree>
+#include "Thruster.h"
 #include "exportdecl.h"
 
 namespace cnoid {
 
-class CNOID_EXPORT Rotor : public Device
+class CNOID_EXPORT Rotor : public Thruster
 {
 public:
     Rotor();
@@ -23,21 +23,12 @@ public:
     virtual DeviceState* cloneState() const override;
     virtual void forEachActualType(std::function<bool(const std::type_info& type)> func) override;
     virtual void clearState() override;
-    virtual bool on() const override;
-    virtual void on(bool on) override;
     virtual int stateSize() const override;
     virtual const double* readState(const double* buf) override;
     virtual double* writeState(double* out_buf) const override;
 
     bool readSpecifications(const Mapping* info);
     bool writeSpecifications(Mapping* info) const;
-
-    double& force() { return force_; }
-    double& torque() { return torque_; }
-    void setForceOffset(const double& forceOffset) { forceOffset_ = forceOffset; }
-    double forceOffset() const { return forceOffset_; }
-    void setTorqueOffset(const double& torqueOffset) { torqueOffset_ = torqueOffset; }
-    double torqueOffset() const { return torqueOffset_; }
 
     void setK(const double& k) { k_ = k; }
     double k() const { return k_; }
@@ -50,25 +41,19 @@ public:
     double& voltage() { return voltage_; }
     void setReverse(const bool& reverse) { reverse_ = reverse; }
     bool reverse() const { return reverse_; }
-    void setSymbol(const bool& symbol) { symbol_ = symbol; }
-    bool symbol() const { return symbol_; }
 
 protected:
     virtual Referenced* doClone(CloneMap* cloneMap) const override;
 
 private:
-    bool on_;
-    double force_;
-    double torque_;
-    double forceOffset_;
-    double torqueOffset_;
     double k_;
     double kv_;
     double diameter_;
     double pitch_;
     double voltage_;
     bool reverse_;
-    bool symbol_;
+
+    void copyRotorStateFrom(const Rotor& other);
 };
 
 typedef ref_ptr<Rotor> RotorPtr;

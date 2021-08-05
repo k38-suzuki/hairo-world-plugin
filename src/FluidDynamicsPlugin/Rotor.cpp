@@ -47,7 +47,6 @@ SceneRotor::SceneRotor(Device* device)
     material->setTransparency(0.5);
     shape->setMaterial(material);
     scene->addChild(shape);
-    Link* link = rotorDevice->link();
     Vector3 translation(0.0, 0.0, 0.025);
     Matrix3 rotation = rotFromRpy(Vector3(90.0, 0.0, 0.0) * TO_RADIAN);
     scene->setTranslation(translation);
@@ -69,7 +68,6 @@ void SceneRotor::updateScene()
         }
         isRotorAttached = on;
     }
-
 //    scene->notifyUpdate();
 }
 
@@ -82,25 +80,20 @@ SceneDevice* createSceneRotor(Device* device)
 
 Rotor::Rotor()
 {
-    on_ = true;
-    force_ = 0.0;
-    torque_ = 0.0;
-    forceOffset_ = 0.0;
-    torqueOffset_ = 0.0;
+    setDirection(Vector3(0.0, 0.0, 1.0));
     k_ = 22.0;
     kv_ = 0.0;
     diameter_ = 0.0;
     pitch_ = 0.0;
     voltage_ = 0.0;
     reverse_ = false;
-    symbol_ = true;
 }
 
 
 Rotor::Rotor(const Rotor& org, bool copyStateOnly)
-    : Device(org, copyStateOnly)
+    : Thruster(org, copyStateOnly)
 {
-    copyStateFrom(org);
+    copyRotorStateFrom(org);
 }
 
 
@@ -112,18 +105,8 @@ const char* Rotor::typeName() const
 
 void Rotor::copyStateFrom(const Rotor& other)
 {
-    on_ = other.on_;
-    force_ = other.force_;
-    torque_ = other.torque_;
-    forceOffset_ = other.forceOffset_;
-    torqueOffset_ = other.torqueOffset_;
-    k_ = other.k_;
-    kv_ = other.kv_;
-    diameter_ = other.diameter_;
-    pitch_ = other.pitch_;
-    voltage_ = other.voltage_;
-    reverse_ = other.reverse_;
-    symbol_ = other.symbol_;
+    Thruster::copyStateFrom(other);
+    copyRotorStateFrom(other);
 }
 
 
@@ -133,6 +116,17 @@ void Rotor::copyStateFrom(const DeviceState& other)
         throw std::invalid_argument("Type mismatch in the Device::copyStateFrom function");
     }
     copyStateFrom(static_cast<const Rotor&>(other));
+}
+
+
+void Rotor::copyRotorStateFrom(const Rotor& other)
+{
+    k_ = other.k_;
+    kv_ = other.kv_;
+    diameter_ = other.diameter_;
+    pitch_ = other.pitch_;
+    voltage_ = other.voltage_;
+    reverse_ = other.reverse_;
 }
 
 
@@ -151,81 +145,57 @@ Referenced* Rotor::doClone(CloneMap*) const
 void Rotor::forEachActualType(std::function<bool(const std::type_info& type)> func)
 {
     if(!func(typeid(Rotor))){
-        Device::forEachActualType(func);
+        Thruster::forEachActualType(func);
     }
 }
 
 
 void Rotor::clearState()
 {
-    force_ = 0.0;
-    torque_ = 0.0;
+    Thruster::clearState();
     voltage_ = 0.0;
-}
-
-
-bool Rotor::on() const
-{
-    return on_;
-}
-
-
-void Rotor::on(bool on)
-{
-    on_ = on;
 }
 
 
 int Rotor::stateSize() const
 {
-    return 10;
+    return Thruster::stateSize() + 6;
 }
 
 
 const double* Rotor::readState(const double* buf)
 {
-    int i = 0;
-    on_ = buf[i++];
-    force_ = buf[i++];
-    torque_ = buf[i++];
-    forceOffset_ = buf[i++];
-    torqueOffset_ = buf[i++];
+    int i = Thruster::stateSize();
+    Thruster::readState(buf);
     k_ = buf[i++];
     kv_ = buf[i++];
     diameter_ = buf[i++];
     pitch_ = buf[i++];
     voltage_ = buf[i++];
     reverse_= buf[i++];
-    symbol_ = buf[i++];
     return buf + i;
 }
 
 
 double* Rotor::writeState(double* out_buf) const
 {
-    int i = 0;
-    out_buf[i++] = on_ ? 1.0 : 0.0;
-    out_buf[i++] = force_;
-    out_buf[i++] = torque_;
-    out_buf[i++] = forceOffset_;
-    out_buf[i++] = torqueOffset_;
+    int i = Thruster::stateSize();
+    Thruster::writeState(out_buf);
     out_buf[i++] = k_;
     out_buf[i++] = kv_;
     out_buf[i++] = diameter_;
     out_buf[i++] = pitch_;
     out_buf[i++] = voltage_;
     out_buf[i++] = reverse_;
-    out_buf[i++] = symbol_ ? 1.0 : 0.0;
     return out_buf + i;
 }
 
 
 bool Rotor::readSpecifications(const Mapping* info)
 {
-    info->read("on", on_);
-    info->read("forceOffset", forceOffset_);
-    info->read("torqueOffset", torqueOffset_);
-    info->read("symbol", symbol_);
+    if(!Thruster::readSpecifications(info)) {
+        return false;
+    }
 
     info->read("k", k_);
     info->read("kv", kv_);
@@ -239,10 +209,9 @@ bool Rotor::readSpecifications(const Mapping* info)
 
 bool Rotor::writeSpecifications(Mapping* info) const
 {
-    info->write("on", on_);
-    info->write("forceOffset", forceOffset_);
-    info->write("torqueOffset", torqueOffset_);
-    info->write("symbol", symbol_);
+    if(!Thruster::writeSpecifications(info)) {
+        return false;
+    }
 
     info->write("k", k_);
     info->write("kv", kv_);

@@ -34,6 +34,8 @@ public:
 
     double& force() { return force_; }
     double& torque() { return torque_; }
+    void setDirection(const Vector3& direction) { direction_ = direction; }
+    Vector3 direction() const { return direction_; }
     void setForceOffset(const double& forceOffset) { forceOffset_ = forceOffset; }
     double forceOffset() const { return forceOffset_; }
     void setTorqueOffset(const double& torqueOffset) { torqueOffset_ = torqueOffset; }
@@ -48,9 +50,12 @@ private:
     bool on_;
     double force_;
     double torque_;
+    Vector3 direction_;
     double forceOffset_;
     double torqueOffset_;
     bool symbol_;
+
+    void copyThrusterStateFrom(const Thruster& other);
 };
 
 typedef ref_ptr<Thruster> ThrusterPtr;
