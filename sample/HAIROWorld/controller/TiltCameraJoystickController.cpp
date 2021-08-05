@@ -64,9 +64,9 @@ public:
         bool changed = false;
         bool pushed = joystick.getButtonState(Joystick::L_BUTTON);
         if(!pushed) {
-            p = -joystick.getPosition(Joystick::L_TRIGGER_AXIS);
+            p = joystick.getPosition(Joystick::L_TRIGGER_AXIS);
         } else  {
-            p = 1.0;
+            p = -1.0;
         }
 
         if(fabs(p) < 0.15) {
