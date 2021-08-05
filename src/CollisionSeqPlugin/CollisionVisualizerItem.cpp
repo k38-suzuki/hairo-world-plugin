@@ -77,6 +77,7 @@ public:
     map<SgShape*, SgMaterial*> materials;
     map<SgMaterial*, Link*> links;
     map<Link*, Vector3> colors;
+    map<Link*, bool> prevs;
     DeviceList<CollisionSensor> sensors;
 
     void onPostDynamicsFunction();
@@ -115,6 +116,7 @@ CollisionVisualizerItemImpl::CollisionVisualizerItemImpl(CollisionVisualizerItem
     materials.clear();
     links.clear();
     colors.clear();
+    prevs.clear();
     sensors.clear();
 }
 
@@ -140,6 +142,7 @@ CollisionVisualizerItemImpl::CollisionVisualizerItemImpl(CollisionVisualizerItem
     materials = org.materials;
     links = org.links;
     colors = org.colors;
+    prevs = org.prevs;
     sensors = org.sensors;
 }
 
@@ -173,6 +176,7 @@ bool CollisionVisualizerItemImpl::initializeSimulation(SimulatorItem* simulatorI
     materials.clear();
     links.clear();
     colors.clear();
+    prevs.clear();
     sensors.clear();
 
     vector<SimulationBody*> simulationBodies = simulatorItem->simulationBodies();
@@ -301,6 +305,7 @@ void CollisionVisualizerItemImpl::extract(SgNode* node, Link* link, Vector3 colo
 
 void CollisionVisualizerItemImpl::update()
 {
+    bool changed = false;
     for(auto itr = materials.begin(); itr != materials.end(); ++itr) {
         SgShape* shape = itr->first;
         SgMaterial* material = itr->second;
@@ -311,11 +316,16 @@ void CollisionVisualizerItemImpl::update()
                 Vector3 color = colors[link];
                 auto& contacts = link->contactPoints();
                 if(!contacts.empty()) {
+                    changed = true;
                     material2->setDiffuseColor(color);
                 }
-                shape->setMaterial(material2);
-                shape->notifyUpdate();
+
+                if(changed != prevs[link]) {
+                    shape->setMaterial(material2);
+                    shape->notifyUpdate();
+                }
             }
+            prevs[link] = changed;
         }
     }
 }
