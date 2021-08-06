@@ -319,7 +319,6 @@ void CollisionVisualizerItemImpl::update()
                     changed = true;
                     material2->setDiffuseColor(color);
                 }
-
                 if(changed != prevs[link]) {
                     shape->setMaterial(material2);
                     shape->notifyUpdate();
