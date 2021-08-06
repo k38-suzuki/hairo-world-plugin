@@ -89,6 +89,7 @@ int CollisionSensor::stateSize() const
 const double* CollisionSensor::readState(const double* buf)
 {
     int i = ForceSensor::stateSize();
+    ForceSensor::readState(buf);
     color_[i++] = buf[0];
     color_[i++] = buf[1];
     color_[i++] = buf[2];
@@ -99,6 +100,7 @@ const double* CollisionSensor::readState(const double* buf)
 double* CollisionSensor::writeState(double* out_buf) const
 {
     int i = ForceSensor::stateSize();
+    ForceSensor::writeState(out_buf);
     out_buf[i++] = color_[0];
     out_buf[i++] = color_[1];
     out_buf[i++] = color_[2];
