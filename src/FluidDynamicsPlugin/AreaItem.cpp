@@ -11,6 +11,7 @@
 #include <cnoid/FloatingNumberString>
 #include <cnoid/ItemManager>
 #include <cnoid/MeshGenerator>
+#include <cnoid/PositionDragger>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/Selection>
 #include "gettext.h"
@@ -39,12 +40,14 @@ public:
     FloatingNumberString shininess;
     FloatingNumberString transparency;
     SgPosTransformPtr scene;
+    PositionDraggerPtr positionDragger;
 
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
     bool restore(const Archive& archive);
     void generateShape();
     void updateScene();
+    void onPositionDragged();
     bool onTranslationPropertyChanged(const string& value);
     bool onRotationPropertyChanged(const string& value);
     bool onAreaTypePropertyChanged(const int& index);
@@ -273,8 +276,7 @@ bool AreaItemImpl::onTranslationPropertyChanged(const string& value)
     Vector3 translation;
     if(toVector3(value, translation)) {
         this->translation = translation;
-        scene->setTranslation(translation);
-        scene->notifyUpdate();
+        updateScene();
         return true;
     }
     return false;
@@ -286,8 +288,7 @@ bool AreaItemImpl::onRotationPropertyChanged(const string& value)
     Vector3 rotation;
     if(toVector3(value, rotation)) {
         this->rotation = rotation;
-        scene->setRotation(rotFromRpy(rotation * TO_RADIAN));
-        scene->notifyUpdate();
+        updateScene();
         return true;
     }
     return false;
@@ -296,20 +297,8 @@ bool AreaItemImpl::onRotationPropertyChanged(const string& value)
 
 bool AreaItemImpl::onAreaTypePropertyChanged(const int& index)
 {
-    MeshGenerator generator;
-
     type.selectIndex(index);
-    SgMesh* mesh;
-    if(type.is(AreaItem::BOX)) {
-        mesh = generator.generateBox(size);
-    } else if(type.is(AreaItem::CYLINDER)) {
-        mesh = generator.generateCylinder(radius.value(), height.value());
-    } else if(type.is(AreaItem::SPHERE)) {
-        mesh = generator.generateSphere(radius.value());
-    }
-    SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
-    shape->setMesh(mesh);
-    shape->notifyUpdate();
+    updateScene();
     return true;
 }
 
@@ -317,14 +306,9 @@ bool AreaItemImpl::onAreaTypePropertyChanged(const int& index)
 bool AreaItemImpl::onAreaSizePropertyChanged(const string& value)
 {
     Vector3 size;
-    MeshGenerator generator;
-
     if(toVector3(value, size)) {
         this->size = size;
-        SgMesh* mesh = generator.generateBox(size);
-        SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
-        shape->setMesh(mesh);
-        shape->notifyUpdate();
+        updateScene();
         return true;
     }
     return false;
@@ -334,19 +318,9 @@ bool AreaItemImpl::onAreaSizePropertyChanged(const string& value)
 bool AreaItemImpl::onAreaRadiusPropertyChanged(const string& value)
 {
     double radius = stod(value);
-    MeshGenerator generator;
-
     if(radius >= 0) {
         this->radius = radius;
-        SgMesh* mesh;
-        if(type.is(AreaItem::CYLINDER)) {
-            mesh = generator.generateCylinder(radius, height.value());
-        } else if(type.is(AreaItem::SPHERE)) {
-            mesh = generator.generateSphere(radius);
-        }
-        SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
-        shape->setMesh(mesh);
-        shape->notifyUpdate();
+        updateScene();
         return true;
     }
     return false;
@@ -356,14 +330,9 @@ bool AreaItemImpl::onAreaRadiusPropertyChanged(const string& value)
 bool AreaItemImpl::onAreaHeightPropertyChanged(const string& value)
 {
     double height = stod(value);
-    MeshGenerator generator;
-
     if(height >= 0) {
         this->height = height;
-        SgMesh* mesh = generator.generateCylinder(radius.value(), height);
-        SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
-        shape->setMesh(mesh);
-        shape->notifyUpdate();
+        updateScene();
         return true;
     }
     return false;
@@ -375,10 +344,7 @@ bool AreaItemImpl::onDiffuseColorPropertyChanged(const string& value)
     Vector3 diffuseColor;
     if(toVector3(value, diffuseColor)) {
         this->diffuseColor = diffuseColor;
-        SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
-        SgMaterial* material = shape->material();
-        material->setDiffuseColor(diffuseColor);
-        material->notifyUpdate();
+        updateScene();
         return true;
     }
     return false;
@@ -390,10 +356,7 @@ bool AreaItemImpl::onEmissiveColorPropertyChanged(const string& value)
     Vector3 emissiveColor;
     if(toVector3(value, emissiveColor)) {
         this->emissiveColor = emissiveColor;
-        SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
-        SgMaterial* material = shape->material();
-        material->setEmissiveColor(emissiveColor);
-        material->notifyUpdate();
+        updateScene();
         return true;
     }
     return false;
@@ -405,10 +368,7 @@ bool AreaItemImpl::onSpecularColorPropertyChanged(const string& value)
     Vector3 specularColor;
     if(toVector3(value, specularColor)) {
         this->specularColor = specularColor;
-        SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
-        SgMaterial* material = shape->material();
-        material->setSpecularColor(specularColor);
-        material->notifyUpdate();
+        updateScene();
         return true;
     }
     return false;
@@ -418,13 +378,9 @@ bool AreaItemImpl::onSpecularColorPropertyChanged(const string& value)
 bool AreaItemImpl::onShininessPropertyChanged(const string& value)
 {
     float shininess = stof(value);
-    float s = 127.0f * std::max(0.0f, std::min(shininess, 1.0f)) + 1.0f;
     if(shininess >= 0) {
         this->shininess = shininess;
-        SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
-        SgMaterial* material = shape->material();
-        material->setSpecularExponent(s);
-        material->notifyUpdate();
+        updateScene();
         return true;
     }
     return false;
@@ -436,22 +392,38 @@ bool AreaItemImpl::onTransparencyPropertyChanged(const string& value)
     double transparency = stod(value);
     if(transparency >= 0) {
         this->transparency = transparency;
-        SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
-        SgMaterial* material = shape->material();
-        material->setTransparency(transparency);
-        material->notifyUpdate();
+        updateScene();
         return true;
     }
     return false;
 }
 
 
+void AreaItemImpl::onPositionDragged()
+{
+    translation = positionDragger->globalDraggingPosition().translation();
+    updateScene();
+}
+
+
 void AreaItemImpl::generateShape()
 {
+    SgGroup* group = new SgGroup();
     SgShape* shape = new SgShape();
     SgMaterial* material = new SgMaterial();
     shape->setMaterial(material);
-    scene->addChild(shape, true);
+    positionDragger = new PositionDragger(
+                PositionDragger::TranslationAxes, PositionDragger::WideHandle);
+    positionDragger->setDragEnabled(true);
+    positionDragger->setOverlayMode(true);
+    positionDragger->setPixelSize(48, 2);
+    positionDragger->setDisplayMode(PositionDragger::DisplayInEditMode);
+
+    group->addChild(shape);
+    group->addChild(positionDragger);
+    scene->addChild(group, true);
+
+    positionDragger->sigPositionDragged().connect([&](){ onPositionDragged(); });
 }
 
 
@@ -469,25 +441,31 @@ void AreaItemImpl::updateScene()
     if(type.is(AreaItem::CYLINDER)) {
         scene->setRotation(rotFromRpy(rotation * TO_RADIAN));
     }
-    SgMesh* mesh;
-    if(type.is(AreaItem::BOX)) {
-        mesh = generator.generateBox(size);
-    } else if(type.is(AreaItem::CYLINDER)) {
-        mesh = generator.generateCylinder(radius.value(), height.value());
-    } else if(type.is(AreaItem::SPHERE)) {
-        mesh = generator.generateSphere(radius.value());
+
+    SgGroup* group = dynamic_cast<SgGroup*>(scene->child(0));
+    if(group) {
+        SgShape* shape = dynamic_cast<SgShape*>(group->child(0));
+        SgMesh* mesh;
+        if(type.is(AreaItem::BOX)) {
+            mesh = generator.generateBox(size);
+        } else if(type.is(AreaItem::CYLINDER)) {
+            mesh = generator.generateCylinder(radius.value(), height.value());
+        } else if(type.is(AreaItem::SPHERE)) {
+            mesh = generator.generateSphere(radius.value());
+        }
+
+        SgMaterial* material = shape->material();
+        float s = 127.0f * std::max(0.0f, std::min((float)shininess.value(), 1.0f)) + 1.0f;
+        shape->setMesh(mesh);
+        material->setDiffuseColor(diffuseColor);
+        material->setEmissiveColor(emissiveColor);
+        material->setSpecularColor(specularColor);
+        material->setSpecularExponent(s);
+        material->setTransparency(transparency.value());
+        shape->setMaterial(material);
+        shape->notifyUpdate();
+        positionDragger->adjustSize(shape->boundingBox());
     }
-    SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
-    SgMaterial* material = shape->material();
-    float s = 127.0f * std::max(0.0f, std::min((float)shininess.value(), 1.0f)) + 1.0f;
-    shape->setMesh(mesh);
-    material->setDiffuseColor(diffuseColor);
-    material->setEmissiveColor(emissiveColor);
-    material->setSpecularColor(specularColor);
-    material->setSpecularExponent(s);
-    material->setTransparency(transparency.value());
-    shape->setMaterial(material);
-    shape->notifyUpdate();
 }
 
 
