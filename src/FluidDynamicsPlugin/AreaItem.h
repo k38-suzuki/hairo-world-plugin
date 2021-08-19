@@ -31,6 +31,8 @@ public:
     Vector3 rotation() const;
     void setType(const int& type);
     int type() const;
+    void setAxes(const int& axes);
+    int axes() const;
     void setSize(const Vector3& size);
     Vector3 size() const;
     void setRadius(const double& radius);

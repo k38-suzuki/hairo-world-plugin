@@ -149,8 +149,8 @@ items:
           is_checked: true
           data: 
             translation: [ 0, 0, 0 ]
-            rotation: [ 0, 0, 0 ]
             type: 0
+            axes: 0
             size: [ 10, 10, 10 ]
             radius: 0.5
             height: 1
@@ -300,7 +300,7 @@ views:
           far: 200
           eye: [ 3, 1.5, 1.2 ]
           direction: [ -0.880451, -0.440225, -0.17609 ]
-          up: [ -0.1575, -0.0787499, 0.984374 ]
+          up: [ -0.1575, -0.0787498, 0.984374 ]
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20

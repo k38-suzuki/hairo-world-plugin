@@ -70,8 +70,8 @@ msgid "Translation"
 msgstr "位置"
 
 #: ../FluidAreaItem.cpp:273
-msgid "RPY"
-msgstr "回転"
+msgid "Axes"
+msgstr "中心軸"
 
 #: ../FluidAreaItem.cpp:276
 msgid "DiffuseColor"

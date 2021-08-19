@@ -11,8 +11,8 @@ items:
       class: WorldItem
       is_checked: true
       data: 
-        collisionDetection: false
-        collisionDetector: AISTCollisionDetector
+        collision_detection: false
+        collision_detector: AISTCollisionDetector
         default_material_table_file: "${SHARE}/default/materials.yaml"
       children: 
         - 
@@ -51,10 +51,9 @@ items:
                 isNoDelayMode: false
                 controllerOptions: ""
                 controller: "HaiROVJoystickController"
-                baseDirectory: "Controller directory"
+                base_directory: "Controller directory"
                 reloading: false
-                exportSymbols: false
-                isOldTargetVariableMode: false
+                export_symbols: false
             - 
               id: 4
               name: "CameraVisualizer"
@@ -78,6 +77,7 @@ items:
                     salt: 0
                     pepper: 0
                     flip: false
+                    filter: 0
                   - 
                     class: CameraImageVisualizer2
                     name: BottomCamera
@@ -94,6 +94,7 @@ items:
                     salt: 0
                     pepper: 0
                     flip: false
+                    filter: 0
         - 
           id: 5
           name: "FuelPool"
@@ -306,8 +307,8 @@ items:
           is_checked: true
           data: 
             translation: [ 0, 0, -2.5 ]
-            rotation: [ 0, 0, 0 ]
             type: 0
+            axes: 0
             size: [ 5.4, 5.4, 5 ]
             radius: 1
             height: 1
@@ -342,7 +343,6 @@ views:
       expanded: [ 1, 2, 3, 4, 6, 8 ]
   - 
     id: 3
-    name: "Location"
     plugin: Base
     class: LocationView
     state: 
@@ -418,7 +418,6 @@ views:
       isDedicatedItemCheckEnabled: false
   - 
     id: 6
-    name: "Virtual Joystick"
     plugin: Base
     class: VirtualJoystickView
   - 
@@ -443,7 +442,6 @@ views:
       show_phases: true
   - 
     id: 9
-    name: "Links / Devices"
     plugin: Body
     class: LinkDeviceListView
     mounted: true
@@ -452,7 +450,6 @@ views:
       listingMode: list
   - 
     id: 10
-    name: "Link Position"
     plugin: Body
     class: LinkPositionView
     state: 
@@ -465,7 +462,6 @@ views:
       target_link_type: ik_link
   - 
     id: 11
-    name: "Link Properties"
     plugin: Body
     class: LinkPropertyView
   - 
@@ -539,14 +535,14 @@ Body:
     editableSceneBodies: 
       - 
         bodyItem: 2
-        showCenterOfMass: false
-        showPpcom: false
-        showZmp: false
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
       - 
         bodyItem: 5
-        showCenterOfMass: false
-        showPpcom: false
-        showZmp: false
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
   "KinematicFaultChecker": 
     checkJointPositions: true
     angleMargin: 0
@@ -568,12 +564,12 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 265, 1250 ]
+      sizes: [ 435, 2054 ]
       children: 
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 441, 441 ]
+          sizes: [ 629, 628 ]
           children: 
             - 
               type: pane
@@ -585,12 +581,12 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 630, 252 ]
+          sizes: [ 898, 359 ]
           children: 
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 551, 695 ]
+              sizes: [ 907, 1143 ]
               children: 
                 - 
                   type: pane
