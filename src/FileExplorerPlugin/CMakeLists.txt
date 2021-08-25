@@ -1,11 +1,11 @@
 
 set(sources
-    FileExplorer.cpp
     FileExplorerPlugin.cpp
+    ProcessManager.cpp
     )
 
 set(headers
-    FileExplorer.h
+    ProcessManager.h
     gettext.h
     )
 

@@ -3,7 +3,7 @@
    \author Kenta Suzuki
 */
 
-#include "FileExplorer.h"
+#include "ProcessManager.h"
 #include <cnoid/BodyItem>
 #include <cnoid/ItemTreeView>
 #include <cnoid/MenuManager>
@@ -17,60 +17,61 @@ using namespace cnoid;
 
 namespace {
 
-FileExplorer* explorer = nullptr;
+ProcessManager* manager = nullptr;
+const string programs[] = { "nautilus", "gedit" };
 
 }
 
 
 namespace cnoid {
 
-class FileExplorerImpl
+class ProcessManagerImpl
 {
 public:
-    FileExplorerImpl(FileExplorer* self);
-    FileExplorer* self;
+    ProcessManagerImpl(ProcessManager* self);
+    ProcessManager* self;
 
     vector<Process*> processes;
 
-    void execute(const Item* item, const int& type);
+    void execute(const int argc, const char* argv[]);
     void finalize();
 };
 
 }
 
 
-FileExplorer::FileExplorer()
+ProcessManager::ProcessManager()
 {
-    impl = new FileExplorerImpl(this);
+    impl = new ProcessManagerImpl(this);
 }
 
 
-FileExplorerImpl::FileExplorerImpl(FileExplorer* self)
+ProcessManagerImpl::ProcessManagerImpl(ProcessManager* self)
     : self(self)
 {
     processes.clear();
 }
 
 
-FileExplorer::~FileExplorer()
+ProcessManager::~ProcessManager()
 {
     delete impl;
 }
 
 
-void FileExplorer::initializeClass(ExtensionManager* ext)
+void ProcessManager::initializeClass(ExtensionManager* ext)
 {
-    if(!explorer) {
-        explorer = new FileExplorer();
+    if(!manager) {
+        manager = new ProcessManager();
     }
 
     ItemTreeView::instance()->customizeContextMenu<BodyItem>(
         [](BodyItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
             menuManager.setPath("/").setPath(_("Open"));
             menuManager.addItem(_("File"))->sigTriggered().connect(
-                [item](){ explorer->execute(item, ToolType::NAUTILUS); });
+                [item](){ manager->execute(item, ProgramId::NAUTILUS); });
             menuManager.addItem(_("Directory"))->sigTriggered().connect(
-                [item](){ explorer->execute(item, ToolType::GEDIT); });
+                [item](){ manager->execute(item, ProgramId::GEDIT); });
             menuManager.setPath("/");
             menuManager.addSeparator();
             menuFunction.dispatchAs<Item>(item);
@@ -80,9 +81,9 @@ void FileExplorer::initializeClass(ExtensionManager* ext)
         [](SceneItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
             menuManager.setPath("/").setPath(_("Open"));
             menuManager.addItem(_("File"))->sigTriggered().connect(
-                [item](){ explorer->execute(item, ToolType::NAUTILUS); });
+                [item](){ manager->execute(item, ProgramId::NAUTILUS); });
             menuManager.addItem(_("Directory"))->sigTriggered().connect(
-                [item](){ explorer->execute(item, ToolType::GEDIT); });
+                [item](){ manager->execute(item, ProgramId::GEDIT); });
             menuManager.setPath("/");
             menuManager.addSeparator();
             menuFunction.dispatchAs<Item>(item);
@@ -90,42 +91,52 @@ void FileExplorer::initializeClass(ExtensionManager* ext)
 }
 
 
-void FileExplorer::finalizeClass()
+void ProcessManager::finalizeClass()
 {
-//    explorer->finalize();
+    manager->finalize();
 }
 
 
-void FileExplorer::execute(const Item* item, const int& type)
+void ProcessManager::execute(const Item* item, const int& id)
 {
-    impl->execute(item, type);
+    const int argc = 2;
+    const char* argv[] = { programs[id].c_str(), item->filePath().c_str() };
+    impl->execute(argc, argv);
 }
 
 
-void FileExplorerImpl::execute(const Item* item, const int& type)
+void ProcessManager::execute(const int argc, const char* argv[])
 {
-    string message = type ? "nautilus" : "gedit";
-    message += " " +  item->filePath();
+    impl->execute(argc, argv);
+}
+
+
+void ProcessManagerImpl::execute(const int argc, const char* argv[])
+{
+    string messages;
+    for(int i = 0; i < argc; ++i) {
+        messages += " " + string(argv[i]);
+    }
+
     Process* process = new Process();
-    process->start(message.c_str());
+    process->start(messages.c_str());
     if(process->waitForStarted()) {}
 
     processes.push_back(process);
-
 }
 
 
-void FileExplorer::finalize()
+void ProcessManager::finalize()
 {
     impl->finalize();
 }
 
 
-void FileExplorerImpl::finalize()
+void ProcessManagerImpl::finalize()
 {
     for(size_t i = 0; i < processes.size(); ++i) {
         Process* process = processes[i];
-        if(process->state() != QProcess::NotRunning){
+        if(process->state() != QProcess::NotRunning) {
             process->kill();
             process->waitForFinished(100);
         }
