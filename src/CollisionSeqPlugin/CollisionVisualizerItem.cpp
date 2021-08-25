@@ -22,11 +22,6 @@ using namespace std;
 
 namespace {
 
-string getKey(Link* link)
-{
-    return link->body()->name() + " " + link->name();
-}
-
 string getNameListString(const vector<string>& names)
 {
     string nameList;

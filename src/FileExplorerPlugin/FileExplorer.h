@@ -10,6 +10,8 @@
 
 namespace cnoid {
 
+class FileExplorerImpl;
+
 class FileExplorer
 {
 public:
@@ -18,6 +20,15 @@ public:
 
     static void initializeClass(ExtensionManager* ext);
     static void finalizeClass();
+
+    enum ToolType { NAUTILUS, GEDIT, NUM_TOOLS };
+
+    void execute(const Item* item, const int& type);
+    void finalize();
+
+private:
+    FileExplorerImpl* impl;
+    friend class FileExplorerImpl;
 };
 
 }
