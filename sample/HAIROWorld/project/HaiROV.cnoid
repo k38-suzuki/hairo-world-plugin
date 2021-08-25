@@ -307,8 +307,8 @@ items:
           is_checked: true
           data: 
             translation: [ 0, 0, -2.5 ]
+            rotation: [ 0, 0, 0 ]
             type: 0
-            axes: 0
             size: [ 5.4, 5.4, 5 ]
             radius: 1
             height: 1

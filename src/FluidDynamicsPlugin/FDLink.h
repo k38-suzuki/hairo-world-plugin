@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_FLUID_DYNAMICS_PLUGIN_FD_LINK_H
-#define CNOID_FLUID_DYNAMICS_PLUGIN_FD_LINK_H
+#ifndef CNOID_FLUIDDYNAMICSPLUGIN_FDLINK_H
+#define CNOID_FLUIDDYNAMICSPLUGIN_FDLINK_H
 
 #include <cnoid/EigenTypes>
 #include <cnoid/Link>
@@ -46,4 +46,4 @@ typedef ref_ptr<FDLink> FDLinkPtr;
 
 }
 
-#endif // CNOID_FLUID_DYNAMICS_PLUGIN_FD_LINK_H
+#endif // CNOID_FLUIDDYNAMICSPLUGIN_FDLINK_H
