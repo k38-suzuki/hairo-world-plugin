@@ -14,6 +14,7 @@
 #include <cnoid/PositionDragger>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/Selection>
+#include <cnoid/WorldItem>
 #include "gettext.h"
 
 using namespace std;
@@ -49,6 +50,7 @@ public:
     bool restore(const Archive& archive);
     void generateShape();
     void updateScene();
+    bool isCollided(const Link* link);
     void onPositionDragged();
     bool onTranslationPropertyChanged(const string& value);
     bool onRotationPropertyChanged(const string& value);
@@ -472,6 +474,63 @@ void AreaItemImpl::updateScene()
             positionDragger->adjustSize(shape->boundingBox());
         }
     }
+}
+
+
+bool AreaItem::isCollided(const Link* link)
+{
+    return impl->isCollided(link);
+}
+
+
+bool AreaItemImpl::isCollided(const Link* link)
+{
+    bool isCollided = false;
+
+    AreaItem* item = self;
+    Vector3 p = link->T().translation();
+    Vector3 translation = item->translation();
+    Vector3 rpy = item->rotation() * TO_RADIAN;
+    Matrix3 rot = rotFromRpy(rpy);
+
+    if(item->type() == AreaItem::BOX) {
+        Vector3 size = item->size();
+        Vector3 min = translation - size / 2.0;
+        Vector3 max = translation + size / 2.0;
+        Vector3 rp = p - translation;
+        Vector3 np = rot.inverse() * rp + translation;
+
+        if((min[0] <= np[0]) && (np[0] <= max[0])
+                && (min[1] <= np[1]) && (np[1] <= max[1])
+                && (min[2] <= np[2]) && (np[2] <= max[2])
+                ) {
+            isCollided = true;
+        }
+    } else if(item->type() == AreaItem::CYLINDER) {
+        Vector3 a = rot * (Vector3(0.0, 1.0, 0.0) * item->height() / 2.0) + translation;
+        Vector3 b = rot * (Vector3(0.0, 1.0, 0.0) * item->height() / 2.0 * -1.0) + translation;
+        Vector3 c = a - b;
+        Vector3 d = p - b;
+        double cd = c.dot(d);
+        if((0.0 < cd) && (cd < c.dot(c))) {
+            double r2 = d.dot(d) - d.dot(c) * d.dot(c) / c.dot(c);
+            double rp2 =  item->radius() * item->radius();
+            if(r2 < rp2) {
+                isCollided = true;
+            }
+        }
+    } else if(item->type() == AreaItem::SPHERE) {
+        Vector3 r = translation - p;
+        if(r.norm() <= item->radius()) {
+            isCollided = true;
+        }
+    }
+    WorldItem* worldItem = item->findOwnerItem<WorldItem>();
+    if(!worldItem) {
+        isCollided = false;
+    }
+
+    return isCollided;
 }
 
 

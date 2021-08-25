@@ -7,6 +7,7 @@
 #define CNOID_FLUIDDYNAMICSPLUGIN_AREAITEM_H
 
 #include <cnoid/Item>
+#include <cnoid/Link>
 #include <cnoid/SceneGraph>
 #include <cnoid/SceneProvider>
 #include "exportdecl.h"
@@ -50,6 +51,8 @@ public:
     void setTransparency(const double& transparency);
     double transparency() const;
     void updateScene();
+
+    bool isCollided(const Link* link);
 
     enum AreaType { BOX, CYLINDER, SPHERE, NUM_AREA };
 

@@ -32,7 +32,6 @@ public:
     FluidDynamicsSimulatorItemImpl(FluidDynamicsSimulatorItem* self, const FluidDynamicsSimulatorItemImpl& org);
 
     FluidDynamicsSimulatorItem* self;
-    FluidAreaItem* isCollided(const Link* link);
     Vector3 gravity;
     std::vector<FDBody*> fdBodies;
     ItemList<FluidAreaItem> items;
@@ -141,7 +140,14 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
 
             //flow
             Vector3 ff = Vector3::Zero();
-            FluidAreaItem* item = isCollided(link);
+            FluidAreaItem* item = nullptr;
+            for(size_t k = 0; k <  items.size(); ++k) {
+                FluidAreaItem* targetItem = items[k];
+                if(targetItem->isCollided(link)) {
+                    item = targetItem;
+                }
+            }
+
             if(item) {
                 density = item->density();
                 viscosity = item->viscosity();
@@ -216,7 +222,13 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
     for(int k = 0; k < thrusters.size(); k++) {
         Thruster* thruster = thrusters[k];
         Link* link = thruster->link();
-        FluidAreaItem* item = isCollided(link);
+        FluidAreaItem* item = nullptr;
+        for(size_t m = 0; m <  items.size(); ++m) {
+            FluidAreaItem* targetItem = items[m];
+            if(targetItem->isCollided(link)) {
+                item = targetItem;
+            }
+        }
         if(item) {
             double density = item->density();
             if(density > 10.0) {
@@ -237,7 +249,13 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
     for(int k = 0; k < rotors.size(); k++) {
         Rotor* rotor = rotors[k];
         Link* link = rotor->link();
-        FluidAreaItem* item = isCollided(link);
+        FluidAreaItem* item = nullptr;
+        for(size_t m = 0; m <  items.size(); ++m) {
+            FluidAreaItem* targetItem = items[m];
+            if(targetItem->isCollided(link)) {
+                item = targetItem;
+            }
+        }
         if(item) {
             double density = item->density();
             if(density < 10.0) {
@@ -298,59 +316,6 @@ void FluidDynamicsSimulatorItemImpl::createFDBody(Body* body)
         fdBody->addFDLinks(fdLink);
     }
     fdBodies.push_back(fdBody);
-}
-
-
-FluidAreaItem* FluidDynamicsSimulatorItemImpl::isCollided(const Link* link)
-{
-    FluidAreaItem* targetItem = nullptr;
-
-    for(int k = 0; k < items.size(); k++) {
-        FluidAreaItem* item = items[k];
-        Vector3 p = link->T().translation();
-        Vector3 translation = item->translation();
-        Vector3 rpy = item->rotation() * TO_RADIAN;
-        Matrix3 rot = rotFromRpy(rpy);
-
-        if(item->type() == AreaItem::BOX) {
-            Vector3 size = item->size();
-            Vector3 min = translation - size / 2.0;
-            Vector3 max = translation + size / 2.0;
-            Vector3 rp = p - translation;
-            Vector3 np = rot.inverse() * rp + translation;
-
-            if((min[0] <= np[0]) && (np[0] <= max[0])
-                    && (min[1] <= np[1]) && (np[1] <= max[1])
-                    && (min[2] <= np[2]) && (np[2] <= max[2])
-                    ) {
-                targetItem = item;
-            }
-        } else if(item->type() == AreaItem::CYLINDER) {
-            Vector3 a = rot * (Vector3(0.0, 1.0, 0.0) * item->height() / 2.0) + translation;
-            Vector3 b = rot * (Vector3(0.0, 1.0, 0.0) * item->height() / 2.0 * -1.0) + translation;
-            Vector3 c = a - b;
-            Vector3 d = p - b;
-            double cd = c.dot(d);
-            if((0.0 < cd) && (cd < c.dot(c))) {
-                double r2 = d.dot(d) - d.dot(c) * d.dot(c) / c.dot(c);
-                double rp2 =  item->radius() * item->radius();
-                if(r2 < rp2) {
-                    targetItem = item;
-                }
-            }
-        } else if(item->type() == AreaItem::SPHERE) {
-            Vector3 r = translation - p;
-            if(r.norm() <= item->radius()) {
-                targetItem = item;
-            }
-        }
-        WorldItem* worldItem = item->findOwnerItem<WorldItem>();
-        if(!worldItem) {
-            targetItem = nullptr;
-        }
-    }
-
-    return targetItem;
 }
 
 
