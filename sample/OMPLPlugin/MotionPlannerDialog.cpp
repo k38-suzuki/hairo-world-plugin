@@ -9,11 +9,11 @@
 #include <cnoid/CheckBox>
 #include <cnoid/ComboBox>
 #include <cnoid/EigenTypes>
-#include <cnoid/ItemTreeView>
 #include <cnoid/JointPath>
 #include <cnoid/MenuManager>
 #include <cnoid/MeshGenerator>
 #include <cnoid/MessageView>
+#include <cnoid/PositionDragger>
 #include <cnoid/RootItem>
 #include <cnoid/SceneDrawables>
 #include <cnoid/SceneView>
@@ -47,7 +47,7 @@ using namespace cnoid;
 namespace ob = ompl::base;
 namespace og = ompl::geometric;
 
-MotionPlannerDialog* motionPlannerDialog = nullptr;
+MotionPlannerDialog* plannerDialog = nullptr;
 
 namespace cnoid {
 
@@ -104,6 +104,9 @@ public:
     double timeLength;
     Timer* timer;
     bool isSolved;
+    PositionDraggerPtr startDragger;
+    PositionDraggerPtr goalDragger;
+
     void onTargetLinkChanged();
     void onStartButtonClicked();
     void onGoalButtonClicked();
@@ -114,6 +117,8 @@ public:
     void onCurrentIndexChanged(int index);
     void onStartValueChanged();
     void onGoalValueChanged();
+    void onStartPositionDragged();
+    void onGoalPositionDragged();
     void planWithSimpleSetup();
     bool isStateValid(const ob::State* state);
     void onAccepted();
@@ -150,31 +155,55 @@ MotionPlannerDialogImpl::MotionPlannerDialogImpl(MotionPlannerDialog* self)
     timer = new Timer();
     timer->start(1);
     isSolved = false;
+    startDragger = nullptr;
+    goalDragger = nullptr;
 
     MeshGenerator generator;
     startScene = new SgSwitchableGroup();
     startScene->setTurnedOn(false);
+    startDragger = new PositionDragger(
+                PositionDragger::TranslationAxes, PositionDragger::WideHandle);
+    startDragger->setDragEnabled(true);
+    startDragger->setOverlayMode(true);
+    startDragger->setPixelSize(48, 2);
+    startDragger->setDisplayMode(PositionDragger::DisplayInEditMode);
     SgPosTransform* startPos = new SgPosTransform();
+    SgGroup* startGroup = new SgGroup();
     SgShape* startShape = new SgShape();
     SgMesh* startMesh = generator.generateSphere(0.05);
     SgMaterial* startMaterial = new SgMaterial();
     startMaterial->setDiffuseColor(Vector3(0.0, 0.0, 1.0));
     startShape->setMesh(startMesh);
     startShape->setMaterial(startMaterial);
-    startPos->addChild(startShape);
+    startGroup->addChild(startShape);
+    startGroup->addChild(startDragger);
+    startPos->addChild(startGroup);
     startScene->addChild(startPos);
+    startDragger->adjustSize(startShape->boundingBox());
+    startDragger->sigPositionDragged().connect([&](){ onStartPositionDragged(); });
 
     goalScene = new SgSwitchableGroup();
     goalScene->setTurnedOn(false);
+    goalDragger = new PositionDragger(
+                PositionDragger::TranslationAxes, PositionDragger::WideHandle);
+    goalDragger->setDragEnabled(true);
+    goalDragger->setOverlayMode(true);
+    goalDragger->setPixelSize(48, 2);
+    goalDragger->setDisplayMode(PositionDragger::DisplayInEditMode);
     SgPosTransform* goalPos = new SgPosTransform();
+    SgGroup* goalGroup = new SgGroup();
     SgShape* goalShape = new SgShape();
     SgMesh* goalMesh = generator.generateSphere(0.05);
     SgMaterial* goalMaterial = new SgMaterial();
     goalMaterial->setDiffuseColor(Vector3(1.0, 0.0, 0.0));
     goalShape->setMesh(goalMesh);
     goalShape->setMaterial(goalMaterial);
-    goalPos->addChild(goalShape);
+    goalGroup->addChild(goalShape);
+    goalGroup->addChild(goalDragger);
+    goalPos->addChild(goalGroup);
     goalScene->addChild(goalPos);
+    goalDragger->adjustSize(goalShape->boundingBox());
+    goalDragger->sigPositionDragged().connect([&](){ onGoalPositionDragged(); });
 
     statesScene = new SgSwitchableGroup();
     statesScene->setTurnedOn(false);
@@ -356,7 +385,7 @@ MotionPlannerDialogImpl::MotionPlannerDialogImpl(MotionPlannerDialog* self)
     vbox->addWidget(buttonBox);
 
     generateButton->sigClicked().connect([&](){ onGenerateButtonClicked(); });
-    ItemTreeView::instance()->sigCheckToggled().connect([&](Item* item, bool on){
+    RootItem::instance()->sigCheckToggled().connect([&](Item* item, bool on){
         onCheckToggled();
     });
     previewButton->sigToggled().connect([&](bool on){ onPreviewButtonToggled(on); });
@@ -439,20 +468,20 @@ void MotionPlannerDialog::initializeClass(ExtensionManager* ext)
     string version = OMPL_VERSION;
     MessageView::instance()->putln(fmt::format("OMPL version: {0}", version));
 
-    if(!motionPlannerDialog) {
-        motionPlannerDialog = ext->manage(new MotionPlannerDialog());
+    if(!plannerDialog) {
+        plannerDialog = ext->manage(new MotionPlannerDialog());
     }
 
     MenuManager& mm = ext->menuManager();
     mm.setPath("/Tools");
     mm.addItem(_("Motion Planner"))
-            ->sigTriggered().connect([](){ motionPlannerDialog->show(); });
+            ->sigTriggered().connect([](){ plannerDialog->show(); });
 }
 
 
 MotionPlannerDialog* MotionPlannerDialog::instance()
 {
-    return motionPlannerDialog;
+    return plannerDialog;
 }
 
 
@@ -544,7 +573,7 @@ void MotionPlannerDialogImpl::onPreviewTimeout()
 
 void MotionPlannerDialogImpl::onCheckToggled()
 {
-    bodyItems = ItemTreeView::instance()->checkedItems<BodyItem>();
+    bodyItems = RootItem::instance()->checkedItems<BodyItem>();
     bodyCombo->clear();
 
     for(size_t i = 0; i < bodyItems.size(); i++) {
@@ -583,6 +612,24 @@ void MotionPlannerDialogImpl::onGoalValueChanged()
     Vector3 translation = Vector3(goalxSpin->value(), goalySpin->value(), goalzSpin->value());
     pos->setTranslation(translation);
     goalScene->notifyUpdate();
+}
+
+
+void MotionPlannerDialogImpl::onStartPositionDragged()
+{
+    Vector3 p = startDragger->globalDraggingPosition().translation();
+    startxSpin->setValue(p[0]);
+    startySpin->setValue(p[1]);
+    startzSpin->setValue(p[2]);
+}
+
+
+void MotionPlannerDialogImpl::onGoalPositionDragged()
+{
+    Vector3 p = goalDragger->globalDraggingPosition().translation();
+    goalxSpin->setValue(p[0]);
+    goalySpin->setValue(p[1]);
+    goalzSpin->setValue(p[2]);
 }
 
 
