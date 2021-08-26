@@ -73,7 +73,7 @@ public:
             p = 0.0;
         }
 
-        if(camera) {
+        if(camera && fabs(p) > 0.0) {
             double fov = camera->fieldOfView();
             fov += radian(1.0) * p * 0.02;
             if((fov > radian(0.0)) && (fov < radian(90.0))) {

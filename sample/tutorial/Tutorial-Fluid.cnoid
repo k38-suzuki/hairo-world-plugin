@@ -106,9 +106,9 @@ items:
             size: [ 1, 1, 1 ]
             radius: 1
             height: 1
-            diffuseColor: [ 0, 1, 1 ]
-            emissiveColor: [ 0, 0, 0 ]
-            specularColor: [ 0, 0, 0 ]
+            diffuse_color: [ 0, 1, 1 ]
+            emissive_color: [ 0, 0, 0 ]
+            specular_color: [ 0, 0, 0 ]
             shininess: 0
             transparency: 0.8
             density: 1000

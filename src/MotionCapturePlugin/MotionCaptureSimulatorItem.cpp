@@ -292,7 +292,7 @@ bool MotionCaptureSimulatorItem::store(Archive& archive)
 bool MotionCaptureSimulatorItemImpl::store(Archive& archive)
 {
     archive.write("record", record);
-    archive.write("cycleTime", cycleTime);
+    archive.write("cycle_time", cycleTime);
     return true;
 }
 
@@ -307,6 +307,6 @@ bool MotionCaptureSimulatorItem::restore(const Archive& archive)
 bool MotionCaptureSimulatorItemImpl::restore(const Archive& archive)
 {
     archive.read("record", record);
-    archive.read("cycleTime", cycleTime);
+    archive.read("cycle_time", cycleTime);
     return true;
 }

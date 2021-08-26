@@ -133,7 +133,7 @@ items:
               data: 
                 enabled: true
                 record: true
-                cycleTime: 0.1
+                cycle_time: 0.1
             - 
               id: 8
               name: "FluidDynamicsSimulator"
@@ -154,9 +154,9 @@ items:
             size: [ 10, 10, 10 ]
             radius: 0.5
             height: 1
-            diffuseColor: [ 1, 1, 1 ]
-            emissiveColor: [ 0, 0, 0 ]
-            specularColor: [ 0, 0, 0 ]
+            diffuse_color: [ 1, 1, 1 ]
+            emissive_color: [ 0, 0, 0 ]
+            specular_color: [ 0, 0, 0 ]
             shininess: 0
             transparency: 1
             density: 1.2

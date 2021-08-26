@@ -127,7 +127,7 @@ items:
                   data: 
                     enabled: true
                     record: true
-                    cycleTime: 0.1
+                    cycle_time: 0.1
                 - 
                   id: 8
                   name: "TCSimulator"
@@ -136,7 +136,7 @@ items:
                   data: 
                     enabled: true
                     interface: "lo"
-                    ifbDevice: "ifb0"
+                    ifb_device: "ifb0"
                 - 
                   id: 9
                   name: "GLVisionSimulator"
@@ -168,9 +168,9 @@ items:
             size: [ 20, 20, 20 ]
             radius: 1
             height: 1
-            diffuseColor: [ 1, 1, 1 ]
-            emissiveColor: [ 0, 0, 0 ]
-            specularColor: [ 0, 0, 0 ]
+            diffuse_color: [ 1, 1, 1 ]
+            emissive_color: [ 0, 0, 0 ]
+            specular_color: [ 0, 0, 0 ]
             shininess: 0
             transparency: 0.7
             density: 1.2
@@ -189,17 +189,17 @@ items:
             size: [ 3, 3, 1 ]
             radius: 1
             height: 1
-            diffuseColor: [ 1, 1, 0 ]
-            emissiveColor: [ 0, 0, 0 ]
-            specularColor: [ 0, 0, 0 ]
+            diffuse_color: [ 1, 1, 0 ]
+            emissive_color: [ 0, 0, 0 ]
+            specular_color: [ 0, 0, 0 ]
             shininess: 0
             transparency: 0.8
-            inboundDelay: 50
-            inboundRate: 0
-            inboundLoss: 0
-            outboundDelay: 150
-            outboundRate: 0
-            outboundLoss: 0
+            inbound_delay: 50
+            inbound_rate: 0
+            inbound_loss: 0
+            outbound_delay: 150
+            outbound_rate: 0
+            outbound_loss: 0
             source: ""
             destination: ""
         - 
@@ -215,17 +215,17 @@ items:
             size: [ 3, 3, 1 ]
             radius: 1
             height: 1
-            diffuseColor: [ 1, 0, 0 ]
-            emissiveColor: [ 0, 0, 0 ]
-            specularColor: [ 0, 0, 0 ]
+            diffuse_color: [ 1, 0, 0 ]
+            emissive_color: [ 0, 0, 0 ]
+            specular_color: [ 0, 0, 0 ]
             shininess: 0
             transparency: 0.8
-            inboundDelay: 100
-            inboundRate: 0
-            inboundLoss: 0
-            outboundDelay: 200
-            outboundRate: 0
-            outboundLoss: 0
+            inbound_delay: 100
+            inbound_rate: 0
+            inbound_loss: 0
+            outbound_delay: 200
+            outbound_rate: 0
+            outbound_loss: 0
             source: ""
             destination: ""
         - 
@@ -269,9 +269,9 @@ items:
             size: [ 1, 1, 1 ]
             radius: 1
             height: 3
-            diffuseColor: [ 0, 1, 1 ]
-            emissiveColor: [ 0, 0, 0 ]
-            specularColor: [ 0, 0, 0 ]
+            diffuse_color: [ 0, 1, 1 ]
+            emissive_color: [ 0, 0, 0 ]
+            specular_color: [ 0, 0, 0 ]
             shininess: 0
             transparency: 0.8
             density: 1.2

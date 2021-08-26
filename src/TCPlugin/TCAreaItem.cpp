@@ -396,12 +396,12 @@ bool TCAreaItem::store(Archive& archive)
 
 bool TCAreaItemImpl::store(Archive& archive)
 {
-    archive.write("inboundDelay", inboundDelay);
-    archive.write("inboundRate", inboundRate);
-    archive.write("inboundLoss", inboundLoss);
-    archive.write("outboundDelay", outboundDelay);
-    archive.write("outboundRate", outboundRate);
-    archive.write("outboundLoss", outboundLoss);
+    archive.write("inbound_delay", inboundDelay);
+    archive.write("inbound_rate", inboundRate);
+    archive.write("inbound_loss", inboundLoss);
+    archive.write("outbound_delay", outboundDelay);
+    archive.write("outbound_rate", outboundRate);
+    archive.write("outbound_loss", outboundLoss);
     archive.write("source", source);
     archive.write("destination", destination);
     return true;
@@ -417,12 +417,12 @@ bool TCAreaItem::restore(const Archive& archive)
 
 bool TCAreaItemImpl::restore(const Archive& archive)
 {
-    inboundDelay = archive.get("inboundDelay", inboundDelay.string());
-    inboundRate = archive.get("inboundRate", inboundRate.string());
-    inboundLoss = archive.get("inboundLoss", inboundLoss.string());
-    outboundDelay = archive.get("outboundDelay", outboundDelay.string());
-    outboundRate = archive.get("outboundRate", outboundRate.string());
-    outboundLoss = archive.get("outboundLoss", outboundLoss.string());
+    inboundDelay = archive.get("inbound_delay", inboundDelay.string());
+    inboundRate = archive.get("inbound_rate", inboundRate.string());
+    inboundLoss = archive.get("inbound_loss", inboundLoss.string());
+    outboundDelay = archive.get("outbound_delay", outboundDelay.string());
+    outboundRate = archive.get("outbound_rate", outboundRate.string());
+    outboundLoss = archive.get("outbound_loss", outboundLoss.string());
     archive.read("source", source);
     archive.read("destination", destination);
     return true;

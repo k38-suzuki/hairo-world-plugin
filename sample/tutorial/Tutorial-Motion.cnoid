@@ -122,8 +122,7 @@ items:
               data: 
                 enabled: true
                 record: true
-                cycleTime: 0.1
-                exportCsv: false
+                cycle_time: 0.1
 views: 
   - 
     id: 0

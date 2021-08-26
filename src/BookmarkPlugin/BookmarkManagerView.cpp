@@ -251,7 +251,7 @@ bool BookmarkManagerView::storeState(Archive& archive)
 bool BookmarkManagerViewImpl::storeState(Archive& archive)
 {
     int numItems = treeWidget->topLevelItemCount();
-    archive.write("numProjects", numItems);
+    archive.write("num_projects", numItems);
     for(int i = 0; i < numItems; ++i) {
         QTreeWidgetItem* item = treeWidget->topLevelItem(i);
         if(item) {
@@ -274,7 +274,7 @@ bool BookmarkManagerViewImpl::restoreState(const Archive& archive)
 {
     onClearButtonClicked();
     int numItems;
-    archive.read("numProjects", numItems);
+    archive.read("num_projects", numItems);
     for(int i = 0; i < numItems; ++i) {
         string key = "project" + to_string(i);
         string filename;

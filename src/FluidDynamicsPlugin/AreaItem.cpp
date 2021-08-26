@@ -592,9 +592,9 @@ bool AreaItemImpl::store(Archive& archive)
     write(archive, "size", size);
     archive.write("radius", radius);
     archive.write("height", height);
-    write(archive, "diffuseColor", diffuseColor);
-    write(archive, "emissiveColor", emissiveColor);
-    write(archive, "specularColor", specularColor);
+    write(archive, "diffuse_color", diffuseColor);
+    write(archive, "emissive_color", emissiveColor);
+    write(archive, "specular_color", specularColor);
     archive.write("shininess", shininess);
     archive.write("transparency", transparency);
     return true;
@@ -617,9 +617,9 @@ bool AreaItemImpl::restore(const Archive& archive)
     read(archive, "size", size);
     radius = archive.get("radius", radius.string());
     height = archive.get("height", height.string());
-    read(archive, "diffuseColor", diffuseColor);
-    read(archive, "emissiveColor", emissiveColor);
-    read(archive, "specularColor", specularColor);
+    read(archive, "diffuse_color", diffuseColor);
+    read(archive, "emissive_color", emissiveColor);
+    read(archive, "specular_color", specularColor);
     shininess = archive.get("shininess", shininess.string());
     transparency = archive.get("transparency", transparency.string());
     updateScene();

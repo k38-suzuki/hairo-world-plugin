@@ -368,8 +368,8 @@ bool CollisionVisualizerItem::store(Archive& archive)
 
 bool CollisionVisualizerItemImpl::store(Archive& archive)
 {
-    writeElements(archive, "targetBodies", bodyNames, true);
-    archive.write("recordCollisionStates", isCollisionStatesRecordingEnabled);
+    writeElements(archive, "target_bodies", bodyNames, true);
+    archive.write("record_collision_states", isCollisionStatesRecordingEnabled);
     return true;
 }
 
@@ -383,8 +383,8 @@ bool CollisionVisualizerItem::restore(const Archive& archive)
 
 bool CollisionVisualizerItemImpl::restore(const Archive& archive)
 {
-    readElements(archive, "targetBodies", bodyNames);
+    readElements(archive, "target_bodies", bodyNames);
     bodyNameListString = getNameListString(bodyNames);
-    archive.read("recordCollisionStates", isCollisionStatesRecordingEnabled);
+    archive.read("record_collision_states", isCollisionStatesRecordingEnabled);
     return true;
 }

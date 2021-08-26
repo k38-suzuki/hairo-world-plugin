@@ -247,7 +247,7 @@ bool TCSimulatorItem::store(Archive& archive)
 bool TCSimulatorItemImpl::store(Archive& archive)
 {
     archive.write("interface", interface.selectedSymbol(), DOUBLE_QUOTED);
-    archive.write("ifbDevice", ifbDevice.selectedSymbol(), DOUBLE_QUOTED);
+    archive.write("ifb_device", ifbDevice.selectedSymbol(), DOUBLE_QUOTED);
     return true;
 }
 
@@ -265,7 +265,7 @@ bool TCSimulatorItemImpl::restore(const Archive& archive)
     if(archive.read("interface", symbol)) {
         interface.select(symbol);
     }
-    if(archive.read("ifbDevice", symbol)) {
+    if(archive.read("ifb_device", symbol)) {
         ifbDevice.select(symbol);
     }
     return true;

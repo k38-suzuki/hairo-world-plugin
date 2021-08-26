@@ -179,7 +179,7 @@ bool JoystickLoggerItem::store(Archive& archive)
 
 bool JoystickLoggerItemImpl::store(Archive& archive)
 {
-    archive.write("recordJoystickStates", isJoystickStatesRecordingEnabled);
+    archive.write("record_joystick_states", isJoystickStatesRecordingEnabled);
     return true;
 }
 
@@ -193,6 +193,6 @@ bool JoystickLoggerItem::restore(const Archive& archive)
 
 bool JoystickLoggerItemImpl::restore(const Archive& archive)
 {
-    archive.read("recordJoystickStates", isJoystickStatesRecordingEnabled);
+    archive.read("record_joystick_states", isJoystickStatesRecordingEnabled);
     return true;
 }

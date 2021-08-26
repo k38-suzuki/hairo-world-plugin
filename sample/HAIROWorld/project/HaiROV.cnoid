@@ -169,7 +169,7 @@ items:
                   data: 
                     enabled: true
                     record: true
-                    cycleTime: 0.4
+                    cycle_time: 0.4
                   children: 
                     - 
                       id: 9
@@ -312,9 +312,9 @@ items:
             size: [ 5.4, 5.4, 5 ]
             radius: 1
             height: 1
-            diffuseColor: [ 0, 0.5, 1 ]
-            emissiveColor: [ 0, 0, 0 ]
-            specularColor: [ 0, 0, 0 ]
+            diffuse_color: [ 0, 0.5, 1 ]
+            emissive_color: [ 0, 0, 0 ]
+            specular_color: [ 0, 0, 0 ]
             shininess: 0
             transparency: 0.7
             density: 1000
