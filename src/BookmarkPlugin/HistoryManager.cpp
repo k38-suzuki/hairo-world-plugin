@@ -80,16 +80,10 @@ HistoryManagerImpl::~HistoryManagerImpl()
 void HistoryManager::initializeClass(ExtensionManager* ext)
 {
     if(!historyManager) {
-        historyManager = new HistoryManager();
+        historyManager = ext->manage(new HistoryManager());
     }
 
     MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("History"));
-}
-
-
-void HistoryManager::finalizeClass()
-{
-    delete historyManager;
 }
 
 

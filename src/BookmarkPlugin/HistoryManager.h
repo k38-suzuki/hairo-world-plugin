@@ -20,7 +20,6 @@ public:
     virtual ~HistoryManager();
 
     static void initializeClass(ExtensionManager* ext);
-    static void finalizeClass();
     static HistoryManager* instance();
 
     std::vector<std::string> histories() const;

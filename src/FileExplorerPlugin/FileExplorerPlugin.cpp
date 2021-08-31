@@ -26,12 +26,6 @@ public:
         return true;
     }
 
-    virtual bool finalize() override
-    {
-//        ProcessManager::finalizeClass();
-        return true;
-    }
-
     virtual const char* description() const override
     {
         static std::string text =

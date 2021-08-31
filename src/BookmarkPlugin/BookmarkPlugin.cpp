@@ -7,6 +7,7 @@
 #include <cnoid/Plugin>
 #include <cnoid/ProjectManager>
 #include <fmt/format.h>
+#include "BookmarkManagerDialog.h"
 #include "BookmarkManagerView.h"
 #include "HistoryManager.h"
 #include "gettext.h"
@@ -29,7 +30,8 @@ public:
 
     virtual bool initialize() override
     {
-        BookmarkManagerView::initializeClass(this);
+        BookmarkManagerDialog::initializeClass(this);
+//        BookmarkManagerView::initializeClass(this);
         HistoryManager::initializeClass(this);
 
         hm = HistoryManager::instance();
@@ -42,12 +44,6 @@ public:
 
         pm->sigProjectLoaded().connect([&](int level){ onProjectLoaded(pm->currentProjectFile()); });
 
-        return true;
-    }
-
-    virtual bool finalize() override
-    {
-        HistoryManager::finalizeClass();
         return true;
     }
 

@@ -29,12 +29,12 @@ class ProcessManagerImpl
 {
 public:
     ProcessManagerImpl(ProcessManager* self);
+    virtual ~ProcessManagerImpl();
     ProcessManager* self;
 
     vector<Process*> processes;
 
     void execute(const int argc, const char* argv[]);
-    void finalize();
 };
 
 }
@@ -59,10 +59,22 @@ ProcessManager::~ProcessManager()
 }
 
 
+ProcessManagerImpl::~ProcessManagerImpl()
+{
+    for(size_t i = 0; i < processes.size(); ++i) {
+        Process* process = processes[i];
+        if(process->state() != QProcess::NotRunning) {
+            process->kill();
+            process->waitForFinished(100);
+        }
+    }
+}
+
+
 void ProcessManager::initializeClass(ExtensionManager* ext)
 {
     if(!manager) {
-        manager = new ProcessManager();
+        manager = ext->manage(new ProcessManager());
     }
 
     ItemTreeView::instance()->customizeContextMenu<BodyItem>(
@@ -88,12 +100,6 @@ void ProcessManager::initializeClass(ExtensionManager* ext)
             menuManager.addSeparator();
             menuFunction.dispatchAs<Item>(item);
         });
-}
-
-
-void ProcessManager::finalizeClass()
-{
-    manager->finalize();
 }
 
 
@@ -123,22 +129,4 @@ void ProcessManagerImpl::execute(const int argc, const char* argv[])
     if(process->waitForStarted()) {}
 
     processes.push_back(process);
-}
-
-
-void ProcessManager::finalize()
-{
-    impl->finalize();
-}
-
-
-void ProcessManagerImpl::finalize()
-{
-    for(size_t i = 0; i < processes.size(); ++i) {
-        Process* process = processes[i];
-        if(process->state() != QProcess::NotRunning) {
-            process->kill();
-            process->waitForFinished(100);
-        }
-    }
 }
