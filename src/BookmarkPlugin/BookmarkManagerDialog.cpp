@@ -11,7 +11,6 @@
 #include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include <cnoid/RootItem>
-#include <cnoid/ToolBar>
 #include <cnoid/TreeWidget>
 #include <QDialogButtonBox>
 #include <QGridLayout>
@@ -22,8 +21,6 @@
 
 using namespace cnoid;
 using namespace std;
-
-BookmarkManagerDialog* dialog = nullptr;
 
 namespace {
 
@@ -140,20 +137,6 @@ BookmarkManagerDialogImpl::~BookmarkManagerDialogImpl()
             config->write(key, filename);
         }
     }
-}
-
-
-void BookmarkManagerDialog::initializeClass(ExtensionManager* ext)
-{
-    if(!dialog) {
-        dialog = ext->manage(new BookmarkManagerDialog());
-    }
-
-    ToolBar* bar = new ToolBar(_("Bookmark"));
-    ToolButton* button = bar->addButton("B");
-    button->sigClicked().connect([&](){ dialog->show(); });
-//    bar->setVisibleByDefault(true);
-    ext->addToolBar(bar);
 }
 
 

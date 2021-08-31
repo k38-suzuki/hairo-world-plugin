@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-30 17:15-0700\n"
+"POT-Creation-Date: 2021-08-31 16:29-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
 "Language-Team: Japanese\n"
@@ -17,64 +17,68 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../BookmarkManagerDialog.cpp:81 ../BookmarkManagerView.cpp:110
+#: ../BookmarkBar.cpp:30
+msgid "BookmarkBar"
+msgstr "ブックマークバー"
+
+#: ../BookmarkBar.cpp:42
+msgid "Show the bookmark dialog"
+msgstr "ブックマークダイアログの表示"
+
+#: ../BookmarkManagerDialog.cpp:78 ../BookmarkManagerView.cpp:110
 msgid "BookmarkManager"
 msgstr "ブックマークマネージャ"
 
-#: ../BookmarkManagerDialog.cpp:85
+#: ../BookmarkManagerDialog.cpp:82
 msgid "Project file"
 msgstr "プロジェクトファイル"
 
-#: ../BookmarkManagerDialog.cpp:98 ../BookmarkManagerView.cpp:77
+#: ../BookmarkManagerDialog.cpp:95 ../BookmarkManagerView.cpp:77
 msgid "+"
 msgstr "＋"
 
-#: ../BookmarkManagerDialog.cpp:98 ../BookmarkManagerView.cpp:78
+#: ../BookmarkManagerDialog.cpp:95 ../BookmarkManagerView.cpp:78
 msgid "-"
 msgstr "ー"
 
-#: ../BookmarkManagerDialog.cpp:98
+#: ../BookmarkManagerDialog.cpp:95
 msgid "&Open"
 msgstr "開く"
 
-#: ../BookmarkManagerDialog.cpp:98
+#: ../BookmarkManagerDialog.cpp:95
 msgid "&Cancel"
 msgstr "キャンセル"
 
-#: ../BookmarkManagerDialog.cpp:98
+#: ../BookmarkManagerDialog.cpp:95
 msgid "&Ok"
 msgstr "Ｏｋ"
 
-#: ../BookmarkManagerDialog.cpp:152
-msgid "Bookmark"
-msgstr "ブックマーク"
-
-#: ../BookmarkManagerDialog.cpp:182 ../BookmarkManagerView.cpp:188
+#: ../BookmarkManagerDialog.cpp:165 ../BookmarkManagerView.cpp:188
 msgid "Select a Choreonoid project file"
 msgstr "Choreonoidプロジェクトファイルの選択"
 
-#: ../BookmarkManagerDialog.cpp:185 ../BookmarkManagerView.cpp:80
+#: ../BookmarkManagerDialog.cpp:168 ../BookmarkManagerView.cpp:80
 #: ../BookmarkManagerView.cpp:191
 msgid "Open"
 msgstr "開く"
 
-#: ../BookmarkManagerDialog.cpp:186 ../BookmarkManagerView.cpp:192
+#: ../BookmarkManagerDialog.cpp:169 ../BookmarkManagerView.cpp:192
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: ../BookmarkManagerDialog.cpp:189 ../BookmarkManagerView.cpp:195
+#: ../BookmarkManagerDialog.cpp:172 ../BookmarkManagerView.cpp:195
 msgid "Project files (*.cnoid)"
 msgstr "プロジェクトファイル (*.cnoid)"
 
-#: ../BookmarkManagerDialog.cpp:190 ../BookmarkManagerView.cpp:196
+#: ../BookmarkManagerDialog.cpp:173 ../BookmarkManagerView.cpp:196
 msgid "Any files (*)"
 msgstr "全てのファイル(*)"
 
-#: ../BookmarkManagerDialog.cpp:230 ../BookmarkManagerView.cpp:126
+#: ../BookmarkManagerDialog.cpp:213 ../BookmarkManagerView.cpp:126
 msgid "Warning"
 msgstr "警告"
 
-#: ../BookmarkManagerDialog.cpp:235 ../BookmarkManagerView.cpp:131
+#: ../BookmarkManagerDialog.cpp:218 ../BookmarkManagerView.cpp:131
 msgid ""
 "A project item exists. Do you want to save it as a project file before "
 "loading a new project?"
@@ -82,7 +86,7 @@ msgstr ""
 "プロジェクトアイテムがあります．新しいプロジェクトを読み込む前にこのアイテム"
 "を保存しますか？"
 
-#: ../BookmarkManagerDialog.cpp:238 ../BookmarkManagerView.cpp:134
+#: ../BookmarkManagerDialog.cpp:221 ../BookmarkManagerView.cpp:134
 msgid ""
 "Project items exist. Do you want to save them as a project file before "
 "loading a new project?"
@@ -90,7 +94,7 @@ msgstr ""
 "プロジェクトアイテムあります．新しいプロジェクトを読み込む前にこのアイテムを"
 "保存しますか？"
 
-#: ../BookmarkManagerDialog.cpp:244 ../BookmarkManagerView.cpp:140
+#: ../BookmarkManagerDialog.cpp:227 ../BookmarkManagerView.cpp:140
 msgid ""
 "Project \"%1\" exists. Do you want to save it before loading a new project?"
 msgstr ""

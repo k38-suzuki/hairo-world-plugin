@@ -7,7 +7,7 @@
 #include <cnoid/Plugin>
 #include <cnoid/ProjectManager>
 #include <fmt/format.h>
-#include "BookmarkManagerDialog.h"
+#include "BookmarkBar.h"
 #include "BookmarkManagerView.h"
 #include "HistoryManager.h"
 #include "gettext.h"
@@ -30,7 +30,7 @@ public:
 
     virtual bool initialize() override
     {
-        BookmarkManagerDialog::initializeClass(this);
+        BookmarkBar::initializeClass(this);
 //        BookmarkManagerView::initializeClass(this);
         HistoryManager::initializeClass(this);
 
