@@ -25,7 +25,6 @@ public:
     {
         BookmarkBar::initializeClass(this);
         HistoryManager::initializeClass(this);
-
         return true;
     }
 

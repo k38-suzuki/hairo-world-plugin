@@ -3,10 +3,8 @@
    \author Kenta Suzuki
 */
 
-
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "AreaItem.h"
 #include "FluidAreaItem.h"
 #include "FluidDynamicsSimulatorItem.h"
 

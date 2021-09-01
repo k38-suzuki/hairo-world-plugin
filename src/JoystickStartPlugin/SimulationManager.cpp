@@ -91,7 +91,7 @@ SimulationManager::~SimulationManager()
 
 SimulationManagerImpl::~SimulationManagerImpl()
 {
-    Mapping* config = AppConfig::archive()->openMapping("JoystickStart");
+    Mapping* config = AppConfig::archive()->openMapping("joystick_start");
     config->write("use_joystick_start", useJoystickStart->isChecked());
     config->write("use_joystick_load", useJoystickLoad->isChecked());
 }
@@ -104,7 +104,7 @@ void SimulationManager::initializeClass(ExtensionManager* ext)
     }
 
     MenuManager& manager = ext->menuManager().setPath("/Options").setPath(N_("JoystickStart"));
-    Mapping* config = AppConfig::archive()->openMapping("JoystickStart");
+    Mapping* config = AppConfig::archive()->openMapping("joystick_start");
     useJoystickStart = manager.addCheckItem(_("Use JoystickStart"));
     useJoystickLoad = manager.addCheckItem(_("Use JoystickLoad"));
     useJoystickStart->setChecked(config->get("use_joystick_start", false));

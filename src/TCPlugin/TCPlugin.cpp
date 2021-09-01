@@ -3,7 +3,6 @@
    \author Kenta Suzuki
 */
 
-
 #include <cnoid/Plugin>
 #include <fmt/format.h>
 #include "TCAreaItem.h"

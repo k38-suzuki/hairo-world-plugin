@@ -82,7 +82,7 @@ HistoryManagerImpl::HistoryManagerImpl(HistoryManager *self)
     maxHistory = 10;
     pm = ProjectManager::instance();
 
-    Mapping* config = AppConfig::archive()->openMapping("History");
+    Mapping* config = AppConfig::archive()->openMapping("history");
     int size = config->get("num_history", 0);
     for(int i = 0; i < size; ++i) {
         string key = "history_" + to_string(i);
@@ -101,7 +101,7 @@ HistoryManager::~HistoryManager()
 HistoryManagerImpl::~HistoryManagerImpl()
 {
     int size = histories.size();
-    Mapping* config = AppConfig::archive()->openMapping("History");
+    Mapping* config = AppConfig::archive()->openMapping("history");
     config->write("num_history", size);
     for(int i = 0; i < size; ++i) {
         string project = histories[i];

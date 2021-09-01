@@ -82,8 +82,8 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
     QStringList labels = { _("Project file") };
     treeWidget->setHeaderLabels(labels);
 
-    Mapping* config = AppConfig::archive()->openMapping("Bookmark");
-    int size = config->get("numBookmark", 0);
+    Mapping* config = AppConfig::archive()->openMapping("bookmark");
+    int size = config->get("num_bookmark", 0);
     for(int i = 0; i < size; ++i) {
         string key = "bookmark_" + to_string(i);
         string filename = config->get(key, "");
@@ -127,8 +127,8 @@ BookmarkManagerDialog::~BookmarkManagerDialog()
 BookmarkManagerDialogImpl::~BookmarkManagerDialogImpl()
 {
     int size = treeWidget->topLevelItemCount();
-    Mapping* config = AppConfig::archive()->openMapping("Bookmark");
-    config->write("numBookmark", size);
+    Mapping* config = AppConfig::archive()->openMapping("bookmark");
+    config->write("num_bookmark", size);
     for(int i = 0; i < size; ++i) {
         QTreeWidgetItem* item = treeWidget->topLevelItem(i);
         if(item) {
