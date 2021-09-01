@@ -22,8 +22,8 @@ msgid "BookmarkBar"
 msgstr "ブックマークバー"
 
 #: ../BookmarkBar.cpp:42
-msgid "Show the bookmark dialog"
-msgstr "ブックマークダイアログの表示"
+msgid "Show the bookmark manager"
+msgstr "ブックマークマネージャの表示"
 
 #: ../BookmarkManagerDialog.cpp:78 ../BookmarkManagerView.cpp:110
 msgid "BookmarkManager"

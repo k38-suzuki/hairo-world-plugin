@@ -39,7 +39,7 @@ BookmarkBarImpl::BookmarkBarImpl(BookmarkBar* self)
 //    self->setVisibleByDefault(true);
 
     dialog = new BookmarkManagerDialog();
-    self->addButton(QIcon(":/Bookmark/icon/bookmark.svg"), _("Show the bookmark dialog"))
+    self->addButton(QIcon(":/Bookmark/icon/bookmark.svg"), _("Show the bookmark manager"))
             ->sigClicked().connect([&](){ dialog->show(); });
 }
 
