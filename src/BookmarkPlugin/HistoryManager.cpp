@@ -7,12 +7,46 @@
 #include <cnoid/AppConfig>
 #include <cnoid/MenuManager>
 #include <cnoid/ProjectManager>
+#include "BookmarkManagerView.h"
 #include "gettext.h"
 
 using namespace cnoid;
 using namespace std;
 
 HistoryManager* historyManager = nullptr;
+MenuManager menuManager;
+
+namespace {
+
+void onProjectLoaded(const string filename)
+{
+    if(!filename.empty()) {
+        Action* historyItem = menuManager.addItem(filename);
+        historyManager->addHistory(filename);
+
+        QWidget* current = menuManager.current();
+        QMenu* menu = dynamic_cast<QMenu*>(current);
+        if(menu) {
+            int size = menu->actions().size();
+            int max = historyManager->maxHistory();
+            if(size > max) {
+                Action* action = dynamic_cast<Action*>(menu->actions()[0]);
+                menu->removeAction(action);
+            }
+        }
+
+        historyItem->sigTriggered().connect([&, historyItem]() {
+            string history = historyItem->text().toStdString();
+            bool on = BookmarkManagerView::openDialogToLoadProject(history);
+            if(!on) {
+                return;
+            }
+        });
+    }
+}
+
+}
+
 
 namespace cnoid {
 
@@ -49,9 +83,9 @@ HistoryManagerImpl::HistoryManagerImpl(HistoryManager *self)
     pm = ProjectManager::instance();
 
     Mapping* config = AppConfig::archive()->openMapping("History");
-    int size = config->get("numHistory", 0);
+    int size = config->get("num_history", 0);
     for(int i = 0; i < size; ++i) {
-        string key = "history" + to_string(i);
+        string key = "history_" + to_string(i);
         string project = config->get(key, "");
         addHistory(project);
     }
@@ -68,10 +102,10 @@ HistoryManagerImpl::~HistoryManagerImpl()
 {
     int size = histories.size();
     Mapping* config = AppConfig::archive()->openMapping("History");
-    config->write("numHistory", size);
+    config->write("num_history", size);
     for(int i = 0; i < size; ++i) {
         string project = histories[i];
-        string key = "history" + to_string(i);
+        string key = "history_" + to_string(i);
         config->write(key, project);
     }
 }
@@ -83,7 +117,14 @@ void HistoryManager::initializeClass(ExtensionManager* ext)
         historyManager = ext->manage(new HistoryManager());
     }
 
-    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("History"));
+    menuManager = ext->menuManager().setPath("/Tools").setPath(_("History"));
+    std::vector<std::string> histories = historyManager->histories();
+    for(int i = 0; i < histories.size(); ++i) {
+        onProjectLoaded(histories[i]);
+    }
+
+    ProjectManager* pm = ProjectManager::instance();
+    pm->sigProjectLoaded().connect([&, pm](int level){ onProjectLoaded(pm->currentProjectFile()); });
 }
 
 
