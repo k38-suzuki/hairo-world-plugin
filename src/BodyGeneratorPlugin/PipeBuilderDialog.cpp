@@ -8,6 +8,7 @@
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/MainWindow>
+#include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/stdx/filesystem>
 #include <cnoid/YAMLWriter>
@@ -147,6 +148,7 @@ PipeBuilderDialogImpl::PipeBuilderDialogImpl(PipeBuilderDialog* self)
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
 
     vbox->addLayout(gbox);
+    vbox->addWidget(new HSeparator());
     vbox->addWidget(formWidget);
     vbox->addWidget(buttonBox);
     self->setLayout(vbox);

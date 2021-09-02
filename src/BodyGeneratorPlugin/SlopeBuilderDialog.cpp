@@ -8,6 +8,7 @@
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/MainWindow>
+#include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/YAMLWriter>
 #include <cnoid/stdx/filesystem>
@@ -115,6 +116,7 @@ SlopeBuilderDialogImpl::SlopeBuilderDialogImpl(SlopeBuilderDialog* self)
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
 
     vbox->addLayout(gbox);
+    vbox->addWidget(new HSeparator());
     vbox->addWidget(formWidget);
     vbox->addWidget(buttonBox);
     self->setLayout(vbox);

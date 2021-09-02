@@ -7,6 +7,7 @@
 #include <cnoid/Button>
 #include <cnoid/EigenTypes>
 #include <cnoid/MainWindow>
+#include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/YAMLWriter>
 #include <cnoid/stdx/filesystem>
@@ -166,6 +167,7 @@ GratingBuilderDialogImpl::GratingBuilderDialogImpl(GratingBuilderDialog* self)
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
 
     vbox->addLayout(gbox);
+    vbox->addWidget(new HSeparator());
     vbox->addWidget(formWidget);
     vbox->addWidget(buttonBox);
     self->setLayout(vbox);

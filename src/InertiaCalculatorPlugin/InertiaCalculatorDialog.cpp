@@ -8,6 +8,7 @@
 #include <cnoid/ComboBox>
 #include <cnoid/MenuManager>
 #include <cnoid/MessageView>
+#include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/EigenTypes>
 #include <fmt/format.h>
@@ -177,6 +178,7 @@ InertiaCalculatorDialogImpl::InertiaCalculatorDialogImpl(InertiaCalculatorDialog
     vbox->addLayout(sbox);
     vbox->addLayout(stbox);
     vbox->addWidget(messageView);
+    vbox->addWidget(new HSeparator());
     vbox->addWidget(buttonBox);
     self->setLayout(vbox);
 

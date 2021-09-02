@@ -392,6 +392,7 @@ CrawlerBuilderDialogImpl::CrawlerBuilderDialogImpl(CrawlerBuilderDialog* self)
     hbox->addLayout(gbox);
 //    hbox->addLayout(agbox);
     vbox->addLayout(hbox);
+    vbox->addWidget(new HSeparator());
     vbox->addWidget(formWidget);
     vbox->addWidget(buttonBox);
     self->setLayout(vbox);

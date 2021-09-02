@@ -8,6 +8,7 @@
 #include <cnoid/FileDialog>
 #include <cnoid/LineEdit>
 #include <cnoid/MainWindow>
+#include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/stdx/filesystem>
 #include <QDebug>
@@ -85,6 +86,7 @@ TerrainBuilderDialogImpl::TerrainBuilderDialogImpl(TerrainBuilderDialog* self)
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
 
     vbox->addLayout(gbox);
+    vbox->addWidget(new HSeparator());
     vbox->addWidget(formWidget);
     vbox->addWidget(buttonBox);
     self->setLayout(vbox);
