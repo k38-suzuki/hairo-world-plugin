@@ -3,10 +3,9 @@
    \author Kenta Suzuki
 */
 
-#include "CrawlerRobotBuilderDialog.h"
+#include "CrawlerBuilderDialog.h"
 #include <cnoid/Button>
 #include <cnoid/CheckBox>
-#include <cnoid/Dialog>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
@@ -29,13 +28,14 @@
 #include <QVBoxLayout>
 #include <cmath>
 #include <stdio.h>
+#include "FileFormWidget.h"
 #include "gettext.h"
 
 using namespace std;
 using namespace cnoid;
 namespace filesystem = cnoid::stdx::filesystem;
 
-CrawlerRobotBuilderDialog* builderDialog = nullptr;
+CrawlerBuilderDialog* crawlerDialog = nullptr;
 
 namespace {
 
@@ -153,21 +153,6 @@ SpinInfo spinInfo[] = {
 };
 
 
-struct DialogButtonInfo {
-    QDialogButtonBox::ButtonRole role;
-};
-
-
-DialogButtonInfo dialogButtonInfo[] = {
-    {  QDialogButtonBox::ResetRole },
-    { QDialogButtonBox::ActionRole },
-    { QDialogButtonBox::ActionRole },
-    { QDialogButtonBox::ActionRole },
-    { QDialogButtonBox::ActionRole },
-    { QDialogButtonBox::AcceptRole }
-};
-
-
 struct LabelInfo {
     int row;
     int column;
@@ -219,11 +204,11 @@ Info agxseparatorInfo[] = {
 
 namespace cnoid {
 
-class CrawlerRobotBuilderDialogImpl
+class CrawlerBuilderDialogImpl
 {
 public:
-    CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilderDialog* self);
-    CrawlerRobotBuilderDialog* self;
+    CrawlerBuilderDialogImpl(CrawlerBuilderDialog* self);
+    CrawlerBuilderDialog* self;
 
     enum DoubleSpinId {
         CHS_MAS, CHS_XSZ, CHS_YSZ, CHS_ZSZ,
@@ -257,23 +242,21 @@ public:
 
     enum CheckId { FFL_CHK, RFL_CHK, AGX_CHK, NUM_CHECKS };
 
-    enum DialogButtonId { RESET, SAVEAS, LOAD, EXPORT, EXPORTAS, OK, NUM_DBUTTONS };
+    enum DialogButtonId { RESET, IMPORT, EXPORT, NUMTBUTTONS };
 
     CheckBox* checks[NUM_CHECKS];
     PushButton* buttons[NUM_BUTTONS];
     DoubleSpinBox* dspins[NUM_DSPINS];
     DoubleSpinBox* agxdspins[NUM_AGXDSPINS];
     SpinBox* spins[NUM_SPINS];
-    PushButton* dialogButtons[NUM_DBUTTONS];
-    string bodyname;
+    PushButton* toolButtons[NUMTBUTTONS];
+    FileFormWidget* formWidget;
 
-    void onAccepted();
-    void onRejected();
+    bool save(const string& filename);
     void initialize();
     void onResetButtonClicked();
     void onExportYamlButtonClicked();
     void onImportYamlButtonClicked();
-    void onExportBodyButtonClicked(const bool& overwrite);
     void onEnableAgxCheckToggled(const bool& on);
     void onExportBody(const string& fileName);
     void onExportAGXBody(const string& fileName);
@@ -281,22 +264,23 @@ public:
     void setColor(PushButton* pushbutton, const Vector3& color);
     Vector3 extractColor(PushButton* colorButton);
     string getSaveFilename(FileDialog& dialog, const string& suffix);
+    void onAccepted();
+    void onRejected();
 };
 
 }
 
 
-CrawlerRobotBuilderDialog::CrawlerRobotBuilderDialog()
+CrawlerBuilderDialog::CrawlerBuilderDialog()
 {
-    impl = new CrawlerRobotBuilderDialogImpl(this);
+    impl = new CrawlerBuilderDialogImpl(this);
 }
 
 
-CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilderDialog* self)
+CrawlerBuilderDialogImpl::CrawlerBuilderDialogImpl(CrawlerBuilderDialog* self)
     : self(self)
 {
-    self->setWindowTitle(_("CrawlerRobotBuilder"));
-
+    self->setWindowTitle(_("CrawlerRobot Builder"));
     QGridLayout* gbox = new QGridLayout();
     QGridLayout* agbox = new QGridLayout();
 
@@ -384,87 +368,78 @@ CrawlerRobotBuilderDialogImpl::CrawlerRobotBuilderDialogImpl(CrawlerRobotBuilder
         agbox->addWidget(new QLabel(agxdlabels[i % 12]), info.row, info.column);
     }
 
-    const char* plabels[] = {
-        _("&Reset"), _("&Save As..."), _("&Load"),
-        _("&Export"), _("&Export As..."), _("&Ok")
-    };
+    const char* tlabels[] = { _("&Reset"), _("&Import"), _("&Export") };
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
-    for(int i = 0; i < NUM_DBUTTONS; ++i) {
-        DialogButtonInfo info = dialogButtonInfo[i];
-        dialogButtons[i] = new PushButton(plabels[i]);
-        PushButton* dialogButton = dialogButtons[i];
-        buttonBox->addButton(dialogButton, info.role);
-        if(i == OK) {
-            dialogButtons[i]->setDefault(true);
-        }
+    QHBoxLayout* thbox = new QHBoxLayout();
+    thbox->addStretch();
+    for(int i = 0; i < NUMTBUTTONS; ++i) {
+        toolButtons[i] = new PushButton(tlabels[i]);
+        PushButton* button = toolButtons[i];
+        thbox->addWidget(button);
     }
 
-    QVBoxLayout* vbox = new QVBoxLayout();
-    QHBoxLayout* hbox = new QHBoxLayout();
-    hbox->addLayout(gbox);
-//    hbox->addLayout(agbox);
-    vbox->addLayout(hbox);
-    vbox->addWidget(buttonBox);
+    formWidget = new FileFormWidget();
+
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    PushButton* okButton = new PushButton(_("&Ok"));
+    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
 
     initialize();
 
-    self->connect(buttonBox,SIGNAL(rejected()), self, SLOT(reject()));
-    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
-    dialogButtons[RESET]->sigClicked().connect([&](){ onResetButtonClicked(); });
-    dialogButtons[SAVEAS]->sigClicked().connect([&](){ onExportYamlButtonClicked(); });
-    dialogButtons[LOAD]->sigClicked().connect([&](){ onImportYamlButtonClicked(); });
-    dialogButtons[EXPORT]->sigClicked().connect([&](){ onExportBodyButtonClicked(true); });
-    dialogButtons[EXPORTAS]->sigClicked().connect([&](){ onExportBodyButtonClicked(false); });
-    checks[AGX_CHK]->sigToggled().connect([&](bool on){ onEnableAgxCheckToggled(on); });
+    QVBoxLayout* vbox = new QVBoxLayout();
+    QHBoxLayout* hbox = new QHBoxLayout();
+    vbox->addLayout(thbox);
+    hbox->addLayout(gbox);
+//    hbox->addLayout(agbox);
+    vbox->addLayout(hbox);
+    vbox->addWidget(formWidget);
+    vbox->addWidget(buttonBox);
     self->setLayout(vbox);
+
+    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
+    toolButtons[RESET]->sigClicked().connect([&](){ onResetButtonClicked(); });
+    toolButtons[IMPORT]->sigClicked().connect([&](){ onImportYamlButtonClicked(); });
+    toolButtons[EXPORT]->sigClicked().connect([&](){ onExportYamlButtonClicked(); });
+    checks[AGX_CHK]->sigToggled().connect([&](bool on){ onEnableAgxCheckToggled(on); });
+    formWidget->sigClicked().connect([&](string filename){ crawlerDialog->save(filename); });
 }
 
 
-CrawlerRobotBuilderDialog::~CrawlerRobotBuilderDialog()
+CrawlerBuilderDialog::~CrawlerBuilderDialog()
 {
     delete impl;
 }
 
 
-void CrawlerRobotBuilderDialog::initializeClass(ExtensionManager* ext)
+CrawlerBuilderDialog* CrawlerBuilderDialog::instance()
 {
-    if(!builderDialog) {
-        builderDialog = ext->manage(new CrawlerRobotBuilderDialog());
+    if(!crawlerDialog) {
+        crawlerDialog = new CrawlerBuilderDialog();
     }
-
-    MenuManager& menuManager = ext->menuManager();
-    menuManager.setPath("/Tools");
-    menuManager.addItem(_("CrawlerRobotBuilder"))
-            ->sigTriggered().connect([](){ builderDialog->show(); });
+    return crawlerDialog;
 }
 
 
-void CrawlerRobotBuilderDialog::onAccepted()
+bool CrawlerBuilderDialog::save(const string& filename)
 {
-    impl->onAccepted();
+    return impl->save(filename);
 }
 
 
-void CrawlerRobotBuilderDialogImpl::onAccepted()
+bool CrawlerBuilderDialogImpl::save(const string& filename)
 {
-
+    if(!filename.empty()) {
+        if(!checks[AGX_CHK]->isChecked()) {
+            onExportBody(filename);
+        } else {
+            onExportAGXBody(filename);
+        }
+    }
+    return true;
 }
 
 
-void CrawlerRobotBuilderDialog::onRejected()
-{
-    impl->onRejected();
-}
-
-
-void CrawlerRobotBuilderDialogImpl::onRejected()
-{
-
-}
-
-
-void CrawlerRobotBuilderDialogImpl::initialize()
+void CrawlerBuilderDialogImpl::initialize()
 {
     for(int i = 0; i < NUM_DSPINS; ++i) {
         DoubleSpinInfo info = doubleSpinInfo[i];
@@ -505,13 +480,13 @@ void CrawlerRobotBuilderDialogImpl::initialize()
 }
 
 
-void CrawlerRobotBuilderDialogImpl::onResetButtonClicked()
+void CrawlerBuilderDialogImpl::onResetButtonClicked()
 {
     initialize();
 }
 
 
-void CrawlerRobotBuilderDialogImpl::onImportYamlButtonClicked()
+void CrawlerBuilderDialogImpl::onImportYamlButtonClicked()
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Open a configuration file"));
@@ -585,7 +560,7 @@ void CrawlerRobotBuilderDialogImpl::onImportYamlButtonClicked()
 }
 
 
-void CrawlerRobotBuilderDialogImpl::onExportYamlButtonClicked()
+void CrawlerBuilderDialogImpl::onExportYamlButtonClicked()
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Save a configuration file"));
@@ -663,7 +638,7 @@ void CrawlerRobotBuilderDialogImpl::onExportYamlButtonClicked()
 }
 
 
-void CrawlerRobotBuilderDialogImpl::onEnableAgxCheckToggled(const bool& on)
+void CrawlerBuilderDialogImpl::onEnableAgxCheckToggled(const bool& on)
 {
     spins[TRK_BNN]->setEnabled(on);
     dspins[TRK_BNT]->setEnabled(on);
@@ -699,50 +674,7 @@ void CrawlerRobotBuilderDialogImpl::onEnableAgxCheckToggled(const bool& on)
 }
 
 
-void CrawlerRobotBuilderDialogImpl::onExportBodyButtonClicked(const bool& overwrite)
-{
-    FileDialog dialog(MainWindow::instance());
-    dialog.setWindowTitle(_("Save a Body file"));
-    dialog.setFileMode(QFileDialog::AnyFile);
-    dialog.setAcceptMode(QFileDialog::AcceptSave);
-    dialog.setViewMode(QFileDialog::List);
-    dialog.setLabelText(QFileDialog::Accept, _("Save"));
-    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
-    dialog.setOption(QFileDialog::DontConfirmOverwrite);
-
-    QStringList filters;
-    filters << _("Body files (*.body)");
-    filters << _("Any files (*)");
-    dialog.setNameFilters(filters);
-
-    dialog.updatePresetDirectories();
-
-    ProjectManager* pm = ProjectManager::instance();
-    string currentProjectFile = pm->currentProjectFile();
-    filesystem::path path(currentProjectFile);
-    string currentProjectName = path.stem().string();
-    if(!dialog.selectFilePath(currentProjectFile)) {
-        dialog.selectFile(currentProjectName);
-    }
-
-    if(bodyname.empty() || !overwrite) {
-        if(dialog.exec() == QDialog::Accepted) {
-            string suffix = ".body";
-            bodyname = getSaveFilename(dialog, suffix);
-        }
-    }
-
-    if(!bodyname.empty()) {
-        if(!checks[AGX_CHK]->isChecked()) {
-            onExportBody(bodyname);
-        } else {
-            onExportAGXBody(bodyname);
-        }
-    }
-}
-
-
-void CrawlerRobotBuilderDialogImpl::onExportBody(const string& fileName)
+void CrawlerBuilderDialogImpl::onExportBody(const string& fileName)
 {
     filesystem::path path(fileName);
     string bodyName = path.stem().string();
@@ -992,7 +924,7 @@ void CrawlerRobotBuilderDialogImpl::onExportBody(const string& fileName)
 }
 
 
-void CrawlerRobotBuilderDialogImpl::onExportAGXBody(const string& fileName)
+void CrawlerBuilderDialogImpl::onExportAGXBody(const string& fileName)
 {
     filesystem::path path(fileName);
     string bodyName = path.stem().string();
@@ -1470,7 +1402,7 @@ void CrawlerRobotBuilderDialogImpl::onExportAGXBody(const string& fileName)
 }
 
 
-void CrawlerRobotBuilderDialogImpl::onColorChanged(PushButton* pushbutton)
+void CrawlerBuilderDialogImpl::onColorChanged(PushButton* pushbutton)
 {
     QColor selectedColor;
     QColor currentColor = pushbutton->palette().color(QPalette::Button);
@@ -1490,7 +1422,7 @@ void CrawlerRobotBuilderDialogImpl::onColorChanged(PushButton* pushbutton)
 }
 
 
-void CrawlerRobotBuilderDialogImpl::setColor(PushButton* pushbutton, const Vector3& color)
+void CrawlerBuilderDialogImpl::setColor(PushButton* pushbutton, const Vector3& color)
 {
     QColor selectedColor;
     selectedColor.setRed(color[0] * 255.0);
@@ -1502,14 +1434,14 @@ void CrawlerRobotBuilderDialogImpl::setColor(PushButton* pushbutton, const Vecto
 }
 
 
-Vector3 CrawlerRobotBuilderDialogImpl::extractColor(PushButton* colorButton)
+Vector3 CrawlerBuilderDialogImpl::extractColor(PushButton* colorButton)
 {
     QColor selectedColor = colorButton->palette().color(QPalette::Button);
     return Vector3(selectedColor.red() / 255.0, selectedColor.green() / 255.0, selectedColor.blue() / 255.0);
 }
 
 
-string CrawlerRobotBuilderDialogImpl::getSaveFilename(FileDialog& dialog, const string& suffix)
+string CrawlerBuilderDialogImpl::getSaveFilename(FileDialog& dialog, const string& suffix)
 {
     string filename;
     auto filenames = dialog.selectedFiles();
@@ -1522,4 +1454,28 @@ string CrawlerRobotBuilderDialogImpl::getSaveFilename(FileDialog& dialog, const 
         }
     }
     return filename;
+}
+
+
+void CrawlerBuilderDialog::onAccepted()
+{
+    impl->onAccepted();
+}
+
+
+void CrawlerBuilderDialogImpl::onAccepted()
+{
+
+}
+
+
+void CrawlerBuilderDialog::onRejected()
+{
+    impl->onRejected();
+}
+
+
+void CrawlerBuilderDialogImpl::onRejected()
+{
+
 }

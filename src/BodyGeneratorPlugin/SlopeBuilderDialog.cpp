@@ -3,7 +3,7 @@
    \author Kenta Suzuki
 */
 
-#include "SlopeBuilderWidget.h"
+#include "SlopeBuilderDialog.h"
 #include <cnoid/Button>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
@@ -12,14 +12,18 @@
 #include <cnoid/YAMLWriter>
 #include <cnoid/stdx/filesystem>
 #include <QColorDialog>
+#include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QLabel>
 #include <QVBoxLayout>
+#include "FileFormWidget.h"
 #include "gettext.h"
 
 using namespace cnoid;
 using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
+
+SlopeBuilderDialog* slopeDialog = nullptr;
 
 namespace {
 
@@ -46,11 +50,11 @@ DoubleSpinInfo doubleSpinInfo[] = {
 
 namespace cnoid {
 
-class SlopeBuilderWidgetImpl
+class SlopeBuilderDialogImpl
 {
 public:
-    SlopeBuilderWidgetImpl(SlopeBuilderWidget* self);
-    SlopeBuilderWidget* self;
+    SlopeBuilderDialogImpl(SlopeBuilderDialog* self);
+    SlopeBuilderDialog* self;
 
     enum DoubleSpinId {
         MASS, WIDTH, HEIGHT,
@@ -59,24 +63,28 @@ public:
 
     DoubleSpinBox* dspins[NUM_DSPINS];
     PushButton* colorButton;
+    FileFormWidget* formWidget;
 
-    void writeYaml(const string& filename);
+    bool writeYaml(const string& filename);
     void onColorButtonClicked();
     VectorXd calcInertia();
+    void onAccepted();
+    void onRejected();
 };
 
 }
 
 
-SlopeBuilderWidget::SlopeBuilderWidget()
+SlopeBuilderDialog::SlopeBuilderDialog()
 {
-    impl = new SlopeBuilderWidgetImpl(this);
+    impl = new SlopeBuilderDialogImpl(this);
 }
 
 
-SlopeBuilderWidgetImpl::SlopeBuilderWidgetImpl(SlopeBuilderWidget* self)
+SlopeBuilderDialogImpl::SlopeBuilderDialogImpl(SlopeBuilderDialog* self)
     : self(self)
 {
+    self->setWindowTitle(_("Slope Builder"));
     QVBoxLayout* vbox = new QVBoxLayout();
     QGridLayout* gbox = new QGridLayout();
 
@@ -100,26 +108,45 @@ SlopeBuilderWidgetImpl::SlopeBuilderWidgetImpl(SlopeBuilderWidget* self)
     gbox->addWidget(new QLabel(_("Color [-]")), 2, 0);
     gbox->addWidget(colorButton, 2, 1);
 
+    formWidget = new FileFormWidget();
+
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    PushButton* okButton = new PushButton(_("&Ok"));
+    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
+
     vbox->addLayout(gbox);
+    vbox->addWidget(formWidget);
+    vbox->addWidget(buttonBox);
     self->setLayout(vbox);
 
+    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
+    formWidget->sigClicked().connect([&](string filename){ slopeDialog->save(filename); });
 }
 
 
-SlopeBuilderWidget::~SlopeBuilderWidget()
+SlopeBuilderDialog::~SlopeBuilderDialog()
 {
     delete impl;
 }
 
 
-void SlopeBuilderWidget::save(const string& filename)
+SlopeBuilderDialog* SlopeBuilderDialog::instance()
 {
-    impl->writeYaml(filename);
+    if(!slopeDialog) {
+        slopeDialog = new SlopeBuilderDialog();
+    }
+    return slopeDialog;
 }
 
 
-void SlopeBuilderWidgetImpl::writeYaml(const string& filename)
+bool SlopeBuilderDialog::save(const string& filename)
+{
+    return impl->writeYaml(filename);
+}
+
+
+bool SlopeBuilderDialogImpl::writeYaml(const string& filename)
 {
     filesystem::path path(filename);
 
@@ -215,10 +242,11 @@ void SlopeBuilderWidgetImpl::writeYaml(const string& filename)
         writer.endListing(); // end of links list
         writer.endMapping(); // end of body map
     }
+    return true;
 }
 
 
-void SlopeBuilderWidgetImpl::onColorButtonClicked()
+void SlopeBuilderDialogImpl::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -238,7 +266,7 @@ void SlopeBuilderWidgetImpl::onColorButtonClicked()
 }
 
 
-VectorXd SlopeBuilderWidgetImpl::calcInertia()
+VectorXd SlopeBuilderDialogImpl::calcInertia()
 {
     VectorXd inertia;
     inertia.resize(9);
@@ -256,4 +284,28 @@ VectorXd SlopeBuilderWidgetImpl::calcInertia()
     inertia << ix, 0.0, 0.0, 0.0, iy, 0.0, 0.0, 0.0, iz;
 
     return inertia;
+}
+
+
+void SlopeBuilderDialog::onAccepted()
+{
+    impl->onAccepted();
+}
+
+
+void SlopeBuilderDialogImpl::onAccepted()
+{
+
+}
+
+
+void SlopeBuilderDialog::onRejected()
+{
+    impl->onRejected();
+}
+
+
+void SlopeBuilderDialogImpl::onRejected()
+{
+
 }

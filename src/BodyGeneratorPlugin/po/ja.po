@@ -1,0 +1,339 @@
+# Japanese translations for PACKAGE package.
+# Copyright (C) 2020 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# suzuki <suzuki.kenta38@jaea.go.jp>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-09-01 23:35-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../BodyGenerator.cpp:52
+msgid "Pipe"
+msgstr "パイプ"
+
+#: ../BodyGenerator.cpp:52
+msgid "Grating"
+msgstr "グレーチング"
+
+#: ../BodyGenerator.cpp:52
+msgid "Slope"
+msgstr "スロープ"
+
+#: ../BodyGenerator.cpp:52
+msgid "BoxTerrain"
+msgstr "ボックステレイン"
+
+#: ../BodyGenerator.cpp:52
+msgid "CrawlerRobot"
+msgstr "クローラロボット"
+
+#: ../BodyGenerator.cpp:53
+msgid "BodyGenerator"
+msgstr "ボディジェネレータ"
+
+#: ../CrawlerBuilderDialog.cpp:283
+msgid "CrawlerRobot Builder"
+msgstr "クローラロボットビルダ"
+
+#: ../CrawlerBuilderDialog.cpp:316 ../CrawlerBuilderDialog.cpp:329
+msgid "Front SubTrack"
+msgstr "サブトラック（前）"
+
+#: ../CrawlerBuilderDialog.cpp:316 ../CrawlerBuilderDialog.cpp:329
+msgid "Rear SubTrack"
+msgstr "サブトラック（後）"
+
+#: ../CrawlerBuilderDialog.cpp:316
+msgid "AGX"
+msgstr "ＡＧＸ"
+
+#: ../CrawlerBuilderDialog.cpp:329
+msgid "Chassis"
+msgstr "シャーシ"
+
+#: ../CrawlerBuilderDialog.cpp:329
+msgid "Track"
+msgstr "トラック"
+
+#: ../CrawlerBuilderDialog.cpp:329
+msgid "Spacer"
+msgstr "スペーサ"
+
+#: ../CrawlerBuilderDialog.cpp:338 ../CrawlerBuilderDialog.cpp:339
+#: ../CrawlerBuilderDialog.cpp:340 ../CrawlerBuilderDialog.cpp:341
+#: ../CrawlerBuilderDialog.cpp:342
+msgid "mass [kg]"
+msgstr "質量 [kg]"
+
+#: ../CrawlerBuilderDialog.cpp:338 ../CrawlerBuilderDialog.cpp:339
+#: ../CrawlerBuilderDialog.cpp:340 ../CrawlerBuilderDialog.cpp:341
+#: ../CrawlerBuilderDialog.cpp:342
+msgid "color"
+msgstr "色"
+
+#: ../CrawlerBuilderDialog.cpp:338
+msgid "size(x-y-z) [m, m, m]"
+msgstr "サイズ(x-y-z)[m, m, m]"
+
+#: ../CrawlerBuilderDialog.cpp:339 ../CrawlerBuilderDialog.cpp:342
+msgid "radius [m]"
+msgstr "半径 [m]"
+
+#: ../CrawlerBuilderDialog.cpp:339 ../CrawlerBuilderDialog.cpp:340
+#: ../CrawlerBuilderDialog.cpp:341 ../CrawlerBuilderDialog.cpp:342
+msgid "width [m]"
+msgstr "幅 [m]"
+
+#: ../CrawlerBuilderDialog.cpp:339 ../CrawlerBuilderDialog.cpp:340
+#: ../CrawlerBuilderDialog.cpp:341
+msgid "wheelbase [m]"
+msgstr "ホイールベース [m]"
+
+#: ../CrawlerBuilderDialog.cpp:340 ../CrawlerBuilderDialog.cpp:341
+msgid "radius(forward-backward) [m]"
+msgstr "半径（前-後） [m"
+
+#: ../CrawlerBuilderDialog.cpp:350
+msgid "Track Belt"
+msgstr "ベルト（トラック）"
+
+#: ../CrawlerBuilderDialog.cpp:350
+msgid "SubTrack Belt"
+msgstr "ベルト（サブトラック）"
+
+#: ../CrawlerBuilderDialog.cpp:358
+msgid "number of nodes [-]"
+msgstr "ノードの数 [-]"
+
+#: ../CrawlerBuilderDialog.cpp:358
+msgid "node thickness [m]"
+msgstr "ノードの厚さ（凹） [m]"
+
+#: ../CrawlerBuilderDialog.cpp:359
+msgid "node width [m]"
+msgstr "ノードの幅 [m]"
+
+#: ../CrawlerBuilderDialog.cpp:359
+msgid "node thickerthickness [m]"
+msgstr "ノードの厚さ（凸） [m]"
+
+#: ../CrawlerBuilderDialog.cpp:360
+msgid "use thicker node every [-]"
+msgstr "ノードの周期 [-]"
+
+#: ../CrawlerBuilderDialog.cpp:360
+msgid "node distance tension [m, e-]"
+msgstr "ノードのテンション [m, e-]"
+
+#: ../CrawlerBuilderDialog.cpp:361
+msgid "stabilizing hinge friction parameter [-, e-]"
+msgstr "ヒンジの摩擦 [-, e-]"
+
+#: ../CrawlerBuilderDialog.cpp:361
+msgid "min stabilizing hinge normal force [N]"
+msgstr "ヒンジの法線力 [N]"
+
+#: ../CrawlerBuilderDialog.cpp:362
+msgid "hinge compliance [rad/Nm, e-]"
+msgstr "ヒンジコンプライアンス [rad/Nm, e-]"
+
+#: ../CrawlerBuilderDialog.cpp:362
+msgid "hinge spook damping [s]"
+msgstr "ヒンジスプークダンパ [s]"
+
+#: ../CrawlerBuilderDialog.cpp:363
+msgid "nodes to wheels merge threshold [-]"
+msgstr "ノードのマージ閾値 [-]"
+
+#: ../CrawlerBuilderDialog.cpp:363
+msgid "nodes to wheels split threshold [-]"
+msgstr "ノードのスプリット閾値 [-]"
+
+#: ../CrawlerBuilderDialog.cpp:371
+msgid "&Reset"
+msgstr "リセット"
+
+#: ../CrawlerBuilderDialog.cpp:371
+msgid "&Import"
+msgstr "インポート"
+
+#: ../CrawlerBuilderDialog.cpp:371
+msgid "&Export"
+msgstr "エクスポート"
+
+#: ../CrawlerBuilderDialog.cpp:384 ../GratingBuilderDialog.cpp:165
+#: ../PipeBuilderDialog.cpp:146 ../SlopeBuilderDialog.cpp:114
+#: ../TerrainBuilderDialog.cpp:84
+msgid "&Ok"
+msgstr "Ｏｋ"
+
+#: ../CrawlerBuilderDialog.cpp:492
+msgid "Open a configuration file"
+msgstr "設定ファイルの読み込み"
+
+#: ../CrawlerBuilderDialog.cpp:495 ../TerrainBuilderDialog.cpp:223
+msgid "Open"
+msgstr "読み込み"
+
+#: ../CrawlerBuilderDialog.cpp:496 ../CrawlerBuilderDialog.cpp:571
+#: ../FileFormWidget.cpp:109 ../TerrainBuilderDialog.cpp:224
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: ../CrawlerBuilderDialog.cpp:499 ../CrawlerBuilderDialog.cpp:575
+msgid "YAML files (*.yaml *.yml)"
+msgstr "YAMLファイル(*.yaml *.yml)"
+
+#: ../CrawlerBuilderDialog.cpp:500 ../CrawlerBuilderDialog.cpp:576
+#: ../FileFormWidget.cpp:114 ../TerrainBuilderDialog.cpp:228
+msgid "Any files (*)"
+msgstr "全てのファイル (*)"
+
+#: ../CrawlerBuilderDialog.cpp:566
+msgid "Save a configuration file"
+msgstr "設定ファイルの保存"
+
+#: ../CrawlerBuilderDialog.cpp:570 ../FileFormWidget.cpp:108
+msgid "Save"
+msgstr "保存"
+
+#: ../CrawlerBuilderDialog.cpp:1410 ../GratingBuilderDialog.cpp:404
+#: ../PipeBuilderDialog.cpp:297 ../SlopeBuilderDialog.cpp:254
+msgid "Select a color"
+msgstr "色の選択"
+
+#: ../FileFormWidget.cpp:68
+msgid "File"
+msgstr "ファイル"
+
+#: ../FileFormWidget.cpp:71
+msgid "&Save"
+msgstr "上書き保存"
+
+#: ../FileFormWidget.cpp:71
+msgid "&Save As..."
+msgstr "保存"
+
+#: ../FileFormWidget.cpp:104
+msgid "Save a Body file"
+msgstr "ボディを保存"
+
+#: ../FileFormWidget.cpp:113
+msgid "Body files (*.body)"
+msgstr "ボディファイル (*.body)"
+
+#: ../GratingBuilderDialog.cpp:112
+msgid "Grating Builder"
+msgstr "グレーチングビルダ"
+
+#: ../GratingBuilderDialog.cpp:117 ../PipeBuilderDialog.cpp:111
+#: ../SlopeBuilderDialog.cpp:92
+msgid "Mass [kg]"
+msgstr "質量 [kg]"
+
+#: ../GratingBuilderDialog.cpp:117 ../SlopeBuilderDialog.cpp:93
+msgid "Height [m]"
+msgstr "高さ [m]"
+
+#: ../GratingBuilderDialog.cpp:117
+msgid "Frame width [m]"
+msgstr "フレームの横幅 [m]"
+
+#: ../GratingBuilderDialog.cpp:118
+msgid "Frame height [m]"
+msgstr "フレームの縦幅 [m]"
+
+#: ../GratingBuilderDialog.cpp:118
+msgid "Grid width [m]"
+msgstr "格子の横幅 [m]"
+
+#: ../GratingBuilderDialog.cpp:118
+msgid "Grid height [m]"
+msgstr "格子の縦幅 [m]"
+
+#: ../GratingBuilderDialog.cpp:121
+msgid "Horizontal grid [-]"
+msgstr "横方向の格子数 [-]"
+
+#: ../GratingBuilderDialog.cpp:121
+msgid "Vertical grid [-]"
+msgstr "縦方向の格子数 [-]"
+
+#: ../GratingBuilderDialog.cpp:145
+msgid " "
+msgstr ""
+
+#: ../GratingBuilderDialog.cpp:157 ../PipeBuilderDialog.cpp:140
+#: ../SlopeBuilderDialog.cpp:108
+msgid "Color [-]"
+msgstr "色 [-]"
+
+#: ../GratingBuilderDialog.cpp:159
+msgid "Size [m, m, m]"
+msgstr "大きさ [m, m, m]"
+
+#: ../PipeBuilderDialog.cpp:107
+msgid "Pipe Builder"
+msgstr "パイプビルダ"
+
+#: ../PipeBuilderDialog.cpp:111 ../SlopeBuilderDialog.cpp:93
+msgid "Length [m]"
+msgstr "長さ [m]"
+
+#: ../PipeBuilderDialog.cpp:112
+msgid "Inner diameter [m]"
+msgstr "内径 [m]"
+
+#: ../PipeBuilderDialog.cpp:112
+msgid "Outer diameter [m]"
+msgstr "外径 [m]"
+
+#: ../PipeBuilderDialog.cpp:112 ../PipeBuilderDialog.cpp:115
+msgid "Opening angle [deg]"
+msgstr "開口角度 [deg]"
+
+#: ../PipeBuilderDialog.cpp:115
+msgid "Step angle [deg]"
+msgstr "きざみ角度 [deg]"
+
+#: ../SlopeBuilderDialog.cpp:87
+msgid "Slope Builder"
+msgstr "スロープビルダ"
+
+#: ../SlopeBuilderDialog.cpp:92
+msgid "Width [m]"
+msgstr "幅 [m]"
+
+#: ../TerrainBuilderDialog.cpp:60
+msgid "BoxTerrain Builder"
+msgstr "ボックステレインビルダ"
+
+#: ../TerrainBuilderDialog.cpp:70
+msgid "&Load"
+msgstr "読み込み"
+
+#: ../TerrainBuilderDialog.cpp:75
+msgid "Input File (.csv)"
+msgstr "入力ファイル (.csv)"
+
+#: ../TerrainBuilderDialog.cpp:78
+msgid "scale[0.1-10.0]"
+msgstr "スケール[0.1-10.0]"
+
+#: ../TerrainBuilderDialog.cpp:220
+msgid "Open a CSV file"
+msgstr "CSVファイルの読み込み"
+
+#: ../TerrainBuilderDialog.cpp:227
+msgid "CSV files (*.csv)"
+msgstr "CSVファイル(*.csv)"

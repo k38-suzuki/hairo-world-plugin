@@ -5,31 +5,31 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "ObjectBuilderDialog.h"
+#include "BodyGenerator.h"
 
 using namespace cnoid;
 
 namespace {
 
-class ObjectBuilderPlugin : public Plugin
+class BodyGeneratorPlugin : public Plugin
 {
 public:
 
-    ObjectBuilderPlugin() : Plugin("ObjectBuilder")
+    BodyGeneratorPlugin() : Plugin("BodyGenerator")
     {
         require("Body");
     }
 
     virtual bool initialize()
     {
-        ObjectBuilderDialog::initializeClass(this);
+        BodyGenerator::initializeClass(this);
         return true;
     }
 
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("ObjectBuilder Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            fmt::format("BodyGenerator Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyright (c) 2021 Japan Atomic Energy Agency.\n"
             "\n" +
@@ -40,4 +40,4 @@ public:
 
 }
 
-CNOID_IMPLEMENT_PLUGIN_ENTRY(ObjectBuilderPlugin)
+CNOID_IMPLEMENT_PLUGIN_ENTRY(BodyGeneratorPlugin)

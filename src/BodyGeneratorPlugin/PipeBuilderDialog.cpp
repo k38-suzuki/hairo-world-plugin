@@ -3,7 +3,7 @@
    \author Kenta Suzuki
 */
 
-#include "PipeBuilderWidget.h"
+#include "PipeBuilderDialog.h"
 #include <cnoid/Button>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
@@ -12,14 +12,18 @@
 #include <cnoid/stdx/filesystem>
 #include <cnoid/YAMLWriter>
 #include <QColorDialog>
+#include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QLabel>
 #include <QVBoxLayout>
+#include "FileFormWidget.h"
 #include "gettext.h"
 
 using namespace cnoid;
 using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
+
+PipeBuilderDialog* pipeDialog = nullptr;
 
 namespace {
 
@@ -64,11 +68,11 @@ SpinInfo spinInfo[] = {
 
 namespace cnoid {
 
-class PipeBuilderWidgetImpl
+class PipeBuilderDialogImpl
 {
 public:
-    PipeBuilderWidgetImpl(PipeBuilderWidget* self);
-    PipeBuilderWidget* self;
+    PipeBuilderDialogImpl(PipeBuilderDialog* self);
+    PipeBuilderDialog* self;
 
     enum DoubleSpinId { MASS, LENGTH, IN_DIA, OUT_DIA, NUM_DSPINS };
 
@@ -77,31 +81,35 @@ public:
     DoubleSpinBox* dspins[NUM_DSPINS];
     SpinBox* spins[NUM_SPINS];
     PushButton* colorButton;
+    FileFormWidget* formWidget;
 
-    void writeYaml(const string& filename);
+    bool writeYaml(const string& filename);
     void onColorButtonClicked();
     void onInnerDiameterChanged(const double& diameter);
     void onOuterDiameterChanged(const double& diameter);
     VectorXd calcInertia();
+    void onAccepted();
+    void onRejected();
 };
 
 }
 
 
-PipeBuilderWidget::PipeBuilderWidget()
+PipeBuilderDialog::PipeBuilderDialog()
 {
-    impl = new PipeBuilderWidgetImpl(this);
+    impl = new PipeBuilderDialogImpl(this);
 }
 
 
-PipeBuilderWidgetImpl::PipeBuilderWidgetImpl(PipeBuilderWidget* self)
+PipeBuilderDialogImpl::PipeBuilderDialogImpl(PipeBuilderDialog* self)
     : self(self)
 {
+    self->setWindowTitle(_("Pipe Builder"));
     QVBoxLayout* vbox = new QVBoxLayout();
     QGridLayout* gbox = new QGridLayout();
 
     const char* dlabels[] = { _("Mass [kg]"), _("Length [m]"),
-                              _("Inner diameter [m]"), _("Opening angle [deg]")
+                              _("Inner diameter [m]"), _("Outer diameter [m]")
                             };
 
     const char* slabels[] = { _("Opening angle [deg]"), _("Step angle [deg]") };
@@ -132,28 +140,47 @@ PipeBuilderWidgetImpl::PipeBuilderWidgetImpl(PipeBuilderWidget* self)
     gbox->addWidget(new QLabel(_("Color [-]")), 3, 0);
     gbox->addWidget(colorButton, 3, 1);
 
+    formWidget = new FileFormWidget();
+
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    PushButton* okButton = new PushButton(_("&Ok"));
+    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
+
     vbox->addLayout(gbox);
+    vbox->addWidget(formWidget);
+    vbox->addWidget(buttonBox);
     self->setLayout(vbox);
 
+    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
     dspins[IN_DIA]->sigValueChanged().connect([&](double value){ onInnerDiameterChanged(value); });
     dspins[OUT_DIA]->sigValueChanged().connect([&](double value){ onOuterDiameterChanged(value); });
+    formWidget->sigClicked().connect([&](string filename){ pipeDialog->save(filename); });
 }
 
 
-PipeBuilderWidget::~PipeBuilderWidget()
+PipeBuilderDialog::~PipeBuilderDialog()
 {
     delete impl;
 }
 
 
-void PipeBuilderWidget::save(const string& filename)
+PipeBuilderDialog* PipeBuilderDialog::instance()
 {
-    impl->writeYaml(filename);
+    if(!pipeDialog) {
+        pipeDialog = new PipeBuilderDialog();
+    }
+    return pipeDialog;
 }
 
 
-void PipeBuilderWidgetImpl::writeYaml(const string& filename)
+bool PipeBuilderDialog::save(const string& filename)
+{
+    return impl->writeYaml(filename);
+}
+
+
+bool PipeBuilderDialogImpl::writeYaml(const string& filename)
 {
     filesystem::path path(filename);
 
@@ -258,10 +285,11 @@ void PipeBuilderWidgetImpl::writeYaml(const string& filename)
         writer.endListing(); // end of links list
         writer.endMapping(); // end of body map
     }
+    return true;
 }
 
 
-void PipeBuilderWidgetImpl::onColorButtonClicked()
+void PipeBuilderDialogImpl::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -281,7 +309,7 @@ void PipeBuilderWidgetImpl::onColorButtonClicked()
 }
 
 
-void PipeBuilderWidgetImpl::onInnerDiameterChanged(const double& diameter)
+void PipeBuilderDialogImpl::onInnerDiameterChanged(const double& diameter)
 {
     double outerDiameter = dspins[OUT_DIA]->value();
     if(diameter >= outerDiameter) {
@@ -291,7 +319,7 @@ void PipeBuilderWidgetImpl::onInnerDiameterChanged(const double& diameter)
 }
 
 
-void PipeBuilderWidgetImpl::onOuterDiameterChanged(const double& diameter)
+void PipeBuilderDialogImpl::onOuterDiameterChanged(const double& diameter)
 {
     double innerDiameter = dspins[IN_DIA]->value();
     if(diameter <= innerDiameter) {
@@ -301,7 +329,7 @@ void PipeBuilderWidgetImpl::onOuterDiameterChanged(const double& diameter)
 }
 
 
-VectorXd PipeBuilderWidgetImpl::calcInertia()
+VectorXd PipeBuilderDialogImpl::calcInertia()
 {
     VectorXd innerInertia, outerInertia;
     innerInertia.resize(9);
@@ -338,4 +366,28 @@ VectorXd PipeBuilderWidgetImpl::calcInertia()
     VectorXd inertia = outerInertia - innerInertia;
 
     return inertia;
+}
+
+
+void PipeBuilderDialog::onAccepted()
+{
+    impl->onAccepted();
+}
+
+
+void PipeBuilderDialogImpl::onAccepted()
+{
+
+}
+
+
+void PipeBuilderDialog::onRejected()
+{
+    impl->onRejected();
+}
+
+
+void PipeBuilderDialogImpl::onRejected()
+{
+
 }

@@ -3,7 +3,7 @@
    \author Kenta Suzuki
 */
 
-#include "GratingBuilderWidget.h"
+#include "GratingBuilderDialog.h"
 #include <cnoid/Button>
 #include <cnoid/EigenTypes>
 #include <cnoid/MainWindow>
@@ -11,13 +11,18 @@
 #include <cnoid/YAMLWriter>
 #include <cnoid/stdx/filesystem>
 #include <QColorDialog>
+#include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QLabel>
 #include <QVBoxLayout>
+#include "FileFormWidget.h"
 #include "gettext.h"
+
 using namespace cnoid;
 using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
+
+GratingBuilderDialog* gratingDialog = nullptr;
 
 namespace {
 
@@ -63,11 +68,11 @@ SpinInfo spinInfo[] = {
 
 namespace cnoid {
 
-class GratingBuilderWidgetImpl
+class GratingBuilderDialogImpl
 {
 public:
-    GratingBuilderWidgetImpl(GratingBuilderWidget* self);
-    GratingBuilderWidget* self;
+    GratingBuilderDialogImpl(GratingBuilderDialog* self);
+    GratingBuilderDialog* self;
 
     enum DoubleSpinId {
         MASS, HEIGHT, FRAME_WDT,
@@ -82,25 +87,29 @@ public:
 
     QLabel* sizeLabel;
     PushButton* colorButton;
+    FileFormWidget* formWidget;
 
-    void writeYaml(const string& filename);
+    bool writeYaml(const string& filename);
     void onColorButtonClicked();
     void onValueChanged();
     VectorXd calcInertia();
+    void onAccepted();
+    void onRejected();
 };
 
 }
 
 
-GratingBuilderWidget::GratingBuilderWidget()
+GratingBuilderDialog::GratingBuilderDialog()
 {
-    impl = new GratingBuilderWidgetImpl(this);
+    impl = new GratingBuilderDialogImpl(this);
 }
 
 
-GratingBuilderWidgetImpl::GratingBuilderWidgetImpl(GratingBuilderWidget* self)
+GratingBuilderDialogImpl::GratingBuilderDialogImpl(GratingBuilderDialog* self)
     : self(self)
 {
+    self->setWindowTitle(_("Grating Builder"));
     QVBoxLayout* vbox = new QVBoxLayout();
     QGridLayout* gbox = new QGridLayout();
 
@@ -150,11 +159,20 @@ GratingBuilderWidgetImpl::GratingBuilderWidgetImpl(GratingBuilderWidget* self)
     gbox->addWidget(new QLabel(_("Size [m, m, m]")), 5, 0);
     gbox->addWidget(sizeLabel, 5, 1, 1, 3);
 
+    formWidget = new FileFormWidget();
+
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    PushButton* okButton = new PushButton(_("&Ok"));
+    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
+
     vbox->addLayout(gbox);
+    vbox->addWidget(formWidget);
+    vbox->addWidget(buttonBox);
     self->setLayout(vbox);
 
     onValueChanged();
 
+    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
     dspins[FRAME_WDT]->sigValueChanged().connect([&](double value){ onValueChanged(); });
     dspins[FRAME_HGT]->sigValueChanged().connect([&](double value){ onValueChanged(); });
@@ -163,22 +181,32 @@ GratingBuilderWidgetImpl::GratingBuilderWidgetImpl(GratingBuilderWidget* self)
     spins[H_GRID]->sigValueChanged().connect([&](double value){ onValueChanged(); });
     spins[V_GRID]->sigValueChanged().connect([&](double value){ onValueChanged(); });
     dspins[HEIGHT]->sigValueChanged().connect([&](double value){ onValueChanged(); });
+    formWidget->sigClicked().connect([&](string filename){ gratingDialog->save(filename); });
 }
 
 
-GratingBuilderWidget::~GratingBuilderWidget()
+GratingBuilderDialog::~GratingBuilderDialog()
 {
     delete impl;
 }
 
 
-void GratingBuilderWidget::save(const string& filename)
+GratingBuilderDialog* GratingBuilderDialog::instance()
 {
-    impl->writeYaml(filename);
+    if(!gratingDialog) {
+        gratingDialog = new GratingBuilderDialog();
+    }
+    return gratingDialog;
 }
 
 
-void GratingBuilderWidgetImpl::writeYaml(const string& filename)
+bool GratingBuilderDialog::save(const string& filename)
+{
+    return impl->writeYaml(filename);
+}
+
+
+bool GratingBuilderDialogImpl::writeYaml(const string& filename)
 {
     filesystem::path path(filename);
 
@@ -364,10 +392,11 @@ void GratingBuilderWidgetImpl::writeYaml(const string& filename)
         writer.endListing(); // end of links list
         writer.endMapping(); // end of body map
     }
+    return true;
 }
 
 
-void GratingBuilderWidgetImpl::onColorButtonClicked()
+void GratingBuilderDialogImpl::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -387,7 +416,7 @@ void GratingBuilderWidgetImpl::onColorButtonClicked()
 }
 
 
-void GratingBuilderWidgetImpl::onValueChanged()
+void GratingBuilderDialogImpl::onValueChanged()
 {
     double frameWidth = dspins[FRAME_WDT]->value();
     double frameHeight = dspins[FRAME_HGT]->value();
@@ -407,7 +436,7 @@ void GratingBuilderWidgetImpl::onValueChanged()
 }
 
 
-VectorXd GratingBuilderWidgetImpl::calcInertia()
+VectorXd GratingBuilderDialogImpl::calcInertia()
 {
     VectorXd inertia;
     inertia.resize(9);
@@ -434,3 +463,26 @@ VectorXd GratingBuilderWidgetImpl::calcInertia()
     return inertia;
 }
 
+
+void GratingBuilderDialog::onAccepted()
+{
+    impl->onAccepted();
+}
+
+
+void GratingBuilderDialogImpl::onAccepted()
+{
+
+}
+
+
+void GratingBuilderDialog::onRejected()
+{
+    impl->onRejected();
+}
+
+
+void GratingBuilderDialogImpl::onRejected()
+{
+
+}
