@@ -17,25 +17,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../TCAreaItem.cpp:171
-msgid "Box"
-msgstr ""
-
-#: ../TCAreaItem.cpp:172
-msgid "Cylinder"
-msgstr ""
-
-#: ../TCAreaItem.cpp:173
-msgid "Sphere"
-msgstr ""
-
 #: ../TCAreaItem.cpp:249
 msgid "TCAreaItem"
-msgstr "TCエリアアイテム"
+msgstr "通信制御エリアアイテム"
 
 #: ../TCAreaItem.cpp:253
 msgid "TC Area"
-msgstr "通信エリア"
+msgstr "通信制御エリア"
 
 #: ../TCAreaItem.cpp:796
 msgid "InboundDelay"
@@ -111,7 +99,7 @@ msgstr ""
 
 #: ../TCSimulatorItem.cpp:167
 msgid "TCSimulatorItem"
-msgstr "TCシミュレータアイテム"
+msgstr "通信制御シミュレータアイテム"
 
 #: ../TCSimulatorItem.cpp:231
 msgid "Interface"
