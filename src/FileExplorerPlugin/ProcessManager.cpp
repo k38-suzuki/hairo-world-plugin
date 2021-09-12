@@ -81,9 +81,9 @@ void ProcessManager::initializeClass(ExtensionManager* ext)
         [](BodyItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
             menuManager.setPath("/").setPath(_("Open"));
             menuManager.addItem(_("File"))->sigTriggered().connect(
-                [item](){ manager->execute(item, ProgramId::NAUTILUS); });
-            menuManager.addItem(_("Directory"))->sigTriggered().connect(
                 [item](){ manager->execute(item, ProgramId::GEDIT); });
+            menuManager.addItem(_("Directory"))->sigTriggered().connect(
+                [item](){ manager->execute(item, ProgramId::NAUTILUS); });
             menuManager.setPath("/");
             menuManager.addSeparator();
             menuFunction.dispatchAs<Item>(item);
@@ -93,9 +93,9 @@ void ProcessManager::initializeClass(ExtensionManager* ext)
         [](SceneItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
             menuManager.setPath("/").setPath(_("Open"));
             menuManager.addItem(_("File"))->sigTriggered().connect(
-                [item](){ manager->execute(item, ProgramId::NAUTILUS); });
-            menuManager.addItem(_("Directory"))->sigTriggered().connect(
                 [item](){ manager->execute(item, ProgramId::GEDIT); });
+            menuManager.addItem(_("Directory"))->sigTriggered().connect(
+                [item](){ manager->execute(item, ProgramId::NAUTILUS); });
             menuManager.setPath("/");
             menuManager.addSeparator();
             menuFunction.dispatchAs<Item>(item);
