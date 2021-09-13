@@ -129,11 +129,12 @@ bool MotionCaptureSimulatorItemImpl::initializeSimulation(SimulatorItem* simulat
     }
 
     QDateTime dateTime = QDateTime::currentDateTime();
-    string date = dateTime.toString("yyyyMMdd_hhmmss").toStdString();
+    string date = dateTime.toString("yyyyMMddhhmmss").toStdString();
 
     if(record) {
         item = new MarkerPointItem();
-        item->setName(date);
+        string name = "Marker Points - " + date;
+        item->setName(name);
         self->addChildItem(item);
         item->setChecked(false);
         int numParts = markers.size();

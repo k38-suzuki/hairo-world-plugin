@@ -36,6 +36,7 @@ items:
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
+            initialJointPositions: [ 0, 0 ]
             staticModel: false
             collisionDetection: true
             selfCollisionDetection: false
@@ -112,15 +113,6 @@ items:
             kinematicWalking: false
             2Dmode: false
             oldAccelSensorMode: false
-          children: 
-            - 
-              id: 6
-              name: "CollisionVisualizer"
-              plugin: CollisionSeq
-              class: CollisionVisualizerItem
-              data: 
-                enabled: true
-                recordCollisionStates: false
 views: 
   - 
     id: 0
@@ -355,17 +347,17 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 1454, 462 ]
+      sizes: [ 1889, 600 ]
       children: 
         - 
           type: splitter
           orientation: horizontal
-          sizes: [ 376, 1074 ]
+          sizes: [ 489, 1396 ]
           children: 
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 537, 535 ]
+              sizes: [ 630, 627 ]
               children: 
                 - 
                   type: pane
@@ -377,7 +369,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 804, 268 ]
+              sizes: [ 943, 314 ]
               children: 
                 - 
                   type: pane
@@ -389,7 +381,7 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 201, 871 ]
+          sizes: [ 236, 1021 ]
           children: 
             - 
               type: pane
@@ -397,7 +389,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 340, 527 ]
+              sizes: [ 399, 618 ]
               children: 
                 - 
                   type: pane
