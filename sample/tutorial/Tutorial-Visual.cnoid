@@ -60,11 +60,11 @@ items:
               id: 4
               name: "VisualEffector"
               plugin: VisualEffect
-              class: VisualEffector
+              class: VisualEffectorItem
               data: 
                 sub_items: 
                   - 
-                    class: CameraImageVisualizer2
+                    class: CameraImageVisualizerItem2
                     name: Kinect_Image
                     is_checked: true
                     hue: 0
