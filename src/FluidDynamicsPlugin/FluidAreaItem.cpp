@@ -159,11 +159,11 @@ void FluidAreaItem::initializeClass(ExtensionManager* ext)
     im.registerClass<FluidAreaItem>(N_("FluidAreaItem"));
     im.addCreationPanel<FluidAreaItem>();
 
-    im.addLoaderAndSaver<FluidAreaItem>(
-        _("Fluid Area"), "FLUID-AREA-FILE", "yaml;yml",
-        [](FluidAreaItem* item, const std::string& filename, std::ostream& os, Item*){ return load(item, filename); },
-        [](FluidAreaItem* item, const std::string& filename, std::ostream& os, Item*){ return save(item, filename); },
-        ItemManager::PRIORITY_CONVERSION);
+//    im.addLoaderAndSaver<FluidAreaItem>(
+//        _("Fluid Area"), "FLUID-AREA-FILE", "yaml;yml",
+//        [](FluidAreaItem* item, const std::string& filename, std::ostream& os, Item*){ return load(item, filename); },
+//        [](FluidAreaItem* item, const std::string& filename, std::ostream& os, Item*){ return save(item, filename); },
+//        ItemManager::PRIORITY_CONVERSION);
 }
 
 

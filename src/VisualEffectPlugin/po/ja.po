@@ -17,19 +17,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../CameraVisualizerItem.cpp:102
-msgid "CameraVisualizer"
-msgstr "カメラビジュアライザ"
+#: ../VisualEffectorItem.cpp:102
+msgid "VisualEffectorItem"
+msgstr "視覚効果アイテム"
 
-#: ../CameraVisualizerItem.cpp:105
-msgid "CameraImageVisualizer2"
-msgstr "カメラ画像ビジュアライザ２"
+#: ../VisualEffectorItem.cpp:105
+msgid "CameraImageVisualizerItem2"
+msgstr "カメラ画像ビジュアライザアイテム２"
 
-#: ../CameraVisualizerItem.cpp:106
-msgid "LightSwitcher"
-msgstr "ライトスイッチャ"
+#: ../VisualEffectorItem.cpp:106
+msgid "LightSwitcherItem"
+msgstr "ライトスイッチャアイテム"
 
-#: ../CameraVisualizerItem.cpp:113
+#: ../VisualEffectorItem.cpp:113
 msgid "Show the config dialog"
 msgstr "設定ダイアログの表示"
 
@@ -111,12 +111,12 @@ msgstr "フィルタ"
 
 #: ../VisualEffectDialog.cpp:129
 msgid "&Reset"
-msgstr ""
+msgstr "リセット"
 
 #: ../VisualEffectDialog.cpp:130
 msgid "&Ok"
-msgstr ""
+msgstr "Ｏｋ"
 
 #: ../VisualEffectDialog.cpp:138
 msgid "Visual Effects"
-msgstr ""
+msgstr "視覚効果"

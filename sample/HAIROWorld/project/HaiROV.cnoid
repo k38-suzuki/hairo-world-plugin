@@ -56,13 +56,13 @@ items:
                 export_symbols: false
             - 
               id: 4
-              name: "CameraVisualizer"
+              name: "VisualEffector"
               plugin: VisualEffect
-              class: CameraVisualizer
+              class: VisualEffectorItem
               data: 
                 sub_items: 
                   - 
-                    class: CameraImageVisualizer2
+                    class: CameraImageVisualizerItem2
                     name: FrontCamera
                     is_checked: true
                     hue: 0
@@ -79,7 +79,7 @@ items:
                     flip: false
                     filter: 0
                   - 
-                    class: CameraImageVisualizer2
+                    class: CameraImageVisualizerItem2
                     name: BottomCamera
                     is_checked: true
                     hue: 0

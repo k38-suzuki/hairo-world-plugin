@@ -57,13 +57,13 @@ items:
                 export_symbols: false
             - 
               id: 4
-              name: "CameraVisualizer"
+              name: "VisualEffector"
               plugin: VisualEffect
-              class: CameraVisualizer
+              class: VisualEffectorItem
               data: 
                 sub_items: 
                   - 
-                    class: CameraImageVisualizer2
+                    class: CameraImageVisualizerItem2
                     name: FrontCamera
                     is_checked: true
                     hue: 0
@@ -130,15 +130,6 @@ items:
                     cycle_time: 0.1
                 - 
                   id: 8
-                  name: "TCSimulator"
-                  plugin: TC
-                  class: TCSimulatorItem
-                  data: 
-                    enabled: true
-                    interface: "lo"
-                    ifb_device: "ifb0"
-                - 
-                  id: 9
                   name: "GLVisionSimulator"
                   plugin: Body
                   class: GLVisionSimulatorItem
@@ -156,7 +147,7 @@ items:
                     enableAdditionalLights: true
                     antiAliasing: false
         - 
-          id: 10
+          id: 9
           name: "FluidArea"
           plugin: FluidDynamics
           class: FluidAreaItem
@@ -177,59 +168,7 @@ items:
             viscosity: 0.00002
             flow: [ 0, 0, 0 ]
         - 
-          id: 11
-          name: "TCArea"
-          plugin: TC
-          class: TCAreaItem
-          is_checked: true
-          data: 
-            translation: [ 0, -1.5, 2 ]
-            rotation: [ 0, 0, 0 ]
-            type: 0
-            size: [ 3, 3, 1 ]
-            radius: 1
-            height: 1
-            diffuse_color: [ 1, 1, 0 ]
-            emissive_color: [ 0, 0, 0 ]
-            specular_color: [ 0, 0, 0 ]
-            shininess: 0
-            transparency: 0.8
-            inbound_delay: 50
-            inbound_rate: 0
-            inbound_loss: 0
-            outbound_delay: 150
-            outbound_rate: 0
-            outbound_loss: 0
-            source: ""
-            destination: ""
-        - 
-          id: 12
-          name: "TCArea2"
-          plugin: TC
-          class: TCAreaItem
-          is_checked: true
-          data: 
-            translation: [ 0, 1.5, 2 ]
-            rotation: [ 0, 0, 0 ]
-            type: 0
-            size: [ 3, 3, 1 ]
-            radius: 1
-            height: 1
-            diffuse_color: [ 1, 0, 0 ]
-            emissive_color: [ 0, 0, 0 ]
-            specular_color: [ 0, 0, 0 ]
-            shininess: 0
-            transparency: 0.8
-            inbound_delay: 100
-            inbound_rate: 0
-            inbound_loss: 0
-            outbound_delay: 200
-            outbound_rate: 0
-            outbound_loss: 0
-            source: ""
-            destination: ""
-        - 
-          id: 13
+          id: 10
           name: "Labo1"
           plugin: Body
           class: BodyItem
@@ -257,14 +196,14 @@ items:
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
         - 
-          id: 14
+          id: 11
           name: "FluidArea"
           plugin: FluidDynamics
           class: FluidAreaItem
           is_checked: true
           data: 
             translation: [ 0, 0, 2 ]
-            rotation: [ 0, 0, 0 ]
+            rotation: [ 0, 0, -90 ]
             type: 1
             size: [ 1, 1, 1 ]
             radius: 1
@@ -496,7 +435,7 @@ Body:
         show_cm_projection: false
         show_zmp: false
       - 
-        bodyItem: 13
+        bodyItem: 10
         show_cm: false
         show_cm_projection: false
         show_zmp: false

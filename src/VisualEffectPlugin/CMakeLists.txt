@@ -1,17 +1,17 @@
 
 set(sources
-    CameraVisualizerItem.cpp
     ImageGenerator.cpp
     VisualEffect.cpp
     VisualEffectDialog.cpp
+    VisualEffectorItem.cpp
     VisualEffectPlugin.cpp
     )
 
 set(headers
-    CameraVisualizerItem.h
     ImageGenerator.h
     VisualEffect.h
     VisualEffectDialog.h
+    VisualEffectorItem.h
     exportdecl.h
     gettext.h
     )

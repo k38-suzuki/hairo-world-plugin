@@ -11,9 +11,9 @@ items:
       class: WorldItem
       is_checked: true
       data: 
-        collisionDetection: false
-        collisionDetector: AISTCollisionDetector
-        materialTableFile: "${SHARE}/default/materials.yaml"
+        collision_detection: false
+        collision_detector: AISTCollisionDetector
+        default_material_table_file: "${SHARE}/default/materials.yaml"
       children: 
         - 
           id: 2
@@ -53,15 +53,14 @@ items:
                 isNoDelayMode: false
                 controllerOptions: ""
                 controller: "TankJoystickController"
-                baseDirectory: "Controller directory"
+                base_directory: "Controller directory"
                 reloading: true
-                exportSymbols: false
-                isOldTargetVariableMode: false
+                export_symbols: false
             - 
               id: 4
-              name: "CameraVisualizer"
+              name: "VisualEffector"
               plugin: VisualEffect
-              class: CameraVisualizer
+              class: VisualEffector
               data: 
                 sub_items: 
                   - 
@@ -74,12 +73,13 @@ items:
                     red: 0
                     green: 0
                     blue: 0
-                    coef_b: -0.3
+                    coef_b: 0
                     coef_d: 1
                     std_dev: 0
                     salt: 0
                     pepper: 0
                     flip: false
+                    filter: 0
                   - 
                     class: CameraImageVisualizer2
                     name: Theta
@@ -95,6 +95,7 @@ items:
                     salt: 0
                     pepper: 0
                     flip: false
+                    filter: 0
                   - 
                     class: LightSwitcher
                     name: Light
@@ -133,7 +134,7 @@ items:
           class: SceneItem
           data: 
             file: "${SHARE}/model/misc/fog.wrl"
-            format: VRML-FILE
+            format: GENERAL-3D-MODEL
             translation: [ 0, 0, 0 ]
             rotation: [ 1, 0, 0, 0 ]
             angle_unit: degree
@@ -211,7 +212,6 @@ views:
       expanded: [ 1, 2, 4, 7 ]
   - 
     id: 3
-    name: "Location"
     plugin: Base
     class: LocationView
     state: 
@@ -287,7 +287,6 @@ views:
       isDedicatedItemCheckEnabled: false
   - 
     id: 6
-    name: "Virtual Joystick"
     plugin: Base
     class: VirtualJoystickView
     mounted: true
@@ -313,7 +312,6 @@ views:
       show_phases: true
   - 
     id: 9
-    name: "Links / Devices"
     plugin: Body
     class: LinkDeviceListView
     mounted: true
@@ -322,7 +320,6 @@ views:
       listingMode: list
   - 
     id: 10
-    name: "Link Position"
     plugin: Body
     class: LinkPositionView
     state: 
@@ -335,15 +332,10 @@ views:
       target_link_type: ik_link
   - 
     id: 11
-    name: "Link Properties"
     plugin: Body
     class: LinkPropertyView
   - 
     id: 12
-    plugin: FileBox
-    class: FileBoxView
-  - 
-    id: 13
     plugin: Python
     class: PythonConsoleView
     mounted: true
@@ -358,6 +350,8 @@ toolbars:
     speedScale: 1
     syncToOngoingUpdates: true
     autoExpansion: true
+  "LeggedBodyBar": 
+    stanceWidth: 0.15
   "KinematicsBar": 
     forward_kinematics: true
     inverse_kinematics: true
@@ -368,8 +362,6 @@ toolbars:
     snapDistance: 0.025
     penetrationBlockDepth: 0.0005
     lazyCollisionDetectionMode: true
-  "LeggedBodyBar": 
-    stanceWidth: 0.15
   "BodyMotionGenerationBar": 
     autoGenerationForNewBody: true
     balancer: false
@@ -413,14 +405,14 @@ Body:
     editableSceneBodies: 
       - 
         bodyItem: 2
-        showCenterOfMass: false
-        showPpcom: false
-        showZmp: false
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
       - 
         bodyItem: 5
-        showCenterOfMass: false
-        showPpcom: false
-        showZmp: false
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
   "KinematicFaultChecker": 
     checkJointPositions: true
     angleMargin: 0
@@ -442,12 +434,12 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 245, 1044 ]
+      sizes: [ 473, 2016 ]
       children: 
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 293, 292 ]
+          sizes: [ 630, 627 ]
           children: 
             - 
               type: pane
@@ -459,12 +451,12 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 419, 166 ]
+          sizes: [ 900, 357 ]
           children: 
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 487, 553 ]
+              sizes: [ 942, 1070 ]
               children: 
                 - 
                   type: pane
@@ -476,11 +468,11 @@ viewAreas:
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 627, 413 ]
+              sizes: [ 1213, 799 ]
               children: 
                 - 
                   type: pane
-                  views: [ 4, 13 ]
+                  views: [ 4, 12 ]
                   current: 4
                 - 
                   type: pane

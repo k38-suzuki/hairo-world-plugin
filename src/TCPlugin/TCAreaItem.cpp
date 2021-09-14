@@ -183,11 +183,11 @@ void TCAreaItem::initializeClass(ExtensionManager* ext)
     im.registerClass<TCAreaItem>(N_("TCAreaItem"));
     im.addCreationPanel<TCAreaItem>();
 
-    im.addLoaderAndSaver<TCAreaItem>(
-        _("TC Area"), "TC-AREA-FILE", "yaml;yml",
-        [](TCAreaItem* item, const string& filename, std::ostream& os, Item*){ return load(item, filename); },
-        [](TCAreaItem* item, const string& filename, std::ostream& os, Item*){ return save(item, filename); },
-        ItemManager::PRIORITY_CONVERSION);
+//    im.addLoaderAndSaver<TCAreaItem>(
+//        _("TC Area"), "TC-AREA-FILE", "yaml;yml",
+//        [](TCAreaItem* item, const string& filename, std::ostream& os, Item*){ return load(item, filename); },
+//        [](TCAreaItem* item, const string& filename, std::ostream& os, Item*){ return save(item, filename); },
+//        ItemManager::PRIORITY_CONVERSION);
 }
 
 

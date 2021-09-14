@@ -5,7 +5,7 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "CameraVisualizerItem.h"
+#include "VisualEffectorItem.h"
 #include "VisualEffectDialog.h"
 
 using namespace cnoid;
@@ -24,7 +24,7 @@ public:
     virtual bool initialize() override
     {
         VisualEffectDialog::initializeClass(this);
-        CameraVisualizerItem::initializeClass(this);
+        VisualEffectorItem::initializeClass(this);
         return true;
     }
 

@@ -3,7 +3,7 @@
    \author Kenta Suzuki
 */
 
-#include "CameraVisualizerItem.h"
+#include "VisualEffectorItem.h"
 #include <cnoid/Archive>
 #include <cnoid/Body>
 #include <cnoid/BodyItem>
@@ -28,13 +28,13 @@ class CameraImageVisualizerItem2;
 CameraImageVisualizerItem2* pitem = nullptr;
 VisualEffectDialog* effectDialog = nullptr;
 
-class CameraVisualizerItemBase
+class VisualEffectorItemBase
 {
 public:
     Item* visualizerItem;
     BodyItem* bodyItem;
     ScopedConnection sigCheckToggledConnection;
-    CameraVisualizerItemBase(Item* visualizerItem);
+    VisualEffectorItemBase(Item* visualizerItem);
     void setBodyItem(BodyItem* bodyItem);
     void updateVisualization();
 
@@ -43,7 +43,7 @@ public:
 };
 
 
-class CameraImageVisualizerItem2 : public Item, public ImageableItem, public CameraVisualizerItemBase
+class CameraImageVisualizerItem2 : public Item, public ImageableItem, public VisualEffectorItemBase
 {
 public:
     CameraImageVisualizerItem2();
@@ -61,7 +61,7 @@ public:
 };
 
 
-class LightSwitcherItem : public Item, public CameraVisualizerItemBase
+class LightSwitcherItem : public Item, public VisualEffectorItemBase
 {
 public:
     LightSwitcherItem();
@@ -81,65 +81,65 @@ protected:
 
 namespace cnoid {
 
-class CameraVisualizerItemImpl
+class VisualEffectorItemImpl
 {
 public:
-    CameraVisualizerItem* self;
+    VisualEffectorItem* self;
     BodyItem* bodyItem;
     vector<Item*> subItems;
     vector<ItemPtr> restoredSubItems;
 
-    CameraVisualizerItemImpl(CameraVisualizerItem* self);
+    VisualEffectorItemImpl(VisualEffectorItem* self);
     void onPositionChanged();
 };
 
 }
 
 
-void CameraVisualizerItem::initializeClass(ExtensionManager* ext)
+void VisualEffectorItem::initializeClass(ExtensionManager* ext)
 {
     ItemManager& im = ext->itemManager();
-    im.registerClass<CameraVisualizerItem>(N_("CameraVisualizer"));
-    im.addCreationPanel<CameraVisualizerItem>();
+    im.registerClass<VisualEffectorItem>(N_("VisualEffectorItem"));
+    im.addCreationPanel<VisualEffectorItem>();
 
-    im.registerClass<CameraImageVisualizerItem2>(N_("CameraImageVisualizer2"));
-    im.registerClass<LightSwitcherItem>(N_("LightSwitcher"));
+    im.registerClass<CameraImageVisualizerItem2>(N_("CameraImageVisualizerItem2"));
+    im.registerClass<LightSwitcherItem>(N_("LightSwitcherItem"));
 }
 
 
-CameraVisualizerItem::CameraVisualizerItem()
+VisualEffectorItem::VisualEffectorItem()
 {
-    impl = new CameraVisualizerItemImpl(this);
+    impl = new VisualEffectorItemImpl(this);
 }
 
 
-CameraVisualizerItemImpl::CameraVisualizerItemImpl(CameraVisualizerItem* self)
+VisualEffectorItemImpl::VisualEffectorItemImpl(VisualEffectorItem* self)
     : self(self)
 {
 
 }
 
 
-CameraVisualizerItem::CameraVisualizerItem(const CameraVisualizerItem& org)
+VisualEffectorItem::VisualEffectorItem(const VisualEffectorItem& org)
     : Item(org)
 {
-    impl = new CameraVisualizerItemImpl(this);
+    impl = new VisualEffectorItemImpl(this);
 }
 
 
-CameraVisualizerItem::~CameraVisualizerItem()
+VisualEffectorItem::~VisualEffectorItem()
 {
     delete impl;
 }
 
 
-Item* CameraVisualizerItem::doDuplicate() const
+Item* VisualEffectorItem::doDuplicate() const
 {
-    return new CameraVisualizerItem(*this);
+    return new VisualEffectorItem(*this);
 }
 
 
-void CameraVisualizerItem::onPositionChanged()
+void VisualEffectorItem::onPositionChanged()
 {
     if(parentItem()){
         impl->onPositionChanged();
@@ -147,7 +147,7 @@ void CameraVisualizerItem::onPositionChanged()
 }
 
 
-void CameraVisualizerItemImpl::onPositionChanged()
+void VisualEffectorItemImpl::onPositionChanged()
 {
     BodyItem* newBodyItem = self->findOwnerItem<BodyItem>();
     if(newBodyItem != bodyItem){
@@ -192,7 +192,7 @@ void CameraVisualizerItemImpl::onPositionChanged()
     }
 }
 
-void CameraVisualizerItem::onDisconnectedFromRoot()
+void VisualEffectorItem::onDisconnectedFromRoot()
 {
     for(size_t i=0; i < impl->subItems.size(); i++){
         impl->subItems[i]->removeFromParentItem();
@@ -201,7 +201,7 @@ void CameraVisualizerItem::onDisconnectedFromRoot()
 }
 
 
-bool CameraVisualizerItem::store(Archive& archive)
+bool VisualEffectorItem::store(Archive& archive)
 {
     ListingPtr subItems = new Listing();
 
@@ -246,7 +246,7 @@ bool CameraVisualizerItem::store(Archive& archive)
 }
 
 
-bool CameraVisualizerItem::restore(const Archive& archive)
+bool VisualEffectorItem::restore(const Archive& archive)
 {
     impl->restoredSubItems.clear();
 
@@ -348,7 +348,7 @@ bool CameraVisualizerItem::restore(const Archive& archive)
 }
 
 
-CameraVisualizerItemBase::CameraVisualizerItemBase(Item* visualizerItem)
+VisualEffectorItemBase::VisualEffectorItemBase(Item* visualizerItem)
     : visualizerItem(visualizerItem),
       bodyItem(nullptr)
 {
@@ -358,14 +358,14 @@ CameraVisualizerItemBase::CameraVisualizerItemBase(Item* visualizerItem)
 }
 
 
-void CameraVisualizerItemBase::setBodyItem(BodyItem* bodyItem)
+void VisualEffectorItemBase::setBodyItem(BodyItem* bodyItem)
 {
     this->bodyItem = bodyItem;
     enableVisualization(visualizerItem->isChecked(Item::LogicalSumOfAllChecks));
 }
 
 
-void CameraVisualizerItemBase::updateVisualization()
+void VisualEffectorItemBase::updateVisualization()
 {
     if(visualizerItem->isChecked(Item::LogicalSumOfAllChecks)){
         doUpdateVisualization();
@@ -374,7 +374,7 @@ void CameraVisualizerItemBase::updateVisualization()
 
 
 CameraImageVisualizerItem2::CameraImageVisualizerItem2()
-    : CameraVisualizerItemBase(this)
+    : VisualEffectorItemBase(this)
 {
     effectDialog = VisualEffectDialog::instance();
 }
@@ -403,7 +403,7 @@ void CameraImageVisualizerItem2::setBodyItem(BodyItem* bodyItem, Camera* camera)
 
     this->camera = camera;
 
-    CameraVisualizerItemBase::setBodyItem(bodyItem);
+    VisualEffectorItemBase::setBodyItem(bodyItem);
 }
 
 
@@ -503,7 +503,7 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
 
 
 LightSwitcherItem::LightSwitcherItem()
-    : CameraVisualizerItemBase(this)
+    : VisualEffectorItemBase(this)
 {
 
 }
@@ -521,7 +521,7 @@ void LightSwitcherItem::setBodyItem(BodyItem* bodyItem, SpotLight* light)
 
     this->light = light;
 
-    CameraVisualizerItemBase::setBodyItem(bodyItem);
+    VisualEffectorItemBase::setBodyItem(bodyItem);
 }
 
 
