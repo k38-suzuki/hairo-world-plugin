@@ -120,3 +120,7 @@ msgstr "Ｏｋ"
 #: ../VisualEffectDialog.cpp:138
 msgid "Visual Effects"
 msgstr "視覚効果"
+
+#: ../VFAreaItem.cpp:145
+msgid "VFAreaItem"
+msgstr "視覚効果エリアアイテム"

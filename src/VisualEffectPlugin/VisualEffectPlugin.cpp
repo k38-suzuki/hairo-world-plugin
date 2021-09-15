@@ -5,6 +5,7 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
+#include "VFAreaItem.h"
 #include "VisualEffectorItem.h"
 #include "VisualEffectDialog.h"
 
@@ -23,6 +24,7 @@ public:
 
     virtual bool initialize() override
     {
+        VFAreaItem::initializeClass(this);
         VisualEffectDialog::initializeClass(this);
         VisualEffectorItem::initializeClass(this);
         return true;

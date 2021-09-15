@@ -24,14 +24,15 @@ items:
           data: 
             file: "${SHARE}/model/Tank/Tank.body"
             format: CHOREONOID-BODY
-            rootPosition: [ -2, -0.5, 0.106 ]
+            rootPosition: [ -2, -0.499999998, 0.105750005 ]
             rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
-              0, 0, 1 ]
-            jointDisplacements: [ 0, 0, 0, 0 ]
-            jointPositions: [ 0, 0, 0, 0 ]
-            initialRootPosition: [ -2, -0.5, 0.106 ]
+              1, 1.62195585e-09, 1.30183893e-09, 
+              -1.62195585e-09, 1, 8.82960535e-12, 
+              -1.30183893e-09, -8.82960746e-12, 1 ]
+            jointDisplacements: [ -5.3272e-10, -0.561853, 0, 0 ]
+            initialJointDisplacements: [ 0, 0, 0, 0 ]
+            jointPositions: [ -9.29772e-12, -0.00980618, 0, 0 ]
+            initialRootPosition: [ -2, -0.5, 0.1 ]
             initialRootAttitude: [ 
               1, 0, 0, 
               0, 1, 0, 
@@ -73,15 +74,15 @@ items:
                     red: 0
                     green: 0
                     blue: 0
-                    coef_b: 0
-                    coef_d: 1
-                    std_dev: 0
+                    coef_b: -0.3
+                    coef_d: 1.6
+                    std_dev: 0.2
                     salt: 0
                     pepper: 0
                     flip: false
                     filter: 0
                   - 
-                    class: CameraImageVisualizer2
+                    class: CameraImageVisualizerItem2
                     name: Theta
                     hue: 0
                     saturation: 0
@@ -97,7 +98,7 @@ items:
                     flip: false
                     filter: 0
                   - 
-                    class: LightSwitcher
+                    class: LightSwitcherItem
                     name: Light
         - 
           id: 5
@@ -113,8 +114,9 @@ items:
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            jointDisplacements: [ 0 ]
-            jointPositions: [ 0 ]
+            jointDisplacements: [ -4.07111e-16 ]
+            initialJointDisplacements: [ 0 ]
+            jointPositions: [ -7.10543e-18 ]
             initialRootPosition: [ 0, 0, 0 ]
             initialRootAttitude: [ 
               1, 0, 0, 
@@ -129,16 +131,25 @@ items:
             zmp: [ 0, 0, 0 ]
         - 
           id: 6
-          name: "fog"
+          name: "Lighting"
           plugin: Base
-          class: SceneItem
+          class: LightingItem
+          is_checked: true
           data: 
-            file: "${SHARE}/model/misc/fog.wrl"
-            format: GENERAL-3D-MODEL
-            translation: [ 0, 0, 0 ]
-            rotation: [ 1, 0, 0, 0 ]
-            angle_unit: degree
-            lightweight_rendering: false
+            light_type: "Spot light"
+            translation: [ 0, 0, 2.5 ]
+            direction: [ 0, 0, -1 ]
+            on: true
+            color: [ 1, 1, 1 ]
+            intensity: 0.8
+            ambient_intensity: 0
+            constant_attenuation: 1
+            linear_attenuation: 0
+            quadratic_attenuation: 0
+            beam_width: 60
+            cutoff_angle: 70
+            cutoff_exponent: 1
+            show_marker: false
         - 
           id: 7
           name: "AISTSimulator"
@@ -147,10 +158,10 @@ items:
           data: 
             timeStep: 0.001
             realtimeSync: true
-            recording: "off"
+            recording: "tail"
             timeRangeMode: "Unlimited"
             timeLength: 60
-            active_control_time_range_mode: false
+            active_control_time_range_mode: true
             allLinkPositionOutputMode: false
             deviceStateOutput: true
             controllerThreads: true
@@ -161,12 +172,12 @@ items:
             gravity: [ 0, 0, -9.80665 ]
             min_friction_coefficient: 0
             max_friction_coefficient: 100
-            cullingThresh: 0.01
+            cullingThresh: 0.005
             contactCullingDepth: 0.05
             errorCriterion: 0.001
-            maxNumIterations: 1000
-            contactCorrectionDepth: 0.0001
-            contactCorrectionVelocityRatio: 30
+            maxNumIterations: 25
+            contactCorrectionDepth: 0.00025
+            contactCorrectionVelocityRatio: 5
             kinematicWalking: false
             2Dmode: false
             oldAccelSensorMode: false
@@ -182,13 +193,44 @@ items:
                 maxLatency: 1
                 recordVisionData: true
                 threadMode: Sensor
-                bestEffort: false
+                bestEffort: true
                 allSceneObjects: false
                 rangeSensorPrecisionRatio: 2
                 depthError: 0
                 enableHeadLight: true
                 enableAdditionalLights: true
                 antiAliasing: false
+        - 
+          id: 9
+          name: "VFArea"
+          plugin: VisualEffect
+          class: VFAreaItem
+          is_checked: true
+          data: 
+            translation: [ 0, -0.5, 0.5 ]
+            rotation: [ 0, 0, 0 ]
+            type: 0
+            size: [ 1, 1, 1 ]
+            radius: 0.5
+            height: 1
+            diffuse_color: [ 0, 1, 0 ]
+            emissive_color: [ 0, 0, 0 ]
+            specular_color: [ 0, 0, 0 ]
+            shininess: 0
+            transparency: 0.8
+            hue: 0
+            saturation: 0
+            value: 0
+            red: 0.5
+            green: 0
+            blue: 0
+            coef_b: 0
+            coef_d: 0
+            std_dev: 0
+            salt: 0
+            pepper: 0
+            flip: false
+            filter: 0
 views: 
   - 
     id: 0
@@ -209,7 +251,7 @@ views:
     class: ItemTreeView
     mounted: true
     state: 
-      expanded: [ 1, 2, 4, 7 ]
+      expanded: [ 1, 2, 3, 4, 5, 6, 7 ]
   - 
     id: 3
     plugin: Base
@@ -219,7 +261,7 @@ views:
       unique_rpy: false
       show_quoternion: false
       show_rotation_matrix: false
-      coordinate: world
+      coordinate: parent
   - 
     id: 4
     plugin: Base
@@ -231,7 +273,7 @@ views:
     class: SceneView
     mounted: true
     state: 
-      editMode: true
+      editMode: false
       viewpointOperationMode: thirdPerson
       visible_polygon_elements: [ face ]
       highlighting: false
@@ -241,7 +283,7 @@ views:
       lightingMode: normal
       cullingMode: enabled
       defaultHeadLight: true
-      defaultHeadLightIntensity: 0.5
+      defaultHeadLightIntensity: 0.75
       headLightLightingFromBack: false
       worldLight: false
       worldLightIntensity: 0.1
@@ -258,7 +300,7 @@ views:
       yzGridInterval: 0.5
       texture: true
       lineWidth: 1
-      pointSize: 1
+      pointSize: 2
       normalVisualization: false
       normalLength: 0.01
       lightweightViewChange: false
@@ -272,15 +314,15 @@ views:
           fieldOfView: 0.6978
           near: 0.01
           far: 10000
-          eye: [ -6.44723, -3.30409, 3.23336 ]
-          direction: [ 0.819988, 0.450152, -0.353529 ]
-          up: [ 0.309902, 0.170128, 0.935424 ]
+          eye: [ -7.55, -3.78401, 3.39381 ]
+          direction: [ 0.8446, 0.410131, -0.344157 ]
+          up: [ 0.309587, 0.150333, 0.938912 ]
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
           near: 0.01
           far: 10000
-      backgroundColor: [ 0.1, 0.1, 0.3 ]
+      backgroundColor: [ 0, 0, 0 ]
       gridColor: [ 0.9, 0.9, 0.9, 1 ]
       xzgridColor: [ 0.9, 0.9, 0.9, 1 ]
       yzgridColor: [ 0.9, 0.9, 0.9, 1 ]
@@ -293,25 +335,18 @@ views:
   - 
     id: 7
     plugin: Body
-    class: BodyLinkView
-    mounted: true
-    state: 
-      showRotationMatrix: false
-  - 
-    id: 8
-    plugin: Body
     class: JointDisplacementView
     mounted: true
     state: 
       show_selected_joints: false
-      show_joint_ids: true
-      show_joint_names: false
+      show_joint_ids: false
+      show_joint_names: true
       overlap_joint_names: false
       show_sliders: true
       show_dials: false
       show_phases: true
   - 
-    id: 9
+    id: 8
     plugin: Body
     class: LinkDeviceListView
     mounted: true
@@ -319,9 +354,10 @@ views:
       element_type: link
       listingMode: list
   - 
-    id: 10
+    id: 9
     plugin: Body
     class: LinkPositionView
+    mounted: true
     state: 
       coordinate_mode: world
       preferred_coordinate_mode: base
@@ -329,20 +365,20 @@ views:
       unique_rpy: false
       show_quoternion: false
       show_rotation_matrix: false
-      target_link_type: ik_link
+      target_link_type: root_or_ik_link
   - 
-    id: 11
+    id: 10
     plugin: Body
     class: LinkPropertyView
   - 
-    id: 12
+    id: 11
     plugin: Python
     class: PythonConsoleView
     mounted: true
 toolbars: 
   "TimeBar": 
     minTime: 0
-    maxTime: 5
+    maxTime: 30
     frameRate: 1000
     playbackFrameRate: 60
     idleLoopDrivenMode: false
@@ -434,45 +470,53 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 473, 2016 ]
+      sizes: [ 363, 1553 ]
       children: 
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 630, 627 ]
+          sizes: [ 554, 552 ]
           children: 
             - 
               type: pane
               views: [ 2 ]
             - 
               type: pane
-              views: [ 1, 9 ]
+              views: [ 1, 8 ]
               current: 1
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 900, 357 ]
+          sizes: [ 857, 249 ]
           children: 
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 942, 1070 ]
+              sizes: [ 726, 823 ]
               children: 
                 - 
-                  type: pane
-                  views: [ 7, 8, 0 ]
-                  current: 0
+                  type: splitter
+                  orientation: vertical
+                  sizes: [ 427, 426 ]
+                  children: 
+                    - 
+                      type: pane
+                      views: [ 9, 7 ]
+                      current: 9
+                    - 
+                      type: pane
+                      views: [ 0 ]
                 - 
                   type: pane
                   views: [ 5 ]
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 1213, 799 ]
+              sizes: [ 892, 657 ]
               children: 
                 - 
                   type: pane
-                  views: [ 4, 12 ]
+                  views: [ 4, 11 ]
                   current: 4
                 - 
                   type: pane
@@ -481,9 +525,9 @@ layoutOfToolBars:
   rows: 
     - 
       - { name: "FileBar", x: 0, priority: 0 }
-      - { name: "ScriptBar", x: 48, priority: 0 }
-      - { name: "SimulationBar", x: 95, priority: 1 }
-      - { name: "TimeBar", x: 96, priority: 0 }
-      - { name: "SceneBar", x: 1336, priority: 2 }
-    - 
-      - { name: "ImageViewBar", x: 0, priority: 0 }
+      - { name: "SimulationBar", x: 47, priority: 1 }
+      - { name: "ScriptBar", x: 47, priority: 0 }
+      - { name: "TimeBar", x: 94, priority: 0 }
+      - { name: "SceneBar", x: 1175, priority: 2 }
+      - { name: "KinematicsBar", x: 1540, priority: 3 }
+      - { name: "ImageViewBar", x: 1774, priority: 4 }

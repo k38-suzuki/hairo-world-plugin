@@ -13,20 +13,21 @@
 #include <cnoid/ItemManager>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/RangeCamera>
+#include <cnoid/RootItem>
 #include <cnoid/SpotLight>
 #include "gettext.h"
+#include "ImageGenerator.h"
+#include "VFAreaItem.h"
 #include "VisualEffectDialog.h"
 #include "VisualEffect.h"
-#include "ImageGenerator.h"
 
-using namespace std;
 using namespace cnoid;
+using namespace std;
 
 namespace {
 
 class CameraImageVisualizerItem2;
-CameraImageVisualizerItem2* pitem = nullptr;
-VisualEffectDialog* effectDialog = nullptr;
+CameraImageVisualizerItem2* pcitem = nullptr;
 
 class VisualEffectorItemBase
 {
@@ -55,6 +56,7 @@ public:
 
     CameraPtr camera;
     VisualEffect effect;
+    ImageGenerator generator;
     ScopedConnectionSet connections;
     std::shared_ptr<const Image> image;
     Signal<void()> sigImageUpdated_;
@@ -376,7 +378,7 @@ void VisualEffectorItemBase::updateVisualization()
 CameraImageVisualizerItem2::CameraImageVisualizerItem2()
     : VisualEffectorItemBase(this)
 {
-    effectDialog = VisualEffectDialog::instance();
+
 }
 
 
@@ -424,47 +426,88 @@ void CameraImageVisualizerItem2::enableVisualization(bool on)
 void CameraImageVisualizerItem2::doUpdateVisualization()
 {
     if(camera){
-        ImageableItem* item = ImageViewBar::instance()->getSelectedImageableItem();
-        CameraImageVisualizerItem2* eitem = dynamic_cast<CameraImageVisualizerItem2*>(item);
+        RootItem* rootItem = RootItem::instance();
+        bool changed = false;
+        double hue = 0.0;
+        double saturation = 0.0;
+        double value = 0.0;
+        double red = 0.0;
+        double green = 0.0;
+        double blue = 0.0;
+        bool flipped = false;
+        double coefB = 0.0;
+        double coefD = 1.0;
+        double stdDev = 0.0;
+        double salt = 0.0;
+        double pepper = 0.0;
+        int filter = 0.0;
 
-        if(eitem) {
-            if(eitem == this) {
-                if(pitem != this) {
-                    effectDialog->setVisualEffect(effect);
+        if(rootItem) {
+            ItemList<VFAreaItem> vitems = rootItem->checkedItems<VFAreaItem>();
+            for(size_t i = 0; i < vitems.size(); ++i) {
+                VFAreaItem* vitem = vitems[i];
+                bool isCollided = vitem->isCollided(camera->link());
+                if(isCollided) {
+                    hue = vitem->hue();
+                    saturation = vitem->saturation();
+                    value = vitem->value();
+                    red = vitem->red();
+                    green = vitem->green();
+                    blue = vitem->blue();
+                    coefB = vitem->coefB();
+                    coefD = vitem->coefD();
+                    stdDev = vitem->stdDev();
+                    salt = vitem->salt();
+                    pepper = vitem->pepper();
+                    flipped = vitem->flip();
+                    filter = vitem->filter();
+                    changed = true;
                 }
-                effect.setHue(effectDialog->hue());
-                effect.setSaturation(effectDialog->saturation());
-                effect.setValue(effectDialog->value());
-                effect.setRed(effectDialog->red());
-                effect.setGreen(effectDialog->green());
-                effect.setBlue(effectDialog->blue());
-                effect.setCoefB(effectDialog->coefB());
-                effect.setCoefD(effectDialog->coefD());
-                effect.setStdDev(effectDialog->stdDev());
-                effect.setSalt(effectDialog->salt());
-                effect.setPepper(effectDialog->pepper());
-                effect.setFlip(effectDialog->flip());
-                effect.setFilter(effectDialog->filter());
-                pitem = this;
             }
         }
 
-        ImageGenerator generator;
-        Image orgImage = *camera->sharedImage();
+        if(!changed) {
+            ImageableItem* item = ImageViewBar::instance()->getSelectedImageableItem();
+            CameraImageVisualizerItem2* citem = dynamic_cast<CameraImageVisualizerItem2*>(item);
+            if(citem) {
+                if(citem == this) {
+                    VisualEffectDialog* ved = VisualEffectDialog::instance();
+                    if(pcitem != this) {
+                        ved->setVisualEffect(effect);
+                    }
+                    hue = ved->hue();
+                    saturation = ved->saturation();
+                    value = ved->value();
+                    red = ved->red();
+                    green = ved->green();
+                    blue = ved->blue();
+                    coefB = ved->coefB();
+                    coefD = ved->coefD();
+                    stdDev = ved->stdDev();
+                    salt = ved->salt();
+                    pepper = ved->pepper();
+                    flipped = ved->flip();
+                    filter = ved->filter();
 
-        double hue = effect.hue();
-        double saturation = effect.saturation();
-        double value = effect.value();
-        double red = effect.red();
-        double green = effect.green();
-        double blue = effect.blue();
-        bool flipped = effect.flip();
-        double coefB = effect.coefB();
-        double coefD = effect.coefD();
-        double stdDev = effect.stdDev();
-        double salt = effect.salt();
-        double pepper = effect.pepper();
-        int filter = effect.filter();
+                    effect.setHue(hue);
+                    effect.setSaturation(saturation);
+                    effect.setValue(value);
+                    effect.setRed(red);
+                    effect.setGreen(green);
+                    effect.setBlue(blue);
+                    effect.setCoefB(coefB);
+                    effect.setCoefD(coefD);
+                    effect.setStdDev(stdDev);
+                    effect.setSalt(salt);
+                    effect.setPepper(pepper);
+                    effect.setFlip(flipped);
+                    effect.setFilter(filter);
+                    pcitem = this;
+                }
+            }
+        }
+
+        Image orgImage = *camera->sharedImage();
 
         if(hue > 0.0 || saturation > 0.0 || value > 0.0) {
             generator.hsv(orgImage, hue, saturation, value);
