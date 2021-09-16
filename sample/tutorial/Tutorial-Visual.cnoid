@@ -495,17 +495,9 @@ viewAreas:
               sizes: [ 726, 823 ]
               children: 
                 - 
-                  type: splitter
-                  orientation: vertical
-                  sizes: [ 427, 426 ]
-                  children: 
-                    - 
-                      type: pane
-                      views: [ 9, 7 ]
-                      current: 9
-                    - 
-                      type: pane
-                      views: [ 0 ]
+                  type: pane
+                  views: [ 9, 7, 0 ]
+                  current: 0
                 - 
                   type: pane
                   views: [ 5 ]

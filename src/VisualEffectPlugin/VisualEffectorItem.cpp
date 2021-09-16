@@ -26,8 +26,7 @@ using namespace std;
 
 namespace {
 
-class CameraImageVisualizerItem2;
-CameraImageVisualizerItem2* pcitem = nullptr;
+ImageableItem* pitem = nullptr;
 
 class VisualEffectorItemBase
 {
@@ -428,19 +427,19 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
     if(camera){
         RootItem* rootItem = RootItem::instance();
         bool changed = false;
-        double hue = 0.0;
-        double saturation = 0.0;
-        double value = 0.0;
-        double red = 0.0;
-        double green = 0.0;
-        double blue = 0.0;
-        bool flipped = false;
-        double coefB = 0.0;
-        double coefD = 1.0;
-        double stdDev = 0.0;
-        double salt = 0.0;
-        double pepper = 0.0;
-        int filter = 0.0;
+        double hue = effect.hue();
+        double saturation = effect.saturation();
+        double value = effect.value();
+        double red = effect.red();
+        double green = effect.green();
+        double blue = effect.blue();
+        bool flipped = effect.flip();
+        double coefB = effect.coefB();
+        double coefD = effect.coefD();
+        double stdDev = effect.stdDev();
+        double salt = effect.salt();
+        double pepper = effect.pepper();
+        int filter = effect.filter();
 
         if(rootItem) {
             ItemList<VFAreaItem> vitems = rootItem->checkedItems<VFAreaItem>();
@@ -469,41 +468,40 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
         if(!changed) {
             ImageableItem* item = ImageViewBar::instance()->getSelectedImageableItem();
             CameraImageVisualizerItem2* citem = dynamic_cast<CameraImageVisualizerItem2*>(item);
-            if(citem) {
-                if(citem == this) {
-                    VisualEffectDialog* ved = VisualEffectDialog::instance();
-                    if(pcitem != this) {
-                        ved->setVisualEffect(effect);
-                    }
-                    hue = ved->hue();
-                    saturation = ved->saturation();
-                    value = ved->value();
-                    red = ved->red();
-                    green = ved->green();
-                    blue = ved->blue();
-                    coefB = ved->coefB();
-                    coefD = ved->coefD();
-                    stdDev = ved->stdDev();
-                    salt = ved->salt();
-                    pepper = ved->pepper();
-                    flipped = ved->flip();
-                    filter = ved->filter();
-
-                    effect.setHue(hue);
-                    effect.setSaturation(saturation);
-                    effect.setValue(value);
-                    effect.setRed(red);
-                    effect.setGreen(green);
-                    effect.setBlue(blue);
-                    effect.setCoefB(coefB);
-                    effect.setCoefD(coefD);
-                    effect.setStdDev(stdDev);
-                    effect.setSalt(salt);
-                    effect.setPepper(pepper);
-                    effect.setFlip(flipped);
-                    effect.setFilter(filter);
-                    pcitem = this;
+            VisualEffectDialog* ved = VisualEffectDialog::instance();
+            if(citem == this) {
+                if(item != pitem) {
+                    ved->setVisualEffect(effect);
                 }
+                pitem = item;
+
+                hue = ved->hue();
+                saturation = ved->saturation();
+                value = ved->value();
+                red = ved->red();
+                green = ved->green();
+                blue = ved->blue();
+                coefB = ved->coefB();
+                coefD = ved->coefD();
+                stdDev = ved->stdDev();
+                salt = ved->salt();
+                pepper = ved->pepper();
+                flipped = ved->flip();
+                filter = ved->filter();
+
+                effect.setHue(hue);
+                effect.setSaturation(saturation);
+                effect.setValue(value);
+                effect.setRed(red);
+                effect.setGreen(green);
+                effect.setBlue(blue);
+                effect.setCoefB(coefB);
+                effect.setCoefD(coefD);
+                effect.setStdDev(stdDev);
+                effect.setSalt(salt);
+                effect.setPepper(pepper);
+                effect.setFlip(flipped);
+                effect.setFilter(filter);
             }
         }
 
