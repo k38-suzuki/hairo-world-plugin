@@ -3,20 +3,20 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_VISUALEFFECTPLUGIN_VFAREAITEM_H
-#define CNOID_VISUALEFFECTPLUGIN_VFAREAITEM_H
+#ifndef CNOID_VISUALEFFECTPLUGIN_VEAREAITEM_H
+#define CNOID_VISUALEFFECTPLUGIN_VEAREAITEM_H
 
 #include <src/FluidDynamicsPlugin/AreaItem.h>
 namespace cnoid {
 
-class VFAreaItemImpl;
+class VEAreaItemImpl;
 
-class VFAreaItem : public AreaItem
+class VEAreaItem : public AreaItem
 {
 public:
-    VFAreaItem();
-    VFAreaItem(const VFAreaItem& org);
-    virtual ~VFAreaItem();
+    VEAreaItem();
+    VEAreaItem(const VEAreaItem& org);
+    virtual ~VEAreaItem();
 
     static void initializeClass(ExtensionManager* ext);
 
@@ -34,8 +34,8 @@ public:
     bool flip() const;
     int filter() const;
 
-    static bool load(VFAreaItem* item, const std::string& filename);
-    static bool save(VFAreaItem* item, const std::string& filename);
+    static bool load(VEAreaItem* item, const std::string& filename);
+    static bool save(VEAreaItem* item, const std::string& filename);
 
 protected:
     virtual Item* doDuplicate() const override;
@@ -44,10 +44,10 @@ protected:
     virtual bool restore(const Archive& archive) override;
 
 private:
-    VFAreaItemImpl* impl;
-    friend class VFAreaItemImpl;
+    VEAreaItemImpl* impl;
+    friend class VEAreaItemImpl;
 };
 
 }
 
-#endif // CNOID_VISUALEFFECTPLUGIN_VFAREAITEM_H
+#endif // CNOID_VISUALEFFECTPLUGIN_VEAREAITEM_H

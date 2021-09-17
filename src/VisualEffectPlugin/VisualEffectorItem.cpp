@@ -17,7 +17,7 @@
 #include <cnoid/SpotLight>
 #include "gettext.h"
 #include "ImageGenerator.h"
-#include "VFAreaItem.h"
+#include "VEAreaItem.h"
 #include "VisualEffectDialog.h"
 #include "VisualEffect.h"
 
@@ -442,9 +442,9 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
         int filter = effect.filter();
 
         if(rootItem) {
-            ItemList<VFAreaItem> vitems = rootItem->checkedItems<VFAreaItem>();
+            ItemList<VEAreaItem> vitems = rootItem->checkedItems<VEAreaItem>();
             for(size_t i = 0; i < vitems.size(); ++i) {
-                VFAreaItem* vitem = vitems[i];
+                VEAreaItem* vitem = vitems[i];
                 bool isCollided = vitem->isCollided(camera->link());
                 if(isCollided) {
                     hue = vitem->hue();

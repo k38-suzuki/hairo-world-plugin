@@ -1,7 +1,7 @@
 
 set(sources
     ImageGenerator.cpp
-    VFAreaItem.cpp
+    VEAreaItem.cpp
     VisualEffect.cpp
     VisualEffectDialog.cpp
     VisualEffectorItem.cpp
@@ -10,7 +10,7 @@ set(sources
 
 set(headers
     ImageGenerator.h
-    VFAreaItem.h
+    VEAreaItem.h
     VisualEffect.h
     VisualEffectDialog.h
     VisualEffectorItem.h

@@ -3,7 +3,7 @@
    \author Kenta Suzuki
 */
 
-#include "VFAreaItem.h"
+#include "VEAreaItem.h"
 #include <cnoid/Archive>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
@@ -44,12 +44,12 @@ static bool toVectorX_(const std::string& s, VectorType& out_v)
 
 namespace cnoid {
 
-class VFAreaItemImpl
+class VEAreaItemImpl
 {
 public:
-    VFAreaItemImpl(VFAreaItem* self);
-    VFAreaItemImpl(VFAreaItem* self, const VFAreaItemImpl& org);
-    VFAreaItem* self;
+    VEAreaItemImpl(VEAreaItem* self);
+    VEAreaItemImpl(VEAreaItem* self, const VEAreaItemImpl& org);
+    VEAreaItem* self;
 
     double hue;
     double saturation;
@@ -74,13 +74,13 @@ public:
 }
 
 
-VFAreaItem::VFAreaItem()
+VEAreaItem::VEAreaItem()
 {
-    impl = new VFAreaItemImpl(this);
+    impl = new VEAreaItemImpl(this);
 }
 
 
-VFAreaItemImpl::VFAreaItemImpl(VFAreaItem* self)
+VEAreaItemImpl::VEAreaItemImpl(VEAreaItem* self)
     : self(self)
 {
     self->setDiffuseColor(Vector3(0.0, 1.0, 0.0));
@@ -104,15 +104,15 @@ VFAreaItemImpl::VFAreaItemImpl(VFAreaItem* self)
 }
 
 
-VFAreaItem::VFAreaItem(const VFAreaItem& org)
+VEAreaItem::VEAreaItem(const VEAreaItem& org)
     : AreaItem(org),
-      impl(new VFAreaItemImpl(this, *org.impl))
+      impl(new VEAreaItemImpl(this, *org.impl))
 {
 
 }
 
 
-VFAreaItemImpl::VFAreaItemImpl(VFAreaItem* self, const VFAreaItemImpl& org)
+VEAreaItemImpl::VEAreaItemImpl(VEAreaItem* self, const VEAreaItemImpl& org)
     : self(self)
 {
     hue = org.hue;
@@ -131,117 +131,117 @@ VFAreaItemImpl::VFAreaItemImpl(VFAreaItem* self, const VFAreaItemImpl& org)
 }
 
 
-VFAreaItem::~VFAreaItem()
+VEAreaItem::~VEAreaItem()
 {
     delete impl;
 }
 
 
-void VFAreaItem::initializeClass(ExtensionManager* ext)
+void VEAreaItem::initializeClass(ExtensionManager* ext)
 {
     ItemManager& im = ext->itemManager();
-    im.registerClass<VFAreaItem>(N_("VFAreaItem"));
-    im.addCreationPanel<VFAreaItem>();
+    im.registerClass<VEAreaItem>(N_("VEAreaItem"));
+    im.addCreationPanel<VEAreaItem>();
 
-//    im.addLoaderAndSaver<VFAreaItem>(
+//    im.addLoaderAndSaver<VEAreaItem>(
 //        _("VF Area"), "VF-AREA-FILE", "yaml;yml",
-//        [](VFAreaItem* item, const string& filename, std::ostream& os, Item*){ return load(item, filename); },
-//        [](VFAreaItem* item, const string& filename, std::ostream& os, Item*){ return save(item, filename); },
+//        [](VEAreaItem* item, const string& filename, std::ostream& os, Item*){ return load(item, filename); },
+//        [](VEAreaItem* item, const string& filename, std::ostream& os, Item*){ return save(item, filename); },
 //        ItemManager::PRIORITY_CONVERSION);
 }
 
 
-double VFAreaItem::hue() const
+double VEAreaItem::hue() const
 {
     return impl->hue;
 }
 
 
-double VFAreaItem::saturation() const
+double VEAreaItem::saturation() const
 {
     return impl->saturation;
 }
 
 
-double VFAreaItem::value() const
+double VEAreaItem::value() const
 {
     return impl->value;
 }
 
 
-double VFAreaItem::red() const
+double VEAreaItem::red() const
 {
     return impl->red;
 }
 
 
-double VFAreaItem::green() const
+double VEAreaItem::green() const
 {
     return impl->green;
 }
 
 
-double VFAreaItem::blue() const
+double VEAreaItem::blue() const
 {
     return impl->blue;
 }
 
 
-double VFAreaItem::coefB() const
+double VEAreaItem::coefB() const
 {
     return impl->coef_b;
 }
 
 
-double VFAreaItem::coefD() const
+double VEAreaItem::coefD() const
 {
     return impl->coef_d;
 }
 
 
-double VFAreaItem::stdDev() const
+double VEAreaItem::stdDev() const
 {
     return impl->std_dev;
 }
 
 
-double VFAreaItem::salt() const
+double VEAreaItem::salt() const
 {
     return impl->salt;
 }
 
 
-double VFAreaItem::pepper() const
+double VEAreaItem::pepper() const
 {
     return impl->pepper;
 }
 
 
-bool VFAreaItem::flip() const
+bool VEAreaItem::flip() const
 {
     return impl->flip;
 }
 
 
-int VFAreaItem::filter() const
+int VEAreaItem::filter() const
 {
     return impl->filter;
 }
 
 
-bool VFAreaItem::load(VFAreaItem* item, const string& filename)
+bool VEAreaItem::load(VEAreaItem* item, const string& filename)
 {
     return true;
 }
 
 
-bool VFAreaItem::save(VFAreaItem* item, const string& filename)
+bool VEAreaItem::save(VEAreaItem* item, const string& filename)
 {
     return true;
 }
 
 
-bool VFAreaItemImpl::onPropertyChanged(double& var, const double& v, const double& min, const double& max)
+bool VEAreaItemImpl::onPropertyChanged(double& var, const double& v, const double& min, const double& max)
 {
     double value = v;
     if(value > max) {
@@ -254,20 +254,20 @@ bool VFAreaItemImpl::onPropertyChanged(double& var, const double& v, const doubl
 }
 
 
-Item* VFAreaItem::doDuplicate() const
+Item* VEAreaItem::doDuplicate() const
 {
-    return new VFAreaItem(*this);
+    return new VEAreaItem(*this);
 }
 
 
-void VFAreaItem::doPutProperties(PutPropertyFunction& putProperty)
+void VEAreaItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     impl->doPutProperties(putProperty);
     AreaItem::doPutProperties(putProperty);
 }
 
 
-void VFAreaItemImpl::doPutProperties(PutPropertyFunction& putProperty)
+void VEAreaItemImpl::doPutProperties(PutPropertyFunction& putProperty)
 {
     putProperty(_("Hue"), hue,
                 [&](const double& v){ return onPropertyChanged(hue, v, 0.0, 1.0); });
@@ -297,14 +297,14 @@ void VFAreaItemImpl::doPutProperties(PutPropertyFunction& putProperty)
 }
 
 
-bool VFAreaItem::store(Archive& archive)
+bool VEAreaItem::store(Archive& archive)
 {
     AreaItem::store(archive);
     return impl->store(archive);
 }
 
 
-bool VFAreaItemImpl::store(Archive& archive)
+bool VEAreaItemImpl::store(Archive& archive)
 {
     archive.write("hue", hue);
     archive.write("saturation", saturation);
@@ -323,14 +323,14 @@ bool VFAreaItemImpl::store(Archive& archive)
 }
 
 
-bool VFAreaItem::restore(const Archive& archive)
+bool VEAreaItem::restore(const Archive& archive)
 {
     AreaItem::restore(archive);
     return impl->restore(archive);
 }
 
 
-bool VFAreaItemImpl::restore(const Archive& archive)
+bool VEAreaItemImpl::restore(const Archive& archive)
 {
     archive.read("hue", hue);
     archive.read("saturation", saturation);

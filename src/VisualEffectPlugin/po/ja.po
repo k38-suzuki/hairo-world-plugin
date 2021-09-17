@@ -121,6 +121,6 @@ msgstr "Ｏｋ"
 msgid "Visual Effects"
 msgstr "視覚効果"
 
-#: ../VFAreaItem.cpp:145
-msgid "VFAreaItem"
+#: ../VEAreaItem.cpp:145
+msgid "VEAreaItem"
 msgstr "視覚効果エリアアイテム"

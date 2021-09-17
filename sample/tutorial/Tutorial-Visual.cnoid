@@ -204,7 +204,7 @@ items:
           id: 9
           name: "VFArea"
           plugin: VisualEffect
-          class: VFAreaItem
+          class: VEAreaItem
           is_checked: true
           data: 
             translation: [ 0, -0.5, 0.5 ]
