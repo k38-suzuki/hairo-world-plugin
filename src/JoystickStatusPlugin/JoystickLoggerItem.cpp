@@ -96,6 +96,10 @@ bool JoystickLoggerItem::initializeSimulation(SimulatorItem* simulatorItem)
 bool JoystickLoggerItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     joysticks.clear();
+    for(size_t i = 0; i < joystickStaSeqItems.size(); ++i) {
+        MultiValueSeqItem* item = joystickStaSeqItems[i];
+        item->removeFromParentItem();
+    }
     joystickStaSeqItems.clear();
     frame = 0;
 
@@ -117,7 +121,7 @@ bool JoystickLoggerItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 
             Joystick* joystick = joysticks[i];
             int numParts = joystick->numAxes() + joystick->numButtons();
-            std::shared_ptr<MultiValueSeq> joystickStaSeq = joystickStaSeqItem->seq();
+            shared_ptr<MultiValueSeq> joystickStaSeq = joystickStaSeqItem->seq();
             joystickStaSeq->setSeqContentName("JoystickStaSeq");
             joystickStaSeq->setNumParts(numParts);
             joystickStaSeq->setDimension(0, numParts, 1);
@@ -136,7 +140,7 @@ void JoystickLoggerItemImpl::onPostDynamicsFunction()
     for(size_t i = 0; i < joysticks.size(); ++i) {
         Joystick* joystick = joysticks[i];
         joystick->readCurrentState();
-        std::shared_ptr<MultiValueSeq> joystickStaSeq = joystickStaSeqItems[i]->seq();
+        shared_ptr<MultiValueSeq> joystickStaSeq = joystickStaSeqItems[i]->seq();
         joystickStaSeq->setNumFrames(frame + 1);
         MultiValueSeq::Frame p = joystickStaSeq->frame(frame);
         for(int i = 0; i < joystick->numAxes(); ++i) {

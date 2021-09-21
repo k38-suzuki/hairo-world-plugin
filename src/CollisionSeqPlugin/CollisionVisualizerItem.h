@@ -7,6 +7,7 @@
 #define CNOID_COLLISIONSEQPLUGIN_COLLISIONVISUALIZERITEM_H
 
 #include <cnoid/SubSimulatorItem>
+#include <vector>
 
 namespace cnoid {
 
@@ -22,6 +23,10 @@ public:
     static void initializeClass(ExtensionManager* ext);
     virtual bool initializeSimulation(SimulatorItem* simulatorItem) override;
     virtual void finalizeSimulation() override;
+
+    void setBodyNames(std::vector<std::string>& bodyNames);
+    void setCollisionStatesRecordingEnabled(const bool& on);
+    bool collisionStatesRecordingEnabled() const;
 
 protected:
     virtual Item* doDuplicate() const override;

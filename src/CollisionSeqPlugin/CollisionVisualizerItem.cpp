@@ -166,6 +166,10 @@ bool CollisionVisualizerItemImpl::initializeSimulation(SimulatorItem* simulatorI
 {
     bodies.clear();
     simulatorItem_ = simulatorItem;
+    for(size_t i = 0; i < collisionStaSeqItems.size(); ++i) {
+        MultiValueSeqItem* item = collisionStaSeqItems[i];
+        item->removeFromParentItem();
+    }
     collisionStaSeqItems.clear();
     frame = 0;
     materials.clear();
@@ -212,12 +216,31 @@ void CollisionVisualizerItemImpl::finalizeSimulation()
 }
 
 
+void CollisionVisualizerItem::setBodyNames(std::vector<string>& bodyNames)
+{
+    impl->bodyNameListString = getNameListString(bodyNames);
+    impl->bodyNames = bodyNames;
+}
+
+
+void CollisionVisualizerItem::setCollisionStatesRecordingEnabled(const bool& on)
+{
+    impl->isCollisionStatesRecordingEnabled = on;
+}
+
+
+bool CollisionVisualizerItem::collisionStatesRecordingEnabled() const
+{
+    return impl->isCollisionStatesRecordingEnabled;
+}
+
+
 void CollisionVisualizerItemImpl::onPostDynamicsFunction()
 {
     for(size_t i = 0; i < bodies.size(); ++i) {
         Body* body = bodies[i];
         if(isCollisionStatesRecordingEnabled) {
-            std::shared_ptr<MultiValueSeq> collisionStaSeq = collisionStaSeqItems[i]->seq();
+            shared_ptr<MultiValueSeq> collisionStaSeq = collisionStaSeqItems[i]->seq();
             collisionStaSeq->setNumFrames(frame + 1);
             MultiValueSeq::Frame p = collisionStaSeq->frame(frame);
             for(int j = 0; j < body->numLinks(); ++j) {
@@ -243,7 +266,7 @@ void CollisionVisualizerItemImpl::initializeBody(Body* body)
         collisionStaSeqItems.push_back(collisionStaSeqItem);
 
         int numParts = body->numLinks();
-        std::shared_ptr<MultiValueSeq> collisionStaSeq = collisionStaSeqItem->seq();
+        shared_ptr<MultiValueSeq> collisionStaSeq = collisionStaSeqItem->seq();
         collisionStaSeq->setSeqContentName("CollisionStaSeq");
         collisionStaSeq->setNumParts(numParts);
         collisionStaSeq->setDimension(0, numParts, 1);
