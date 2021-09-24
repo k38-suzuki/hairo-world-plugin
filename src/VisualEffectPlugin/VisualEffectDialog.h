@@ -8,7 +8,6 @@
 
 #include <cnoid/Dialog>
 #include <cnoid/ExtensionManager>
-#include "VisualEffect.h"
 
 namespace cnoid {
 
@@ -19,11 +18,6 @@ class VisualEffectDialog : public Dialog
 public:
     VisualEffectDialog();
     virtual ~VisualEffectDialog();
-
-    static void initializeClass(ExtensionManager* ext);
-    static VisualEffectDialog* instance();
-
-    void setVisualEffect(const VisualEffect& effect);
 
     void setHue(const double& hue);
     double hue() const;

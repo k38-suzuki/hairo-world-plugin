@@ -7,7 +7,6 @@
 #include <cnoid/Button>
 #include <cnoid/CheckBox>
 #include <cnoid/ComboBox>
-#include <cnoid/ImageView>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <QDialogButtonBox>
@@ -17,10 +16,8 @@
 #include <QVBoxLayout>
 #include "gettext.h"
 
-using namespace std;
 using namespace cnoid;
-
-VisualEffectDialog* effectDialog = nullptr;
+using namespace std;
 
 namespace cnoid {
 
@@ -61,7 +58,7 @@ VisualEffectDialog::VisualEffectDialog()
 VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
     : self(self)
 {
-    self->setWindowTitle(_("Configuration"));
+    self->setWindowTitle(_("Effect Config"));
 
     double ranges[11][2] = {
         {  0.0, 1.0 }, { -1.0,  1.0 }, { -1.0, 1.0 },
@@ -146,8 +143,6 @@ VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
     self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
 
     QVBoxLayout* vbox = new QVBoxLayout();
-    HSeparatorBox* hsbox = new HSeparatorBox(new QLabel(_("Visual Effects")));
-    vbox->addLayout(hsbox);
     vbox->addLayout(gbox);
     vbox->addWidget(new HSeparator());
     vbox->addWidget(buttonBox);
@@ -160,42 +155,6 @@ VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
 VisualEffectDialog::~VisualEffectDialog()
 {
     delete impl;
-}
-
-
-void VisualEffectDialog::initializeClass(ExtensionManager* ext)
-{
-    ImageViewBar* bar = ImageViewBar::instance();
-    if(!effectDialog) {
-        effectDialog = ext->manage(new VisualEffectDialog());
-    }
-
-    bar->addButton(QIcon(":/Base/icon/setup.svg"), _("Show the config dialog"))
-            ->sigClicked().connect([&](){ effectDialog->show(); });
-}
-
-
-VisualEffectDialog* VisualEffectDialog::instance()
-{
-    return effectDialog;
-}
-
-
-void VisualEffectDialog::setVisualEffect(const VisualEffect& effect)
-{
-    setHue(effect.hue());
-    setSaturation(effect.saturation());
-    setValue(effect.value());
-    setRed(effect.red());
-    setGreen(effect.green());
-    setBlue(effect.blue());
-    setCoefB(effect.coefB());
-    setCoefD(effect.coefD());
-    setStdDev(effect.stdDev());
-    setSalt(effect.salt());
-    setPepper(effect.pepper());
-    setFlip(effect.flip());
-    setFilter(effect.filter());
 }
 
 

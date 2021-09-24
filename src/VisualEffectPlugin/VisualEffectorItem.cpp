@@ -11,22 +11,20 @@
 #include <cnoid/ImageView>
 #include <cnoid/ImageableItem>
 #include <cnoid/ItemManager>
+#include <cnoid/ItemTreeView>
+#include <cnoid/MenuManager>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/RangeCamera>
 #include <cnoid/RootItem>
-#include <cnoid/SpotLight>
 #include "gettext.h"
 #include "ImageGenerator.h"
 #include "VEAreaItem.h"
 #include "VisualEffectDialog.h"
-#include "VisualEffect.h"
 
 using namespace cnoid;
 using namespace std;
 
 namespace {
-
-ImageableItem* pitem = nullptr;
 
 class VisualEffectorItemBase
 {
@@ -54,28 +52,11 @@ public:
     virtual void doUpdateVisualization() override;
 
     CameraPtr camera;
-    VisualEffect effect;
+    VisualEffectDialog* visualDialog;
     ImageGenerator generator;
     ScopedConnectionSet connections;
     std::shared_ptr<const Image> image;
     Signal<void()> sigImageUpdated_;
-};
-
-
-class LightSwitcherItem : public Item, public VisualEffectorItemBase
-{
-public:
-    LightSwitcherItem();
-    void setBodyItem(BodyItem* bodyItem, SpotLight* light);
-    virtual void enableVisualization(bool on) override;
-    virtual void doUpdateVisualization() override;
-    void updateLightState();
-
-protected:
-    virtual void doPutProperties(PutPropertyFunction& putProperty) override;
-
-    SpotLightPtr light;
-    ScopedConnectionSet connections;
 };
 
 }
@@ -104,7 +85,16 @@ void VisualEffectorItem::initializeClass(ExtensionManager* ext)
     im.addCreationPanel<VisualEffectorItem>();
 
     im.registerClass<CameraImageVisualizerItem2>(N_("CameraImageVisualizerItem2"));
-    im.registerClass<LightSwitcherItem>(N_("LightSwitcherItem"));
+
+    ItemTreeView::instance()->customizeContextMenu<CameraImageVisualizerItem2>(
+        [](CameraImageVisualizerItem2* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
+            menuManager.setPath("/");
+            menuManager.addItem(_("Visual Effect"))->sigTriggered().connect(
+                [item](){ item->visualDialog->show(); });
+            menuManager.setPath("/");
+            menuManager.addSeparator();
+            menuFunction.dispatchAs<Item>(item);
+        });
 }
 
 
@@ -176,17 +166,6 @@ void VisualEffectorItemImpl::onPositionChanged()
                     }
                 }
             }
-
-            DeviceList<SpotLight> lights = body->devices<SpotLight>();
-            for(size_t i=0; i < lights.size(); ++i){
-                LightSwitcherItem* lightStateSwitcherItem =
-                        j<n ? dynamic_cast<LightSwitcherItem*>(restoredSubItems[j++].get()) : new LightSwitcherItem();
-                if(lightStateSwitcherItem){
-                    lightStateSwitcherItem->setBodyItem(bodyItem, lights[i]);
-                    self->addSubItem(lightStateSwitcherItem);
-                    subItems.push_back(lightStateSwitcherItem);
-                }
-            }
         }
 
         restoredSubItems.clear();
@@ -221,20 +200,21 @@ bool VisualEffectorItem::store(Archive& archive)
             subArchive->write("is_checked", true);
         }
         CameraImageVisualizerItem2* vitem = dynamic_cast<CameraImageVisualizerItem2*>(item);
-        if(vitem) {
-            subArchive->write("hue", vitem->effect.hue());
-            subArchive->write("saturation", vitem->effect.saturation());
-            subArchive->write("value", vitem->effect.value());
-            subArchive->write("red", vitem->effect.red());
-            subArchive->write("green", vitem->effect.green());
-            subArchive->write("blue", vitem->effect.blue());
-            subArchive->write("coef_b", vitem->effect.coefB());
-            subArchive->write("coef_d", vitem->effect.coefD());
-            subArchive->write("std_dev", vitem->effect.stdDev());
-            subArchive->write("salt", vitem->effect.salt());
-            subArchive->write("pepper", vitem->effect.pepper());
-            subArchive->write("flip", vitem->effect.flip());
-            subArchive->write("filter", vitem->effect.filter());
+        VisualEffectDialog* ved = vitem->visualDialog;
+        if(ved) {
+            subArchive->write("hue", ved->hue());
+            subArchive->write("saturation", ved->saturation());
+            subArchive->write("value", ved->value());
+            subArchive->write("red", ved->red());
+            subArchive->write("green", ved->green());
+            subArchive->write("blue", ved->blue());
+            subArchive->write("coef_b", ved->coefB());
+            subArchive->write("coef_d", ved->coefD());
+            subArchive->write("std_dev", ved->stdDev());
+            subArchive->write("salt", ved->salt());
+            subArchive->write("pepper", ved->pepper());
+            subArchive->write("flip", ved->flip());
+            subArchive->write("filter", ved->filter());
         }
         item->store(*subArchive);
 
@@ -273,13 +253,14 @@ bool VisualEffectorItem::restore(const Archive& archive)
                 Item* tmpItem = item;
                 if(tmpItem) {
                     CameraImageVisualizerItem2* vitem = dynamic_cast<CameraImageVisualizerItem2*>(tmpItem);
-                    if(vitem) {
+                    VisualEffectDialog* ved = vitem->visualDialog;
+                    if(ved) {
                         double value;
                         subArchive->read("hue", value);
                         if(fabs(value) < 0.01) {
                             value = 0.0;
                         }
-                        vitem->effect.setHue(value);
+                        ved->setHue(value);
                         if(fabs(value) < 0.01) {
                             value = 0.0;
                         }
@@ -287,58 +268,58 @@ bool VisualEffectorItem::restore(const Archive& archive)
                         if(fabs(value) < 0.01) {
                             value = 0.0;
                         }
-                        vitem->effect.setSaturation(value);
+                        ved->setSaturation(value);
                         subArchive->read("value", value);
                         if(fabs(value) < 0.01) {
                             value = 0.0;
                         }
-                        vitem->effect.setValue(value);
+                        ved->setValue(value);
                         subArchive->read("red", value);
                         if(fabs(value) < 0.01) {
                             value = 0.0;
                         }
-                        vitem->effect.setRed(value);
+                        ved->setRed(value);
                         subArchive->read("green", value);
                         if(fabs(value) < 0.01) {
                             value = 0.0;
                         }
-                        vitem->effect.setGreen(value);
+                        ved->setGreen(value);
                         subArchive->read("blue", value);
                         if(fabs(value) < 0.01) {
                             value = 0.0;
                         }
-                        vitem->effect.setBlue(value);
+                        ved->setBlue(value);
                         subArchive->read("coef_b", value);
                         if(fabs(value) < 0.01) {
                             value = 0.0;
                         }
-                        vitem->effect.setCoefB(value);
+                        ved->setCoefB(value);
                         subArchive->read("coef_d", value);
                         if(fabs(value) < 1.0) {
                             value = 1.0;
                         }
-                        vitem->effect.setCoefD(value);
+                        ved->setCoefD(value);
                         subArchive->read("std_dev", value);
                         if(fabs(value) < 0.01) {
                             value = 0.0;
                         }
-                        vitem->effect.setStdDev(value);
+                        ved->setStdDev(value);
                         subArchive->read("salt", value);
                         if(fabs(value) < 0.01) {
                             value = 0.0;
                         }
-                        vitem->effect.setSalt(value);
+                        ved->setSalt(value);
                         subArchive->read("pepper", value);
                         if(fabs(value) < 0.01) {
                             value = 0.0;
                         }
-                        vitem->effect.setPepper(value);
+                        ved->setPepper(value);
                         bool flip;
                         subArchive->read("flip", flip);
-                        vitem->effect.setFlip(flip);
+                        ved->setFlip(flip);
                         int filter = 0;
                         subArchive->read("filter", filter);
-                        vitem->effect.setFilter(filter);
+                        ved->setFilter(filter);
                     }
                 }
                 impl->restoredSubItems.push_back(item);
@@ -377,7 +358,7 @@ void VisualEffectorItemBase::updateVisualization()
 CameraImageVisualizerItem2::CameraImageVisualizerItem2()
     : VisualEffectorItemBase(this)
 {
-
+    visualDialog = new VisualEffectDialog();
 }
 
 
@@ -425,22 +406,21 @@ void CameraImageVisualizerItem2::enableVisualization(bool on)
 void CameraImageVisualizerItem2::doUpdateVisualization()
 {
     if(camera){
-        RootItem* rootItem = RootItem::instance();
-        bool changed = false;
-        double hue = effect.hue();
-        double saturation = effect.saturation();
-        double value = effect.value();
-        double red = effect.red();
-        double green = effect.green();
-        double blue = effect.blue();
-        bool flipped = effect.flip();
-        double coefB = effect.coefB();
-        double coefD = effect.coefD();
-        double stdDev = effect.stdDev();
-        double salt = effect.salt();
-        double pepper = effect.pepper();
-        int filter = effect.filter();
+        double hue = visualDialog->hue();
+        double saturation = visualDialog->saturation();
+        double value = visualDialog->value();
+        double red = visualDialog->red();
+        double green = visualDialog->green();
+        double blue = visualDialog->blue();
+        bool flipped = visualDialog->flip();
+        double coefB = visualDialog->coefB();
+        double coefD = visualDialog->coefD();
+        double stdDev = visualDialog->stdDev();
+        double salt = visualDialog->salt();
+        double pepper = visualDialog->pepper();
+        int filter = visualDialog->filter();
 
+        RootItem* rootItem = RootItem::instance();
         if(rootItem) {
             ItemList<VEAreaItem> vitems = rootItem->checkedItems<VEAreaItem>();
             for(size_t i = 0; i < vitems.size(); ++i) {
@@ -460,48 +440,7 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
                     pepper = vitem->pepper();
                     flipped = vitem->flip();
                     filter = vitem->filter();
-                    changed = true;
                 }
-            }
-        }
-
-        if(!changed) {
-            ImageableItem* item = ImageViewBar::instance()->getSelectedImageableItem();
-            CameraImageVisualizerItem2* citem = dynamic_cast<CameraImageVisualizerItem2*>(item);
-            VisualEffectDialog* ved = VisualEffectDialog::instance();
-            if(citem == this) {
-                if(item != pitem) {
-                    ved->setVisualEffect(effect);
-                }
-                pitem = item;
-
-                hue = ved->hue();
-                saturation = ved->saturation();
-                value = ved->value();
-                red = ved->red();
-                green = ved->green();
-                blue = ved->blue();
-                coefB = ved->coefB();
-                coefD = ved->coefD();
-                stdDev = ved->stdDev();
-                salt = ved->salt();
-                pepper = ved->pepper();
-                flipped = ved->flip();
-                filter = ved->filter();
-
-                effect.setHue(hue);
-                effect.setSaturation(saturation);
-                effect.setValue(value);
-                effect.setRed(red);
-                effect.setGreen(green);
-                effect.setBlue(blue);
-                effect.setCoefB(coefB);
-                effect.setCoefD(coefD);
-                effect.setStdDev(stdDev);
-                effect.setSalt(salt);
-                effect.setPepper(pepper);
-                effect.setFlip(flipped);
-                effect.setFilter(filter);
             }
         }
 
@@ -540,64 +479,4 @@ void CameraImageVisualizerItem2::doUpdateVisualization()
         image.reset();
     }
     sigImageUpdated_();
-}
-
-
-LightSwitcherItem::LightSwitcherItem()
-    : VisualEffectorItemBase(this)
-{
-
-}
-
-
-void LightSwitcherItem::setBodyItem(BodyItem* bodyItem, SpotLight* light)
-{
-    if(name().empty()){
-        string name = light->name();
-        if(name.empty()) {
-            name = "NoName";
-        }
-        setName(name);
-    }
-
-    this->light = light;
-
-    VisualEffectorItemBase::setBodyItem(bodyItem);
-}
-
-
-void LightSwitcherItem::enableVisualization(bool on)
-{
-    connections.disconnect();
-
-    if(light && on){
-        connections.add(
-            light->sigStateChanged().connect(
-                [&](){ updateLightState(); }));
-
-        doUpdateVisualization();
-    }
-
-    if(light) {
-        light->on(on);
-        light->notifyStateChange();
-    }
-}
-
-
-void LightSwitcherItem::doUpdateVisualization()
-{
-
-}
-
-
-void LightSwitcherItem::doPutProperties(PutPropertyFunction& putProperty)
-{
-
-}
-
-
-void LightSwitcherItem::updateLightState()
-{
-
 }

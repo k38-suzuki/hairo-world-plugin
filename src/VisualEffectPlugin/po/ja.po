@@ -25,18 +25,6 @@ msgstr "視覚効果アイテム"
 msgid "CameraImageVisualizerItem2"
 msgstr "カメラ画像ビジュアライザアイテム２"
 
-#: ../VisualEffectorItem.cpp:106
-msgid "LightSwitcherItem"
-msgstr "ライトスイッチャアイテム"
-
-#: ../VisualEffectorItem.cpp:113
-msgid "Show the config dialog"
-msgstr "設定ダイアログの表示"
-
-#: ../VisualEffectDialog.cpp:59
-msgid "Configuration"
-msgstr "設定"
-
 #: ../VisualEffectDialog.cpp:100
 msgid "Flip"
 msgstr "反転"
@@ -118,7 +106,11 @@ msgid "&Ok"
 msgstr "Ｏｋ"
 
 #: ../VisualEffectDialog.cpp:138
-msgid "Visual Effects"
+msgid "Effect Config"
+msgstr "視覚効果の設定"
+
+#: ../VisualEffectorItem.cpp:92
+msgid "Visual Effect"
 msgstr "視覚効果"
 
 #: ../VEAreaItem.cpp:145

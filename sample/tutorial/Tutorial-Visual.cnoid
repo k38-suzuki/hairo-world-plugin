@@ -97,9 +97,6 @@ items:
                     pepper: 0
                     flip: false
                     filter: 0
-                  - 
-                    class: LightSwitcherItem
-                    name: Light
         - 
           id: 5
           name: "Labo1"
@@ -470,12 +467,12 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 363, 1553 ]
+      sizes: [ 472, 2017 ]
       children: 
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 554, 552 ]
+          sizes: [ 647, 644 ]
           children: 
             - 
               type: pane
@@ -487,12 +484,12 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 857, 249 ]
+          sizes: [ 1000, 291 ]
           children: 
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 726, 823 ]
+              sizes: [ 943, 1070 ]
               children: 
                 - 
                   type: pane
@@ -504,7 +501,7 @@ viewAreas:
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 892, 657 ]
+              sizes: [ 1159, 854 ]
               children: 
                 - 
                   type: pane

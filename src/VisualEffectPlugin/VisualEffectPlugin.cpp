@@ -7,7 +7,6 @@
 #include <fmt/format.h>
 #include "VEAreaItem.h"
 #include "VisualEffectorItem.h"
-#include "VisualEffectDialog.h"
 
 using namespace cnoid;
 
@@ -25,7 +24,6 @@ public:
     virtual bool initialize() override
     {
         VEAreaItem::initializeClass(this);
-        VisualEffectDialog::initializeClass(this);
         VisualEffectorItem::initializeClass(this);
         return true;
     }
