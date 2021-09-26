@@ -63,7 +63,7 @@ items:
               data: 
                 sub_items: 
                   - 
-                    class: CameraImageVisualizerItem2
+                    class: VEImageVisualizerItem
                     name: FrontCamera
                     is_checked: true
                     hue: 0

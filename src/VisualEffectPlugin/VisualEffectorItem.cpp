@@ -6,60 +6,17 @@
 #include "VisualEffectorItem.h"
 #include <cnoid/Archive>
 #include <cnoid/Body>
-#include <cnoid/BodyItem>
-#include <cnoid/ConnectionSet>
 #include <cnoid/ImageView>
-#include <cnoid/ImageableItem>
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
 #include <cnoid/MenuManager>
 #include <cnoid/PutPropertyFunction>
-#include <cnoid/RangeCamera>
 #include <cnoid/RootItem>
 #include "gettext.h"
-#include "ImageGenerator.h"
 #include "VEAreaItem.h"
-#include "VisualEffectDialog.h"
 
 using namespace cnoid;
 using namespace std;
-
-namespace {
-
-class VisualEffectorItemBase
-{
-public:
-    Item* visualizerItem;
-    BodyItem* bodyItem;
-    ScopedConnection sigCheckToggledConnection;
-    VisualEffectorItemBase(Item* visualizerItem);
-    void setBodyItem(BodyItem* bodyItem);
-    void updateVisualization();
-
-    virtual void enableVisualization(bool on) = 0;
-    virtual void doUpdateVisualization() = 0;
-};
-
-
-class CameraImageVisualizerItem2 : public Item, public ImageableItem, public VisualEffectorItemBase
-{
-public:
-    CameraImageVisualizerItem2();
-    virtual const Image* getImage() override;
-    virtual SignalProxy<void()> sigImageUpdated() override;
-    void setBodyItem(BodyItem* bodyItem, Camera* camera);
-    virtual void enableVisualization(bool on) override;
-    virtual void doUpdateVisualization() override;
-
-    CameraPtr camera;
-    VisualEffectDialog* visualDialog;
-    ImageGenerator generator;
-    ScopedConnectionSet connections;
-    std::shared_ptr<const Image> image;
-    Signal<void()> sigImageUpdated_;
-};
-
-}
 
 namespace cnoid {
 
@@ -84,10 +41,10 @@ void VisualEffectorItem::initializeClass(ExtensionManager* ext)
     im.registerClass<VisualEffectorItem>(N_("VisualEffectorItem"));
     im.addCreationPanel<VisualEffectorItem>();
 
-    im.registerClass<CameraImageVisualizerItem2>(N_("CameraImageVisualizerItem2"));
+    im.registerClass<VEImageVisualizerItem>(N_("VEImageVisualizerItem"));
 
-    ItemTreeView::instance()->customizeContextMenu<CameraImageVisualizerItem2>(
-        [](CameraImageVisualizerItem2* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
+    ItemTreeView::instance()->customizeContextMenu<VEImageVisualizerItem>(
+        [](VEImageVisualizerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
             menuManager.setPath("/");
             menuManager.addItem(_("Visual Effect"))->sigTriggered().connect(
                 [item](){ item->visualDialog->show(); });
@@ -157,8 +114,8 @@ void VisualEffectorItemImpl::onPositionChanged()
             DeviceList<Camera> cameras = body->devices<Camera>();
             for(size_t i=0; i < cameras.size(); ++i){
                 if(cameras[i]->imageType()!=Camera::NO_IMAGE){
-                    CameraImageVisualizerItem2* cameraImageVisualizerItem =
-                            j<n ? dynamic_cast<CameraImageVisualizerItem2*>(restoredSubItems[j++].get()) : new CameraImageVisualizerItem2();
+                    VEImageVisualizerItem* cameraImageVisualizerItem =
+                            j<n ? dynamic_cast<VEImageVisualizerItem*>(restoredSubItems[j++].get()) : new VEImageVisualizerItem();
                     if(cameraImageVisualizerItem){
                         cameraImageVisualizerItem->setBodyItem(bodyItem, cameras[i]);
                         self->addSubItem(cameraImageVisualizerItem);
@@ -199,7 +156,7 @@ bool VisualEffectorItem::store(Archive& archive)
         if(item->isChecked()){
             subArchive->write("is_checked", true);
         }
-        CameraImageVisualizerItem2* vitem = dynamic_cast<CameraImageVisualizerItem2*>(item);
+        VEImageVisualizerItem* vitem = dynamic_cast<VEImageVisualizerItem*>(item);
         VisualEffectDialog* ved = vitem->visualDialog;
         if(ved) {
             subArchive->write("hue", ved->hue());
@@ -252,7 +209,7 @@ bool VisualEffectorItem::restore(const Archive& archive)
                 }
                 Item* tmpItem = item;
                 if(tmpItem) {
-                    CameraImageVisualizerItem2* vitem = dynamic_cast<CameraImageVisualizerItem2*>(tmpItem);
+                    VEImageVisualizerItem* vitem = dynamic_cast<VEImageVisualizerItem*>(tmpItem);
                     VisualEffectDialog* ved = vitem->visualDialog;
                     if(ved) {
                         double value;
@@ -355,26 +312,26 @@ void VisualEffectorItemBase::updateVisualization()
 }
 
 
-CameraImageVisualizerItem2::CameraImageVisualizerItem2()
+VEImageVisualizerItem::VEImageVisualizerItem()
     : VisualEffectorItemBase(this)
 {
     visualDialog = new VisualEffectDialog();
 }
 
 
-const Image* CameraImageVisualizerItem2::getImage()
+const Image* VEImageVisualizerItem::getImage()
 {
     return image.get();
 }
 
 
-SignalProxy<void()> CameraImageVisualizerItem2::sigImageUpdated()
+SignalProxy<void()> VEImageVisualizerItem::sigImageUpdated()
 {
     return sigImageUpdated_;
 }
 
 
-void CameraImageVisualizerItem2::setBodyItem(BodyItem* bodyItem, Camera* camera)
+void VEImageVisualizerItem::setBodyItem(BodyItem* bodyItem, Camera* camera)
 {
     if(name().empty()){
         string name = camera->name();
@@ -389,7 +346,13 @@ void CameraImageVisualizerItem2::setBodyItem(BodyItem* bodyItem, Camera* camera)
 }
 
 
-void CameraImageVisualizerItem2::enableVisualization(bool on)
+void VEImageVisualizerItem::show()
+{
+    visualDialog->show();
+}
+
+
+void VEImageVisualizerItem::enableVisualization(bool on)
 {
     connections.disconnect();
 
@@ -403,7 +366,7 @@ void CameraImageVisualizerItem2::enableVisualization(bool on)
 }
 
 
-void CameraImageVisualizerItem2::doUpdateVisualization()
+void VEImageVisualizerItem::doUpdateVisualization()
 {
     if(camera){
         double hue = visualDialog->hue();

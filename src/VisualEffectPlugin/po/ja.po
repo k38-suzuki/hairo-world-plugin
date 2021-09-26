@@ -22,8 +22,8 @@ msgid "VisualEffectorItem"
 msgstr "視覚効果アイテム"
 
 #: ../VisualEffectorItem.cpp:105
-msgid "CameraImageVisualizerItem2"
-msgstr "カメラ画像ビジュアライザアイテム２"
+msgid "VEImageVisualizerItem"
+msgstr "視覚効果画像可視化"
 
 #: ../VisualEffectDialog.cpp:100
 msgid "Flip"

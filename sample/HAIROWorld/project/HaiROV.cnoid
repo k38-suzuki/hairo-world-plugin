@@ -62,7 +62,7 @@ items:
               data: 
                 sub_items: 
                   - 
-                    class: CameraImageVisualizerItem2
+                    class: VEImageVisualizerItem
                     name: FrontCamera
                     is_checked: true
                     hue: 0
@@ -79,7 +79,7 @@ items:
                     flip: false
                     filter: 0
                   - 
-                    class: CameraImageVisualizerItem2
+                    class: VEImageVisualizerItem
                     name: BottomCamera
                     is_checked: true
                     hue: 0

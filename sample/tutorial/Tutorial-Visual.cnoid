@@ -65,7 +65,7 @@ items:
               data: 
                 sub_items: 
                   - 
-                    class: CameraImageVisualizerItem2
+                    class: VEImageVisualizerItem
                     name: Kinect_Image
                     is_checked: true
                     hue: 0
@@ -82,7 +82,7 @@ items:
                     flip: false
                     filter: 0
                   - 
-                    class: CameraImageVisualizerItem2
+                    class: VEImageVisualizerItem
                     name: Theta
                     hue: 0
                     saturation: 0
