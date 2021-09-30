@@ -13,6 +13,7 @@
 #include <cnoid/FileDialog>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
+#include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
@@ -257,6 +258,7 @@ public:
     void onResetButtonClicked();
     void onExportYamlButtonClicked();
     void onImportYamlButtonClicked();
+    bool loadConfig(const string& filename);
     void onEnableAgxCheckToggled(const bool& on);
     void onExportBody(const string& fileName);
     void onExportAGXBody(const string& fileName);
@@ -514,27 +516,34 @@ void CrawlerBuilderDialogImpl::onImportYamlButtonClicked()
         if(ext.empty()) {
             filename += ".yaml";
         }
+        loadConfig(filename);
+    }
+}
 
+
+bool CrawlerBuilderDialogImpl::loadConfig(const string& filename)
+{
+    try {
         YAMLReader reader;
-        if(reader.load(filename)) {
-            Mapping* topNode = reader.loadDocument(filename)->toMapping();
-            Listing* configList = topNode->findListing("configs");
-            if(configList->isValid()) {
-                for(int i = 0; i < configList->size(); i++) {
-                    Mapping& node = *configList->at(i)->toMapping();
+        MappingPtr node = reader.loadDocument(filename)->toMapping();
+        if(node) {
+            auto& configList = *node->findListing("configs");
+            if(configList.isValid()) {
+                for(int i = 0; i < configList.size(); i++) {
+                    Mapping* info = configList[i].toMapping();
 
-                    Listing* doubleSpinList = node.findListing("doubleSpin");
-                    if(doubleSpinList->isValid()) {
-                        for(int j = 0; j < doubleSpinList->size(); ++j) {
-                            double value = doubleSpinList->at(j)->toDouble();
+                    auto& doubleSpinList = *info->findListing("doubleSpin");
+                    if(doubleSpinList.isValid()) {
+                        for(int j = 0; j < doubleSpinList.size(); ++j) {
+                            double value = doubleSpinList[j].toDouble();
                             dspins[j]->setValue(value);
                         }
                     }
 
-                    Listing* spinList = node.findListing("spin");
-                    if(spinList->isValid()) {
-                        for(int j = 0; j < spinList->size(); ++j) {
-                            int value = spinList->at(j)->toInt();
+                    auto& spinList = *info->findListing("spin");
+                    if(spinList.isValid()) {
+                        for(int j = 0; j < spinList.size(); ++j) {
+                            int value = spinList[j].toInt();
                             spins[j]->setValue(value);
                         }
                     }
@@ -542,22 +551,28 @@ void CrawlerBuilderDialogImpl::onImportYamlButtonClicked()
                     for(int j = 0; j < NUM_BUTTONS; ++j) {
                         Vector3 color;
                         string key = "button" + to_string(j);
-                        if(read(node, key, color)) {
+                        if(read(info, key, color)) {
                             setColor(buttons[j], color);
                         }
                     }
 
-                    Listing* checkList = node.findListing("check");
-                    if(checkList->isValid()) {
-                        for(int j = 0; j < checkList->size(); ++j) {
-                            bool checked = checkList->at(j)->toBool() ? true : false;
+                    auto& checkList = *info->findListing("check");
+                    if(checkList.isValid()) {
+                        for(int j = 0; j < checkList.size(); ++j) {
+                            bool checked = checkList[j].toBool() ? true : false;
                             checks[j]->setChecked(checked);
                         }
                     }
                 }
             }
+
         }
     }
+    catch (const ValueNode::Exception& ex) {
+        MessageView::instance()->putln(ex.message());
+    }
+
+    return true;
 }
 
 
@@ -642,36 +657,36 @@ void CrawlerBuilderDialogImpl::onExportYamlButtonClicked()
 void CrawlerBuilderDialogImpl::onEnableAgxCheckToggled(const bool& on)
 {
     spins[TRK_BNN]->setEnabled(on);
-    dspins[TRK_BNT]->setEnabled(on);
-    dspins[TRK_BNW]->setEnabled(on);
-    dspins[TRK_BNTT]->setEnabled(on);
+    agxdspins[TRK_BNT]->setEnabled(on);
+    agxdspins[TRK_BNW]->setEnabled(on);
+    agxdspins[TRK_BNTT]->setEnabled(on);
     spins[TRK_BUTNE]->setEnabled(on);
-    dspins[TRK_BNDTM]->setEnabled(on);
+    agxdspins[TRK_BNDTM]->setEnabled(on);
     spins[TRK_BNDTE]->setEnabled(on);
-    dspins[TRK_BSHFPM]->setEnabled(on);
+    agxdspins[TRK_BSHFPM]->setEnabled(on);
     spins[TRK_BSHFPE]->setEnabled(on);
     spins[TRK_BMSHNF]->setEnabled(on);
-    dspins[TRK_BHCM]->setEnabled(on);
+    agxdspins[TRK_BHCM]->setEnabled(on);
     spins[TRK_BHCE]->setEnabled(on);
-    dspins[TRK_BHSD]->setEnabled(on);
-    dspins[TRK_BNWMT]->setEnabled(on);
-    dspins[TRK_BNWST]->setEnabled(on);
+    agxdspins[TRK_BHSD]->setEnabled(on);
+    agxdspins[TRK_BNWMT]->setEnabled(on);
+    agxdspins[TRK_BNWST]->setEnabled(on);
 
     spins[FLP_BNN]->setEnabled(on);
-    dspins[FLP_BNT]->setEnabled(on);
-    dspins[FLP_BNW]->setEnabled(on);
-    dspins[FLP_BNTT]->setEnabled(on);
+    agxdspins[FLP_BNT]->setEnabled(on);
+    agxdspins[FLP_BNW]->setEnabled(on);
+    agxdspins[FLP_BNTT]->setEnabled(on);
     spins[FLP_BUTNE]->setEnabled(on);
-    dspins[FLP_BNDTM]->setEnabled(on);
+    agxdspins[FLP_BNDTM]->setEnabled(on);
     spins[FLP_BNDTE]->setEnabled(on);
-    dspins[FLP_BSHFPM]->setEnabled(on);
+    agxdspins[FLP_BSHFPM]->setEnabled(on);
     spins[FLP_BSHFPE]->setEnabled(on);
     spins[FLP_BMSHNF]->setEnabled(on);
-    dspins[FLP_BHCM]->setEnabled(on);
+    agxdspins[FLP_BHCM]->setEnabled(on);
     spins[FLP_BHCE]->setEnabled(on);
-    dspins[FLP_BHSD]->setEnabled(on);
-    dspins[FLP_BNWMT]->setEnabled(on);
-    dspins[FLP_BNWST]->setEnabled(on);
+    agxdspins[FLP_BHSD]->setEnabled(on);
+    agxdspins[FLP_BNWMT]->setEnabled(on);
+    agxdspins[FLP_BNWST]->setEnabled(on);
 }
 
 

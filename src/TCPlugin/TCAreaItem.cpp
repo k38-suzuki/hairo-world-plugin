@@ -8,6 +8,7 @@
 #include <cnoid/EigenArchive>
 #include <cnoid/FloatingNumberString>
 #include <cnoid/ItemManager>
+#include <cnoid/MessageView>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/YAMLReader>
 #include <cnoid/YAMLWriter>
@@ -53,35 +54,43 @@ void loadItem(Mapping& node, TCAreaItem* item)
 
 bool loadDocument(const string& filename)
 {
-    YAMLReader reader;
-    if(reader.load(filename)) {
-        Mapping* topNode = reader.loadDocument(filename)->toMapping();
-        Listing* trafficList = topNode->findListing("traffics");
-        if(trafficList->isValid()) {
-            for(int i = 0; i < trafficList->size(); i++) {
+    try {
+        YAMLReader reader;
+        MappingPtr node = reader.loadDocument(filename)->toMapping();
+        auto& trafficList = *node->findListing("traffics");
+        if(trafficList.isValid()) {
+            for(int i = 0; i < trafficList.size(); i++) {
                 TCAreaItem* item = new TCAreaItem();
-                Mapping* node = trafficList->at(i)->toMapping();
-                loadItem(*node, item);
+                Mapping* info = trafficList[i].toMapping();
+                loadItem(*info, item);
             }
         }
     }
+    catch (const ValueNode::Exception& ex) {
+        MessageView::instance()->putln(ex.message());
+    }
+
     return true;
 }
 
 
 bool loadDocument(TCAreaItem* item, const string& filename)
 {
-    YAMLReader reader;
-    if(reader.load(filename)) {
-        Mapping* topNode = reader.loadDocument(filename)->toMapping();
-        Listing* trafficList = topNode->findListing("traffics");
-        if(trafficList->isValid()) {
-            for(int i = 0; i < trafficList->size(); i++) {
-                Mapping* node = trafficList->at(i)->toMapping();
-                loadItem(*node, item);
+    try {
+        YAMLReader reader;
+        MappingPtr node = reader.loadDocument(filename)->toMapping();
+        auto& trafficList = *node->findListing("traffics");
+        if(trafficList.isValid()) {
+            for(int i = 0; i < trafficList.size(); i++) {
+                Mapping* info = trafficList[i].toMapping();
+                loadItem(*info, item);
             }
         }
     }
+    catch (const ValueNode::Exception& ex) {
+        MessageView::instance()->putln(ex.message());
+    }
+
     return true;
 }
 

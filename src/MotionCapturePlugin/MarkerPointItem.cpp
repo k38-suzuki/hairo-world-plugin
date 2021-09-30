@@ -11,6 +11,7 @@
 #include <cnoid/ExtensionManager>
 #include <cnoid/ItemManager>
 #include <cnoid/MeshGenerator>
+#include <cnoid/MessageView>
 #include <cnoid/UTF8>
 #include <cnoid/YAMLReader>
 #include <cnoid/YAMLWriter>
@@ -21,8 +22,8 @@
 #include <bitset>
 #include "gettext.h"
 
-using namespace std;
 using namespace cnoid;
+using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
 int colorIndex = 1;
@@ -128,25 +129,6 @@ bool loadCsv(MarkerPointItem* item, const string& fileName)
     colorIndex++;
     if(colorIndex > 6) {
         colorIndex = 1;
-    }
-    return true;
-}
-
-
-bool loadItem(Mapping& node, MarkerPointItem* item)
-{
-    Listing* markerList = node.findListing("markers");
-    if(markerList->isValid()) {
-        for(int i = 0; i < markerList->size(); i++) {
-            Mapping& info = *markerList->at(i)->toMapping();
-            Vector3 point;
-            if(read(info, "point", point)) {}
-            Vector3 color;
-            if(read(info, "color", color)) {}
-            double transparency;
-            if(info.read("transparency", transparency)) {}
-            item->addPoint(point, 0.03, Vector3f(color[0], color[1], color[2]), transparency);
-        }
     }
     return true;
 }
@@ -270,10 +252,27 @@ bool MarkerPointItem::load(MarkerPointItem* item, const string& fileName)
     stdx::filesystem::path name(fileName);
     string extension = name.extension().c_str();
     if((extension == ".yaml") || (extension == ".yml")) {
-        YAMLReader reader;
-        if(reader.load(fileName)) {
-            Mapping* topNode = reader.loadDocument(fileName)->toMapping();
-            loadItem(*topNode, item);
+        try {
+            YAMLReader reader;
+            MappingPtr node = reader.loadDocument(fileName)->toMapping();
+            if(node) {
+                auto& markerList = *node->findListing("markers");
+                if(markerList.isValid()) {
+                    for(int i = 0; i < markerList.size(); ++i) {
+                        Mapping* info = markerList[i].toMapping();
+                        Vector3 point;
+                        read(info, "point", point);
+                        Vector3 color;
+                        read(info, "color", color);
+                        double transparency;
+                        info->read("transparency", transparency);
+                        item->addPoint(point, 0.03, Vector3f(color[0], color[1], color[2]), transparency);
+                    }
+                }
+            }
+        }
+        catch (const ValueNode::Exception& ex) {
+            MessageView::instance()->putln(ex.message());
         }
     } else if(extension == ".csv") {
         loadCsv(item, fileName);

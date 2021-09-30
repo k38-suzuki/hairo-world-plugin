@@ -6,7 +6,6 @@
 #include "VisualEffectorItem.h"
 #include <cnoid/Archive>
 #include <cnoid/Body>
-#include <cnoid/ImageView>
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
 #include <cnoid/MenuManager>

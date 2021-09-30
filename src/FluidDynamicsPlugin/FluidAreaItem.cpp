@@ -8,6 +8,7 @@
 #include <cnoid/EigenArchive>
 #include <cnoid/FloatingNumberString>
 #include <cnoid/ItemManager>
+#include <cnoid/MessageView>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/YAMLReader>
 #include <cnoid/YAMLWriter>
@@ -48,35 +49,45 @@ void loadItem(Mapping& node, FluidAreaItem* item)
 
 bool loadDocument(const string& filename)
 {
-    YAMLReader reader;
-    if(reader.load(filename)) {
-        Mapping* topNode = reader.loadDocument(filename)->toMapping();
-        Listing* fluidList = topNode->findListing("fluids");
-        if(fluidList->isValid()) {
-            for(int i = 0; i < fluidList->size(); i++) {
-                FluidAreaItem* item = new FluidAreaItem();
-                Mapping* info = fluidList->at(i)->toMapping();
-                loadItem(*info, item);
+    try {
+        YAMLReader reader;
+        MappingPtr node = reader.loadDocument(filename)->toMapping();
+        if(node) {
+            auto& fluidList = *node->findListing("fluids");
+            if(fluidList.isValid()) {
+                for(int i = 0; i < fluidList.size(); i++) {
+                    FluidAreaItem* item = new FluidAreaItem();
+                    Mapping* info = fluidList[i].toMapping();
+                    loadItem(*info, item);
+                }
             }
         }
     }
+    catch (const ValueNode::Exception& ex) {
+        MessageView::instance()->putln(ex.message());
+    }
+
     return true;
 }
 
 
 bool loadDocument(FluidAreaItem* item, const string& filename)
 {
-    YAMLReader reader;
-    if(reader.load(filename)) {
-        Mapping* topNode = reader.loadDocument(filename)->toMapping();
-        Listing* fluidList = topNode->findListing("fluids");
-        if(fluidList->isValid()) {
-            for(int i = 0; i < fluidList->size(); i++) {
-                Mapping* info = fluidList->at(i)->toMapping();
+    try {
+        YAMLReader reader;
+        MappingPtr node = reader.loadDocument(filename)->toMapping();
+        auto& fluidList = *node->findListing("fluids");
+        if(fluidList.isValid()) {
+            for(int i = 0; i < fluidList.size(); i++) {
+                Mapping* info = fluidList[i].toMapping();
                 loadItem(*info, item);
             }
         }
     }
+    catch (const ValueNode::Exception& ex) {
+        MessageView::instance()->putln(ex.message());
+    }
+
     return true;
 }
 
