@@ -4,6 +4,7 @@
 */
 
 #include "VisualEffectDialog.h"
+#include <cnoid/Archive>
 #include <cnoid/Button>
 #include <cnoid/CheckBox>
 #include <cnoid/ComboBox>
@@ -14,6 +15,7 @@
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <math.h>
 #include "gettext.h"
 
 using namespace cnoid;
@@ -41,6 +43,8 @@ public:
     CheckBox* flipCheck;
     ComboBox* filterCombo;
 
+    bool store(Archive& archive);
+    bool restore(const Archive& archive);
     void onAccepted();
     void onRejected();
     void onResetButtonClicked();
@@ -158,21 +162,9 @@ VisualEffectDialog::~VisualEffectDialog()
 }
 
 
-void VisualEffectDialog::setHue(const double& hue)
-{
-    impl->hueSpin->setValue(hue);
-}
-
-
 double VisualEffectDialog::hue() const
 {
     return impl->hueSpin->value();
-}
-
-
-void VisualEffectDialog::setSaturation(const double& saturation)
-{
-    impl->saturationSpin->setValue(saturation);
 }
 
 
@@ -182,21 +174,9 @@ double VisualEffectDialog::saturation() const
 }
 
 
-void VisualEffectDialog::setValue(const double& value)
-{
-    impl->valueSpin->setValue(value);
-}
-
-
 double VisualEffectDialog::value() const
 {
     return impl->valueSpin->value();
-}
-
-
-void VisualEffectDialog::setRed(const double& red)
-{
-    impl->redSpin->setValue(red);
 }
 
 
@@ -206,21 +186,9 @@ double VisualEffectDialog::red() const
 }
 
 
-void VisualEffectDialog::setGreen(const double& green)
-{
-    impl->greenSpin->setValue(green);
-}
-
-
 double VisualEffectDialog::green() const
 {
     return impl->greenSpin->value();
-}
-
-
-void VisualEffectDialog::setBlue(const double& blue)
-{
-    impl->blueSpin->setValue(blue);
 }
 
 
@@ -230,21 +198,9 @@ double VisualEffectDialog::blue() const
 }
 
 
-void VisualEffectDialog::setCoefB(const double& coefB)
-{
-    impl->coefBSpin->setValue(coefB);
-}
-
-
 double VisualEffectDialog::coefB() const
 {
     return impl->coefBSpin->value();
-}
-
-
-void VisualEffectDialog::setCoefD(const double& coefD)
-{
-    impl->coefDSpin->setValue(coefD);
 }
 
 
@@ -254,21 +210,9 @@ double VisualEffectDialog::coefD() const
 }
 
 
-void VisualEffectDialog::setStdDev(const double& stdDev)
-{
-    impl->stdDevSpin->setValue(stdDev);
-}
-
-
 double VisualEffectDialog::stdDev() const
 {
     return impl->stdDevSpin->value();
-}
-
-
-void VisualEffectDialog::setSalt(const double& salt)
-{
-    impl->saltSpin->setValue(salt);
 }
 
 
@@ -278,33 +222,15 @@ double VisualEffectDialog::salt() const
 }
 
 
-void VisualEffectDialog::setPepper(const double& pepper)
-{
-    impl->pepperSpin->setValue(pepper);
-}
-
-
 double VisualEffectDialog::pepper() const
 {
     return impl->pepperSpin->value();
 }
 
 
-void VisualEffectDialog::setFlip(const double& flip)
-{
-    impl->flipCheck->setChecked(flip);
-}
-
-
 bool VisualEffectDialog::flip() const
 {
     return impl->flipCheck->isChecked();
-}
-
-
-void VisualEffectDialog::setFilter(const int& filter)
-{
-    impl->filterCombo->setCurrentIndex(filter);
 }
 
 
@@ -329,6 +255,108 @@ void VisualEffectDialogImpl::onResetButtonClicked()
     pepperSpin->setValue(0.0);
     flipCheck->setChecked(false);
     filterCombo->setCurrentIndex(0);
+}
+
+
+bool VisualEffectDialog::store(Archive& archive)
+{
+    return impl->store(archive);
+}
+
+
+bool VisualEffectDialogImpl::store(Archive& archive)
+{
+    archive.write("hue", hueSpin->value());
+    archive.write("saturation", saturationSpin->value());
+    archive.write("value", valueSpin->value());
+    archive.write("red", redSpin->value());
+    archive.write("green", greenSpin->value());
+    archive.write("blue", blueSpin->value());
+    archive.write("coef_b", coefBSpin->value());
+    archive.write("coef_d", coefDSpin->value());
+    archive.write("std_dev", stdDevSpin->value());
+    archive.write("salt", saltSpin->value());
+    archive.write("pepper", pepperSpin->value());
+    archive.write("flip", flipCheck->isChecked());
+    archive.write("filter", filterCombo->currentIndex());
+    return true;
+}
+
+
+bool VisualEffectDialog::restore(const Archive& archive)
+{
+    return impl->restore(archive);
+}
+
+
+bool VisualEffectDialogImpl::restore(const Archive& archive)
+{
+    double value;
+    archive.read("hue", value);
+    if(fabs(value) < 0.01) {
+        value = 0.0;
+    }
+    hueSpin->setValue(value);
+    if(fabs(value) < 0.01) {
+        value = 0.0;
+    }
+    archive.read("saturation", value);
+    if(fabs(value) < 0.01) {
+        value = 0.0;
+    }
+    saturationSpin->setValue(value);
+    archive.read("value", value);
+    if(fabs(value) < 0.01) {
+        value = 0.0;
+    }
+    valueSpin->setValue(value);
+    archive.read("red", value);
+    if(fabs(value) < 0.01) {
+        value = 0.0;
+    }
+    redSpin->setValue(value);
+    archive.read("green", value);
+    if(fabs(value) < 0.01) {
+        value = 0.0;
+    }
+    greenSpin->setValue(value);
+    archive.read("blue", value);
+    if(fabs(value) < 0.01) {
+        value = 0.0;
+    }
+    blueSpin->setValue(value);
+    archive.read("coef_b", value);
+    if(fabs(value) < 0.01) {
+        value = 0.0;
+    }
+    coefBSpin->setValue(value);
+    archive.read("coef_d", value);
+    if(fabs(value) < 1.0) {
+        value = 1.0;
+    }
+    coefDSpin->setValue(value);
+    archive.read("std_dev", value);
+    if(fabs(value) < 0.01) {
+        value = 0.0;
+    }
+    stdDevSpin->setValue(value);
+    archive.read("salt", value);
+    if(fabs(value) < 0.01) {
+        value = 0.0;
+    }
+    saltSpin->setValue(value);
+    archive.read("pepper", value);
+    if(fabs(value) < 0.01) {
+        value = 0.0;
+    }
+    pepperSpin->setValue(value);
+    bool flip;
+    archive.read("flip", flip);
+    flipCheck->setChecked(flip);
+    int filter = 0;
+    archive.read("filter", filter);
+    filterCombo->setCurrentIndex(filter);
+    return true;
 }
 
 

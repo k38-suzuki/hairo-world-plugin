@@ -19,32 +19,22 @@ public:
     VisualEffectDialog();
     virtual ~VisualEffectDialog();
 
-    void setHue(const double& hue);
     double hue() const;
-    void setSaturation(const double& saturation);
     double saturation() const;
-    void setValue(const double& value);
     double value() const;
-    void setRed(const double& red);
     double red() const;
-    void setGreen(const double& green);
     double green() const;
-    void setBlue(const double& blue);
     double blue() const;
-    void setCoefB(const double& coefB);
     double coefB() const;
-    void setCoefD(const double& coefD);
     double coefD() const;
-    void setStdDev(const double& stdDev);
     double stdDev() const;
-    void setSalt(const double& salt);
     double salt() const;
-    void setPepper(const double& pepper);
     double pepper() const;
-    void setFlip(const double& flip);
     bool flip() const;
-    void setFilter(const int& filter);
     int filter() const;
+
+    bool store(Archive& archive);
+    bool restore(const Archive& archive);
 
 protected:
     virtual void onAccepted() override;

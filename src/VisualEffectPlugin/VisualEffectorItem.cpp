@@ -128,6 +128,7 @@ void VisualEffectorItemImpl::onPositionChanged()
     }
 }
 
+
 void VisualEffectorItem::onDisconnectedFromRoot()
 {
     for(size_t i=0; i < impl->subItems.size(); i++){
@@ -155,25 +156,12 @@ bool VisualEffectorItem::store(Archive& archive)
         if(item->isChecked()){
             subArchive->write("is_checked", true);
         }
-        VEImageVisualizerItem* vitem = dynamic_cast<VEImageVisualizerItem*>(item);
-        VisualEffectDialog* ved = vitem->visualDialog;
-        if(ved) {
-            subArchive->write("hue", ved->hue());
-            subArchive->write("saturation", ved->saturation());
-            subArchive->write("value", ved->value());
-            subArchive->write("red", ved->red());
-            subArchive->write("green", ved->green());
-            subArchive->write("blue", ved->blue());
-            subArchive->write("coef_b", ved->coefB());
-            subArchive->write("coef_d", ved->coefD());
-            subArchive->write("std_dev", ved->stdDev());
-            subArchive->write("salt", ved->salt());
-            subArchive->write("pepper", ved->pepper());
-            subArchive->write("flip", ved->flip());
-            subArchive->write("filter", ved->filter());
-        }
         item->store(*subArchive);
-
+        VEImageVisualizerItem* vitem = dynamic_cast<VEImageVisualizerItem*>(item);
+        VisualEffectDialog* vd = vitem->visualDialog;
+        if(vd) {
+            vd->store(*subArchive);
+        }
         subItems->append(subArchive);
     }
 
@@ -209,73 +197,9 @@ bool VisualEffectorItem::restore(const Archive& archive)
                 Item* tmpItem = item;
                 if(tmpItem) {
                     VEImageVisualizerItem* vitem = dynamic_cast<VEImageVisualizerItem*>(tmpItem);
-                    VisualEffectDialog* ved = vitem->visualDialog;
-                    if(ved) {
-                        double value;
-                        subArchive->read("hue", value);
-                        if(fabs(value) < 0.01) {
-                            value = 0.0;
-                        }
-                        ved->setHue(value);
-                        if(fabs(value) < 0.01) {
-                            value = 0.0;
-                        }
-                        subArchive->read("saturation", value);
-                        if(fabs(value) < 0.01) {
-                            value = 0.0;
-                        }
-                        ved->setSaturation(value);
-                        subArchive->read("value", value);
-                        if(fabs(value) < 0.01) {
-                            value = 0.0;
-                        }
-                        ved->setValue(value);
-                        subArchive->read("red", value);
-                        if(fabs(value) < 0.01) {
-                            value = 0.0;
-                        }
-                        ved->setRed(value);
-                        subArchive->read("green", value);
-                        if(fabs(value) < 0.01) {
-                            value = 0.0;
-                        }
-                        ved->setGreen(value);
-                        subArchive->read("blue", value);
-                        if(fabs(value) < 0.01) {
-                            value = 0.0;
-                        }
-                        ved->setBlue(value);
-                        subArchive->read("coef_b", value);
-                        if(fabs(value) < 0.01) {
-                            value = 0.0;
-                        }
-                        ved->setCoefB(value);
-                        subArchive->read("coef_d", value);
-                        if(fabs(value) < 1.0) {
-                            value = 1.0;
-                        }
-                        ved->setCoefD(value);
-                        subArchive->read("std_dev", value);
-                        if(fabs(value) < 0.01) {
-                            value = 0.0;
-                        }
-                        ved->setStdDev(value);
-                        subArchive->read("salt", value);
-                        if(fabs(value) < 0.01) {
-                            value = 0.0;
-                        }
-                        ved->setSalt(value);
-                        subArchive->read("pepper", value);
-                        if(fabs(value) < 0.01) {
-                            value = 0.0;
-                        }
-                        ved->setPepper(value);
-                        bool flip;
-                        subArchive->read("flip", flip);
-                        ved->setFlip(flip);
-                        int filter = 0;
-                        subArchive->read("filter", filter);
-                        ved->setFilter(filter);
+                    VisualEffectDialog* vd = vitem->visualDialog;
+                    if(vd) {
+                        vd->restore(*subArchive);
                     }
                 }
                 impl->restoredSubItems.push_back(item);
