@@ -3,12 +3,9 @@
    \author Kenta Suzuki
 */
 
-#include <cnoid/MessageView>
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include <QSystemTrayIcon>
-#include "StartupDialog.h"
-#include "gettext.h"
+#include "StartupManager.h"
 
 using namespace cnoid;
 
@@ -25,12 +22,7 @@ public:
 
     virtual bool initialize() override
     {
-        if(!QSystemTrayIcon::isSystemTrayAvailable()) {
-            MessageView::instance()
-                    ->putln(fmt::format("I couldn't detect any system tray on this system."));
-        }
-
-        StartupDialog::initializeClass(this);
+        StartupManager::initializeClass(this);
         return true;
     }
 

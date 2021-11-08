@@ -18,32 +18,12 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../StartupDialog.cpp:40
-msgid "Enable startup"
-msgstr "自動起動の有効化"
+msgid "Reboot mode"
+msgstr "再起動モード"
 
 #: ../StartupDialog.cpp:41
 msgid "Set a project"
-msgstr "プロジェクトを設定"
-
-#: ../StartupDialog.cpp:86
-msgid "Startup Config"
-msgstr "自動起動の設定"
-
-#: ../StartupDialog.cpp:113
-msgid "Select"
-msgstr "選択"
-
-#: ../StartupDialog.cpp:116
-msgid "Project"
-msgstr "プロジェクト"
-
-#: ../StartupDialog.cpp:120
-msgid "&Ok"
-msgstr "&Ok"
-
-#: ../StartupDialog.cpp:121
-msgid "&Cancel"
-msgstr "&キャンセル"
+msgstr "プロジェクトの設定"
 
 #: ../StartupDialog.cpp:170
 msgid "Select a Choreonoid project file"

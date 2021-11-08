@@ -5,26 +5,14 @@ if(NOT BUILD_STARTUP_PLUGIN)
 endif()
 
 set(sources
-    StartupDialog.cpp
+    StartupManager.cpp
     StartupPlugin.cpp
     )
 
 set(headers
+    StartupManager.h
     gettext.h
-    StartupDialog.h
     )
-
-set(qtsources
-    JProcess.cpp
-    )
-
-set(qtheaders
-    JProcess.h
-    )
-
-QT5_WRAP_CPP(qtsources ${qtheaders})
-
-set(sources ${sources} ${qtsources})
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
