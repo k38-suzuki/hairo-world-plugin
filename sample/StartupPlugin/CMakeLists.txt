@@ -1,8 +1,8 @@
 
-option(BUILD_STARTUP_PLUGIN "Building a StartupPlugin" OFF)
-if(NOT BUILD_STARTUP_PLUGIN)
-  return()
-endif()
+#option(BUILD_STARTUP_PLUGIN "Building a StartupPlugin" OFF)
+#if(NOT BUILD_STARTUP_PLUGIN)
+#  return()
+#endif()
 
 set(sources
     StartupManager.cpp
