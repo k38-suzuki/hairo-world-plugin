@@ -7,6 +7,7 @@
 #define CNOID_FILEEXPLORERPLUGIN_PROCESSMANAGER_H
 
 #include <cnoid/ExtensionManager>
+#include <cnoid/Item>
 
 namespace cnoid {
 
