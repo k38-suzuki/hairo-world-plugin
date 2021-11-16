@@ -19,11 +19,11 @@ msgstr ""
 
 #: ../TCAreaItem.cpp:249
 msgid "TCAreaItem"
-msgstr "通信制御エリアアイテム"
+msgstr "通信エリアアイテム"
 
 #: ../TCAreaItem.cpp:253
 msgid "TC Area"
-msgstr "通信制御エリア"
+msgstr "通信エリア"
 
 #: ../TCAreaItem.cpp:796
 msgid "InboundDelay"
@@ -99,7 +99,7 @@ msgstr ""
 
 #: ../TCSimulatorItem.cpp:167
 msgid "TCSimulatorItem"
-msgstr "通信制御シミュレータアイテム"
+msgstr "通信シミュレータアイテム"
 
 #: ../TCSimulatorItem.cpp:231
 msgid "Interface"
