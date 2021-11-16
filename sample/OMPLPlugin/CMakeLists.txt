@@ -1,8 +1,8 @@
 
-#option(BUILD_OMPL_PLUGIN "Building OMPLPlugin" OFF)
-#if(NOT BUILD_OMPL_PLUGIN)
-#  return()
-#endif()
+option(BUILD_OMPL_PLUGIN "Building OMPLPlugin" OFF)
+if(NOT BUILD_OMPL_PLUGIN)
+  return()
+endif()
 
 find_package(ompl REQUIRED)
 include_directories(${OMPL_INCLUDE_DIRS})
