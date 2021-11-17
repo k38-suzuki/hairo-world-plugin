@@ -7,6 +7,7 @@
 #include <cnoid/ViewManager>
 #include <cnoid/Buttons>
 #include <cnoid/ExtJoystick>
+#include <cnoid/JoystickCapture>
 #include <QBoxLayout>
 #include <QGridLayout>
 #include <QHBoxLayout>
@@ -108,12 +109,16 @@ public:
     vector<double> axisPositions;
     vector<bool> buttonStates;
     vector<QProgressBar*> bars;
+    JoystickCapture joystick;
 
     JoystickStatusViewImpl(JoystickStatusView* self);
     bool onKeyStateChanged(int key, bool on);
     void onButtonPressed(int index);
     void onButtonReleased(int index);
-    void onPositionChanged(const bool& on, const int& index);
+    void onButtonClicked( const int& index, const bool& isPressed);
+    void onAxis(const int& id, const double& position);
+    void onButton(const int& id, const bool& isPressed);
+    void setPosition(const int& id, const double& position);
     
     virtual int numAxes() const;
     virtual int numButtons() const;
@@ -178,6 +183,10 @@ JoystickStatusViewImpl::JoystickStatusViewImpl(JoystickStatusView* self)
         bars.push_back(bar);
     }
 
+    joystick.setDevice("/dev/input/js0");
+    joystick.sigAxis().connect([&](int id, double position){ onAxis(id, position); });
+    joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
+
     QHBoxLayout* hbox = new QHBoxLayout;
     hbox->addStretch();
     hbox->addLayout(&grid);
@@ -232,7 +241,7 @@ bool JoystickStatusViewImpl::onKeyStateChanged(int key, bool on)
             std::lock_guard<std::mutex> lock(mutex);
             keyValues[index] = on ? info.activeValue : 0.0;
         }
-        onPositionChanged(on, index);
+        onButtonClicked(index, on);
     }
     return true;
 }
@@ -243,7 +252,7 @@ void JoystickStatusViewImpl::onButtonPressed(int index)
     ButtonInfo& info = buttonInfo[index];
     std::lock_guard<std::mutex> lock(mutex);
     keyValues[index] = info.activeValue;
-    onPositionChanged(true, index);
+    onButtonClicked(index, true);
 }
 
 
@@ -251,31 +260,70 @@ void JoystickStatusViewImpl::onButtonReleased(int index)
 {
     std::lock_guard<std::mutex> lock(mutex);
     keyValues[index] = 0.0;
-    onPositionChanged(false, index);
+    onButtonClicked(index, false);
 }
 
 
-void JoystickStatusViewImpl::onPositionChanged(const bool& on, const int& index)
+void JoystickStatusViewImpl::onButtonClicked(const int& index, const bool& isPressed)
 {
     ToolButton& button = buttons[index];
     ButtonInfo& info = buttonInfo[index];
     QPalette palette;
-    if(on) {
+    if(isPressed) {
         palette.setColor(QPalette::Button, QColor(Qt::red));
         if(info.isAxis) {
-            bars[info.id]->setValue(fabs(100.0 * info.activeValue));
-            if(info.activeValue < 0.0) {
-                bars[info.id]->setStyleSheet("QProgressBar { text-align: center; } QProgressBar::chunk { background-color: magenta; }") ;
-            } else {
-                bars[info.id]->setStyleSheet("QProgressBar { text-align: center; } QProgressBar::chunk { background-color: cyan; }") ;
-            }
+            setPosition(info.id, info.activeValue);
         }
     } else {
         if(info.isAxis) {
-            bars[info.id]->setValue(0);
+            setPosition(info.id, 0.0);
         }
     }
     button.setPalette(palette);
+}
+
+
+void JoystickStatusViewImpl::onAxis(const int& id, const double& position)
+{
+    for(int i = 0; i < NUM_JOYSTICK_ELEMENTS; ++i) {
+        ToolButton& button = buttons[i];
+        ButtonInfo& info = buttonInfo[i];
+        if(info.isAxis) {
+            if(info.id == id) {
+                QPalette palette;
+                if((info.activeValue < 0.0 && position < 0.0)
+                        || (info.activeValue > 0.0 && position > 0.0)) {
+                    palette.setColor(QPalette::Button, QColor(Qt::red));
+                }
+                button.setPalette(palette);
+                setPosition(id, position);
+            }
+        }
+    }
+}
+
+
+void JoystickStatusViewImpl::onButton(const int& id, const bool& isPressed)
+{
+    for(int i = 0; i < NUM_JOYSTICK_ELEMENTS; ++i) {
+        ButtonInfo& info = buttonInfo[i];
+        if(!info.isAxis) {
+            if(info.id == id) {
+                onButtonClicked(i, isPressed);
+            }
+        }
+    }
+}
+
+
+void JoystickStatusViewImpl::setPosition(const int& id, const double& position)
+{
+    bars[id]->setValue(fabs(100.0 * position));
+    if(position < 0.0) {
+        bars[id]->setStyleSheet("QProgressBar { text-align: center; } QProgressBar::chunk { background-color: magenta; }") ;
+    } else {
+        bars[id]->setStyleSheet("QProgressBar { text-align: center; } QProgressBar::chunk { background-color: cyan; }") ;
+    }
 }
 
 
