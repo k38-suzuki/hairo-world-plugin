@@ -18,16 +18,16 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../JoystickStartPlugin.cpp:56
-msgid "JoystickStart"
-msgstr "ジョイスティックスタート"
+msgid "Joystick"
+msgstr "ジョイスティック"
 
 #: ../JoystickStartPlugin.cpp:58
-msgid "Use JoystickStart"
-msgstr "スタートボタンでシミュレーションを開始"
+msgid "Start simulation (StartButton)"
+msgstr "シミュレーションを開始（スタートボタン）"
 
 #: ../JoystickStartPlugin.cpp:60
-msgid "Use JoystickLoad"
-msgstr "ロゴボタンでプロジェクトファイルを読み込む"
+msgid "Open a project (LogoButton)"
+msgstr "プロジェクトを開く（ロゴボタン）"
 
 #: ../JoystickStartPlugin.cpp:137
 msgid "There is no simulator item."
