@@ -33,7 +33,6 @@ using fmt::format;
 namespace {
 
 SimulationManager* simulationManager = nullptr;
-Mapping* config;
 Action* useJoystickStart;
 Action* useJoystickLoad;
 
@@ -48,21 +47,21 @@ public:
   SimulationManagerImpl(SimulationManager* self);
   SimulationManager* self;
 
-  bool start = false;
-  bool pause = false;
+  bool start_state;
+  bool pause_state;
   string currentProjectName;
   string currentProjectFile;
   JoystickCapture* joystick;
 
   void startSimulation(bool doReset = true);
   void startSimulation(SimulatorItem* simulatorItem, bool doReset);
+  void stopSimulation();
   void stopSimulation(SimulatorItem* simulatorItem);
+  void pauseSimulation();
   void pauseSimulation(SimulatorItem* simulatorItem);
   void forEachSimulator(std::function<void(SimulatorItem* simulatorItem)> callback, bool doSelect = false);
-  void onStopSimulationClicked();
-  void onPauseSimulationClicked();
   void openDialogToLoadProject();
-  void onButtonPressed(const int& id, const bool& isPressed);
+  void onButton(const int& id, const bool& isPressed);
 };
 
 }
@@ -77,9 +76,11 @@ SimulationManager::SimulationManager()
 SimulationManagerImpl::SimulationManagerImpl(SimulationManager* self)
     : self(self)
 {
+    start_state = false;
+    pause_state = false;
     joystick = new JoystickCapture();
     joystick->setDevice("/dev/input/js0");
-    joystick->sigButton().connect([&](int id, bool isPressed){ onButtonPressed(id, isPressed); });
+    joystick->sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
 }
 
 
@@ -89,21 +90,52 @@ SimulationManager::~SimulationManager()
 }
 
 
-void SimulationManager::initializeClass(ExtensionManager* ext)
+void SimulationManager::initialize(ExtensionManager* ext)
 {
     if(!simulationManager) {
         simulationManager = ext->manage(new SimulationManager());
     }
 
     MenuManager& manager = ext->menuManager().setPath("/Options").setPath(N_("JoystickStart"));
-    config = AppConfig::archive()->openMapping("joystick_start");
+    Mapping* config = AppConfig::archive()->openMapping("joystick_start");
     useJoystickStart = manager.addCheckItem(_("Use JoystickStart"));
     useJoystickLoad = manager.addCheckItem(_("Use JoystickLoad"));
     useJoystickStart->setChecked(config->get("use_joystick_start", false));
     useJoystickLoad->setChecked(config->get("use_joystick_load", false));
 
-    useJoystickStart->sigToggled().connect([&](bool on){ config->write("use_joystick_start", on); });
-    useJoystickLoad->sigToggled().connect([&](bool on){ config->write("use_joystick_load", on); });
+    useJoystickStart->sigToggled().connect([=](bool on){ config->write("use_joystick_start", on); });
+    useJoystickLoad->sigToggled().connect([=](bool on){ config->write("use_joystick_load", on); });
+}
+
+
+SimulationManager* SimulationManager::instance()
+{
+    return simulationManager;
+}
+
+
+void SimulationManager::start()
+{
+    impl->startSimulation(true);
+
+}
+
+
+void SimulationManager::restart()
+{
+    impl->startSimulation(false);
+}
+
+
+void SimulationManager::stop()
+{
+    impl->stopSimulation();
+}
+
+
+void SimulationManager::pause()
+{
+    impl->pauseSimulation();
 }
 
 
@@ -116,14 +148,22 @@ void SimulationManagerImpl::startSimulation(bool doReset)
 void SimulationManagerImpl::startSimulation(SimulatorItem* simulatorItem, bool doReset)
 {
     if(simulatorItem->isRunning()) {
-        if(pause && !doReset) {
+        if(!doReset) {
             simulatorItem->restartSimulation();
-            pause = false;
         }
         TimeBar::instance()->startPlayback();
     } else {
         simulatorItem->startSimulation(doReset);
-        pause = false;
+    }
+}
+
+
+void SimulationManagerImpl::stopSimulation()
+{
+    forEachSimulator([&](SimulatorItem* simulatorItem){ stopSimulation(simulatorItem); });
+    TimeBar* timeBar = TimeBar::instance();
+    if(timeBar->isDoingPlayback()) {
+        timeBar->stopPlayback();
     }
 }
 
@@ -134,10 +174,16 @@ void SimulationManagerImpl::stopSimulation(SimulatorItem* simulatorItem)
 }
 
 
+void SimulationManagerImpl::pauseSimulation()
+{
+    forEachSimulator([&](SimulatorItem* simulatorItem){ pauseSimulation(simulatorItem); });
+}
+
+
 void SimulationManagerImpl::pauseSimulation(SimulatorItem* simulatorItem)
 {
     TimeBar* timeBar = TimeBar::instance();
-    if(pause) {
+    if(!pause_state) {
         if(simulatorItem->isRunning()) {
             simulatorItem->pauseSimulation();
         }
@@ -211,23 +257,6 @@ void SimulationManagerImpl::forEachSimulator(std::function<void(SimulatorItem* s
 }
 
 
-void SimulationManagerImpl::onStopSimulationClicked()
-{
-    forEachSimulator([&](SimulatorItem* simulatorItem){ stopSimulation(simulatorItem); });
-    TimeBar* timeBar = TimeBar::instance();
-    if(timeBar->isDoingPlayback()) {
-        timeBar->stopPlayback();
-    }
-    pause = false;
-}
-
-
-void SimulationManagerImpl::onPauseSimulationClicked()
-{
-    forEachSimulator([&](SimulatorItem* simulatorItem){ pauseSimulation(simulatorItem); });
-}
-
-
 void SimulationManagerImpl::openDialogToLoadProject()
 {
     ProjectManager* pm = ProjectManager::instance();
@@ -285,42 +314,38 @@ void SimulationManagerImpl::openDialogToLoadProject()
 }
 
 
-void SimulationManagerImpl::onButtonPressed(const int& id, const bool& isPressed)
+void SimulationManagerImpl::onButton(const int& id, const bool& isPressed)
 {
     if(isPressed) {
         switch (id) {
         case Joystick::START_BUTTON:
             if(useJoystickStart->isChecked()) {
-                if(!start) {
-                    //start
+                if(!start_state) {
                     startSimulation(true);
-                    start = !start;
+                    start_state = !start_state;
                 } else {
-                    //pause
-                    pause = !pause;
-                    onPauseSimulationClicked();
+                    pauseSimulation();
+                    pause_state = !pause_state;
                 }
             }
             break;
         case Joystick::SELECT_BUTTON:
             if(useJoystickStart->isChecked()) {
-                if(!start && !pause) {
-                    //re-start
+                if(!start_state) {
                     startSimulation(false);
-                    start = !start;
+                    start_state = !start_state;
                 } else {
-                    //stop
-                    onStopSimulationClicked();
-                    start = false;
-                    pause = false;
+                    stopSimulation();
+                    start_state = false;
+                    pause_state = false;
                 }
             }
             break;
         case Joystick::LOGO_BUTTON:
             if(useJoystickLoad->isChecked()) {
                 openDialogToLoadProject();
-                start = false;
-                pause = false;
+                start_state = false;
+                pause_state = false;
             }
             break;
         default:

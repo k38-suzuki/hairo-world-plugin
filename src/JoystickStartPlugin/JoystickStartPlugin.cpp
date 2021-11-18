@@ -22,7 +22,7 @@ public:
 
     virtual bool initialize() override
     {
-        SimulationManager::initializeClass(this);
+        SimulationManager::initialize(this);
         return true;
     }
 
