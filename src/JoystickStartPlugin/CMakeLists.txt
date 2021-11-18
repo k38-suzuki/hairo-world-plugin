@@ -6,6 +6,7 @@ set(sources
 
 set(headers
     SimulationManager.h
+    exportdecl.h
     gettext.h
     )
 
