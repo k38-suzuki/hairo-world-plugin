@@ -7,7 +7,6 @@
 #define CNOID_BOOKMARKPLUGIN_HISTORYMANAGER_H
 
 #include <cnoid/ExtensionManager>
-#include <vector>
 
 namespace cnoid {
 
@@ -16,19 +15,10 @@ class HistoryManagerImpl;
 class HistoryManager
 {
 public:
-    HistoryManager();
+    HistoryManager(ExtensionManager* ext);
     virtual ~HistoryManager();
 
-    static void initializeClass(ExtensionManager* ext);
-    static HistoryManager* instance();
-
-    std::vector<std::string> histories() const;
-    bool addHistory(const std::string& history);
-    void setMaxHistory(const int& maxHistory);
-    int maxHistory() const;
-    void clearHistory();
-
-    SignalProxy<void(std::string filename)> sigHistoryAdded();
+    static void initialize(ExtensionManager* ext);
 
 private:
     HistoryManagerImpl* impl;

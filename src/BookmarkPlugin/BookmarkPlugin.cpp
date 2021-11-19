@@ -24,7 +24,7 @@ public:
     virtual bool initialize() override
     {
         BookmarkManager::initialize(this);
-        HistoryManager::initializeClass(this);
+        HistoryManager::initialize(this);
         return true;
     }
 

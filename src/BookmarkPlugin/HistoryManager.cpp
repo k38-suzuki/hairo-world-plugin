@@ -7,88 +7,56 @@
 #include <cnoid/AppConfig>
 #include <cnoid/MenuManager>
 #include <cnoid/ProjectManager>
-#include "BookmarkManagerView.h"
+#include <vector>
 #include "gettext.h"
 
 using namespace cnoid;
 using namespace std;
-
-HistoryManager* historyManager = nullptr;
-MenuManager menuManager;
-
-namespace {
-
-void onProjectLoaded(const string filename)
-{
-    if(!filename.empty()) {
-        Action* historyItem = menuManager.addItem(filename);
-        historyManager->addHistory(filename);
-
-        QWidget* current = menuManager.current();
-        QMenu* menu = dynamic_cast<QMenu*>(current);
-        if(menu) {
-            int size = menu->actions().size();
-            int max = historyManager->maxHistory();
-            if(size > max) {
-                Action* action = dynamic_cast<Action*>(menu->actions()[0]);
-                menu->removeAction(action);
-            }
-        }
-
-        historyItem->sigTriggered().connect([&, historyItem]() {
-            string history = historyItem->text().toStdString();
-            bool on = BookmarkManagerView::openDialogToLoadProject(history);
-            if(!on) {
-                return;
-            }
-        });
-    }
-}
-
-}
-
 
 namespace cnoid {
 
 class HistoryManagerImpl
 {
 public:
-    HistoryManagerImpl(HistoryManager* self);
+    HistoryManagerImpl(HistoryManager* self, ExtensionManager* ext);
     virtual ~HistoryManagerImpl();
     HistoryManager* self;
 
-    vector<string> histories;
+    ExtensionManager* ext;
     int maxHistory;
+    vector<string> histories;
     ProjectManager* pm;
+    MappingPtr config;
 
-    Signal<void(string filename)> sigHistoryAdded;
-
-    bool addHistory(const string& history);
+    void onProjectLoaded(const string& filename);
 };
 
 }
 
 
-HistoryManager::HistoryManager()
+HistoryManager::HistoryManager(ExtensionManager* ext)
 {
-    impl = new HistoryManagerImpl(this);
+    impl = new HistoryManagerImpl(this, ext);
 }
 
 
-HistoryManagerImpl::HistoryManagerImpl(HistoryManager *self)
-    : self(self)
+HistoryManagerImpl::HistoryManagerImpl(HistoryManager* self, ExtensionManager* ext)
+    : self(self),
+      pm(ProjectManager::instance()),
+      ext(ext)
 {
-    histories.clear();
     maxHistory = 10;
-    pm = ProjectManager::instance();
+    histories.clear();
 
-    Mapping* config = AppConfig::archive()->openMapping("history");
-    int size = config->get("num_history", 0);
-    for(int i = 0; i < size; ++i) {
+    config = AppConfig::archive()->openMapping("history");
+    int numHistories = config->get("num_history", 0);
+    for(int i = 0; i < numHistories; ++i) {
         string key = "history_" + to_string(i);
-        string project = config->get(key, "");
-        addHistory(project);
+        string history = config->get(key, "");
+        onProjectLoaded(history);
     }
+
+    pm->sigProjectLoaded().connect([&](int level){ onProjectLoaded(pm->currentProjectFile()); });
 }
 
 
@@ -100,84 +68,45 @@ HistoryManager::~HistoryManager()
 
 HistoryManagerImpl::~HistoryManagerImpl()
 {
-    int size = histories.size();
-    Mapping* config = AppConfig::archive()->openMapping("history");
-    config->write("num_history", size);
-    for(int i = 0; i < size; ++i) {
-        string project = histories[i];
+    int numHistories = histories.size();
+    config->write("num_history", numHistories);
+    for(int i = 0; i < numHistories; ++i) {
         string key = "history_" + to_string(i);
-        config->write(key, project);
+        string history = histories[i];
+        config->write(key, history);
     }
 }
 
 
-void HistoryManager::initializeClass(ExtensionManager* ext)
+void HistoryManager::initialize(ExtensionManager* ext)
 {
-    if(!historyManager) {
-        historyManager = ext->manage(new HistoryManager);
-    }
+    HistoryManager* manager = ext->manage(new HistoryManager(ext));
 
-    menuManager = ext->menuManager().setPath("/Tools").setPath(_("History"));
-    std::vector<std::string> histories = historyManager->histories();
-    for(int i = 0; i < histories.size(); ++i) {
-        onProjectLoaded(histories[i]);
-    }
-
-    ProjectManager* pm = ProjectManager::instance();
-    pm->sigProjectLoaded().connect([&, pm](int level){ onProjectLoaded(pm->currentProjectFile()); });
+    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("History"));
 }
 
 
-HistoryManager* HistoryManager::instance()
+void HistoryManagerImpl::onProjectLoaded(const string& filename)
 {
-    return historyManager;
-}
+    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("History"));
 
+    if(!filename.empty()) {
+        Action* historyItem = mm.addItem(filename);
+        historyItem->sigTriggered().connect([=](){ pm->loadProject(filename); });
 
-vector<string> HistoryManager::histories() const
-{
-    return impl->histories;
-}
-
-
-bool HistoryManager::addHistory(const string& history)
-{
-    return impl->addHistory(history);
-}
-
-
-bool HistoryManagerImpl::addHistory(const string& history)
-{
-    if(!history.empty()) {
-        histories.push_back(history);
-        sigHistoryAdded(history);
+        histories.push_back(filename);
         if(histories.size() > maxHistory) {
             histories.erase(histories.begin());
         }
+
+        QWidget* current = mm.current();
+        QMenu* menu = dynamic_cast<QMenu*>(current);
+        if(menu) {
+            int numHistories = menu->actions().size();
+            if(numHistories > maxHistory) {
+                Action* action = dynamic_cast<Action*>(menu->actions()[0]);
+                menu->removeAction(action);
+            }
+        }
     }
-    return true;
-}
-
-
-void HistoryManager::setMaxHistory(const int& maxHistory)
-{
-    impl->maxHistory = maxHistory;
-}
-
-
-int HistoryManager::maxHistory() const
-{
-    return impl->maxHistory;
-}
-
-
-void HistoryManager::clearHistory()
-{
-    impl->histories.clear();
-}
-
-
-SignalProxy<void(string filename)> HistoryManager::sigHistoryAdded()
-{
-    return impl->sigHistoryAdded;
 }
