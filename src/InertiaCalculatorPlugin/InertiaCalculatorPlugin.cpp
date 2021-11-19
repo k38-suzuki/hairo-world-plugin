@@ -5,7 +5,7 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "InertiaCalculatorDialog.h"
+#include "InertiaCalculator.h"
 
 using namespace cnoid;
 
@@ -22,7 +22,7 @@ public:
 
     virtual bool initialize() override
     {
-        InertiaCalculatorDialog::initialize(this);
+        InertiaCalculator::initialize(this);
         return true;
     }
 

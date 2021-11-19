@@ -3,9 +3,10 @@
    \author Kenta Suzuki
 */
 
-#include "InertiaCalculatorDialog.h"
+#include "InertiaCalculator.h"
 #include <cnoid/Button>
 #include <cnoid/ComboBox>
+#include <cnoid/Dialog>
 #include <cnoid/MenuManager>
 #include <cnoid/MessageView>
 #include <cnoid/Separator>
@@ -38,29 +39,23 @@ DialogButtonInfo dialogButtonInfo[] = {
 
 namespace cnoid {
 
-class InertiaCalculatorDialogImpl
+class ConfigDialog : public Dialog
 {
 public:
-    InertiaCalculatorDialogImpl(InertiaCalculatorDialog* self);
+    ConfigDialog();
 
-    InertiaCalculatorDialog* self;
+    enum Shape { BOX, SPHERE, CYLINDER, CONE, NUM_SHAPE };
+    enum Axis { X, Y, Z, NUM_AXIS };
+    enum DialogButtonId { CALC, OK, NUM_DBUTTONS };
+
     ComboBox* shapeCombo;
     QStackedLayout* stbox;
-    MessageView* messageView;
+    MessageView* mv;
     ComboBox* cylinderAxisCombo;
     ComboBox* coneAxisCombo;
     DoubleSpinBox* dspins[12];
-
-    enum Shape { BOX, SPHERE, CYLINDER, CONE, NUM_SHAPE };
-
-    enum Axis { X, Y, Z, NUM_AXIS };
-
-    enum DialogButtonId { CALC, OK, NUM_DBUTTONS };
-
     PushButton* dialogButtons[NUM_DBUTTONS];
 
-    void onAccepted();
-    void onRejected();
     void calcBoxInertia();
     void calcSphereInertia();
     void calcCylinderInertia();
@@ -68,19 +63,57 @@ public:
     void printIntertia(const Vector3& inertia);
 };
 
-}
 
-
-InertiaCalculatorDialog::InertiaCalculatorDialog()
+class InertiaCalculatorImpl
 {
-    impl = new InertiaCalculatorDialogImpl(this);
+public:
+    InertiaCalculatorImpl(InertiaCalculator* self);
+    InertiaCalculator* self;
+
+    ConfigDialog* config;
+};
+
 }
 
 
-InertiaCalculatorDialogImpl::InertiaCalculatorDialogImpl(InertiaCalculatorDialog* self)
+InertiaCalculator::InertiaCalculator()
+{
+    impl = new InertiaCalculatorImpl(this);
+}
+
+
+InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self)
     : self(self)
 {
-    self->setWindowTitle(_("InertiaCalculator"));
+    config = new ConfigDialog();
+}
+
+
+InertiaCalculator::~InertiaCalculator()
+{
+    delete impl;
+}
+
+
+void InertiaCalculator::initialize(ExtensionManager* ext)
+{
+    InertiaCalculator* calculator = ext->manage(new InertiaCalculator);
+
+    MenuManager& mm = ext->menuManager().setPath("/Tools");
+    mm.addItem(_("InertiaCalculator"))->sigTriggered().connect([=](){ calculator->show(); });
+}
+
+
+void InertiaCalculator::show()
+{
+    impl->config->show();
+}
+
+
+ConfigDialog::ConfigDialog()
+    : mv(new MessageView())
+{
+    setWindowTitle(_("InertiaCalculator"));
 
     shapeCombo = new ComboBox();
     QStringList items = { _("Box"), _("Sphere"), _("Cylinder"), _("Cone") };
@@ -91,7 +124,6 @@ InertiaCalculatorDialogImpl::InertiaCalculatorDialogImpl(InertiaCalculatorDialog
     sbox->addStretch();
 
     stbox = new QStackedLayout();
-    messageView = new MessageView();
 
     for(int i = 0; i < 12; i++) {
         dspins[i] = new DoubleSpinBox();
@@ -160,7 +192,7 @@ InertiaCalculatorDialogImpl::InertiaCalculatorDialogImpl(InertiaCalculatorDialog
 
     const char* labels[] = { _("&Calc"), _ ("&Ok") };
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
     for(int i = 0; i < NUM_DBUTTONS; ++i) {
         DialogButtonInfo info = dialogButtonInfo[i];
         dialogButtons[i] = new PushButton(labels[i]);
@@ -170,15 +202,15 @@ InertiaCalculatorDialogImpl::InertiaCalculatorDialogImpl(InertiaCalculatorDialog
             dialogButton->setDefault(true);
         }
     }
-    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
+    connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
 
     QVBoxLayout* vbox = new QVBoxLayout();
     vbox->addLayout(sbox);
     vbox->addLayout(stbox);
-    vbox->addWidget(messageView);
+    vbox->addWidget(mv);
     vbox->addWidget(new HSeparator());
     vbox->addWidget(buttonBox);
-    self->setLayout(vbox);
+    setLayout(vbox);
 
     dialogButtons[CALC]->sigClicked().connect([&](){
         int index = shapeCombo->currentIndex();
@@ -204,46 +236,7 @@ InertiaCalculatorDialogImpl::InertiaCalculatorDialogImpl(InertiaCalculatorDialog
 }
 
 
-InertiaCalculatorDialog::~InertiaCalculatorDialog()
-{
-    delete impl;
-}
-
-
-void InertiaCalculatorDialog::initialize(ExtensionManager* ext)
-{
-    InertiaCalculatorDialog* calculator = ext->manage(new InertiaCalculatorDialog);
-
-    MenuManager& mm = ext->menuManager().setPath("/Tools");
-    mm.addItem(_("InertiaCalculator"))->sigTriggered().connect([=](){ calculator->show(); });
-}
-
-
-void InertiaCalculatorDialog::onAccepted()
-{
-    impl->onAccepted();
-}
-
-
-void InertiaCalculatorDialogImpl::onAccepted()
-{
-
-}
-
-
-void InertiaCalculatorDialog::onRejected()
-{
-    impl->onRejected();
-}
-
-
-void InertiaCalculatorDialogImpl::onRejected()
-{
-
-}
-
-
-void InertiaCalculatorDialogImpl::calcBoxInertia()
+void ConfigDialog::calcBoxInertia()
 {
     double mass = dspins[0]->value();
     double x = dspins[1]->value();
@@ -253,26 +246,26 @@ void InertiaCalculatorDialogImpl::calcBoxInertia()
     double iy = mass / 12.0 * (z * z + x * x);
     double iz = mass / 12.0 * (x * x + y * y);
 
-    messageView->putln(fmt::format(_("shape: Box, mass: {0} [kg], x: {1} [m], y: {2} [m], z: {3} [m]"),
+    mv->putln(fmt::format(_("shape: Box, mass: {0} [kg], x: {1} [m], y: {2} [m], z: {3} [m]"),
                                    mass, x, y, z));
     printIntertia(Vector3(ix, iy, iz));
 }
 
 
-void InertiaCalculatorDialogImpl::calcSphereInertia()
+void ConfigDialog::calcSphereInertia()
 {
     double mass = dspins[4]->value();
     double radius = dspins[5]->value();
     double ix, iy, iz;
     ix = iy = iz = mass * radius * radius / 5.0 * 2.0;
 
-    messageView->putln(fmt::format(_("shape: Sphere, mass: {0} [kg], radius: {1} [m]"),
+    mv->putln(fmt::format(_("shape: Sphere, mass: {0} [kg], radius: {1} [m]"),
                                    mass, radius));
     printIntertia(Vector3(ix, iy, iz));
 }
 
 
-void InertiaCalculatorDialogImpl::calcCylinderInertia()
+void ConfigDialog::calcCylinderInertia()
 {
     double mass = dspins[6]->value();
     double radius = dspins[7]->value();
@@ -299,13 +292,13 @@ void InertiaCalculatorDialogImpl::calcCylinderInertia()
         break;
     }
 
-    messageView->putln(fmt::format(_("shape: Cylinder, mass: {0} [kg], radius: {1} [m], height: {2} [m], axis: {3} [-]"),
+    mv->putln(fmt::format(_("shape: Cylinder, mass: {0} [kg], radius: {1} [m], height: {2} [m], axis: {3} [-]"),
                                    mass, radius, height, cylinderAxisCombo->currentText().toStdString()));
     printIntertia(Vector3(ix, iy, iz));
 }
 
 
-void InertiaCalculatorDialogImpl::calcConeInertia()
+void ConfigDialog::calcConeInertia()
 {
     double mass = dspins[9]->value();
     double radius = dspins[10]->value();
@@ -332,13 +325,13 @@ void InertiaCalculatorDialogImpl::calcConeInertia()
         break;
     }
 
-    messageView->putln(fmt::format(_("shape: Cone, mass: {0} [kg], radius: {1} [m], height: {2} [m], axis: {3} [-]"),
+    mv->putln(fmt::format(_("shape: Cone, mass: {0} [kg], radius: {1} [m], height: {2} [m], axis: {3} [-]"),
                                    mass, radius, height, coneAxisCombo->currentText().toStdString()));
     printIntertia(Vector3(ix, iy, iz));
 }
 
 
-void InertiaCalculatorDialogImpl::printIntertia(const Vector3& inertia)
+void ConfigDialog::printIntertia(const Vector3& inertia)
 {
-    messageView->putln(fmt::format(_("inertia: [ {0}, 0, 0, 0, {1}, 0, 0, 0, {2} ]\n"), inertia[0], inertia[1], inertia[2]));
+    mv->putln(fmt::format(_("inertia: [ {0}, 0, 0, 0, {1}, 0, 0, 0, {2} ]\n"), inertia[0], inertia[1], inertia[2]));
 }

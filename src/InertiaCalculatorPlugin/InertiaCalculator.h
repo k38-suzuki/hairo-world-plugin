@@ -6,28 +6,25 @@
 #ifndef CNOID_INERTIACALCULATORPLUGIN_INERTIACALCULATORDIALOG_H
 #define CNOID_INERTIACALCULATORPLUGIN_INERTIACALCULATORDIALOG_H
 
-#include <cnoid/Dialog>
 #include <cnoid/ExtensionManager>
 
 namespace cnoid {
 
-class InertiaCalculatorDialogImpl;
+class InertiaCalculatorImpl;
 
-class InertiaCalculatorDialog : public Dialog
+class InertiaCalculator
 {
 public:
-    InertiaCalculatorDialog();
-    virtual ~InertiaCalculatorDialog();
+    InertiaCalculator();
+    virtual ~InertiaCalculator();
 
     static void initialize(ExtensionManager* ext);
 
-protected:
-    virtual void onAccepted() override;
-    virtual void onRejected() override;
+    void show();
 
 private:
-    InertiaCalculatorDialogImpl* impl;
-    friend class InertiaCalculatorDialogImpl;
+    InertiaCalculatorImpl* impl;
+    friend class InertiaCalculatorImpl;
 };
 
 }

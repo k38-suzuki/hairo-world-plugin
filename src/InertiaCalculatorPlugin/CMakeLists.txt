@@ -1,11 +1,11 @@
 
 set(sources
-    InertiaCalculatorDialog.cpp
+    InertiaCalculator.cpp
     InertiaCalculatorPlugin.cpp
     )
 
 set(headers
-    InertiaCalculatorDialog.h
+    InertiaCalculator.h
     gettext.h
     )
 
@@ -13,7 +13,7 @@ if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
   set(target CnoidInertiaCalculatorPlugin)
   make_gettext_mofiles(${target} mofiles)
-  add_cnoid_plugin(${target} SHARED ${sources} ${mofiles} ${headers})
+  add_cnoid_plugin(${target} ${sources} ${mofiles} HEADERS ${headers})
   target_link_libraries(${target} CnoidBodyPlugin)
   apply_common_setting_for_plugin(${target})
 else()
