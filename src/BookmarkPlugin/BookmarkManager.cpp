@@ -3,9 +3,10 @@
    \author Kenta Suzuki
 */
 
-#include "BookmarkManagerDialog.h"
+#include "BookmarkManager.h"
 #include <cnoid/AppConfig>
 #include <cnoid/Button>
+#include <cnoid/Dialog>
 #include <cnoid/FileDialog>
 #include <cnoid/MainWindow>
 #include <cnoid/MessageView>
@@ -43,14 +44,13 @@ ButtonInfo buttonInfo[] = {
 
 namespace cnoid {
 
-class BookmarkManagerDialogImpl
+class ConfigDialog : public Dialog
 {
 public:
-    BookmarkManagerDialogImpl(BookmarkManagerDialog* self);
-    virtual ~BookmarkManagerDialogImpl();
-    BookmarkManagerDialog* self;
+    ConfigDialog();
+    virtual ~ConfigDialog();
 
-    enum ButtonId { ADD, REMOVE, OPEN, CANCEL, OK, NUM_BUTTONS };
+    enum ButtonID { ADD, REMOVE, OPEN, CANCEL, OK, NUM_BUTTONS };
 
     TreeWidget* treeWidget;
     PushButton* buttons[NUM_BUTTONS];
@@ -60,23 +60,60 @@ public:
     void onAddButtonClicked();
     void onOpenButtonClicked();
     bool openDialogToLoadProject(const string& filename);
-    void onAccepted();
-    void onRejected();
+};
+
+
+class BookmarkManagerImpl
+{
+public:
+    BookmarkManagerImpl(BookmarkManager* self);
+    BookmarkManager* self;
+
+    ConfigDialog* config;
 };
 
 }
 
 
-BookmarkManagerDialog::BookmarkManagerDialog()
+BookmarkManager::BookmarkManager()
 {
-    impl = new BookmarkManagerDialogImpl(this);
+    impl = new BookmarkManagerImpl(this);
 }
 
 
-BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self)
+BookmarkManagerImpl::BookmarkManagerImpl(BookmarkManager* self)
     : self(self)
 {
-    self->setWindowTitle(_("BookmarkManager"));
+    config = new ConfigDialog();
+}
+
+
+BookmarkManager::~BookmarkManager()
+{
+    delete impl;
+}
+
+
+void BookmarkManager::initialize(ExtensionManager* ext)
+{
+    BookmarkManager* bookmark = ext->manage(new BookmarkManager);
+
+    ToolBar* bar = new ToolBar(N_("BookmarkBar"));
+    ext->addToolBar(bar);
+    ToolButton* button = bar->addButton(QIcon(":/Bookmark/icon/bookmark.svg"), _("Show the bookmark manager"));
+    button->sigClicked().connect([=](){ bookmark->show(); });
+}
+
+
+void BookmarkManager::show()
+{
+    impl->config->show();
+}
+
+
+ConfigDialog::ConfigDialog()
+{
+    setWindowTitle(_("BookmarkManager"));
 
     treeWidget = new TreeWidget();
     treeWidget->setHeaderHidden(false);
@@ -95,7 +132,7 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
 
     const char* blabels[] = { _("+"), _("-"), _("&Open"), _("&Cancel"), _("&Ok") };
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
     for(int i = 0; i < NUM_BUTTONS; ++i) {
         ButtonInfo info = buttonInfo[i];
         buttons[i] = new PushButton(blabels[i]);
@@ -106,8 +143,8 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
         buttonBox->addButton(button, info.role);
     }
 
-    self->connect(buttonBox, SIGNAL(accepted()), self, SLOT(accept()));
-    self->connect(buttonBox, SIGNAL(rejected()), self, SLOT(reject()));
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
     buttons[ADD]->sigClicked().connect([&](){ onAddButtonClicked(); });
     buttons[REMOVE]->sigClicked().connect([&](){ removeItem(); });
     buttons[OPEN]->sigClicked().connect([&](){ onOpenButtonClicked(); });
@@ -115,17 +152,11 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
     QVBoxLayout* vbox = new QVBoxLayout();
     vbox->addWidget(treeWidget);
     vbox->addWidget(buttonBox);
-    self->setLayout(vbox);
+    setLayout(vbox);
 }
 
 
-BookmarkManagerDialog::~BookmarkManagerDialog()
-{
-    delete impl;
-}
-
-
-BookmarkManagerDialogImpl::~BookmarkManagerDialogImpl()
+ConfigDialog::~ConfigDialog()
 {
     int size = treeWidget->topLevelItemCount();
     Mapping* config = AppConfig::archive()->openMapping("bookmark");
@@ -141,18 +172,7 @@ BookmarkManagerDialogImpl::~BookmarkManagerDialogImpl()
 }
 
 
-void BookmarkManagerDialog::initialize(ExtensionManager* ext)
-{
-    BookmarkManagerDialog* manager = ext->manage(new BookmarkManagerDialog);
-
-    ToolBar* bar = new ToolBar(N_("BookmarkBar"));
-    ext->addToolBar(bar);
-    ToolButton* button = bar->addButton(QIcon(":/Bookmark/icon/bookmark.svg"), _("Show the bookmark manager"));
-    button->sigClicked().connect([=](){ manager->show(); });
-}
-
-
-void BookmarkManagerDialogImpl::addItem(const string& filename)
+void ConfigDialog::addItem(const string& filename)
 {
     QTreeWidgetItem* item = new QTreeWidgetItem(treeWidget);
     item->setText(0, filename.c_str());
@@ -160,7 +180,7 @@ void BookmarkManagerDialogImpl::addItem(const string& filename)
 }
 
 
-void BookmarkManagerDialogImpl::removeItem()
+void ConfigDialog::removeItem()
 {
     QTreeWidgetItem* item = treeWidget->currentItem();
     if(item) {
@@ -170,7 +190,7 @@ void BookmarkManagerDialogImpl::removeItem()
 }
 
 
-void BookmarkManagerDialogImpl::onAddButtonClicked()
+void ConfigDialog::onAddButtonClicked()
 {
     MainWindow* mw = MainWindow::instance();
     FileDialog dialog(mw);
@@ -197,7 +217,7 @@ void BookmarkManagerDialogImpl::onAddButtonClicked()
 }
 
 
-void BookmarkManagerDialogImpl::onOpenButtonClicked()
+void ConfigDialog::onOpenButtonClicked()
 {
     QTreeWidgetItem* item = treeWidget->currentItem();
     if(item) {
@@ -210,7 +230,7 @@ void BookmarkManagerDialogImpl::onOpenButtonClicked()
 }
 
 
-bool BookmarkManagerDialogImpl::openDialogToLoadProject(const string& filename)
+bool ConfigDialog::openDialogToLoadProject(const string& filename)
 {
     bool result = true;
     MainWindow* mw = MainWindow::instance();
@@ -255,28 +275,4 @@ bool BookmarkManagerDialogImpl::openDialogToLoadProject(const string& filename)
         pm->loadProject(filename);
     }
     return result;
-}
-
-
-void BookmarkManagerDialog::onAccepted()
-{
-    impl->onAccepted();
-}
-
-
-void BookmarkManagerDialogImpl::onAccepted()
-{
-
-}
-
-
-void BookmarkManagerDialog::onRejected()
-{
-    impl->onRejected();
-}
-
-
-void BookmarkManagerDialogImpl::onRejected()
-{
-
 }

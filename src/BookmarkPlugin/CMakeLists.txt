@@ -1,13 +1,13 @@
 
 set(sources
-    BookmarkManagerDialog.cpp
+    BookmarkManager.cpp
     BookmarkManagerView.cpp
     BookmarkPlugin.cpp
     HistoryManager.cpp
     )
 
 set(headers
-    BookmarkManagerDialog.h
+    BookmarkManager.h
     BookmarkManagerView.h
     HistoryManager.h
     gettext.h
@@ -19,7 +19,7 @@ if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
   set(target CnoidBookmarkPlugin)
   make_gettext_mofiles(${target} mofiles)
-  choreonoid_add_plugin(${target} SHARED ${sources} ${mofiles} ${RC_SRCS} HEADERS ${headers})
+  choreonoid_add_plugin(${target} ${sources} ${mofiles} ${RC_SRCS} HEADERS ${headers})
   target_link_libraries(${target} CnoidBodyPlugin)
   apply_common_setting_for_plugin(${target})
 else()
@@ -32,7 +32,7 @@ else()
   link_directories(${CHOREONOID_LIBRARY_DIRS})
   set(target CnoidBookmarkPlugin)
   make_gettext_mofiles(${target} mofiles)
-  add_library(${target} SHARED ${sources} ${mofiles} ${RC_SRCS} HEADERS ${headers})
+  add_library(${target} SHARED ${sources} ${mofiles} ${RC_SRCS} ${headers})
   target_link_libraries(${target} ${CHOREONOID_BODY_PLUGIN_LIBRARIES})
   install(TARGETS ${target} LIBRARY DESTINATION ${CHOREONOID_PLUGIN_DIR})
 endif()

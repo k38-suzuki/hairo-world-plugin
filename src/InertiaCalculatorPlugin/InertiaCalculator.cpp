@@ -24,12 +24,12 @@ using namespace cnoid;
 
 namespace {
 
-struct DialogButtonInfo {
+struct ButtonInfo {
     QDialogButtonBox::ButtonRole role;
 };
 
 
-DialogButtonInfo dialogButtonInfo[] = {
+ButtonInfo buttonInfo[] = {
     { QDialogButtonBox::ActionRole },
     { QDialogButtonBox::AcceptRole }
 };
@@ -44,9 +44,9 @@ class ConfigDialog : public Dialog
 public:
     ConfigDialog();
 
-    enum Shape { BOX, SPHERE, CYLINDER, CONE, NUM_SHAPE };
-    enum Axis { X, Y, Z, NUM_AXIS };
-    enum DialogButtonId { CALC, OK, NUM_DBUTTONS };
+    enum ShapeID { BOX, SPHERE, CYLINDER, CONE, NUM_SHAPE };
+    enum AxisID { X, Y, Z, NUM_AXIS };
+    enum DialogButtonID { CALC, OK, NUM_DBUTTONS };
 
     ComboBox* shapeCombo;
     QStackedLayout* stbox;
@@ -194,7 +194,7 @@ ConfigDialog::ConfigDialog()
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
     for(int i = 0; i < NUM_DBUTTONS; ++i) {
-        DialogButtonInfo info = dialogButtonInfo[i];
+        ButtonInfo info = buttonInfo[i];
         dialogButtons[i] = new PushButton(labels[i]);
         PushButton* dialogButton = dialogButtons[i];
         buttonBox->addButton(dialogButton, info.role);
@@ -215,16 +215,16 @@ ConfigDialog::ConfigDialog()
     dialogButtons[CALC]->sigClicked().connect([&](){
         int index = shapeCombo->currentIndex();
         switch (index) {
-        case Shape::BOX:
+        case BOX:
             calcBoxInertia();
             break;
-        case Shape::SPHERE:
+        case SPHERE:
             calcSphereInertia();
             break;
-        case Shape::CYLINDER:
+        case CYLINDER:
             calcCylinderInertia();
             break;
-        case Shape::CONE:
+        case CONE:
             calcConeInertia();
             break;
         default:
@@ -276,15 +276,15 @@ void ConfigDialog::calcCylinderInertia()
     double ix, iy, iz;
 
     switch (index) {
-    case Axis::X:
+    case X:
         ix = mainInertia;
         iy = iz = subInertia;
         break;
-    case Axis::Y:
+    case Y:
         iy = mainInertia;
         iz = ix = subInertia;
         break;
-    case Axis::Z:
+    case Z:
         iz = mainInertia;
         ix = iy = subInertia;
         break;
@@ -309,15 +309,15 @@ void ConfigDialog::calcConeInertia()
     double ix, iy, iz;
 
     switch (index) {
-    case Axis::X:
+    case X:
         ix = mainInertia;
         iy = iz = subInertia;
         break;
-    case Axis::Y:
+    case Y:
         iy = mainInertia;
         iz = ix = subInertia;
         break;
-    case Axis::Z:
+    case Z:
         iz = mainInertia;
         ix = iy = subInertia;
         break;
