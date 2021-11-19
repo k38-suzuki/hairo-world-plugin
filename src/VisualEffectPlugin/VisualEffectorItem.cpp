@@ -46,7 +46,7 @@ void VisualEffectorItem::initializeClass(ExtensionManager* ext)
         [](VEImageVisualizerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
             menuManager.setPath("/");
             menuManager.addItem(_("Visual Effect"))->sigTriggered().connect(
-                [item](){ item->visualDialog->show(); });
+                [item](){ item->effector->show(); });
             menuManager.setPath("/");
             menuManager.addSeparator();
             menuFunction.dispatchAs<Item>(item);
@@ -158,10 +158,8 @@ bool VisualEffectorItem::store(Archive& archive)
         }
         item->store(*subArchive);
         VEImageVisualizerItem* vitem = dynamic_cast<VEImageVisualizerItem*>(item);
-        VisualEffectDialog* vd = vitem->visualDialog;
-        if(vd) {
-            vd->store(*subArchive);
-        }
+        VisualEffector* effector = vitem->effector;
+        effector->store(*subArchive);
         subItems->append(subArchive);
     }
 
@@ -197,10 +195,8 @@ bool VisualEffectorItem::restore(const Archive& archive)
                 Item* tmpItem = item;
                 if(tmpItem) {
                     VEImageVisualizerItem* vitem = dynamic_cast<VEImageVisualizerItem*>(tmpItem);
-                    VisualEffectDialog* vd = vitem->visualDialog;
-                    if(vd) {
-                        vd->restore(*subArchive);
-                    }
+                    VisualEffector* effector = vitem->effector;
+                    effector->restore(*subArchive);
                 }
                 impl->restoredSubItems.push_back(item);
             }
@@ -238,7 +234,7 @@ void VisualEffectorItemBase::updateVisualization()
 VEImageVisualizerItem::VEImageVisualizerItem()
     : VisualEffectorItemBase(this)
 {
-    visualDialog = new VisualEffectDialog();
+    effector = new VisualEffector();
 }
 
 
@@ -271,7 +267,7 @@ void VEImageVisualizerItem::setBodyItem(BodyItem* bodyItem, Camera* camera)
 
 void VEImageVisualizerItem::show()
 {
-    visualDialog->show();
+    effector->show();
 }
 
 
@@ -292,19 +288,19 @@ void VEImageVisualizerItem::enableVisualization(bool on)
 void VEImageVisualizerItem::doUpdateVisualization()
 {
     if(camera){
-        double hue = visualDialog->hue();
-        double saturation = visualDialog->saturation();
-        double value = visualDialog->value();
-        double red = visualDialog->red();
-        double green = visualDialog->green();
-        double blue = visualDialog->blue();
-        bool flipped = visualDialog->flip();
-        double coefB = visualDialog->coefB();
-        double coefD = visualDialog->coefD();
-        double stdDev = visualDialog->stdDev();
-        double salt = visualDialog->salt();
-        double pepper = visualDialog->pepper();
-        int filter = visualDialog->filter();
+        double hue = effector->hue();
+        double saturation = effector->saturation();
+        double value = effector->value();
+        double red = effector->red();
+        double green = effector->green();
+        double blue = effector->blue();
+        bool flipped = effector->flip();
+        double coefB = effector->coefB();
+        double coefD = effector->coefD();
+        double stdDev = effector->stdDev();
+        double salt = effector->salt();
+        double pepper = effector->pepper();
+        int filter = effector->filter();
 
         RootItem* rootItem = RootItem::instance();
         if(rootItem) {

@@ -3,11 +3,12 @@
    \author Kenta Suzuki
 */
 
-#include "MotionPlannerDialog.h"
+#include "MotionPlanner.h"
 #include <cnoid/BodyItem>
 #include <cnoid/Button>
 #include <cnoid/CheckBox>
 #include <cnoid/ComboBox>
+#include <cnoid/Dialog>
 #include <cnoid/EigenTypes>
 #include <cnoid/JointPath>
 #include <cnoid/MenuManager>
@@ -47,16 +48,13 @@ using namespace cnoid;
 namespace ob = ompl::base;
 namespace og = ompl::geometric;
 
-MotionPlannerDialog* plannerDialog = nullptr;
-
 namespace cnoid {
 
-class MotionPlannerDialogImpl
+class ConfigDialog : public Dialog
 {
 public:
-    MotionPlannerDialogImpl(MotionPlannerDialog* self);
+    ConfigDialog();
 
-    MotionPlannerDialog* self;
     SgSwitchableGroupPtr startScene;
     SgSwitchableGroupPtr goalScene;
     SgSwitchableGroupPtr statesScene;
@@ -121,23 +119,61 @@ public:
     void onGoalPositionDragged();
     void planWithSimpleSetup();
     bool isStateValid(const ob::State* state);
-    void onAccepted();
-    void onRejected();
+};
+
+
+class MotionPlannerImpl
+{
+public:
+    MotionPlannerImpl(MotionPlanner* self);
+    MotionPlanner* self;
+
+    ConfigDialog* dialog;
 };
 
 }
 
 
-MotionPlannerDialog::MotionPlannerDialog()
+MotionPlanner::MotionPlanner()
 {
-    impl = new MotionPlannerDialogImpl(this);
+    impl = new MotionPlannerImpl(this);
 }
 
 
-MotionPlannerDialogImpl::MotionPlannerDialogImpl(MotionPlannerDialog* self)
+MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self)
     : self(self)
 {
-    self->setWindowTitle(_("Motion Planner"));
+    dialog = new ConfigDialog();
+}
+
+
+MotionPlanner::~MotionPlanner()
+{
+    delete impl;
+}
+
+
+void MotionPlanner::initialize(ExtensionManager* ext)
+{
+    string version = OMPL_VERSION;
+    MessageView::instance()->putln(fmt::format("OMPL version: {0}", version));
+
+    MotionPlanner* planner = ext->manage(new MotionPlanner);
+
+    MenuManager& mm = ext->menuManager().setPath("/Tools");
+    mm.addItem(_("Motion Planner"))->sigTriggered().connect([=](){ planner->show(); });
+}
+
+
+void MotionPlanner::show()
+{
+    impl->dialog->show();
+}
+
+
+ConfigDialog::ConfigDialog()
+{
+    setWindowTitle(_("Motion Planner"));
 
     currentShape = nullptr;
     bodyItems.clear();
@@ -379,9 +415,9 @@ MotionPlannerDialogImpl::MotionPlannerDialogImpl(MotionPlannerDialog* self)
 
     QPushButton* okButton = new QPushButton(_("&Ok"));
     okButton->setDefault(true);
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
-    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
+    connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
     vbox->addWidget(buttonBox);
 
     generateButton->sigClicked().connect([&](){ onGenerateButtonClicked(); });
@@ -453,39 +489,11 @@ MotionPlannerDialogImpl::MotionPlannerDialogImpl(MotionPlannerDialog* self)
     startButton->sigClicked().connect([&](){ onStartButtonClicked(); });
     goalButton->sigClicked().connect([&](){ onGoalButtonClicked(); });
 
-    self->setLayout(vbox);
+    setLayout(vbox);
 }
 
 
-MotionPlannerDialog::~MotionPlannerDialog()
-{
-    delete impl;
-}
-
-
-void MotionPlannerDialog::initializeClass(ExtensionManager* ext)
-{
-    string version = OMPL_VERSION;
-    MessageView::instance()->putln(fmt::format("OMPL version: {0}", version));
-
-    if(!plannerDialog) {
-        plannerDialog = ext->manage(new MotionPlannerDialog());
-    }
-
-    MenuManager& mm = ext->menuManager();
-    mm.setPath("/Tools");
-    mm.addItem(_("Motion Planner"))
-            ->sigTriggered().connect([](){ plannerDialog->show(); });
-}
-
-
-MotionPlannerDialog* MotionPlannerDialog::instance()
-{
-    return plannerDialog;
-}
-
-
-void MotionPlannerDialogImpl::onTargetLinkChanged()
+void ConfigDialog::onTargetLinkChanged()
 {
     bodyItem = bodyItems[bodyCombo->currentIndex()];
     body = bodyItem->body();
@@ -493,7 +501,7 @@ void MotionPlannerDialogImpl::onTargetLinkChanged()
 }
 
 
-void MotionPlannerDialogImpl::onStartButtonClicked()
+void ConfigDialog::onStartButtonClicked()
 {
     onTargetLinkChanged();
     if(endLink) {
@@ -505,7 +513,7 @@ void MotionPlannerDialogImpl::onStartButtonClicked()
 }
 
 
-void MotionPlannerDialogImpl::onGoalButtonClicked()
+void ConfigDialog::onGoalButtonClicked()
 {
     onTargetLinkChanged();
     if(endLink) {
@@ -517,7 +525,7 @@ void MotionPlannerDialogImpl::onGoalButtonClicked()
 }
 
 
-void MotionPlannerDialogImpl::onGenerateButtonClicked()
+void ConfigDialog::onGenerateButtonClicked()
 {
     statesScene->clearChildren();
     solutionScene->clearChildren();
@@ -533,7 +541,7 @@ void MotionPlannerDialogImpl::onGenerateButtonClicked()
 }
 
 
-void MotionPlannerDialogImpl::onPreviewButtonToggled(bool on)
+void ConfigDialog::onPreviewButtonToggled(bool on)
 {
     if(on && isSolved) {
         time = 0.0;
@@ -550,7 +558,7 @@ void MotionPlannerDialogImpl::onPreviewButtonToggled(bool on)
 }
 
 
-void MotionPlannerDialogImpl::onPreviewTimeout()
+void ConfigDialog::onPreviewTimeout()
 {
     if(body && baseLink && endLink) {
         if(previewButton->isChecked()) {
@@ -571,7 +579,7 @@ void MotionPlannerDialogImpl::onPreviewTimeout()
 }
 
 
-void MotionPlannerDialogImpl::onCheckToggled()
+void ConfigDialog::onCheckToggled()
 {
     bodyItems = RootItem::instance()->checkedItems<BodyItem>();
     bodyCombo->clear();
@@ -582,7 +590,7 @@ void MotionPlannerDialogImpl::onCheckToggled()
 }
 
 
-void MotionPlannerDialogImpl::onCurrentIndexChanged(int index)
+void ConfigDialog::onCurrentIndexChanged(int index)
 {
     baseCombo->clear();
     endCombo->clear();
@@ -597,7 +605,7 @@ void MotionPlannerDialogImpl::onCurrentIndexChanged(int index)
 }
 
 
-void MotionPlannerDialogImpl::onStartValueChanged()
+void ConfigDialog::onStartValueChanged()
 {
     SgPosTransform* pos = dynamic_cast<SgPosTransform*>(startScene->child(0));
     Vector3 translation = Vector3(startxSpin->value(), startySpin->value(), startzSpin->value());
@@ -606,7 +614,7 @@ void MotionPlannerDialogImpl::onStartValueChanged()
 }
 
 
-void MotionPlannerDialogImpl::onGoalValueChanged()
+void ConfigDialog::onGoalValueChanged()
 {
     SgPosTransform* pos = dynamic_cast<SgPosTransform*>(goalScene->child(0));
     Vector3 translation = Vector3(goalxSpin->value(), goalySpin->value(), goalzSpin->value());
@@ -615,7 +623,7 @@ void MotionPlannerDialogImpl::onGoalValueChanged()
 }
 
 
-void MotionPlannerDialogImpl::onStartPositionDragged()
+void ConfigDialog::onStartPositionDragged()
 {
     Vector3 p = startDragger->globalDraggingPosition().translation();
     startxSpin->setValue(p[0]);
@@ -624,7 +632,7 @@ void MotionPlannerDialogImpl::onStartPositionDragged()
 }
 
 
-void MotionPlannerDialogImpl::onGoalPositionDragged()
+void ConfigDialog::onGoalPositionDragged()
 {
     Vector3 p = goalDragger->globalDraggingPosition().translation();
     goalxSpin->setValue(p[0]);
@@ -633,7 +641,7 @@ void MotionPlannerDialogImpl::onGoalPositionDragged()
 }
 
 
-void MotionPlannerDialogImpl::planWithSimpleSetup()
+void ConfigDialog::planWithSimpleSetup()
 {
     auto space(std::make_shared<ob::SE3StateSpace>());
 
@@ -753,7 +761,7 @@ void MotionPlannerDialogImpl::planWithSimpleSetup()
 }
 
 
-bool MotionPlannerDialogImpl::isStateValid(const ob::State* state)
+bool ConfigDialog::isStateValid(const ob::State* state)
 {
     const auto *se3state = state->as<ob::SE3StateSpace::StateType>();
     const auto *pos = se3state->as<ob::RealVectorStateSpace::StateType>(0);
@@ -808,28 +816,4 @@ bool MotionPlannerDialogImpl::isStateValid(const ob::State* state)
     }
 
     return ((const void*)rot != (const void*)pos) && solved && !collided;
-}
-
-
-void MotionPlannerDialog::onAccepted()
-{
-    impl->onAccepted();
-}
-
-
-void MotionPlannerDialogImpl::onAccepted()
-{
-
-}
-
-
-void MotionPlannerDialog::onRejected()
-{
-    impl->onAccepted();
-}
-
-
-void MotionPlannerDialogImpl::onRejected()
-{
-
 }

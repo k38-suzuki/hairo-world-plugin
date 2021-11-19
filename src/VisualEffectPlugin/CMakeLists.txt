@@ -2,7 +2,7 @@
 set(sources
     ImageGenerator.cpp
     VEAreaItem.cpp
-    VisualEffectDialog.cpp
+    VisualEffector.cpp
     VisualEffectorItem.cpp
     VisualEffectPlugin.cpp
     )
@@ -10,7 +10,7 @@ set(sources
 set(headers
     ImageGenerator.h
     VEAreaItem.h
-    VisualEffectDialog.h
+    VisualEffector.h
     VisualEffectorItem.h
     exportdecl.h
     gettext.h
@@ -20,7 +20,7 @@ if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
   set(target CnoidVisualEffectPlugin)
   make_gettext_mofiles(${target} mofiles)
-  add_cnoid_plugin(${target} SHARED ${sources} ${mofiles} ${headers})
+  add_cnoid_plugin(${target} ${sources} ${mofiles} HEADERS ${headers})
   target_link_libraries(${target} CnoidBodyPlugin CnoidFluidDynamicsPlugin)
   apply_common_setting_for_plugin(${target})
 else()

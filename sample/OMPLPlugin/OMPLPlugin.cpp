@@ -5,7 +5,7 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "MotionPlannerDialog.h"
+#include "MotionPlanner.h"
 
 using namespace cnoid;
 
@@ -22,7 +22,7 @@ public:
 
     virtual bool initialize() override
     {
-        MotionPlannerDialog::initializeClass(this);
+        MotionPlanner::initialize(this);
         return true;
     }
 

@@ -3,11 +3,12 @@
    \author Kenta Suzuki
 */
 
-#include "VisualEffectDialog.h"
+#include "VisualEffector.h"
 #include <cnoid/Archive>
 #include <cnoid/Button>
 #include <cnoid/CheckBox>
 #include <cnoid/ComboBox>
+#include <cnoid/Dialog>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <QDialogButtonBox>
@@ -23,11 +24,10 @@ using namespace std;
 
 namespace cnoid {
 
-class VisualEffectDialogImpl
+class EffectConfigDialog : public Dialog
 {
 public:
-    VisualEffectDialogImpl(VisualEffectDialog* self);
-    VisualEffectDialog* self;
+    EffectConfigDialog();
 
     DoubleSpinBox* hueSpin;
     DoubleSpinBox* saturationSpin;
@@ -43,28 +43,132 @@ public:
     CheckBox* flipCheck;
     ComboBox* filterCombo;
 
+    void onResetButtonClicked();
     bool store(Archive& archive);
     bool restore(const Archive& archive);
-    void onAccepted();
-    void onRejected();
-    void onResetButtonClicked();
+};
+
+
+class VisualEffectorImpl
+{
+public:
+    VisualEffectorImpl(VisualEffector* self);
+    VisualEffector* self;
+
+    EffectConfigDialog* dialog;
 };
 
 }
 
 
-VisualEffectDialog::VisualEffectDialog()
+VisualEffector::VisualEffector()
 {
-    impl = new VisualEffectDialogImpl(this);
+    impl = new VisualEffectorImpl(this);
 }
 
 
-VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
+VisualEffectorImpl::VisualEffectorImpl(VisualEffector* self)
     : self(self)
 {
-    self->setWindowTitle(_("Effect Config"));
+    dialog = new EffectConfigDialog();
+}
 
-    double ranges[11][2] = {
+
+VisualEffector::~VisualEffector()
+{
+    delete impl;
+}
+
+
+void VisualEffector::show()
+{
+    impl->dialog->show();
+}
+
+
+double VisualEffector::hue() const
+{
+    return impl->dialog->hueSpin->value();
+}
+
+
+double VisualEffector::saturation() const
+{
+    return impl->dialog->saturationSpin->value();
+}
+
+
+double VisualEffector::value() const
+{
+    return impl->dialog->valueSpin->value();
+}
+
+
+double VisualEffector::red() const
+{
+    return impl->dialog->redSpin->value();
+}
+
+
+double VisualEffector::green() const
+{
+    return impl->dialog->greenSpin->value();
+}
+
+
+double VisualEffector::blue() const
+{
+    return impl->dialog->blueSpin->value();
+}
+
+
+double VisualEffector::coefB() const
+{
+    return impl->dialog->coefBSpin->value();
+}
+
+
+double VisualEffector::coefD() const
+{
+    return impl->dialog->coefDSpin->value();
+}
+
+
+double VisualEffector::stdDev() const
+{
+    return impl->dialog->stdDevSpin->value();
+}
+
+
+double VisualEffector::salt() const
+{
+    return impl->dialog->saltSpin->value();
+}
+
+
+double VisualEffector::pepper() const
+{
+    return impl->dialog->pepperSpin->value();
+}
+
+
+bool VisualEffector::flip() const
+{
+    return impl->dialog->flipCheck->isChecked();
+}
+
+
+int VisualEffector::filter() const
+{
+    return impl->dialog->filterCombo->currentIndex();
+}
+
+
+EffectConfigDialog::EffectConfigDialog()
+{
+    setWindowTitle(_("Effect Config"));
+
+    const double ranges[11][2] = {
         {  0.0, 1.0 }, { -1.0,  1.0 }, { -1.0, 1.0 },
         { -1.0, 1.0 }, { -1.0,  1.0 }, { -1.0, 1.0 },
         { -1.0, 0.0 }, {  1.0, 32.0 },
@@ -141,106 +245,22 @@ VisualEffectDialogImpl::VisualEffectDialogImpl(VisualEffectDialog* self)
     PushButton* resetButton = new PushButton(_("&Reset"));
     QPushButton* okButton = new QPushButton(_("&Ok"));
     okButton->setDefault(true);
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
     buttonBox->addButton(resetButton, QDialogButtonBox::ResetRole);
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
-    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
+    connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
 
     QVBoxLayout* vbox = new QVBoxLayout();
     vbox->addLayout(gbox);
     vbox->addWidget(new HSeparator());
     vbox->addWidget(buttonBox);
-    self->setLayout(vbox);
+    setLayout(vbox);
 
     resetButton->sigClicked().connect([&](){ onResetButtonClicked(); });
 }
 
 
-VisualEffectDialog::~VisualEffectDialog()
-{
-    delete impl;
-}
-
-
-double VisualEffectDialog::hue() const
-{
-    return impl->hueSpin->value();
-}
-
-
-double VisualEffectDialog::saturation() const
-{
-    return impl->saturationSpin->value();
-}
-
-
-double VisualEffectDialog::value() const
-{
-    return impl->valueSpin->value();
-}
-
-
-double VisualEffectDialog::red() const
-{
-    return impl->redSpin->value();
-}
-
-
-double VisualEffectDialog::green() const
-{
-    return impl->greenSpin->value();
-}
-
-
-double VisualEffectDialog::blue() const
-{
-    return impl->blueSpin->value();
-}
-
-
-double VisualEffectDialog::coefB() const
-{
-    return impl->coefBSpin->value();
-}
-
-
-double VisualEffectDialog::coefD() const
-{
-    return impl->coefDSpin->value();
-}
-
-
-double VisualEffectDialog::stdDev() const
-{
-    return impl->stdDevSpin->value();
-}
-
-
-double VisualEffectDialog::salt() const
-{
-    return impl->saltSpin->value();
-}
-
-
-double VisualEffectDialog::pepper() const
-{
-    return impl->pepperSpin->value();
-}
-
-
-bool VisualEffectDialog::flip() const
-{
-    return impl->flipCheck->isChecked();
-}
-
-
-int VisualEffectDialog::filter() const
-{
-    return impl->filterCombo->currentIndex();
-}
-
-
-void VisualEffectDialogImpl::onResetButtonClicked()
+void EffectConfigDialog::onResetButtonClicked()
 {
     hueSpin->setValue(0.0);
     saturationSpin->setValue(0.0);
@@ -258,13 +278,13 @@ void VisualEffectDialogImpl::onResetButtonClicked()
 }
 
 
-bool VisualEffectDialog::store(Archive& archive)
+bool VisualEffector::store(Archive& archive)
 {
-    return impl->store(archive);
+    return impl->dialog->store(archive);
 }
 
 
-bool VisualEffectDialogImpl::store(Archive& archive)
+bool EffectConfigDialog::store(Archive& archive)
 {
     archive.write("hue", hueSpin->value());
     archive.write("saturation", saturationSpin->value());
@@ -283,13 +303,13 @@ bool VisualEffectDialogImpl::store(Archive& archive)
 }
 
 
-bool VisualEffectDialog::restore(const Archive& archive)
+bool VisualEffector::restore(const Archive& archive)
 {
-    return impl->restore(archive);
+    return impl->dialog->restore(archive);
 }
 
 
-bool VisualEffectDialogImpl::restore(const Archive& archive)
+bool EffectConfigDialog::restore(const Archive& archive)
 {
     double value;
     archive.read("hue", value);
@@ -357,28 +377,4 @@ bool VisualEffectDialogImpl::restore(const Archive& archive)
     archive.read("filter", filter);
     filterCombo->setCurrentIndex(filter);
     return true;
-}
-
-
-void VisualEffectDialog::onAccepted()
-{
-    impl->onAccepted();
-}
-
-
-void VisualEffectDialogImpl::onAccepted()
-{
-
-}
-
-
-void VisualEffectDialog::onRejected()
-{
-    impl->onRejected();
-}
-
-
-void VisualEffectDialogImpl::onRejected()
-{
-
 }

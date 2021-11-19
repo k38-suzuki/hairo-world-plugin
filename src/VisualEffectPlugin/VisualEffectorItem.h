@@ -12,7 +12,7 @@
 #include <cnoid/Item>
 #include <cnoid/RangeCamera>
 #include "ImageGenerator.h"
-#include "VisualEffectDialog.h"
+#include "VisualEffector.h"
 #include "exportdecl.h"
 
 namespace cnoid {
@@ -46,7 +46,7 @@ public:
     virtual void doUpdateVisualization() override;
 
     CameraPtr camera;
-    VisualEffectDialog* visualDialog;
+    VisualEffector* effector;
     ImageGenerator generator;
     ScopedConnectionSet connections;
     std::shared_ptr<const Image> image;
