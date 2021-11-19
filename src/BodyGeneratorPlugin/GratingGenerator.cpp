@@ -3,10 +3,12 @@
    \author Kenta Suzuki
 */
 
-#include "GratingBuilderDialog.h"
+#include "GratingGenerator.h"
 #include <cnoid/Button>
+#include <cnoid/Dialog>
 #include <cnoid/EigenTypes>
 #include <cnoid/MainWindow>
+#include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/YAMLWriter>
@@ -67,18 +69,16 @@ SpinInfo spinInfo[] = {
 
 namespace cnoid {
 
-class GratingBuilderDialogImpl
+class GratingConfigDialog : public Dialog
 {
 public:
-    GratingBuilderDialogImpl(GratingBuilderDialog* self);
-    GratingBuilderDialog* self;
+    GratingConfigDialog();
 
     enum DoubleSpinId {
         MASS, HEIGHT, FRAME_WDT,
         FRAME_HGT, GRID_WDT, GRID_HGT,
         NUM_DSPINS
     };
-
     enum SpinId { H_GRID, V_GRID, NUM_SPINS };
 
     DoubleSpinBox* dspins[NUM_DSPINS];
@@ -92,23 +92,58 @@ public:
     void onColorButtonClicked();
     void onValueChanged();
     VectorXd calcInertia();
-    void onAccepted();
-    void onRejected();
+};
+
+
+class GratingGeneratorImpl
+{
+public:
+    GratingGeneratorImpl(GratingGenerator* self);
+    GratingGenerator* self;
+
+    GratingConfigDialog* dialog;
 };
 
 }
 
 
-GratingBuilderDialog::GratingBuilderDialog()
+GratingGenerator::GratingGenerator()
 {
-    impl = new GratingBuilderDialogImpl(this);
+    impl = new GratingGeneratorImpl(this);
 }
 
 
-GratingBuilderDialogImpl::GratingBuilderDialogImpl(GratingBuilderDialog* self)
+GratingGeneratorImpl::GratingGeneratorImpl(GratingGenerator* self)
     : self(self)
 {
-    self->setWindowTitle(_("Grating Builder"));
+    dialog = new GratingConfigDialog();
+}
+
+
+GratingGenerator::~GratingGenerator()
+{
+    delete impl;
+}
+
+
+void GratingGenerator::initialize(ExtensionManager* ext)
+{
+    GratingGenerator* generator = ext->manage(new GratingGenerator);
+
+    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
+    mm.addItem(_("Grating"))->sigTriggered().connect([=](){ generator->show(); });
+}
+
+
+void GratingGenerator::show()
+{
+    impl->dialog->show();
+}
+
+
+GratingConfigDialog::GratingConfigDialog()
+{
+    setWindowTitle(_("Grating Builder"));
     QVBoxLayout* vbox = new QVBoxLayout();
     QGridLayout* gbox = new QGridLayout();
 
@@ -160,7 +195,7 @@ GratingBuilderDialogImpl::GratingBuilderDialogImpl(GratingBuilderDialog* self)
 
     formWidget = new FileFormWidget();
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
     PushButton* okButton = new PushButton(_("&Ok"));
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
 
@@ -168,11 +203,11 @@ GratingBuilderDialogImpl::GratingBuilderDialogImpl(GratingBuilderDialog* self)
     vbox->addWidget(new HSeparator());
     vbox->addWidget(formWidget);
     vbox->addWidget(buttonBox);
-    self->setLayout(vbox);
+    setLayout(vbox);
 
     onValueChanged();
 
-    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
+    connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
     dspins[FRAME_WDT]->sigValueChanged().connect([&](double value){ onValueChanged(); });
     dspins[FRAME_HGT]->sigValueChanged().connect([&](double value){ onValueChanged(); });
@@ -185,13 +220,7 @@ GratingBuilderDialogImpl::GratingBuilderDialogImpl(GratingBuilderDialog* self)
 }
 
 
-GratingBuilderDialog::~GratingBuilderDialog()
-{
-    delete impl;
-}
-
-
-bool GratingBuilderDialogImpl::writeYaml(const string& filename)
+bool GratingConfigDialog::writeYaml(const string& filename)
 {
     filesystem::path path(filename);
 
@@ -381,7 +410,7 @@ bool GratingBuilderDialogImpl::writeYaml(const string& filename)
 }
 
 
-void GratingBuilderDialogImpl::onColorButtonClicked()
+void GratingConfigDialog::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -401,7 +430,7 @@ void GratingBuilderDialogImpl::onColorButtonClicked()
 }
 
 
-void GratingBuilderDialogImpl::onValueChanged()
+void GratingConfigDialog::onValueChanged()
 {
     double frameWidth = dspins[FRAME_WDT]->value();
     double frameHeight = dspins[FRAME_HGT]->value();
@@ -421,7 +450,7 @@ void GratingBuilderDialogImpl::onValueChanged()
 }
 
 
-VectorXd GratingBuilderDialogImpl::calcInertia()
+VectorXd GratingConfigDialog::calcInertia()
 {
     VectorXd inertia;
     inertia.resize(9);
@@ -446,28 +475,4 @@ VectorXd GratingBuilderDialogImpl::calcInertia()
     inertia << ix, 0.0, 0.0, 0.0, iy, 0.0, 0.0, 0.0, iz;
 
     return inertia;
-}
-
-
-void GratingBuilderDialog::onAccepted()
-{
-    impl->onAccepted();
-}
-
-
-void GratingBuilderDialogImpl::onAccepted()
-{
-
-}
-
-
-void GratingBuilderDialog::onRejected()
-{
-    impl->onRejected();
-}
-
-
-void GratingBuilderDialogImpl::onRejected()
-{
-
 }

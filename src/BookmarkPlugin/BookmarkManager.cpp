@@ -69,7 +69,7 @@ public:
     BookmarkManagerImpl(BookmarkManager* self);
     BookmarkManager* self;
 
-    ConfigDialog* config;
+    ConfigDialog* dialog;
 };
 
 }
@@ -84,7 +84,7 @@ BookmarkManager::BookmarkManager()
 BookmarkManagerImpl::BookmarkManagerImpl(BookmarkManager* self)
     : self(self)
 {
-    config = new ConfigDialog();
+    dialog = new ConfigDialog();
 }
 
 
@@ -107,7 +107,7 @@ void BookmarkManager::initialize(ExtensionManager* ext)
 
 void BookmarkManager::show()
 {
-    impl->config->show();
+    impl->dialog->show();
 }
 
 

@@ -5,7 +5,11 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "BodyGenerator.h"
+#include "PipeGenerator.h"
+#include "GratingGenerator.h"
+#include "SlopeGenerator.h"
+#include "TerrainGenerator.h"
+#include "CrawlerGenerator.h"
 
 using namespace cnoid;
 
@@ -22,7 +26,11 @@ public:
 
     virtual bool initialize()
     {
-        BodyGenerator::initialize(this);
+        PipeGenerator::initialize(this);
+        GratingGenerator::initialize(this);
+        SlopeGenerator::initialize(this);
+        TerrainGenerator::initialize(this);
+        CrawlerGenerator::initialize(this);
         return true;
     }
 

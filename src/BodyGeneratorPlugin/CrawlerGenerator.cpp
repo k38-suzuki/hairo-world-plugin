@@ -3,9 +3,10 @@
    \author Kenta Suzuki
 */
 
-#include "CrawlerBuilderDialog.h"
+#include "CrawlerGenerator.h"
 #include <cnoid/Button>
 #include <cnoid/CheckBox>
+#include <cnoid/Dialog>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
@@ -203,11 +204,10 @@ Info agxseparatorInfo[] = {
 
 namespace cnoid {
 
-class CrawlerBuilderDialogImpl
+class CrawlerConfigDialog : public Dialog
 {
 public:
-    CrawlerBuilderDialogImpl(CrawlerBuilderDialog* self);
-    CrawlerBuilderDialog* self;
+    CrawlerConfigDialog();
 
     enum DoubleSpinId {
         CHS_MAS, CHS_XSZ, CHS_YSZ, CHS_ZSZ,
@@ -217,7 +217,6 @@ public:
         SPC_MAS, SPC_RAD, SPC_WDT,
         NUM_DSPINS
     };
-
     enum AGXDoubleSpinId {
         TRK_BNT, TRK_BNW, TRK_BNTT, TRK_BNDTM, TRK_BSHFPM,
         TRK_BHCM, TRK_BHSD, TRK_BNWMT, TRK_BNWST,
@@ -225,7 +224,6 @@ public:
         FLP_BHCM, FLP_BHSD, FLP_BNWMT, FLP_BNWST,
         NUM_AGXDSPINS
     };
-
     enum SpinId {
         TRK_BNN, TRK_BUTNE, TRK_BNDTE,
         TRK_BSHFPE, TRK_BMSHNF, TRK_BHCE,
@@ -233,14 +231,11 @@ public:
         FLP_BSHFPE, FLP_BMSHNF, FLP_BHCE,
         NUM_SPINS
     };
-
     enum ButtonId {
         CHS_CLR, TRK_CLR, FFL_CLR,
         RFL_CLR, SPC_CLR, NUM_BUTTONS
     };
-
     enum CheckId { FFL_CHK, RFL_CHK, AGX_CHK, NUM_CHECKS };
-
     enum DialogButtonId { RESET, IMPORT, EXPORT, NUMTBUTTONS };
 
     CheckBox* checks[NUM_CHECKS];
@@ -264,23 +259,58 @@ public:
     void setColor(PushButton* pushbutton, const Vector3& color);
     Vector3 extractColor(PushButton* colorButton);
     string getSaveFilename(FileDialog& dialog, const string& suffix);
-    void onAccepted();
-    void onRejected();
+};
+
+
+class CrawlerGeneratorImpl
+{
+public:
+    CrawlerGeneratorImpl(CrawlerGenerator* self);
+    CrawlerGenerator* self;
+
+    CrawlerConfigDialog* dialog;
 };
 
 }
 
 
-CrawlerBuilderDialog::CrawlerBuilderDialog()
+CrawlerGenerator::CrawlerGenerator()
 {
-    impl = new CrawlerBuilderDialogImpl(this);
+    impl = new CrawlerGeneratorImpl(this);
 }
 
 
-CrawlerBuilderDialogImpl::CrawlerBuilderDialogImpl(CrawlerBuilderDialog* self)
+CrawlerGeneratorImpl::CrawlerGeneratorImpl(CrawlerGenerator* self)
     : self(self)
 {
-    self->setWindowTitle(_("CrawlerRobot Builder"));
+    dialog = new CrawlerConfigDialog();
+}
+
+
+CrawlerGenerator::~CrawlerGenerator()
+{
+    delete impl;
+}
+
+
+void CrawlerGenerator::initialize(ExtensionManager* ext)
+{
+    CrawlerGenerator* generator = ext->manage(new CrawlerGenerator);
+
+    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
+    mm.addItem(_("CrawlerRobot"))->sigTriggered().connect([=](){ generator->show(); });
+}
+
+
+void CrawlerGenerator::show()
+{
+    impl->dialog->show();
+}
+
+
+CrawlerConfigDialog::CrawlerConfigDialog()
+{
+    setWindowTitle(_("CrawlerRobot Builder"));
     QGridLayout* gbox = new QGridLayout();
     QGridLayout* agbox = new QGridLayout();
 
@@ -380,7 +410,7 @@ CrawlerBuilderDialogImpl::CrawlerBuilderDialogImpl(CrawlerBuilderDialog* self)
 
     formWidget = new FileFormWidget();
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
     PushButton* okButton = new PushButton(_("&Ok"));
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
 
@@ -395,9 +425,9 @@ CrawlerBuilderDialogImpl::CrawlerBuilderDialogImpl(CrawlerBuilderDialog* self)
     vbox->addWidget(new HSeparator());
     vbox->addWidget(formWidget);
     vbox->addWidget(buttonBox);
-    self->setLayout(vbox);
+    setLayout(vbox);
 
-    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
+    connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
     toolButtons[RESET]->sigClicked().connect([&](){ onResetButtonClicked(); });
     toolButtons[IMPORT]->sigClicked().connect([&](){ onImportYamlButtonClicked(); });
     toolButtons[EXPORT]->sigClicked().connect([&](){ onExportYamlButtonClicked(); });
@@ -406,13 +436,7 @@ CrawlerBuilderDialogImpl::CrawlerBuilderDialogImpl(CrawlerBuilderDialog* self)
 }
 
 
-CrawlerBuilderDialog::~CrawlerBuilderDialog()
-{
-    delete impl;
-}
-
-
-bool CrawlerBuilderDialogImpl::save(const string& filename)
+bool CrawlerConfigDialog::save(const string& filename)
 {
     if(!filename.empty()) {
         if(!checks[AGX_CHK]->isChecked()) {
@@ -425,7 +449,7 @@ bool CrawlerBuilderDialogImpl::save(const string& filename)
 }
 
 
-void CrawlerBuilderDialogImpl::initialize()
+void CrawlerConfigDialog::initialize()
 {
     for(int i = 0; i < NUM_DSPINS; ++i) {
         DoubleSpinInfo info = doubleSpinInfo[i];
@@ -466,13 +490,13 @@ void CrawlerBuilderDialogImpl::initialize()
 }
 
 
-void CrawlerBuilderDialogImpl::onResetButtonClicked()
+void CrawlerConfigDialog::onResetButtonClicked()
 {
     initialize();
 }
 
 
-void CrawlerBuilderDialogImpl::onImportYamlButtonClicked()
+void CrawlerConfigDialog::onImportYamlButtonClicked()
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Open a configuration file"));
@@ -504,7 +528,7 @@ void CrawlerBuilderDialogImpl::onImportYamlButtonClicked()
 }
 
 
-bool CrawlerBuilderDialogImpl::loadConfig(const string& filename)
+bool CrawlerConfigDialog::loadConfig(const string& filename)
 {
     try {
         YAMLReader reader;
@@ -559,7 +583,7 @@ bool CrawlerBuilderDialogImpl::loadConfig(const string& filename)
 }
 
 
-void CrawlerBuilderDialogImpl::onExportYamlButtonClicked()
+void CrawlerConfigDialog::onExportYamlButtonClicked()
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Save a configuration file"));
@@ -637,7 +661,7 @@ void CrawlerBuilderDialogImpl::onExportYamlButtonClicked()
 }
 
 
-void CrawlerBuilderDialogImpl::onEnableAgxCheckToggled(const bool& on)
+void CrawlerConfigDialog::onEnableAgxCheckToggled(const bool& on)
 {
     spins[TRK_BNN]->setEnabled(on);
     agxdspins[TRK_BNT]->setEnabled(on);
@@ -673,7 +697,7 @@ void CrawlerBuilderDialogImpl::onEnableAgxCheckToggled(const bool& on)
 }
 
 
-void CrawlerBuilderDialogImpl::onExportBody(const string& fileName)
+void CrawlerConfigDialog::onExportBody(const string& fileName)
 {
     filesystem::path path(fileName);
     string bodyName = path.stem().string();
@@ -923,7 +947,7 @@ void CrawlerBuilderDialogImpl::onExportBody(const string& fileName)
 }
 
 
-void CrawlerBuilderDialogImpl::onExportAGXBody(const string& fileName)
+void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
 {
     filesystem::path path(fileName);
     string bodyName = path.stem().string();
@@ -1401,7 +1425,7 @@ void CrawlerBuilderDialogImpl::onExportAGXBody(const string& fileName)
 }
 
 
-void CrawlerBuilderDialogImpl::onColorChanged(PushButton* pushbutton)
+void CrawlerConfigDialog::onColorChanged(PushButton* pushbutton)
 {
     QColor selectedColor;
     QColor currentColor = pushbutton->palette().color(QPalette::Button);
@@ -1421,7 +1445,7 @@ void CrawlerBuilderDialogImpl::onColorChanged(PushButton* pushbutton)
 }
 
 
-void CrawlerBuilderDialogImpl::setColor(PushButton* pushbutton, const Vector3& color)
+void CrawlerConfigDialog::setColor(PushButton* pushbutton, const Vector3& color)
 {
     QColor selectedColor;
     selectedColor.setRed(color[0] * 255.0);
@@ -1433,14 +1457,14 @@ void CrawlerBuilderDialogImpl::setColor(PushButton* pushbutton, const Vector3& c
 }
 
 
-Vector3 CrawlerBuilderDialogImpl::extractColor(PushButton* colorButton)
+Vector3 CrawlerConfigDialog::extractColor(PushButton* colorButton)
 {
     QColor selectedColor = colorButton->palette().color(QPalette::Button);
     return Vector3(selectedColor.red() / 255.0, selectedColor.green() / 255.0, selectedColor.blue() / 255.0);
 }
 
 
-string CrawlerBuilderDialogImpl::getSaveFilename(FileDialog& dialog, const string& suffix)
+string CrawlerConfigDialog::getSaveFilename(FileDialog& dialog, const string& suffix)
 {
     string filename;
     auto filenames = dialog.selectedFiles();
@@ -1453,28 +1477,4 @@ string CrawlerBuilderDialogImpl::getSaveFilename(FileDialog& dialog, const strin
         }
     }
     return filename;
-}
-
-
-void CrawlerBuilderDialog::onAccepted()
-{
-    impl->onAccepted();
-}
-
-
-void CrawlerBuilderDialogImpl::onAccepted()
-{
-
-}
-
-
-void CrawlerBuilderDialog::onRejected()
-{
-    impl->onRejected();
-}
-
-
-void CrawlerBuilderDialogImpl::onRejected()
-{
-
 }

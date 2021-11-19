@@ -70,7 +70,7 @@ public:
     InertiaCalculatorImpl(InertiaCalculator* self);
     InertiaCalculator* self;
 
-    ConfigDialog* config;
+    ConfigDialog* dialog;
 };
 
 }
@@ -85,7 +85,7 @@ InertiaCalculator::InertiaCalculator()
 InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self)
     : self(self)
 {
-    config = new ConfigDialog();
+    dialog = new ConfigDialog();
 }
 
 
@@ -106,7 +106,7 @@ void InertiaCalculator::initialize(ExtensionManager* ext)
 
 void InertiaCalculator::show()
 {
-    impl->config->show();
+    impl->dialog->show();
 }
 
 

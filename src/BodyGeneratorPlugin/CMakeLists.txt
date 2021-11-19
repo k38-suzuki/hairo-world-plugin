@@ -1,25 +1,23 @@
 
 set(sources
-    BodyGenerator.cpp
     CellManager.cpp
-    CrawlerBuilderDialog.cpp
+    CrawlerGenerator.cpp
     FileFormWidget.cpp
-    GratingBuilderDialog.cpp
+    GratingGenerator.cpp
     BodyGeneratorPlugin.cpp
-    PipeBuilderDialog.cpp
-    SlopeBuilderDialog.cpp
-    TerrainBuilderDialog.cpp
+    PipeGenerator.cpp
+    SlopeGenerator.cpp
+    TerrainGenerator.cpp
     )
 
 set(headers
-    BodyGenerator.h
     CellManager.h
-    CrawlerBuilderDialog.h
+    CrawlerGenerator.h
     FileFormWidget.h
-    GratingBuilderDialog.h
-    PipeBuilderDialog.h
-    SlopeBuilderDialog.h
-    TerrainBuilderDialog.h
+    GratingGenerator.h
+    PipeGenerator.h
+    SlopeGenerator.h
+    TerrainGenerator.h
     gettext.h
     )
 
@@ -27,7 +25,7 @@ if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
   set(target CnoidBodyGeneratorPlugin)
   make_gettext_mofiles(${target} mofiles)
-  choreonoid_add_plugin(${target} ${sources} ${mofiles} ${headers})
+  choreonoid_add_plugin(${target} ${sources} ${mofiles} HEADERS ${headers})
   target_link_libraries(${target} CnoidBodyPlugin)
 else()
   # Stand alone build

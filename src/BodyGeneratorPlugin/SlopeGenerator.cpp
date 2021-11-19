@@ -3,11 +3,13 @@
    \author Kenta Suzuki
 */
 
-#include "SlopeBuilderDialog.h"
+#include "SlopeGenerator.h"
 #include <cnoid/Button>
+#include <cnoid/Dialog>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/MainWindow>
+#include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/YAMLWriter>
@@ -47,13 +49,13 @@ DoubleSpinInfo doubleSpinInfo[] = {
 
 }
 
+
 namespace cnoid {
 
-class SlopeBuilderDialogImpl
+class SlopeConfigDialog : public Dialog
 {
 public:
-    SlopeBuilderDialogImpl(SlopeBuilderDialog* self);
-    SlopeBuilderDialog* self;
+    SlopeConfigDialog();
 
     enum DoubleSpinId {
         MASS, WIDTH, HEIGHT,
@@ -67,23 +69,58 @@ public:
     bool writeYaml(const string& filename);
     void onColorButtonClicked();
     VectorXd calcInertia();
-    void onAccepted();
-    void onRejected();
+};
+
+
+class SlopeGeneratorImpl
+{
+public:
+    SlopeGeneratorImpl(SlopeGenerator* self);
+    SlopeGenerator* self;
+
+    SlopeConfigDialog* dialog;
 };
 
 }
 
 
-SlopeBuilderDialog::SlopeBuilderDialog()
+SlopeGenerator::SlopeGenerator()
 {
-    impl = new SlopeBuilderDialogImpl(this);
+    impl = new SlopeGeneratorImpl(this);
 }
 
 
-SlopeBuilderDialogImpl::SlopeBuilderDialogImpl(SlopeBuilderDialog* self)
+SlopeGeneratorImpl::SlopeGeneratorImpl(SlopeGenerator* self)
     : self(self)
 {
-    self->setWindowTitle(_("Slope Builder"));
+    dialog = new SlopeConfigDialog();
+}
+
+
+SlopeGenerator::~SlopeGenerator()
+{
+    delete impl;
+}
+
+
+void SlopeGenerator::initialize(ExtensionManager* ext)
+{
+    SlopeGenerator* generator = ext->manage(new SlopeGenerator);
+
+    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
+    mm.addItem(_("Slope"))->sigTriggered().connect([=](){ generator->show(); });
+}
+
+
+void SlopeGenerator::show()
+{
+    impl->dialog->show();
+}
+
+
+SlopeConfigDialog::SlopeConfigDialog()
+{
+    setWindowTitle(_("Slope Builder"));
     QVBoxLayout* vbox = new QVBoxLayout();
     QGridLayout* gbox = new QGridLayout();
 
@@ -109,7 +146,7 @@ SlopeBuilderDialogImpl::SlopeBuilderDialogImpl(SlopeBuilderDialog* self)
 
     formWidget = new FileFormWidget();
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
     PushButton* okButton = new PushButton(_("&Ok"));
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
 
@@ -117,21 +154,15 @@ SlopeBuilderDialogImpl::SlopeBuilderDialogImpl(SlopeBuilderDialog* self)
     vbox->addWidget(new HSeparator());
     vbox->addWidget(formWidget);
     vbox->addWidget(buttonBox);
-    self->setLayout(vbox);
+    setLayout(vbox);
 
-    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
+    connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
     formWidget->sigClicked().connect([&](string filename){ writeYaml(filename); });
 }
 
 
-SlopeBuilderDialog::~SlopeBuilderDialog()
-{
-    delete impl;
-}
-
-
-bool SlopeBuilderDialogImpl::writeYaml(const string& filename)
+bool SlopeConfigDialog::writeYaml(const string& filename)
 {
     filesystem::path path(filename);
 
@@ -231,7 +262,7 @@ bool SlopeBuilderDialogImpl::writeYaml(const string& filename)
 }
 
 
-void SlopeBuilderDialogImpl::onColorButtonClicked()
+void SlopeConfigDialog::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -251,7 +282,7 @@ void SlopeBuilderDialogImpl::onColorButtonClicked()
 }
 
 
-VectorXd SlopeBuilderDialogImpl::calcInertia()
+VectorXd SlopeConfigDialog::calcInertia()
 {
     VectorXd inertia;
     inertia.resize(9);
@@ -269,28 +300,4 @@ VectorXd SlopeBuilderDialogImpl::calcInertia()
     inertia << ix, 0.0, 0.0, 0.0, iy, 0.0, 0.0, 0.0, iz;
 
     return inertia;
-}
-
-
-void SlopeBuilderDialog::onAccepted()
-{
-    impl->onAccepted();
-}
-
-
-void SlopeBuilderDialogImpl::onAccepted()
-{
-
-}
-
-
-void SlopeBuilderDialog::onRejected()
-{
-    impl->onRejected();
-}
-
-
-void SlopeBuilderDialogImpl::onRejected()
-{
-
 }

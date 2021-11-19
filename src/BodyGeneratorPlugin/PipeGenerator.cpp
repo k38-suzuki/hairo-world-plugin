@@ -3,11 +3,13 @@
    \author Kenta Suzuki
 */
 
-#include "PipeBuilderDialog.h"
+#include "PipeGenerator.h"
 #include <cnoid/Button>
+#include <cnoid/Dialog>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/MainWindow>
+#include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/stdx/filesystem>
@@ -67,14 +69,12 @@ SpinInfo spinInfo[] = {
 
 namespace cnoid {
 
-class PipeBuilderDialogImpl
+class PipeConfigDialog : public Dialog
 {
 public:
-    PipeBuilderDialogImpl(PipeBuilderDialog* self);
-    PipeBuilderDialog* self;
+    PipeConfigDialog();
 
     enum DoubleSpinId { MASS, LENGTH, IN_DIA, OUT_DIA, NUM_DSPINS };
-
     enum SpinId { ANGLE, STEP, NUM_SPINS };
 
     DoubleSpinBox* dspins[NUM_DSPINS];
@@ -87,23 +87,58 @@ public:
     void onInnerDiameterChanged(const double& diameter);
     void onOuterDiameterChanged(const double& diameter);
     VectorXd calcInertia();
-    void onAccepted();
-    void onRejected();
+};
+
+
+class PipeGeneratorImpl
+{
+public:
+    PipeGeneratorImpl(PipeGenerator* self);
+    PipeGenerator* self;
+
+    PipeConfigDialog* dialog;
 };
 
 }
 
 
-PipeBuilderDialog::PipeBuilderDialog()
+PipeGenerator::PipeGenerator()
 {
-    impl = new PipeBuilderDialogImpl(this);
+    impl = new PipeGeneratorImpl(this);
 }
 
 
-PipeBuilderDialogImpl::PipeBuilderDialogImpl(PipeBuilderDialog* self)
+PipeGeneratorImpl::PipeGeneratorImpl(PipeGenerator* self)
     : self(self)
 {
-    self->setWindowTitle(_("Pipe Builder"));
+    dialog = new PipeConfigDialog();
+}
+
+
+PipeGenerator::~PipeGenerator()
+{
+    delete impl;
+}
+
+
+void PipeGenerator::initialize(ExtensionManager* ext)
+{
+    PipeGenerator* generator = ext->manage(new PipeGenerator);
+
+    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
+    mm.addItem(_("Pipe"))->sigTriggered().connect([=](){ generator->show(); });
+}
+
+
+void PipeGenerator::show()
+{
+    impl->dialog->show();
+}
+
+
+PipeConfigDialog::PipeConfigDialog()
+{
+    setWindowTitle(_("Pipe Builder"));
     QVBoxLayout* vbox = new QVBoxLayout();
     QGridLayout* gbox = new QGridLayout();
 
@@ -141,7 +176,7 @@ PipeBuilderDialogImpl::PipeBuilderDialogImpl(PipeBuilderDialog* self)
 
     formWidget = new FileFormWidget();
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
     PushButton* okButton = new PushButton(_("&Ok"));
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
 
@@ -149,9 +184,9 @@ PipeBuilderDialogImpl::PipeBuilderDialogImpl(PipeBuilderDialog* self)
     vbox->addWidget(new HSeparator());
     vbox->addWidget(formWidget);
     vbox->addWidget(buttonBox);
-    self->setLayout(vbox);
+    setLayout(vbox);
 
-    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
+    connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
     dspins[IN_DIA]->sigValueChanged().connect([&](double value){ onInnerDiameterChanged(value); });
     dspins[OUT_DIA]->sigValueChanged().connect([&](double value){ onOuterDiameterChanged(value); });
@@ -159,13 +194,7 @@ PipeBuilderDialogImpl::PipeBuilderDialogImpl(PipeBuilderDialog* self)
 }
 
 
-PipeBuilderDialog::~PipeBuilderDialog()
-{
-    delete impl;
-}
-
-
-bool PipeBuilderDialogImpl::writeYaml(const string& filename)
+bool PipeConfigDialog::writeYaml(const string& filename)
 {
     filesystem::path path(filename);
 
@@ -274,7 +303,7 @@ bool PipeBuilderDialogImpl::writeYaml(const string& filename)
 }
 
 
-void PipeBuilderDialogImpl::onColorButtonClicked()
+void PipeConfigDialog::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -294,7 +323,7 @@ void PipeBuilderDialogImpl::onColorButtonClicked()
 }
 
 
-void PipeBuilderDialogImpl::onInnerDiameterChanged(const double& diameter)
+void PipeConfigDialog::onInnerDiameterChanged(const double& diameter)
 {
     double outerDiameter = dspins[OUT_DIA]->value();
     if(diameter >= outerDiameter) {
@@ -304,7 +333,7 @@ void PipeBuilderDialogImpl::onInnerDiameterChanged(const double& diameter)
 }
 
 
-void PipeBuilderDialogImpl::onOuterDiameterChanged(const double& diameter)
+void PipeConfigDialog::onOuterDiameterChanged(const double& diameter)
 {
     double innerDiameter = dspins[IN_DIA]->value();
     if(diameter <= innerDiameter) {
@@ -314,7 +343,7 @@ void PipeBuilderDialogImpl::onOuterDiameterChanged(const double& diameter)
 }
 
 
-VectorXd PipeBuilderDialogImpl::calcInertia()
+VectorXd PipeConfigDialog::calcInertia()
 {
     VectorXd innerInertia, outerInertia;
     innerInertia.resize(9);
@@ -351,28 +380,4 @@ VectorXd PipeBuilderDialogImpl::calcInertia()
     VectorXd inertia = outerInertia - innerInertia;
 
     return inertia;
-}
-
-
-void PipeBuilderDialog::onAccepted()
-{
-    impl->onAccepted();
-}
-
-
-void PipeBuilderDialogImpl::onAccepted()
-{
-
-}
-
-
-void PipeBuilderDialog::onRejected()
-{
-    impl->onRejected();
-}
-
-
-void PipeBuilderDialogImpl::onRejected()
-{
-
 }

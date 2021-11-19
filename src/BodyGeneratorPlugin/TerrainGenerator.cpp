@@ -3,11 +3,13 @@
    \author Kenta Suzuki
 */
 
-#include "TerrainBuilderDialog.h"
+#include "TerrainGenerator.h"
 #include <cnoid/Button>
+#include <cnoid/Dialog>
 #include <cnoid/FileDialog>
 #include <cnoid/LineEdit>
 #include <cnoid/MainWindow>
+#include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/stdx/filesystem>
@@ -24,15 +26,14 @@ using namespace std;
 using namespace cnoid;
 namespace filesystem = cnoid::stdx::filesystem;
 
-TerrainBuilderDialog* terrainDialog = nullptr;
+TerrainGenerator* terrainGenerator = nullptr;
 
 namespace cnoid {
 
-class TerrainBuilderDialogImpl
+class TerrainConfigDialog : public Dialog
 {
 public:
-    TerrainBuilderDialogImpl(TerrainBuilderDialog* self);
-    TerrainBuilderDialog* self;
+    TerrainConfigDialog();
 
     DoubleSpinBox* scaleSpin;
     LineEdit* inputFileLine;
@@ -41,24 +42,73 @@ public:
 
     bool save(const string& filename);
     void onLoadButtonClicked();
-    void onAccepted();
-    void onRejected();
+};
+
+
+class TerrainGeneratorImpl
+{
+public:
+    TerrainGeneratorImpl(TerrainGenerator* self);
+    TerrainGenerator* self;
+
+    TerrainConfigDialog* dialog;
 };
 
 }
 
 
-TerrainBuilderDialog::TerrainBuilderDialog()
+TerrainGenerator::TerrainGenerator()
 {
-    impl = new TerrainBuilderDialogImpl(this);
+    impl = new TerrainGeneratorImpl(this);
 
 }
 
 
-TerrainBuilderDialogImpl::TerrainBuilderDialogImpl(TerrainBuilderDialog* self)
+TerrainGeneratorImpl::TerrainGeneratorImpl(TerrainGenerator* self)
     : self(self)
 {
-    self->setWindowTitle(_("BoxTerrain Builder"));
+    dialog = new TerrainConfigDialog();
+}
+
+
+TerrainGenerator::~TerrainGenerator()
+{
+    delete impl;
+}
+
+
+void TerrainGenerator::initialize(ExtensionManager* ext)
+{
+    if(!terrainGenerator) {
+        terrainGenerator = new TerrainGenerator();
+    }
+
+    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
+    mm.addItem(_("BoxTerrain"))->sigTriggered().connect([&](){ terrainGenerator->show(); });
+}
+
+
+TerrainGenerator* TerrainGenerator::instance()
+{
+    return terrainGenerator;
+}
+
+
+void TerrainGenerator::show()
+{
+    impl->dialog->show();
+}
+
+
+double TerrainGenerator::scale() const
+{
+    return impl->dialog->scaleSpin->value();
+}
+
+
+TerrainConfigDialog::TerrainConfigDialog()
+{
+    setWindowTitle(_("BoxTerrain Builder"));
     scaleSpin = new DoubleSpinBox();
     scaleSpin->setDecimals(1);
     scaleSpin->setSingleStep(0.1);
@@ -81,7 +131,7 @@ TerrainBuilderDialogImpl::TerrainBuilderDialogImpl(TerrainBuilderDialog* self)
 
     formWidget = new FileFormWidget();
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
     PushButton* okButton = new PushButton(_("&Ok"));
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
 
@@ -89,36 +139,15 @@ TerrainBuilderDialogImpl::TerrainBuilderDialogImpl(TerrainBuilderDialog* self)
     vbox->addWidget(new HSeparator());
     vbox->addWidget(formWidget);
     vbox->addWidget(buttonBox);
-    self->setLayout(vbox);
+    setLayout(vbox);
 
-    self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
+    connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
     loadButton->sigClicked().connect([&](){ onLoadButtonClicked(); });
     formWidget->sigClicked().connect([&](string filename){ save(filename); });
 }
 
 
-TerrainBuilderDialog::~TerrainBuilderDialog()
-{
-    delete impl;
-}
-
-
-TerrainBuilderDialog* TerrainBuilderDialog::instance()
-{
-    if(!terrainDialog) {
-        terrainDialog = new TerrainBuilderDialog();
-    }
-    return terrainDialog;
-}
-
-
-double TerrainBuilderDialog::scale() const
-{
-    return impl->scaleSpin->value();
-}
-
-
-bool TerrainBuilderDialogImpl::save(const string& filename)
+bool TerrainConfigDialog::save(const string& filename)
 {
     string inputFile = inputFileLine->text().toStdString();
     if(!filename.empty() && !inputFile.empty()) {
@@ -210,7 +239,7 @@ bool TerrainBuilderDialogImpl::save(const string& filename)
 }
 
 
-void TerrainBuilderDialogImpl::onLoadButtonClicked()
+void TerrainConfigDialog::onLoadButtonClicked()
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Open a CSV file"));
@@ -230,28 +259,4 @@ void TerrainBuilderDialogImpl::onLoadButtonClicked()
         string filename = dialog.selectedFiles().front().toStdString();
         inputFileLine->setText(filename);
     }
-}
-
-
-void TerrainBuilderDialog::onAccepted()
-{
-    impl->onAccepted();
-}
-
-
-void TerrainBuilderDialogImpl::onAccepted()
-{
-
-}
-
-
-void TerrainBuilderDialog::onRejected()
-{
-    impl->onRejected();
-}
-
-
-void TerrainBuilderDialogImpl::onRejected()
-{
-
 }

@@ -6,7 +6,7 @@
 #include "CellManager.h"
 #include <fstream>
 #include <sstream>
-#include "TerrainBuilderDialog.h"
+#include "TerrainGenerator.h"
 
 using namespace cnoid;
 using namespace std;
@@ -112,9 +112,9 @@ bool CellManagerImpl::read(const string& filename)
     //set pointa, pointb
     double scale = 0.1;
 
-    TerrainBuilderDialog* widget = TerrainBuilderDialog::instance();
-    if(widget) {
-        scale *= widget->scale();
+    TerrainGenerator* generator = TerrainGenerator::instance();
+    if(generator) {
+        scale *= generator->scale();
     }
     for(int j = 0; j < ysize; j++) {
         for(int i = 0; i < xsize; i++) {
