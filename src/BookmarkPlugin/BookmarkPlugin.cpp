@@ -5,7 +5,7 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "BookmarkBar.h"
+#include "BookmarkManagerDialog.h"
 #include "HistoryManager.h"
 
 using namespace cnoid;
@@ -23,7 +23,7 @@ public:
 
     virtual bool initialize() override
     {
-        BookmarkBar::initializeClass(this);
+        BookmarkManagerDialog::initialize(this);
         HistoryManager::initializeClass(this);
         return true;
     }

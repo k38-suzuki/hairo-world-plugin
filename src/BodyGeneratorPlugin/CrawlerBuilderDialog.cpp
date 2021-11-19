@@ -36,8 +36,6 @@ using namespace std;
 using namespace cnoid;
 namespace filesystem = cnoid::stdx::filesystem;
 
-CrawlerBuilderDialog* crawlerDialog = nullptr;
-
 namespace {
 
 void putKeyVector3(YAMLWriter* writer, const string key, const Vector3 value)
@@ -404,28 +402,13 @@ CrawlerBuilderDialogImpl::CrawlerBuilderDialogImpl(CrawlerBuilderDialog* self)
     toolButtons[IMPORT]->sigClicked().connect([&](){ onImportYamlButtonClicked(); });
     toolButtons[EXPORT]->sigClicked().connect([&](){ onExportYamlButtonClicked(); });
     checks[AGX_CHK]->sigToggled().connect([&](bool on){ onEnableAgxCheckToggled(on); });
-    formWidget->sigClicked().connect([&](string filename){ crawlerDialog->save(filename); });
+    formWidget->sigClicked().connect([&](string filename){ save(filename); });
 }
 
 
 CrawlerBuilderDialog::~CrawlerBuilderDialog()
 {
     delete impl;
-}
-
-
-CrawlerBuilderDialog* CrawlerBuilderDialog::instance()
-{
-    if(!crawlerDialog) {
-        crawlerDialog = new CrawlerBuilderDialog();
-    }
-    return crawlerDialog;
-}
-
-
-bool CrawlerBuilderDialog::save(const string& filename)
-{
-    return impl->save(filename);
 }
 
 

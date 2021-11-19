@@ -18,10 +18,6 @@ public:
     CrawlerBuilderDialog();
     virtual ~CrawlerBuilderDialog();
 
-    static CrawlerBuilderDialog* instance();
-
-    bool save(const std::string& filename);
-
 protected:
     virtual void onAccepted();
     virtual void onRejected();

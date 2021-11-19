@@ -14,26 +14,7 @@
 
 using namespace cnoid;
 
-namespace cnoid {
-
-class BodyGeneratorImpl
-{
-public:
-    BodyGeneratorImpl(BodyGenerator* self);
-    BodyGenerator* self;
-};
-
-}
-
-
 BodyGenerator::BodyGenerator()
-{
-    impl = new BodyGeneratorImpl(this);
-}
-
-
-BodyGeneratorImpl::BodyGeneratorImpl(BodyGenerator* self)
-    : self(self)
 {
 
 }
@@ -41,24 +22,24 @@ BodyGeneratorImpl::BodyGeneratorImpl(BodyGenerator* self)
 
 BodyGenerator::~BodyGenerator()
 {
-    delete impl;
+
 }
 
 
-void BodyGenerator::initializeClass(ExtensionManager* ext)
+void BodyGenerator::initialize(ExtensionManager* ext)
 {
-    MenuManager& menuManager = ext->menuManager();
+    PipeBuilderDialog* pipeBuilder = ext->manage(new PipeBuilderDialog);
+    GratingBuilderDialog* gratingBuilder = ext->manage(new GratingBuilderDialog);
+    SlopeBuilderDialog* slopeBuilder = ext->manage(new SlopeBuilderDialog);
+    TerrainBuilderDialog* terrainBuilder = ext->manage(TerrainBuilderDialog::instance());
+    CrawlerBuilderDialog* crawlerBuilder = ext->manage(new CrawlerBuilderDialog);
 
-    const char* builders[] = { _("Pipe"), _("Grating"), _("Slope"), _("BoxTerrain"), _("CrawlerRobot") };
-    menuManager.setPath("/Tools").setPath(_("BodyGenerator"));
-    menuManager.addItem(builders[0])
-            ->sigTriggered().connect([&](){ PipeBuilderDialog::instance()->show(); });
-    menuManager.addItem(builders[1])
-            ->sigTriggered().connect([&](){ GratingBuilderDialog::instance()->show(); });
-    menuManager.addItem(builders[2])
-            ->sigTriggered().connect([&](){ SlopeBuilderDialog::instance()->show(); });
-    menuManager.addItem(builders[3])
-            ->sigTriggered().connect([&](){ TerrainBuilderDialog::instance()->show(); });
-    menuManager.addItem(builders[4])
-            ->sigTriggered().connect([&](){ CrawlerBuilderDialog::instance()->show(); });
+    const char* labels[] = { _("Pipe"), _("Grating"), _("Slope"), _("BoxTerrain"), _("CrawlerRobot") };
+    MenuManager& mm = ext->menuManager();
+    mm.setPath("/Tools").setPath(_("BodyGenerator"));
+    mm.addItem(labels[0])->sigTriggered().connect([=](){ pipeBuilder->show(); });
+    mm.addItem(labels[1])->sigTriggered().connect([=](){ gratingBuilder->show(); });
+    mm.addItem(labels[2])->sigTriggered().connect([=](){ slopeBuilder->show(); });
+    mm.addItem(labels[3])->sigTriggered().connect([=](){ terrainBuilder->show(); });
+    mm.addItem(labels[4])->sigTriggered().connect([=](){ crawlerBuilder->show(); });
 }

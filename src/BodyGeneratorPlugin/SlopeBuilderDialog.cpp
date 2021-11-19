@@ -24,8 +24,6 @@ using namespace cnoid;
 using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
-SlopeBuilderDialog* slopeDialog = nullptr;
-
 namespace {
 
 struct DoubleSpinInfo
@@ -123,28 +121,13 @@ SlopeBuilderDialogImpl::SlopeBuilderDialogImpl(SlopeBuilderDialog* self)
 
     self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
-    formWidget->sigClicked().connect([&](string filename){ slopeDialog->save(filename); });
+    formWidget->sigClicked().connect([&](string filename){ writeYaml(filename); });
 }
 
 
 SlopeBuilderDialog::~SlopeBuilderDialog()
 {
     delete impl;
-}
-
-
-SlopeBuilderDialog* SlopeBuilderDialog::instance()
-{
-    if(!slopeDialog) {
-        slopeDialog = new SlopeBuilderDialog();
-    }
-    return slopeDialog;
-}
-
-
-bool SlopeBuilderDialog::save(const string& filename)
-{
-    return impl->writeYaml(filename);
 }
 
 

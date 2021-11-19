@@ -24,8 +24,6 @@ using namespace cnoid;
 using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
-PipeBuilderDialog* pipeDialog = nullptr;
-
 namespace {
 
 struct DoubleSpinInfo
@@ -157,28 +155,13 @@ PipeBuilderDialogImpl::PipeBuilderDialogImpl(PipeBuilderDialog* self)
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
     dspins[IN_DIA]->sigValueChanged().connect([&](double value){ onInnerDiameterChanged(value); });
     dspins[OUT_DIA]->sigValueChanged().connect([&](double value){ onOuterDiameterChanged(value); });
-    formWidget->sigClicked().connect([&](string filename){ pipeDialog->save(filename); });
+    formWidget->sigClicked().connect([&](string filename){ writeYaml(filename); });
 }
 
 
 PipeBuilderDialog::~PipeBuilderDialog()
 {
     delete impl;
-}
-
-
-PipeBuilderDialog* PipeBuilderDialog::instance()
-{
-    if(!pipeDialog) {
-        pipeDialog = new PipeBuilderDialog();
-    }
-    return pipeDialog;
-}
-
-
-bool PipeBuilderDialog::save(const string& filename)
-{
-    return impl->writeYaml(filename);
 }
 
 

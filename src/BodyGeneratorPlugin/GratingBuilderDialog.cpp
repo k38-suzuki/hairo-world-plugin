@@ -23,8 +23,6 @@ using namespace cnoid;
 using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
-GratingBuilderDialog* gratingDialog = nullptr;
-
 namespace {
 
 struct DoubleSpinInfo
@@ -183,28 +181,13 @@ GratingBuilderDialogImpl::GratingBuilderDialogImpl(GratingBuilderDialog* self)
     spins[H_GRID]->sigValueChanged().connect([&](double value){ onValueChanged(); });
     spins[V_GRID]->sigValueChanged().connect([&](double value){ onValueChanged(); });
     dspins[HEIGHT]->sigValueChanged().connect([&](double value){ onValueChanged(); });
-    formWidget->sigClicked().connect([&](string filename){ gratingDialog->save(filename); });
+    formWidget->sigClicked().connect([&](string filename){ writeYaml(filename); });
 }
 
 
 GratingBuilderDialog::~GratingBuilderDialog()
 {
     delete impl;
-}
-
-
-GratingBuilderDialog* GratingBuilderDialog::instance()
-{
-    if(!gratingDialog) {
-        gratingDialog = new GratingBuilderDialog();
-    }
-    return gratingDialog;
-}
-
-
-bool GratingBuilderDialog::save(const string& filename)
-{
-    return impl->writeYaml(filename);
 }
 
 

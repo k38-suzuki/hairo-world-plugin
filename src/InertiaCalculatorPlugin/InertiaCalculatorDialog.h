@@ -19,7 +19,7 @@ public:
     InertiaCalculatorDialog();
     virtual ~InertiaCalculatorDialog();
 
-    static void initializeClass(ExtensionManager* ext);
+    static void initialize(ExtensionManager* ext);
 
 protected:
     virtual void onAccepted() override;

@@ -92,7 +92,7 @@ SimulationManager::~SimulationManager()
 void SimulationManager::initialize(ExtensionManager* ext)
 {
     if(!simulationManager) {
-        simulationManager = ext->manage(new SimulationManager());
+        simulationManager = ext->manage(new SimulationManager);
     }
 
     MenuManager& mm = ext->menuManager().setPath("/Options").setPath(N_("Joystick"));

@@ -11,6 +11,7 @@
 #include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include <cnoid/RootItem>
+#include <cnoid/ToolBar>
 #include <cnoid/TreeWidget>
 #include <QDialogButtonBox>
 #include <QGridLayout>
@@ -137,6 +138,17 @@ BookmarkManagerDialogImpl::~BookmarkManagerDialogImpl()
             config->write(key, filename);
         }
     }
+}
+
+
+void BookmarkManagerDialog::initialize(ExtensionManager* ext)
+{
+    BookmarkManagerDialog* manager = ext->manage(new BookmarkManagerDialog);
+
+    ToolBar* bar = new ToolBar(N_("BookmarkBar"));
+    ext->addToolBar(bar);
+    ToolButton* button = bar->addButton(QIcon(":/Bookmark/icon/bookmark.svg"), _("Show the bookmark manager"));
+    button->sigClicked().connect([=](){ manager->show(); });
 }
 
 

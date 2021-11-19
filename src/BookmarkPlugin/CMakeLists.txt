@@ -1,6 +1,5 @@
 
 set(sources
-    BookmarkBar.cpp
     BookmarkManagerDialog.cpp
     BookmarkManagerView.cpp
     BookmarkPlugin.cpp
@@ -8,7 +7,6 @@ set(sources
     )
 
 set(headers
-    BookmarkBar.h
     BookmarkManagerDialog.h
     BookmarkManagerView.h
     HistoryManager.h

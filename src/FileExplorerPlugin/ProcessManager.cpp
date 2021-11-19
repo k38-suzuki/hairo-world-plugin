@@ -71,10 +71,10 @@ ProcessManagerImpl::~ProcessManagerImpl()
 }
 
 
-void ProcessManager::initializeClass(ExtensionManager* ext)
+void ProcessManager::initialize(ExtensionManager* ext)
 {
     if(!manager) {
-        manager = ext->manage(new ProcessManager());
+        manager = ext->manage(new ProcessManager);
     }
 
     ItemTreeView::instance()->customizeContextMenu<BodyItem>(

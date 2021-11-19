@@ -10,19 +10,13 @@
 
 namespace cnoid {
 
-class BodyGeneratorImpl;
-
 class BodyGenerator
 {
 public:
     BodyGenerator();
     virtual ~BodyGenerator();
 
-    static void initializeClass(ExtensionManager* ext);
-
-private:
-    BodyGeneratorImpl* impl;
-    friend class BodyGeneratorImpl;
+    static void initialize(ExtensionManager* ext);
 };
 
 }

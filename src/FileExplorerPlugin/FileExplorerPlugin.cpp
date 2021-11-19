@@ -22,7 +22,7 @@ public:
 
     virtual bool initialize() override
     {
-        ProcessManager::initializeClass(this);
+        ProcessManager::initialize(this);
         return true;
     }
 

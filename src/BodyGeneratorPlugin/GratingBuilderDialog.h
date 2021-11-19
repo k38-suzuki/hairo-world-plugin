@@ -18,10 +18,6 @@ public:
     GratingBuilderDialog();
     virtual ~GratingBuilderDialog();
 
-    static GratingBuilderDialog* instance();
-
-    bool save(const std::string& filename);
-
 protected:
     virtual void onAccepted();
     virtual void onRejected();

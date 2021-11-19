@@ -18,10 +18,6 @@ public:
     SlopeBuilderDialog();
     virtual ~SlopeBuilderDialog();
 
-    static SlopeBuilderDialog* instance();
-
-    bool save(const std::string& filename);
-
 protected:
     virtual void onAccepted();
     virtual void onRejected();

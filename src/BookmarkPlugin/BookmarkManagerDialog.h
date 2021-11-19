@@ -7,6 +7,7 @@
 #define CNOID_BOOKMARKPLUGIN_BOOKMARKMANAGERDIALOG_H
 
 #include <cnoid/Dialog>
+#include <cnoid/ExtensionManager>
 
 namespace cnoid {
 
@@ -17,6 +18,8 @@ class BookmarkManagerDialog : public Dialog
 public:
     BookmarkManagerDialog();
     virtual ~BookmarkManagerDialog();
+
+    static void initialize(ExtensionManager* ext);
 
 protected:
     virtual void onAccepted() override;

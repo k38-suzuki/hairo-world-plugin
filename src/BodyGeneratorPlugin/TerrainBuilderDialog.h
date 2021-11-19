@@ -19,9 +19,7 @@ public:
     virtual ~TerrainBuilderDialog();
 
     static TerrainBuilderDialog* instance();
-
     double scale() const;
-    bool save(const std::string& filename);
 
 protected:
     virtual void onAccepted();

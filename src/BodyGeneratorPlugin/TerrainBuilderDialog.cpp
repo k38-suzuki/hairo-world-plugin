@@ -93,7 +93,7 @@ TerrainBuilderDialogImpl::TerrainBuilderDialogImpl(TerrainBuilderDialog* self)
 
     self->connect(buttonBox,SIGNAL(accepted()), self, SLOT(accept()));
     loadButton->sigClicked().connect([&](){ onLoadButtonClicked(); });
-    formWidget->sigClicked().connect([&](string filename){ terrainDialog->save(filename); });
+    formWidget->sigClicked().connect([&](string filename){ save(filename); });
 }
 
 
@@ -115,12 +115,6 @@ TerrainBuilderDialog* TerrainBuilderDialog::instance()
 double TerrainBuilderDialog::scale() const
 {
     return impl->scaleSpin->value();
-}
-
-
-bool TerrainBuilderDialog::save(const string& filename)
-{
-    return impl->save(filename);
 }
 
 

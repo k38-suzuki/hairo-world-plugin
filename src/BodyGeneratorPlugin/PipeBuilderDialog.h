@@ -18,10 +18,6 @@ public:
     PipeBuilderDialog();
     virtual ~PipeBuilderDialog();
 
-    static PipeBuilderDialog* instance();
-
-    bool save(const std::string& filename);
-
 protected:
     virtual void onAccepted();
     virtual void onRejected();

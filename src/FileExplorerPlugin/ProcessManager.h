@@ -19,7 +19,7 @@ public:
     ProcessManager();
     virtual ~ProcessManager();
 
-    static void initializeClass(ExtensionManager* ext);
+    static void initialize(ExtensionManager* ext);
 
     enum ProgramId { NAUTILUS, GEDIT, NUM_PROGRAMS };
 

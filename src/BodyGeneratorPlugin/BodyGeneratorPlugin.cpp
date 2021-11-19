@@ -22,7 +22,7 @@ public:
 
     virtual bool initialize()
     {
-        BodyGenerator::initializeClass(this);
+        BodyGenerator::initialize(this);
         return true;
     }
 

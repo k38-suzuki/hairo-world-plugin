@@ -21,8 +21,6 @@
 
 using namespace cnoid;
 
-InertiaCalculatorDialog* dialog = nullptr;
-
 namespace {
 
 struct DialogButtonInfo {
@@ -212,16 +210,12 @@ InertiaCalculatorDialog::~InertiaCalculatorDialog()
 }
 
 
-void InertiaCalculatorDialog::initializeClass(ExtensionManager* ext)
+void InertiaCalculatorDialog::initialize(ExtensionManager* ext)
 {
-    if(!dialog) {
-        dialog = ext->manage(new InertiaCalculatorDialog());
-    }
+    InertiaCalculatorDialog* calculator = ext->manage(new InertiaCalculatorDialog);
 
-    MenuManager& menuManager = ext->menuManager();
-    menuManager.setPath("/Tools");
-    menuManager.addItem(_("InertiaCalculator"))
-            ->sigTriggered().connect([](){ dialog->show(); });
+    MenuManager& mm = ext->menuManager().setPath("/Tools");
+    mm.addItem(_("InertiaCalculator"))->sigTriggered().connect([=](){ calculator->show(); });
 }
 
 
