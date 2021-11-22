@@ -265,12 +265,6 @@ void VEImageVisualizerItem::setBodyItem(BodyItem* bodyItem, Camera* camera)
 }
 
 
-void VEImageVisualizerItem::show()
-{
-    effector->show();
-}
-
-
 void VEImageVisualizerItem::enableVisualization(bool on)
 {
     connections.disconnect();

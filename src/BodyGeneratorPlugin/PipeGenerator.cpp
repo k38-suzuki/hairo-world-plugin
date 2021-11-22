@@ -93,7 +93,7 @@ public:
 class PipeGeneratorImpl
 {
 public:
-    PipeGeneratorImpl(PipeGenerator* self);
+    PipeGeneratorImpl(PipeGenerator* self, ExtensionManager* ext);
     PipeGenerator* self;
 
     PipeConfigDialog* dialog;
@@ -102,16 +102,20 @@ public:
 }
 
 
-PipeGenerator::PipeGenerator()
+PipeGenerator::PipeGenerator(ExtensionManager* ext)
 {
-    impl = new PipeGeneratorImpl(this);
+    impl = new PipeGeneratorImpl(this, ext);
 }
 
 
-PipeGeneratorImpl::PipeGeneratorImpl(PipeGenerator* self)
+PipeGeneratorImpl::PipeGeneratorImpl(PipeGenerator* self, ExtensionManager* ext)
     : self(self)
 {
     dialog = new PipeConfigDialog();
+
+
+    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
+    mm.addItem(_("Pipe"))->sigTriggered().connect([&](){ dialog->show(); });
 }
 
 
@@ -123,16 +127,7 @@ PipeGenerator::~PipeGenerator()
 
 void PipeGenerator::initialize(ExtensionManager* ext)
 {
-    PipeGenerator* generator = ext->manage(new PipeGenerator);
-
-    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
-    mm.addItem(_("Pipe"))->sigTriggered().connect([=](){ generator->show(); });
-}
-
-
-void PipeGenerator::show()
-{
-    impl->dialog->show();
+    ext->manage(new PipeGenerator(ext));
 }
 
 

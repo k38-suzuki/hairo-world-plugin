@@ -75,7 +75,7 @@ public:
 class SlopeGeneratorImpl
 {
 public:
-    SlopeGeneratorImpl(SlopeGenerator* self);
+    SlopeGeneratorImpl(SlopeGenerator* self, ExtensionManager* ext);
     SlopeGenerator* self;
 
     SlopeConfigDialog* dialog;
@@ -84,16 +84,19 @@ public:
 }
 
 
-SlopeGenerator::SlopeGenerator()
+SlopeGenerator::SlopeGenerator(ExtensionManager* ext)
 {
-    impl = new SlopeGeneratorImpl(this);
+    impl = new SlopeGeneratorImpl(this, ext);
 }
 
 
-SlopeGeneratorImpl::SlopeGeneratorImpl(SlopeGenerator* self)
+SlopeGeneratorImpl::SlopeGeneratorImpl(SlopeGenerator* self, ExtensionManager* ext)
     : self(self)
 {
     dialog = new SlopeConfigDialog();
+
+    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
+    mm.addItem(_("Slope"))->sigTriggered().connect([&](){ dialog->show(); });
 }
 
 
@@ -105,16 +108,7 @@ SlopeGenerator::~SlopeGenerator()
 
 void SlopeGenerator::initialize(ExtensionManager* ext)
 {
-    SlopeGenerator* generator = ext->manage(new SlopeGenerator);
-
-    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
-    mm.addItem(_("Slope"))->sigTriggered().connect([=](){ generator->show(); });
-}
-
-
-void SlopeGenerator::show()
-{
-    impl->dialog->show();
+    ext->manage(new SlopeGenerator(ext));
 }
 
 

@@ -15,12 +15,10 @@ class InertiaCalculatorImpl;
 class InertiaCalculator
 {
 public:
-    InertiaCalculator();
+    InertiaCalculator(ExtensionManager* ext);
     virtual ~InertiaCalculator();
 
     static void initialize(ExtensionManager* ext);
-
-    void show();
 
 private:
     InertiaCalculatorImpl* impl;

@@ -67,7 +67,7 @@ public:
 class InertiaCalculatorImpl
 {
 public:
-    InertiaCalculatorImpl(InertiaCalculator* self);
+    InertiaCalculatorImpl(InertiaCalculator* self, ExtensionManager* ext);
     InertiaCalculator* self;
 
     ConfigDialog* dialog;
@@ -76,16 +76,19 @@ public:
 }
 
 
-InertiaCalculator::InertiaCalculator()
+InertiaCalculator::InertiaCalculator(ExtensionManager* ext)
 {
-    impl = new InertiaCalculatorImpl(this);
+    impl = new InertiaCalculatorImpl(this, ext);
 }
 
 
-InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self)
+InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self, ExtensionManager* ext)
     : self(self)
 {
     dialog = new ConfigDialog();
+
+    MenuManager& mm = ext->menuManager().setPath("/Tools");
+    mm.addItem(_("InertiaCalculator"))->sigTriggered().connect([&](){ dialog->show(); });
 }
 
 
@@ -97,16 +100,7 @@ InertiaCalculator::~InertiaCalculator()
 
 void InertiaCalculator::initialize(ExtensionManager* ext)
 {
-    InertiaCalculator* calculator = ext->manage(new InertiaCalculator);
-
-    MenuManager& mm = ext->menuManager().setPath("/Tools");
-    mm.addItem(_("InertiaCalculator"))->sigTriggered().connect([=](){ calculator->show(); });
-}
-
-
-void InertiaCalculator::show()
-{
-    impl->dialog->show();
+    ext->manage(new InertiaCalculator(ext));
 }
 
 

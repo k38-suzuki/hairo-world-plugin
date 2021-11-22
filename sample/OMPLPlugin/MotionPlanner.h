@@ -15,12 +15,10 @@ class MotionPlannerImpl;
 class MotionPlanner
 {
 public:
-    MotionPlanner();
+    MotionPlanner(ExtensionManager* ext);
     virtual ~MotionPlanner();
 
     static void initialize(ExtensionManager* ext);
-
-    void show();
 
 private:
     MotionPlannerImpl* impl;

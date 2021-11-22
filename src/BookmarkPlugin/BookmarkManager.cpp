@@ -66,7 +66,7 @@ public:
 class BookmarkManagerImpl
 {
 public:
-    BookmarkManagerImpl(BookmarkManager* self);
+    BookmarkManagerImpl(BookmarkManager* self, ExtensionManager* ext);
     BookmarkManager* self;
 
     ConfigDialog* dialog;
@@ -75,16 +75,21 @@ public:
 }
 
 
-BookmarkManager::BookmarkManager()
+BookmarkManager::BookmarkManager(ExtensionManager* ext)
 {
-    impl = new BookmarkManagerImpl(this);
+    impl = new BookmarkManagerImpl(this, ext);
 }
 
 
-BookmarkManagerImpl::BookmarkManagerImpl(BookmarkManager* self)
+BookmarkManagerImpl::BookmarkManagerImpl(BookmarkManager* self, ExtensionManager* ext)
     : self(self)
 {
     dialog = new ConfigDialog();
+
+    ToolBar* bar = new ToolBar(N_("BookmarkBar"));
+    ext->addToolBar(bar);
+    ToolButton* button = bar->addButton(QIcon(":/Bookmark/icon/bookmark.svg"), _("Show the bookmark manager"));
+    button->sigClicked().connect([&](){ dialog->show(); });
 }
 
 
@@ -96,18 +101,7 @@ BookmarkManager::~BookmarkManager()
 
 void BookmarkManager::initialize(ExtensionManager* ext)
 {
-    BookmarkManager* bookmark = ext->manage(new BookmarkManager);
-
-    ToolBar* bar = new ToolBar(N_("BookmarkBar"));
-    ext->addToolBar(bar);
-    ToolButton* button = bar->addButton(QIcon(":/Bookmark/icon/bookmark.svg"), _("Show the bookmark manager"));
-    button->sigClicked().connect([=](){ bookmark->show(); });
-}
-
-
-void BookmarkManager::show()
-{
-    impl->dialog->show();
+    ext->manage(new BookmarkManager(ext));
 }
 
 

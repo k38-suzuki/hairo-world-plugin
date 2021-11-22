@@ -15,12 +15,10 @@ class BookmarkManagerImpl;
 class BookmarkManager
 {
 public:
-    BookmarkManager();
+    BookmarkManager(ExtensionManager* ext);
     virtual ~BookmarkManager();
 
     static void initialize(ExtensionManager* ext);
-
-    void show();
 
 private:
     BookmarkManagerImpl* impl;

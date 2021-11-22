@@ -15,12 +15,10 @@ class SlopeGeneratorImpl;
 class SlopeGenerator
 {
 public:
-    SlopeGenerator();
+    SlopeGenerator(ExtensionManager* ext);
     virtual ~SlopeGenerator();
 
     static void initialize(ExtensionManager* ext);
-
-    void show();
 
 private:
     SlopeGeneratorImpl* impl;

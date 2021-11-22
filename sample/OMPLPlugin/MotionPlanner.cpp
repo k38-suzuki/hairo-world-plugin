@@ -125,7 +125,7 @@ public:
 class MotionPlannerImpl
 {
 public:
-    MotionPlannerImpl(MotionPlanner* self);
+    MotionPlannerImpl(MotionPlanner* self, ExtensionManager* ext);
     MotionPlanner* self;
 
     ConfigDialog* dialog;
@@ -134,16 +134,19 @@ public:
 }
 
 
-MotionPlanner::MotionPlanner()
+MotionPlanner::MotionPlanner(ExtensionManager* ext)
 {
-    impl = new MotionPlannerImpl(this);
+    impl = new MotionPlannerImpl(this, ext);
 }
 
 
-MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self)
+MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self, ExtensionManager* ext)
     : self(self)
 {
     dialog = new ConfigDialog();
+
+    MenuManager& mm = ext->menuManager().setPath("/Tools");
+    mm.addItem(_("Motion Planner"))->sigTriggered().connect([&](){ dialog->show(); });
 }
 
 
@@ -158,16 +161,7 @@ void MotionPlanner::initialize(ExtensionManager* ext)
     string version = OMPL_VERSION;
     MessageView::instance()->putln(fmt::format("OMPL version: {0}", version));
 
-    MotionPlanner* planner = ext->manage(new MotionPlanner);
-
-    MenuManager& mm = ext->menuManager().setPath("/Tools");
-    mm.addItem(_("Motion Planner"))->sigTriggered().connect([=](){ planner->show(); });
-}
-
-
-void MotionPlanner::show()
-{
-    impl->dialog->show();
+    ext->manage(new MotionPlanner(ext));
 }
 
 

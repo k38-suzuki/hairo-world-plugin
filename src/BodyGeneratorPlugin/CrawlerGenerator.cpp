@@ -265,7 +265,7 @@ public:
 class CrawlerGeneratorImpl
 {
 public:
-    CrawlerGeneratorImpl(CrawlerGenerator* self);
+    CrawlerGeneratorImpl(CrawlerGenerator* self, ExtensionManager* ext);
     CrawlerGenerator* self;
 
     CrawlerConfigDialog* dialog;
@@ -274,16 +274,19 @@ public:
 }
 
 
-CrawlerGenerator::CrawlerGenerator()
+CrawlerGenerator::CrawlerGenerator(ExtensionManager* ext)
 {
-    impl = new CrawlerGeneratorImpl(this);
+    impl = new CrawlerGeneratorImpl(this, ext);
 }
 
 
-CrawlerGeneratorImpl::CrawlerGeneratorImpl(CrawlerGenerator* self)
+CrawlerGeneratorImpl::CrawlerGeneratorImpl(CrawlerGenerator* self, ExtensionManager* ext)
     : self(self)
 {
     dialog = new CrawlerConfigDialog();
+
+    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
+    mm.addItem(_("CrawlerRobot"))->sigTriggered().connect([&](){ dialog->show(); });
 }
 
 
@@ -295,16 +298,7 @@ CrawlerGenerator::~CrawlerGenerator()
 
 void CrawlerGenerator::initialize(ExtensionManager* ext)
 {
-    CrawlerGenerator* generator = ext->manage(new CrawlerGenerator);
-
-    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
-    mm.addItem(_("CrawlerRobot"))->sigTriggered().connect([=](){ generator->show(); });
-}
-
-
-void CrawlerGenerator::show()
-{
-    impl->dialog->show();
+    ext->manage(new CrawlerGenerator(ext));
 }
 
 

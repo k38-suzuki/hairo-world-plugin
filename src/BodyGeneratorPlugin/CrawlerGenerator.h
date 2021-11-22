@@ -15,12 +15,10 @@ class CrawlerGeneratorImpl;
 class CrawlerGenerator
 {
 public:
-    CrawlerGenerator();
+    CrawlerGenerator(ExtensionManager* ext);
     virtual ~CrawlerGenerator();
 
     static void initialize(ExtensionManager* ext);
-
-    void show();
 
 private:
     CrawlerGeneratorImpl* impl;

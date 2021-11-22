@@ -98,7 +98,7 @@ public:
 class GratingGeneratorImpl
 {
 public:
-    GratingGeneratorImpl(GratingGenerator* self);
+    GratingGeneratorImpl(GratingGenerator* self, ExtensionManager* ext);
     GratingGenerator* self;
 
     GratingConfigDialog* dialog;
@@ -107,16 +107,19 @@ public:
 }
 
 
-GratingGenerator::GratingGenerator()
+GratingGenerator::GratingGenerator(ExtensionManager* ext)
 {
-    impl = new GratingGeneratorImpl(this);
+    impl = new GratingGeneratorImpl(this, ext);
 }
 
 
-GratingGeneratorImpl::GratingGeneratorImpl(GratingGenerator* self)
+GratingGeneratorImpl::GratingGeneratorImpl(GratingGenerator* self, ExtensionManager* ext)
     : self(self)
 {
     dialog = new GratingConfigDialog();
+
+    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
+    mm.addItem(_("Grating"))->sigTriggered().connect([&](){ dialog->show(); });
 }
 
 
@@ -128,16 +131,7 @@ GratingGenerator::~GratingGenerator()
 
 void GratingGenerator::initialize(ExtensionManager* ext)
 {
-    GratingGenerator* generator = ext->manage(new GratingGenerator);
-
-    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
-    mm.addItem(_("Grating"))->sigTriggered().connect([=](){ generator->show(); });
-}
-
-
-void GratingGenerator::show()
-{
-    impl->dialog->show();
+    ext->manage(new GratingGenerator(ext));
 }
 
 

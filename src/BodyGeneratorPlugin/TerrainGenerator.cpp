@@ -81,7 +81,7 @@ public:
 class TerrainGeneratorImpl
 {
 public:
-    TerrainGeneratorImpl(TerrainGenerator* self);
+    TerrainGeneratorImpl(TerrainGenerator* self, ExtensionManager* ext);
     TerrainGenerator* self;
 
     TerrainConfigDialog* dialog;
@@ -90,17 +90,20 @@ public:
 }
 
 
-TerrainGenerator::TerrainGenerator()
+TerrainGenerator::TerrainGenerator(ExtensionManager* ext)
 {
-    impl = new TerrainGeneratorImpl(this);
+    impl = new TerrainGeneratorImpl(this, ext);
 
 }
 
 
-TerrainGeneratorImpl::TerrainGeneratorImpl(TerrainGenerator* self)
+TerrainGeneratorImpl::TerrainGeneratorImpl(TerrainGenerator* self, ExtensionManager* ext)
     : self(self)
 {
     dialog = new TerrainConfigDialog();
+
+    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
+    mm.addItem(_("BoxTerrain"))->sigTriggered().connect([&](){ dialog->show(); });
 }
 
 
@@ -112,16 +115,7 @@ TerrainGenerator::~TerrainGenerator()
 
 void TerrainGenerator::initialize(ExtensionManager* ext)
 {
-    TerrainGenerator* generator = ext->manage(new TerrainGenerator);
-
-    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
-    mm.addItem(_("BoxTerrain"))->sigTriggered().connect([=](){ generator->show(); });
-}
-
-
-void TerrainGenerator::show()
-{
-    impl->dialog->show();
+    ext->manage(new TerrainGenerator(ext));
 }
 
 

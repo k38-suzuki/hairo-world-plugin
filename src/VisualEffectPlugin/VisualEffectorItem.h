@@ -41,7 +41,6 @@ public:
     virtual const Image* getImage() override;
     virtual SignalProxy<void()> sigImageUpdated() override;
     void setBodyItem(BodyItem* bodyItem, Camera* camera);
-    void show();
     virtual void enableVisualization(bool on) override;
     virtual void doUpdateVisualization() override;
 
