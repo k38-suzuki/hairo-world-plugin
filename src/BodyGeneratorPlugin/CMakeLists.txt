@@ -1,6 +1,5 @@
 
 set(sources
-    CellManager.cpp
     CrawlerGenerator.cpp
     FileFormWidget.cpp
     GratingGenerator.cpp
@@ -11,7 +10,6 @@ set(sources
     )
 
 set(headers
-    CellManager.h
     CrawlerGenerator.h
     FileFormWidget.h
     GratingGenerator.h

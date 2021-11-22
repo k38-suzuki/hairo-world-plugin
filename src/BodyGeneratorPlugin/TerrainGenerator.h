@@ -19,10 +19,8 @@ public:
     virtual ~TerrainGenerator();
 
     static void initialize(ExtensionManager* ext);
-    static TerrainGenerator* instance();
 
     void show();
-    double scale() const;
 
 private:
     TerrainGeneratorImpl* impl;
