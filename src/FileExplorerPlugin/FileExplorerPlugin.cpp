@@ -5,7 +5,7 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "ProcessManager.h"
+#include "FileExplorer.h"
 
 using namespace cnoid;
 
@@ -22,7 +22,7 @@ public:
 
     virtual bool initialize() override
     {
-        ProcessManager::initialize(this);
+        FileExplorer::initialize(this);
         return true;
     }
 
