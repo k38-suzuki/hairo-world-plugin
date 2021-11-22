@@ -2,7 +2,6 @@
 set(sources
     ImageGenerator.cpp
     VEAreaItem.cpp
-    VisualEffector.cpp
     VisualEffectorItem.cpp
     VisualEffectPlugin.cpp
     )
@@ -10,7 +9,6 @@ set(sources
 set(headers
     ImageGenerator.h
     VEAreaItem.h
-    VisualEffector.h
     VisualEffectorItem.h
     exportdecl.h
     gettext.h
