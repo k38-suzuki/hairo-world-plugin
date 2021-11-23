@@ -48,7 +48,6 @@ class ConfigDialog : public Dialog
 {
 public:
     ConfigDialog();
-    virtual ~ConfigDialog();
 
     enum ButtonID { ADD, REMOVE, OPEN, CANCEL, OK, NUM_BUTTONS };
 
@@ -60,6 +59,8 @@ public:
     void onAddButtonClicked();
     void onOpenButtonClicked();
     bool openDialogToLoadProject(const string& filename);
+    bool store(Mapping& archive);
+    void restore(const Mapping& archive);
 };
 
 
@@ -67,9 +68,13 @@ class BookmarkManagerImpl
 {
 public:
     BookmarkManagerImpl(BookmarkManager* self, ExtensionManager* ext);
+    virtual ~BookmarkManagerImpl();
     BookmarkManager* self;
 
     ConfigDialog* dialog;
+
+    bool store(Mapping& archive);
+    void restore(const Mapping& archive);
 };
 
 }
@@ -90,6 +95,11 @@ BookmarkManagerImpl::BookmarkManagerImpl(BookmarkManager* self, ExtensionManager
     ext->addToolBar(bar);
     ToolButton* button = bar->addButton(QIcon(":/Bookmark/icon/bookmark.svg"), _("Show the bookmark manager"));
     button->sigClicked().connect([&](){ dialog->show(); });
+
+    Mapping& config = *AppConfig::archive()->openMapping("BookMark");
+    if(config.isValid()) {
+        restore(config);
+    }
 }
 
 
@@ -99,9 +109,28 @@ BookmarkManager::~BookmarkManager()
 }
 
 
+BookmarkManagerImpl::~BookmarkManagerImpl()
+{
+    store(*AppConfig::archive()->openMapping("BookMark"));
+    delete dialog;
+}
+
+
 void BookmarkManager::initialize(ExtensionManager* ext)
 {
     ext->manage(new BookmarkManager(ext));
+}
+
+
+bool BookmarkManagerImpl::store(Mapping& archive)
+{
+    return dialog->store(archive);
+}
+
+
+void BookmarkManagerImpl::restore(const Mapping& archive)
+{
+    dialog->restore(archive);
 }
 
 
@@ -114,17 +143,7 @@ ConfigDialog::ConfigDialog()
     QStringList labels = { _("Project file") };
     treeWidget->setHeaderLabels(labels);
 
-    Mapping* config = AppConfig::archive()->openMapping("bookmark");
-    int size = config->get("num_bookmark", 0);
-    for(int i = 0; i < size; ++i) {
-        string key = "bookmark_" + to_string(i);
-        string filename = config->get(key, "");
-        if(!filename.empty()) {
-            addItem(filename);
-        }
-    }
-
-    const char* blabels[] = { _("+"), _("-"), _("&Open"), _("&Cancel"), _("&Ok") };
+    static const char* blabels[] = { _("+"), _("-"), _("&Open"), _("&Cancel"), _("&Ok") };
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
     for(int i = 0; i < NUM_BUTTONS; ++i) {
@@ -147,22 +166,6 @@ ConfigDialog::ConfigDialog()
     vbox->addWidget(treeWidget);
     vbox->addWidget(buttonBox);
     setLayout(vbox);
-}
-
-
-ConfigDialog::~ConfigDialog()
-{
-    int size = treeWidget->topLevelItemCount();
-    Mapping* config = AppConfig::archive()->openMapping("bookmark");
-    config->write("num_bookmark", size);
-    for(int i = 0; i < size; ++i) {
-        QTreeWidgetItem* item = treeWidget->topLevelItem(i);
-        if(item) {
-            string filename = item->text(0).toStdString();
-            string key = "bookmark_" + to_string(i);
-            config->write(key, filename);
-        }
-    }
 }
 
 
@@ -269,4 +272,33 @@ bool ConfigDialog::openDialogToLoadProject(const string& filename)
         pm->loadProject(filename);
     }
     return result;
+}
+
+
+bool ConfigDialog::store(Mapping& archive)
+{
+    int size = treeWidget->topLevelItemCount();
+    archive.write("num_bookmark", size);
+    for(int i = 0; i < size; ++i) {
+        QTreeWidgetItem* item = treeWidget->topLevelItem(i);
+        if(item) {
+            string filename = item->text(0).toStdString();
+            string key = "bookmark_" + to_string(i);
+            archive.write(key, filename);
+        }
+    }
+    return true;
+}
+
+
+void ConfigDialog::restore(const Mapping& archive)
+{
+    int size = archive.get("num_bookmark", 0);
+    for(int i = 0; i < size; ++i) {
+        string key = "bookmark_" + to_string(i);
+        string filename = archive.get(key, "");
+        if(!filename.empty()) {
+            addItem(filename);
+        }
+    }
 }
