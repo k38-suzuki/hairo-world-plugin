@@ -16,16 +16,10 @@ class SimulationManagerImpl;
 class CNOID_EXPORT SimulationManager
 {
 public:
-    SimulationManager();
+    SimulationManager(ExtensionManager* ext);
     virtual ~SimulationManager();
 
     static void initialize(ExtensionManager* ext);
-    static SimulationManager* instance();
-
-    void start();
-    void restart();
-    void stop();
-    void pause();
 
 private:
     SimulationManagerImpl* impl;

@@ -30,21 +30,13 @@ using namespace cnoid;
 namespace filesystem = stdx::filesystem;
 using fmt::format;
 
-namespace {
-
-SimulationManager* simulationManager = nullptr;
-Action* useStartButton;
-Action* useLogoButton;
-
-}
-
-
 namespace cnoid {
 
 class SimulationManagerImpl
 {
 public:
-  SimulationManagerImpl(SimulationManager* self);
+  SimulationManagerImpl(SimulationManager* self, ExtensionManager* ext);
+  virtual ~SimulationManagerImpl();
   SimulationManager* self;
 
   bool startState;
@@ -52,6 +44,8 @@ public:
   string currentProjectName;
   string currentProjectFile;
   JoystickCapture joystick;
+  Action* useStartButton;
+  Action* useLogoButton;
 
   void startSimulation(bool doReset = true);
   void startSimulation(SimulatorItem* simulatorItem, bool doReset);
@@ -62,24 +56,35 @@ public:
   void forEachSimulator(std::function<void(SimulatorItem* simulatorItem)> callback, bool doSelect = false);
   void openDialogToLoadProject();
   void onButton(const int& id, const bool& isPressed);
+  bool store(Mapping& archive);
+  void restore(const Mapping& archive);
 };
 
 }
 
 
-SimulationManager::SimulationManager()
+SimulationManager::SimulationManager(ExtensionManager* ext)
 {
-    impl = new SimulationManagerImpl(this);
+    impl = new SimulationManagerImpl(this, ext);
 }
 
 
-SimulationManagerImpl::SimulationManagerImpl(SimulationManager* self)
+SimulationManagerImpl::SimulationManagerImpl(SimulationManager* self, ExtensionManager* ext)
     : self(self)
 {
+    MenuManager& mm = ext->menuManager().setPath("/Options").setPath(N_("Joystick"));
+    useStartButton = mm.addCheckItem(_("Start simulation (StartButton)"));
+    useLogoButton = mm.addCheckItem(_("Open a project (LogoButton)"));
+
     startState = false;
     pauseState = false;
     joystick.setDevice("/dev/input/js0");
     joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
+
+    Mapping& config = *AppConfig::archive()->openMapping("simulation_manager");
+    if(config.isValid()) {
+        restore(config);
+    }
 }
 
 
@@ -89,52 +94,15 @@ SimulationManager::~SimulationManager()
 }
 
 
+SimulationManagerImpl::~SimulationManagerImpl()
+{
+    store(*AppConfig::archive()->openMapping("simulation_manager"));
+}
+
+
 void SimulationManager::initialize(ExtensionManager* ext)
 {
-    if(!simulationManager) {
-        simulationManager = ext->manage(new SimulationManager);
-    }
-
-    MenuManager& mm = ext->menuManager().setPath("/Options").setPath(N_("Joystick"));
-    Mapping* config = AppConfig::archive()->openMapping("simulation_manager");
-    useStartButton = mm.addCheckItem(_("Start simulation (StartButton)"));
-    useLogoButton = mm.addCheckItem(_("Open a project (LogoButton)"));
-    useStartButton->setChecked(config->get("use_start_button", false));
-    useLogoButton->setChecked(config->get("use_logo_button", false));
-
-    useStartButton->sigToggled().connect([=](bool on){ config->write("use_start_button", on); });
-    useLogoButton->sigToggled().connect([=](bool on){ config->write("use_logo_button", on); });
-}
-
-
-SimulationManager* SimulationManager::instance()
-{
-    return simulationManager;
-}
-
-
-void SimulationManager::start()
-{
-    impl->startSimulation(true);
-
-}
-
-
-void SimulationManager::restart()
-{
-    impl->startSimulation(false);
-}
-
-
-void SimulationManager::stop()
-{
-    impl->stopSimulation();
-}
-
-
-void SimulationManager::pause()
-{
-    impl->pauseSimulation();
+    ext->manage(new SimulationManager(ext));
 }
 
 
@@ -342,4 +310,19 @@ void SimulationManagerImpl::onButton(const int& id, const bool& isPressed)
             }
         }
     }
+}
+
+
+bool SimulationManagerImpl::store(Mapping& archive)
+{
+    archive.write("use_start_button", useStartButton->isChecked());
+    archive.write("use_logo_button", useLogoButton->isChecked());
+    return true;
+}
+
+
+void SimulationManagerImpl::restore(const Mapping& archive)
+{
+    useStartButton->setChecked(archive.get("use_start_button", false));
+    useLogoButton->setChecked(archive.get("use_logo_button", false));
 }
