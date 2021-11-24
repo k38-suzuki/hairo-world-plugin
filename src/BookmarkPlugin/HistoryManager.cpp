@@ -18,10 +18,16 @@ class HistoryManagerImpl
 {
 public:
     HistoryManagerImpl(HistoryManager* self, ExtensionManager* ext);
+    virtual ~HistoryManagerImpl();
     HistoryManager* self;
 
     ProjectManager* pm;
-    MappingPtr config;
+    Menu* menu;
+
+    void onActionTriggered(const QAction* action);
+    void onProjectLoaded();
+    bool store(Mapping& archive);
+    void restore(const Mapping& archive);
 };
 
 }
@@ -38,43 +44,15 @@ HistoryManagerImpl::HistoryManagerImpl(HistoryManager* self, ExtensionManager* e
       pm(ProjectManager::instance())
 {
     MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("History"));
-    Menu* menu = mm.currentMenu();
-    menu->sigTriggered().connect([&](QAction* action){
-        string filename = action->text().toStdString();
-        pm->loadProject(filename);
-    });
+    menu = mm.currentMenu();
 
-    config = AppConfig::archive()->openMapping("history");
-    int numHistories = config->get("num_history", 0);
-    for(int i = 0; i < numHistories; ++i) {
-        string key = "history_" + to_string(i);
-        string history = config->get(key, "");
-        mm.addItem(history);
+    menu->sigTriggered().connect([&](QAction* action){ onActionTriggered(action); });
+    pm->sigProjectLoaded().connect([&](int level){ onProjectLoaded(); });
+
+    Mapping& config = *AppConfig::archive()->openMapping("history");
+    if(config.isValid()) {
+        restore(config);
     }
-
-    pm->sigProjectLoaded().connect([&](int level){
-        string filename = pm->currentProjectFile();
-        if(!filename.empty()) {
-            mm.addItem(filename);
-
-            int maxHistory = 10;
-            Menu* menu = mm.currentMenu();
-            int numHistories = menu->actions().size();
-            if(numHistories > maxHistory) {
-                Action* action = dynamic_cast<Action*>(menu->actions()[0]);
-                menu->removeAction(action);
-            }
-
-            numHistories = menu->actions().size();
-            config->write("num_history", numHistories);
-            for(int i = 0; i < numHistories; ++i) {
-                Action* action = dynamic_cast<Action*>(menu->actions()[i]);
-                string key = "history_" + to_string(i);
-                string filename = action->text().toStdString();
-                config->write(key, filename);
-            }
-        }
-    });
 }
 
 
@@ -84,7 +62,65 @@ HistoryManager::~HistoryManager()
 }
 
 
+HistoryManagerImpl::~HistoryManagerImpl()
+{
+    store(*AppConfig::archive()->openMapping("history"));
+}
+
+
 void HistoryManager::initialize(ExtensionManager* ext)
 {
     ext->manage(new HistoryManager(ext));
+}
+
+
+void HistoryManagerImpl::onActionTriggered(const QAction* action)
+{
+    string filename = action->text().toStdString();
+    pm->loadProject(filename);
+}
+
+
+void HistoryManagerImpl::onProjectLoaded()
+{
+    string filename = pm->currentProjectFile();
+    if(!filename.empty()) {
+        Action* action = new Action();
+        action->setText(filename.c_str());
+        menu->addAction(action);
+
+        int maxHistory = 10;
+        int numHistories = menu->actions().size();
+        if(numHistories > maxHistory) {
+            Action* action = dynamic_cast<Action*>(menu->actions()[0]);
+            menu->removeAction(action);
+        }
+    }
+}
+
+
+bool HistoryManagerImpl::store(Mapping& archive)
+{
+    int numHistories = menu->actions().size();
+    archive.write("num_history", numHistories);
+    for(int i = 0; i < numHistories; ++i) {
+        Action* action = dynamic_cast<Action*>(menu->actions()[i]);
+        string key = "history_" + to_string(i);
+        string filename = action->text().toStdString();
+        archive.write(key, filename);
+    }
+    return true;
+}
+
+
+void HistoryManagerImpl::restore(const Mapping& archive)
+{
+    int numHistories = archive.get("num_history", 0);
+    for(int i = 0; i < numHistories; ++i) {
+        string key = "history_" + to_string(i);
+        string filename = archive.get(key, "");
+        Action* action = new Action();
+        action->setText(filename.c_str());
+        menu->addAction(action);
+    }
 }
