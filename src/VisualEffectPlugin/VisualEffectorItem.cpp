@@ -92,6 +92,10 @@ public:
     ScopedConnectionSet connections;
     std::shared_ptr<const Image> image;
     Signal<void()> sigImageUpdated_;
+
+protected:
+    virtual bool store(Archive& archive) override;
+    virtual bool restore(const Archive& archive) override;
 };
 
 }
@@ -237,9 +241,7 @@ bool VisualEffectorItem::store(Archive& archive)
             subArchive->write("is_checked", true);
         }
         item->store(*subArchive);
-        VEImageVisualizerItem* vitem = dynamic_cast<VEImageVisualizerItem*>(item);
-        EffectConfigDialog* config = vitem->config;
-        config->storeState(*subArchive);
+
         subItems->append(subArchive);
     }
 
@@ -271,12 +273,6 @@ bool VisualEffectorItem::restore(const Archive& archive)
                 }
                 if(subArchive->get("is_checked", false)){
                     item->setChecked(true);
-                }
-                Item* tmpItem = item;
-                if(tmpItem) {
-                    VEImageVisualizerItem* vitem = dynamic_cast<VEImageVisualizerItem*>(tmpItem);
-                    EffectConfigDialog* config = vitem->config;
-                    config->restoreState(*subArchive);
                 }
                 impl->restoredSubItems.push_back(item);
             }
@@ -438,11 +434,25 @@ void VEImageVisualizerItem::doUpdateVisualization()
 }
 
 
+bool VEImageVisualizerItem::store(Archive& archive)
+{
+    config->storeState(archive);
+    return true;
+}
+
+
+bool VEImageVisualizerItem::restore(const Archive& archive)
+{
+    config->restoreState(archive);
+    return true;
+}
+
+
 EffectConfigDialog::EffectConfigDialog()
 {
     setWindowTitle(_("Effect Config"));
 
-    const double ranges[11][2] = {
+    static const double ranges[11][2] = {
         {  0.0, 1.0 }, { -1.0,  1.0 }, { -1.0, 1.0 },
         { -1.0, 1.0 }, { -1.0,  1.0 }, { -1.0, 1.0 },
         { -1.0, 0.0 }, {  1.0, 32.0 },
