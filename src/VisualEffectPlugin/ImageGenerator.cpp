@@ -39,23 +39,12 @@ class ImageGeneratorImpl
 {
 public:
     ImageGeneratorImpl(ImageGenerator* self);
-
     ImageGenerator* self;
+
     random_device seed_gen;
     default_random_engine engine;
     normal_distribution<> dist;
 
-    void barrelDistortion(Image& image, const double& m_coefb, const double& m_coefd);
-    void gaussianNoise(Image& image, const double& m_std_dev);
-    void hsv(Image& image, const double& m_hue, const double& m_saturation, const double& m_value);
-    void rgb(Image& image, const double& m_red, const double& m_green, const double& m_blue);
-    void saltPepperNoise(Image& image, const double& m_salt, const double& m_pepper);
-    void filteredImage(Image& image, const double& m_scalex, const double& m_scaley);
-    void flippedImage(Image& image);
-    void gaussianFilter(Image& image, const int& matrix);
-    void medianFilter(Image& image, const int& matrix);
-    void sobelFilter(Image& image);
-    void prewittFilter(Image& image);
     void differentialFilter(Image& image, const double kernel[2][9]);
 };
 
@@ -85,12 +74,6 @@ ImageGenerator::~ImageGenerator()
 
 
 void ImageGenerator::barrelDistortion(Image& image, const double& m_coefb, const double& m_coefd)
-{
-    impl->barrelDistortion(image, m_coefb, m_coefd);
-}
-
-
-void ImageGeneratorImpl::barrelDistortion(Image& image, const double& m_coefb, const double& m_coefd)
 {
     Image cloneImage;
     cloneImage.setSize(image.width(), image.height(), image.numComponents());
@@ -131,12 +114,6 @@ void ImageGeneratorImpl::barrelDistortion(Image& image, const double& m_coefb, c
 
 void ImageGenerator::gaussianNoise(Image& image, const double& m_std_dev)
 {
-    impl->gaussianNoise(image, m_std_dev);
-}
-
-
-void ImageGeneratorImpl::gaussianNoise(Image& image, const double& m_std_dev)
-{
     image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
     int height = image.height();
@@ -145,7 +122,7 @@ void ImageGeneratorImpl::gaussianNoise(Image& image, const double& m_std_dev)
     for(int j = 0; j < height; ++j) {
         for(int i = 0; i < width; ++i) {
             int index = nc * (i + j * width);
-            double color = dist(engine) * m_std_dev * 255.0;
+            double color = impl->dist(impl->engine) * m_std_dev * 255.0;
             for(int k = 0; k < nc; ++k) {
                 int pixel = image.pixels()[index + k] + (int)color;
                 if(pixel > 255) {
@@ -161,12 +138,6 @@ void ImageGeneratorImpl::gaussianNoise(Image& image, const double& m_std_dev)
 
 
 void ImageGenerator::hsv(Image& image, const double& m_hue, const double& m_saturation, const double& m_value)
-{
-    impl->hsv(image, m_hue, m_saturation, m_value);
-}
-
-
-void ImageGeneratorImpl::hsv(Image& image, const double& m_hue, const double& m_saturation, const double& m_value)
 {
     image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
@@ -215,12 +186,6 @@ void ImageGeneratorImpl::hsv(Image& image, const double& m_hue, const double& m_
 
 void ImageGenerator::rgb(Image& image, const double& m_red, const double& m_green, const double& m_blue)
 {
-    impl->rgb(image, m_red, m_green, m_blue);
-}
-
-
-void ImageGeneratorImpl::rgb(Image& image, const double& m_red, const double& m_green, const double& m_blue)
-{
     image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
     int height = image.height();
@@ -246,12 +211,6 @@ void ImageGeneratorImpl::rgb(Image& image, const double& m_red, const double& m_
 
 void ImageGenerator::saltPepperNoise(Image& image, const double& m_salt, const double& m_pepper)
 {
-    impl->saltPepperNoise(image, m_salt, m_pepper);
-}
-
-
-void ImageGeneratorImpl::saltPepperNoise(Image& image, const double& m_salt, const double& m_pepper)
-{
     image.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
     int height = image.height();
@@ -276,12 +235,6 @@ void ImageGeneratorImpl::saltPepperNoise(Image& image, const double& m_salt, con
 
 
 void ImageGenerator::filteredImage(Image& image, const double& m_scalex, const double& m_scaley)
-{
-    impl->filteredImage(image, m_scalex, m_scaley);
-}
-
-
-void ImageGeneratorImpl::filteredImage(Image& image, const double& m_scalex, const double& m_scaley)
 {
     //Linear interpolation
     Image cloneImage = image;
@@ -346,12 +299,6 @@ void ImageGeneratorImpl::filteredImage(Image& image, const double& m_scalex, con
 
 void ImageGenerator::flippedImage(Image& image)
 {
-    impl->flippedImage(image);
-}
-
-
-void ImageGeneratorImpl::flippedImage(Image& image)
-{
     Image cloneImage = image;
     cloneImage.setSize(image.width(), image.height(), image.numComponents());
     int width = image.width();
@@ -371,12 +318,6 @@ void ImageGeneratorImpl::flippedImage(Image& image)
 
 
 void ImageGenerator::gaussianFilter(Image& image, const int& matrix)
-{
-    impl->gaussianFilter(image, matrix);
-}
-
-
-void ImageGeneratorImpl::gaussianFilter(Image& image,  const int& matrix)
 {
     Image cloneImage;
     int width = image.width();
@@ -426,12 +367,6 @@ void ImageGeneratorImpl::gaussianFilter(Image& image,  const int& matrix)
 
 void ImageGenerator::medianFilter(Image& image, const int& matrix)
 {
-    impl->medianFilter(image, matrix);
-}
-
-
-void ImageGeneratorImpl::medianFilter(Image& image, const int& matrix)
-{
     Image cloneImage;
     int width = image.width();
     int height = image.height();
@@ -469,25 +404,13 @@ void ImageGeneratorImpl::medianFilter(Image& image, const int& matrix)
 
 void ImageGenerator::sobelFilter(Image& image)
 {
-    impl->sobelFilter(image);
-}
-
-
-void ImageGeneratorImpl::sobelFilter(Image& image)
-{
-    differentialFilter(image, sobel3);
+    impl->differentialFilter(image, sobel3);
 }
 
 
 void ImageGenerator::prewittFilter(Image& image)
 {
-    impl->prewittFilter(image);
-}
-
-
-void ImageGeneratorImpl::prewittFilter(Image& image)
-{
-    differentialFilter(image, prewitt3);
+    impl->differentialFilter(image, prewitt3);
 }
 
 
