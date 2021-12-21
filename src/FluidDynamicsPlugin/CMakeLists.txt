@@ -1,8 +1,8 @@
 
 set(sources
     AreaItem.cpp
-    FDBody.cpp
-    FDLink.cpp
+    CFDBody.cpp
+    CFDLink.cpp
     FluidAreaItem.cpp
     FluidDynamicsPlugin.cpp
     FluidDynamicsSimulatorItem.cpp
@@ -12,8 +12,8 @@ set(sources
 
 set(headers
     AreaItem.h
-    FDBody.h
-    FDLink.h
+    CFDBody.h
+    CFDLink.h
     FluidAreaItem.h
     FluidDynamicsSimulatorItem.h
     Rotor.h

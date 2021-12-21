@@ -93,7 +93,8 @@ BookmarkManagerImpl::BookmarkManagerImpl(BookmarkManager* self, ExtensionManager
 
     ToolBar* bar = new ToolBar(N_("BookmarkBar"));
     ext->addToolBar(bar);
-    ToolButton* button = bar->addButton(QIcon(":/Bookmark/icon/bookmark.svg"), _("Show the bookmark manager"));
+    ToolButton* button = bar->addButton(QIcon(":/Bookmark/icon/bookmark.svg"));
+    button->setToolTip(_("Show the bookmark manager"));
     button->sigClicked().connect([&](){ dialog->show(); });
 
     Mapping& config = *AppConfig::archive()->openMapping("BookMark");

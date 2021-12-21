@@ -14,7 +14,7 @@
 #include <cnoid/WorldItem>
 #include <vector>
 #include <cmath>
-#include "FDBody.h"
+#include "CFDBody.h"
 #include "FluidAreaItem.h"
 #include "Rotor.h"
 #include "Thruster.h"
@@ -33,7 +33,7 @@ public:
 
     FluidDynamicsSimulatorItem* self;
     Vector3 gravity;
-    std::vector<FDBody*> fdBodies;
+    vector<CFDBody*> cfdBodies;
     ItemList<FluidAreaItem> items;
     DeviceList<Thruster> thrusters;
     DeviceList<Rotor> rotors;
@@ -43,7 +43,7 @@ public:
     bool store(Archive& archive);
     bool restore(const Archive& archive);
     void onPreDynamicsFunction();
-    void createFDBody(Body* body);
+    void createCFDBody(Body* body);
 };
 
 }
@@ -59,7 +59,7 @@ FluidDynamicsSimulatorItemImpl::FluidDynamicsSimulatorItemImpl(FluidDynamicsSimu
     : self(self)
 {
     gravity << 0.0, 0.0, -9.80665;
-    fdBodies.clear();
+    cfdBodies.clear();
     items.clear();
     thrusters.clear();
     rotors.clear();
@@ -78,7 +78,7 @@ FluidDynamicsSimulatorItemImpl::FluidDynamicsSimulatorItemImpl(FluidDynamicsSimu
     : self(self)
 {
     gravity = org.gravity;
-    fdBodies = org.fdBodies;
+    cfdBodies = org.cfdBodies;
     items = org.items;
     thrusters = org.thrusters;
     rotors = org.rotors;
@@ -107,19 +107,19 @@ bool FluidDynamicsSimulatorItem::initializeSimulation(SimulatorItem* simulatorIt
 bool FluidDynamicsSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     gravity = simulatorItem->getGravity();
-    fdBodies.clear();
+    cfdBodies.clear();
     items.clear();
     thrusters.clear();
     rotors.clear();
     vector<SimulationBody*> simulationBodies = simulatorItem->simulationBodies();
     for(size_t i = 0; i < simulationBodies.size(); i++) {
         Body* body = simulationBodies[i]->body();
-        createFDBody(body);
+        createCFDBody(body);
         thrusters << body->devices();
         rotors << body->devices();
     }
 
-    if(fdBodies.size()) {
+    if(cfdBodies.size()) {
         RootItem* rootItem = RootItem::instance();
         items = rootItem->checkedItems<FluidAreaItem>();
         simulatorItem->addPreDynamicsFunction([&](){ onPreDynamicsFunction(); });
@@ -130,11 +130,11 @@ bool FluidDynamicsSimulatorItemImpl::initializeSimulation(SimulatorItem* simulat
 
 void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
 {
-    for(size_t i = 0; i < fdBodies.size(); i++) {
-        FDBody* fdBody = fdBodies[i];
+    for(size_t i = 0; i < cfdBodies.size(); i++) {
+        CFDBody* fdBody = cfdBodies[i];
         for(int j = 0; j < fdBody->numFDLinks(); j++) {
-            FDLink* fdLink = fdBody->fdLink(j);
-            Link* link = fdLink->link();
+            CFDLink* cfdLink = fdBody->cfdLink(j);
+            Link* link = cfdLink->link();
             double density = 0.0;
             double viscosity = 0.0;
 
@@ -159,21 +159,21 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
 
             // buoyancy
             double volume = 0.0;
-            if(fdLink->density() != 0.0) {
-                volume = link->mass() / fdLink->density();
+            if(cfdLink->density() != 0.0) {
+                volume = link->mass() / cfdLink->density();
             }
             Vector3 fb = density * gravity * volume * -1.0;
             link->f_ext() += fb;
-            Vector3 cb = link->T() * fdLink->centerOfBuoyancy();
+            Vector3 cb = link->T() * cfdLink->centerOfBuoyancy();
             link->tau_ext() += cb.cross(fb);
 
             Vector3 v = link->v();
             Vector3 w = link->w();
             double cd = 0.0;
             if(density > 10.0) {
-                cd = fdLink->cdw();
+                cd = cfdLink->cdw();
             } else {
-                cd = fdLink->cda();
+                cd = cfdLink->cda();
             }
 
             //drag
@@ -191,8 +191,8 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
                     sign = -1.0;
                     index = 0;
                 }
-                fd[k] = 0.5 * density * v[k] * v[k] * fdLink->surface()[k * 2 + index] * cd * sign;
-                double cv = fdLink->cv();
+                fd[k] = 0.5 * density * v[k] * v[k] * cfdLink->surface()[k * 2 + index] * cd * sign;
+                double cv = cfdLink->cv();
                 fv[k] = cv * viscosity * fabs(v[k]) * sign;
             }
 
@@ -206,8 +206,8 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
                     sign = -1.0;
                     index = 0;
                 }
-                td[k] = density * w[k] * w[k] * (fdLink->surface()[index0 * 2 + index] + fdLink->surface()[index1 * 2 + index]) * fdLink->td() * sign;
-                double cv = fdLink->cv();
+                td[k] = density * w[k] * w[k] * (cfdLink->surface()[index0 * 2 + index] + cfdLink->surface()[index1 * 2 + index]) * cfdLink->td() * sign;
+                double cv = cfdLink->cv();
                 tv[k] = cv * viscosity * fabs(w[k]) * sign;
             }
 
@@ -291,31 +291,31 @@ void FluidDynamicsSimulatorItemImpl::onPreDynamicsFunction()
 }
 
 
-void FluidDynamicsSimulatorItemImpl::createFDBody(Body* body)
+void FluidDynamicsSimulatorItemImpl::createCFDBody(Body* body)
 {
-    FDBody* fdBody = new FDBody(body);
+    CFDBody* cfdBody = new CFDBody(body);
     for(int i = 0; i < body->numLinks(); i++) {
         Link* link = body->link(i);
-        FDLink* fdLink = new FDLink(link);
+        CFDLink* cfdLink = new CFDLink(link);
         Mapping& node = *link->info();
 
         double d;
         Vector3 v;
         Vector6 v6;
-        if(node.read("density", d)) fdLink->setDensity(d);
+        if(node.read("density", d)) cfdLink->setDensity(d);
         if(read(node, "centerOfBuoyancy", v)) {
-            fdLink->setCenterOfBuoyancy(v);
+            cfdLink->setCenterOfBuoyancy(v);
         } else {
-            fdLink->setCenterOfBuoyancy(link->centerOfMass());
+            cfdLink->setCenterOfBuoyancy(link->centerOfMass());
         }
-        if(node.read("cdw", d)) fdLink->setCdw(d);
-        if(node.read("cda", d)) fdLink->setCda(d);
-        if(node.read("td", d)) fdLink->setTd(d);
-        if(read(node, "surface", v6)) fdLink->setSurface(v6);
-        if(node.read("cv", d)) fdLink->setCv(d);
-        fdBody->addFDLinks(fdLink);
+        if(node.read("cdw", d)) cfdLink->setCdw(d);
+        if(node.read("cda", d)) cfdLink->setCda(d);
+        if(node.read("td", d)) cfdLink->setTd(d);
+        if(read(node, "surface", v6)) cfdLink->setSurface(v6);
+        if(node.read("cv", d)) cfdLink->setCv(d);
+        cfdBody->addFDLinks(cfdLink);
     }
-    fdBodies.push_back(fdBody);
+    cfdBodies.push_back(cfdBody);
 }
 
 

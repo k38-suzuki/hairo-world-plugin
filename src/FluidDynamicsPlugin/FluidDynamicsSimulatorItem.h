@@ -17,7 +17,7 @@ class FluidDynamicsSimulatorItem : public SubSimulatorItem
 public:
     FluidDynamicsSimulatorItem();
     FluidDynamicsSimulatorItem(const FluidDynamicsSimulatorItem& org);
-    ~FluidDynamicsSimulatorItem();
+    virtual ~FluidDynamicsSimulatorItem();
 
     static void initializeClass(ExtensionManager* ext);
     virtual bool initializeSimulation(SimulatorItem* simulatorItem) override;
