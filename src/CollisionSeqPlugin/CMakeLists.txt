@@ -12,6 +12,8 @@ set(headers
     gettext.h
     )
 
+choreonoid_make_header_public(CollisionSensor.h)
+
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
   set(target CnoidCollisionSeqPlugin)

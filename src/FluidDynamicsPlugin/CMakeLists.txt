@@ -22,6 +22,9 @@ set(headers
     gettext.h
     )
 
+choreonoid_make_header_public(Rotor.h)
+choreonoid_make_header_public(Thruster.h)
+
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
   set(target CnoidFluidDynamicsPlugin)
