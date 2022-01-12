@@ -14,7 +14,7 @@
 #include <cnoid/FileDialog>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
-#include <cnoid/MessageView>
+#include <cnoid/NullOut>
 #include <cnoid/ProjectManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
@@ -123,7 +123,7 @@ DoubleSpinInfo doubleSpinInfo[] = {
     {  5, 1,  1.000, 0.0, 1000.000, 3,  true }, {  6, 1,  0.080, 0.0, 1000.000, 3,  true }, {  7, 1,  0.100, 0.0, 1000.000, 3,  true }, {  7, 3,  0.420, 0.0, 1000.000, 3,  true },
     {  9, 1,  0.250, 0.0, 1000.000, 3,  true }, { 10, 1,  0.080, 0.0, 1000.000, 3,  true }, { 10, 2,  0.080, 0.0, 1000.000, 3,  true }, { 11, 1,  0.080, 0.0, 1000.000, 3,  true }, { 11, 3,  0.130, 0.0, 1000.000, 3,  true },
     { 13, 1,  0.250, 0.0, 1000.000, 3,  true }, { 14, 1,  0.080, 0.0, 1000.000, 3,  true }, { 14, 2,  0.080, 0.0, 1000.000, 3,  true }, { 15, 1,  0.080, 0.0, 1000.000, 3,  true }, { 15, 3,  0.130, 0.0, 1000.000, 3,  true },
-    { 17, 1,  0.200, 0.0, 1000.000, 3,  true }, { 18, 1,  0.060, 0.0, 1000.000, 3,  true }, { 19, 1,  0.013, 0.0, 1000.000, 3,  true },
+    { 17, 1,  0.200, 0.0, 1000.000, 3,  true }, { 18, 1,  0.060, 0.0, 1000.000, 3,  true }, { 19, 1,  0.013, 0.0, 1000.000, 3,  true }
 };
 
 
@@ -145,7 +145,7 @@ struct SpinInfo {
 };
 
 
-SpinInfo spinInfo[] = {
+SpinInfo agxspinInfo[] = {
     {  1, 1, 42, 0, 9999, false }, {  3, 1,   3, 0, 9999, false }, {  3, 5,  4, 0, 9999, false },
     {  4, 2,  6, 0, 9999, false }, {  4, 4, 100, 0, 9999, false }, {  5, 2, 10, 0, 9999, false },
     {  8, 1, 42, 0, 9999, false }, { 10, 1,   3, 0, 9999, false }, { 10, 5,  4, 0, 9999, false },
@@ -242,7 +242,7 @@ public:
     PushButton* buttons[NUM_BUTTONS];
     DoubleSpinBox* dspins[NUM_DSPINS];
     DoubleSpinBox* agxdspins[NUM_AGXDSPINS];
-    SpinBox* spins[NUM_SPINS];
+    SpinBox* agxspins[NUM_SPINS];
     PushButton* toolButtons[NUMTBUTTONS];
     FileFormWidget* formWidget;
 
@@ -251,7 +251,7 @@ public:
     void onResetButtonClicked();
     void onExportYamlButtonClicked();
     void onImportYamlButtonClicked();
-    bool loadConfig(const string& filename);
+    bool loadConfig(const string& filename, ostream& os = nullout());
     void onEnableAgxCheckToggled(const bool& on);
     void onExportBody(const string& fileName);
     void onExportAGXBody(const string& fileName);
@@ -323,9 +323,9 @@ CrawlerConfigDialog::CrawlerConfigDialog()
     }
 
     for(int i = 0; i < NUM_SPINS; ++i) {
-        spins[i] = new SpinBox();
-        SpinInfo info = spinInfo[i];
-        SpinBox* spin = spins[i];
+        agxspins[i] = new SpinBox();
+        SpinInfo info = agxspinInfo[i];
+        SpinBox* spin = agxspins[i];
         agbox->addWidget(spin, info.row, info.column);
     }
 
@@ -337,7 +337,7 @@ CrawlerConfigDialog::CrawlerConfigDialog()
         button->sigClicked().connect([&, button](){ onColorChanged(button); });
     }
 
-    const char* clabels[] = { _("Front SubTrack"), _("Rear SubTrack"), _("AGX") };
+    static const char* clabels[] = { _("Front SubTrack"), _("Rear SubTrack"), _("AGX") };
 
     QHBoxLayout* chbox = new QHBoxLayout();
     for(int i = 0; i < NUM_CHECKS; ++i) {
@@ -349,7 +349,7 @@ CrawlerConfigDialog::CrawlerConfigDialog()
     }
     gbox->addLayout(chbox, 0, 0, 1, 4);
 
-    const char* hlabels[] = {
+    static const char* hlabels[] = {
         _("Chassis"), _("Track"), _("Front SubTrack"), _("Rear SubTrack"), _("Spacer")
     };
 
@@ -358,7 +358,7 @@ CrawlerConfigDialog::CrawlerConfigDialog()
         gbox->addLayout(new HSeparatorBox(new QLabel(hlabels[i])), info.row, info.column, 1, 4);
     }
 
-    const char* dlabels[] = {
+    static const char* dlabels[] = {
         _("mass [kg]"), _("color"), _("size(x-y-z) [m, m, m]"),
         _("mass [kg]"), _("color"), _("radius [m]"), _("width [m]"), _("wheelbase [m]"),
         _("mass [kg]"), _("color"), _("radius(forward-backward) [m]"), _("width [m]"), _("wheelbase [m]"),
@@ -371,14 +371,14 @@ CrawlerConfigDialog::CrawlerConfigDialog()
         gbox->addWidget(new QLabel(dlabels[i]), info.row, info.column);
     }
 
-    const char* agxhlabels[] = { _("Track Belt"), _("SubTrack Belt") };
+    static const char* agxhlabels[] = { _("Track Belt"), _("SubTrack Belt") };
 
     for(int i = 0; i < 2; ++i) {
         Info info = agxseparatorInfo[i];
         agbox->addLayout(new HSeparatorBox(new QLabel(agxhlabels[i])), info.row, info.column, 1, 6);
     }
 
-    const char* agxdlabels[] = {
+    static const char* agxdlabels[] = {
         _("number of nodes [-]"), _("node thickness [m]"),
         _("node width [m]"), _("node thickerthickness [m]"),
         _("use thicker node every [-]"), _("node distance tension [m, e-]"),
@@ -392,7 +392,7 @@ CrawlerConfigDialog::CrawlerConfigDialog()
         agbox->addWidget(new QLabel(agxdlabels[i % 12]), info.row, info.column);
     }
 
-    const char* tlabels[] = { _("&Reset"), _("&Import"), _("&Export") };
+    static const char* tlabels[] = { _("&Reset"), _("&Import"), _("&Export") };
 
     QHBoxLayout* thbox = new QHBoxLayout();
     thbox->addStretch();
@@ -464,8 +464,8 @@ void CrawlerConfigDialog::initialize()
     }
 
     for(int i = 0; i < NUM_SPINS; ++i) {
-        SpinInfo info = spinInfo[i];
-        SpinBox* spin = spins[i];
+        SpinInfo info = agxspinInfo[i];
+        SpinBox* spin = agxspins[i];
         spin->setValue(info.value);
         spin->setRange(info.min, info.max);
         spin->setEnabled(info.enabled);
@@ -522,7 +522,7 @@ void CrawlerConfigDialog::onImportYamlButtonClicked()
 }
 
 
-bool CrawlerConfigDialog::loadConfig(const string& filename)
+bool CrawlerConfigDialog::loadConfig(const string& filename,std::ostream& os )
 {
     try {
         YAMLReader reader;
@@ -545,7 +545,7 @@ bool CrawlerConfigDialog::loadConfig(const string& filename)
                     if(spinList.isValid()) {
                         for(int j = 0; j < spinList.size(); ++j) {
                             int value = spinList[j].toInt();
-                            spins[j]->setValue(value);
+                            agxspins[j]->setValue(value);
                         }
                     }
 
@@ -570,7 +570,7 @@ bool CrawlerConfigDialog::loadConfig(const string& filename)
         }
     }
     catch (const ValueNode::Exception& ex) {
-        MessageView::instance()->putln(ex.message());
+        os << ex.message();
     }
 
     return true;
@@ -633,7 +633,7 @@ void CrawlerConfigDialog::onExportYamlButtonClicked()
         writer.putKey("spin");
         writer.startFlowStyleListing();
         for(int i = 0; i < NUM_SPINS; ++i) {
-            writer.putScalar(spins[i]->value());
+            writer.putScalar(agxspins[i]->value());
         }
         writer.endListing();
 
@@ -657,37 +657,41 @@ void CrawlerConfigDialog::onExportYamlButtonClicked()
 
 void CrawlerConfigDialog::onEnableAgxCheckToggled(const bool& on)
 {
-    spins[TRK_BNN]->setEnabled(on);
     agxdspins[TRK_BNT]->setEnabled(on);
     agxdspins[TRK_BNW]->setEnabled(on);
     agxdspins[TRK_BNTT]->setEnabled(on);
-    spins[TRK_BUTNE]->setEnabled(on);
     agxdspins[TRK_BNDTM]->setEnabled(on);
-    spins[TRK_BNDTE]->setEnabled(on);
     agxdspins[TRK_BSHFPM]->setEnabled(on);
-    spins[TRK_BSHFPE]->setEnabled(on);
-    spins[TRK_BMSHNF]->setEnabled(on);
+
     agxdspins[TRK_BHCM]->setEnabled(on);
-    spins[TRK_BHCE]->setEnabled(on);
     agxdspins[TRK_BHSD]->setEnabled(on);
     agxdspins[TRK_BNWMT]->setEnabled(on);
     agxdspins[TRK_BNWST]->setEnabled(on);
 
-    spins[FLP_BNN]->setEnabled(on);
     agxdspins[FLP_BNT]->setEnabled(on);
     agxdspins[FLP_BNW]->setEnabled(on);
     agxdspins[FLP_BNTT]->setEnabled(on);
-    spins[FLP_BUTNE]->setEnabled(on);
     agxdspins[FLP_BNDTM]->setEnabled(on);
-    spins[FLP_BNDTE]->setEnabled(on);
     agxdspins[FLP_BSHFPM]->setEnabled(on);
-    spins[FLP_BSHFPE]->setEnabled(on);
-    spins[FLP_BMSHNF]->setEnabled(on);
+
     agxdspins[FLP_BHCM]->setEnabled(on);
-    spins[FLP_BHCE]->setEnabled(on);
     agxdspins[FLP_BHSD]->setEnabled(on);
     agxdspins[FLP_BNWMT]->setEnabled(on);
     agxdspins[FLP_BNWST]->setEnabled(on);
+
+    agxspins[TRK_BNN]->setEnabled(on);
+    agxspins[TRK_BUTNE]->setEnabled(on);
+    agxspins[TRK_BNDTE]->setEnabled(on);
+    agxspins[TRK_BSHFPE]->setEnabled(on);
+    agxspins[TRK_BMSHNF]->setEnabled(on);
+    agxspins[TRK_BHCE]->setEnabled(on);
+
+    agxspins[FLP_BNN]->setEnabled(on);
+    agxspins[FLP_BUTNE]->setEnabled(on);
+    agxspins[FLP_BNDTE]->setEnabled(on);
+    agxspins[FLP_BSHFPE]->setEnabled(on);
+    agxspins[FLP_BMSHNF]->setEnabled(on);
+    agxspins[FLP_BHCE]->setEnabled(on);
 }
 
 
@@ -1006,36 +1010,36 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
 
     fprintf(fp, "TRACKBELT_COMMON: &TrackBeltCommon\n");
     fprintf(fp, "  upAxis: [ 0, 0, 1 ]\n");
-    fprintf(fp, "  numberOfNodes: %d\n", spins[TRK_BNN]->value());
-    fprintf(fp, "  nodeThickness: %lf\n", dspins[TRK_BNT]->value());
-    fprintf(fp, "  nodeWidth:  %lf\n", dspins[TRK_BNW]->value());
-    fprintf(fp, "  nodeThickerThickness: %lf\n", dspins[TRK_BNTT]->value());
-    fprintf(fp, "  useThickerNodeEvery: %d\n", spins[TRK_BUTNE]->value());
+    fprintf(fp, "  numberOfNodes: %d\n", agxspins[TRK_BNN]->value());
+    fprintf(fp, "  nodeThickness: %lf\n", agxdspins[TRK_BNT]->value());
+    fprintf(fp, "  nodeWidth:  %lf\n", agxdspins[TRK_BNW]->value());
+    fprintf(fp, "  nodeThickerThickness: %lf\n", agxdspins[TRK_BNTT]->value());
+    fprintf(fp, "  useThickerNodeEvery: %d\n", agxspins[TRK_BUTNE]->value());
     fprintf(fp, "  material: %sTracks\n", bodyName.c_str());
-    fprintf(fp, "#  nodeDistanceTension: %2.1lfe-%d\n", dspins[TRK_BNDTM]->value(), spins[TRK_BNDTE]->value());
-    fprintf(fp, "#  stabilizingHingeFrictionParameter: %2.1lfe-%d\n", dspins[TRK_BSHFPM]->value(), spins[TRK_BSHFPE]->value());
-    fprintf(fp, "#  minStabilizingHingeNormalForce: %d\n", spins[TRK_BMSHNF]->value());
-    fprintf(fp, "#  hingeCompliance: %2.1lfe-%d\n", dspins[TRK_BHCM]->value(), spins[TRK_BHCE]->value());
-    fprintf(fp, "#  hingeSpookDamping: %lf\n", dspins[TRK_BHSD]->value());
-    fprintf(fp, "#  nodesToWheelsMergeThreshold: %lf\n", dspins[TRK_BNWMT]->value());
-    fprintf(fp, "#  nodesToWheelsSplitThreshold: %lf\n", dspins[TRK_BNWST]->value());
+    fprintf(fp, "#  nodeDistanceTension: %2.1lfe-%d\n", agxdspins[TRK_BNDTM]->value(), agxspins[TRK_BNDTE]->value());
+    fprintf(fp, "#  stabilizingHingeFrictionParameter: %2.1lfe-%d\n", agxdspins[TRK_BSHFPM]->value(), agxspins[TRK_BSHFPE]->value());
+    fprintf(fp, "#  minStabilizingHingeNormalForce: %d\n", agxspins[TRK_BMSHNF]->value());
+    fprintf(fp, "#  hingeCompliance: %2.1lfe-%d\n", agxdspins[TRK_BHCM]->value(), agxspins[TRK_BHCE]->value());
+    fprintf(fp, "#  hingeSpookDamping: %lf\n", agxdspins[TRK_BHSD]->value());
+    fprintf(fp, "#  nodesToWheelsMergeThreshold: %lf\n", agxdspins[TRK_BNWMT]->value());
+    fprintf(fp, "#  nodesToWheelsSplitThreshold: %lf\n", agxdspins[TRK_BNWST]->value());
     fprintf(fp, "\n");
 
     fprintf(fp, "SUBTRACKBELT_COMMON: &SubTrackBeltCommon\n");
     fprintf(fp, "  upAxis: [ 0, 0, 1 ]\n");
-    fprintf(fp, "  numberOfNodes: %d\n", spins[FLP_BNN]->value());
-    fprintf(fp, "  nodeThickness: %lf\n", dspins[FLP_BNT]->value());
-    fprintf(fp, "  nodeWidth: %lf\n", dspins[FLP_BNW]->value());
-    fprintf(fp, "  nodeThickerThickness: %lf\n", dspins[FLP_BNTT]->value());
-    fprintf(fp, "  useThickerNodeEvery: %d\n", spins[FLP_BUTNE]->value());
+    fprintf(fp, "  numberOfNodes: %d\n", agxspins[FLP_BNN]->value());
+    fprintf(fp, "  nodeThickness: %lf\n", agxdspins[FLP_BNT]->value());
+    fprintf(fp, "  nodeWidth: %lf\n", agxdspins[FLP_BNW]->value());
+    fprintf(fp, "  nodeThickerThickness: %lf\n", agxdspins[FLP_BNTT]->value());
+    fprintf(fp, "  useThickerNodeEvery: %d\n", agxspins[FLP_BUTNE]->value());
     fprintf(fp, "  material: %sTracks\n", bodyName.c_str());
-    fprintf(fp, "#  nodeDistanceTension: %2.1lfe-%d\n", dspins[FLP_BNDTM]->value(), spins[FLP_BNDTE]->value());
-    fprintf(fp, "#  stabilizingHingeFrictionParameter: %2.1lfe-%d\n", dspins[FLP_BSHFPM]->value(), spins[FLP_BSHFPE]->value());
-    fprintf(fp, "#  minStabilizingHingeNormalForce: %d\n", spins[FLP_BMSHNF]->value());
-    fprintf(fp, "#  hingeCompliance: %2.1lfe-%d\n", dspins[FLP_BHCM]->value(), spins[FLP_BHCE]->value());
-    fprintf(fp, "#  hingeSpookDamping: %lf\n", dspins[FLP_BHSD]->value());
-    fprintf(fp, "#  nodesToWheelsMergeThreshold: %lf\n", dspins[FLP_BNWMT]->value());
-    fprintf(fp, "#  nodesToWheelsSplitThreshold: %lf\n", dspins[FLP_BNWST]->value());
+    fprintf(fp, "#  nodeDistanceTension: %2.1lfe-%d\n", agxdspins[FLP_BNDTM]->value(), agxspins[FLP_BNDTE]->value());
+    fprintf(fp, "#  stabilizingHingeFrictionParameter: %2.1lfe-%d\n", agxdspins[FLP_BSHFPM]->value(), agxspins[FLP_BSHFPE]->value());
+    fprintf(fp, "#  minStabilizingHingeNormalForce: %d\n", agxspins[FLP_BMSHNF]->value());
+    fprintf(fp, "#  hingeCompliance: %2.1lfe-%d\n", agxdspins[FLP_BHCM]->value(), agxspins[FLP_BHCE]->value());
+    fprintf(fp, "#  hingeSpookDamping: %lf\n", agxdspins[FLP_BHSD]->value());
+    fprintf(fp, "#  nodesToWheelsMergeThreshold: %lf\n", agxdspins[FLP_BNWMT]->value());
+    fprintf(fp, "#  nodesToWheelsSplitThreshold: %lf\n", agxdspins[FLP_BNWST]->value());
     fprintf(fp, "\n");
 
     fprintf(fp, "WHEEL_COMMON: &WheelCommon\n");
