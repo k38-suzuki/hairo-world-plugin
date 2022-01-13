@@ -13,6 +13,7 @@ using namespace std;
 class CrawlerJoystickController : public SimpleController
 {
     SimpleControllerIO* io;
+    bool usePseudoContinousTrackMode;
 
     enum TrackID {
         TRACK_L, TRACK_R, TRACK_LF,
@@ -27,8 +28,8 @@ class CrawlerJoystickController : public SimpleController
 
     Link* tracks[NUM_TRACKS];
     Link* joints[NUM_JOINTS];
+
     Joystick* joystick;
-    string device;
 
 public:
 
@@ -37,9 +38,13 @@ public:
         this->io = io;
         ostream& os = io->os();
         Body* body = io->body();
-        device = "/dev/input/js0";
+        string device = "/dev/input/js0";
 
+        usePseudoContinousTrackMode = true;
         for(auto opt : io->options()) {
+            if(opt == "wheels") {
+                usePseudoContinousTrackMode = false;
+            }
             if(opt == "2p") {
                 device = "/dev/input/js1";
             }
@@ -52,8 +57,16 @@ public:
             "TRACK_RF", "TRACK_LR", "TRACK_RR",
         };
 
+        static const char* agxtracknames[] = {
+            "SPROCKET_L", "SPROCKET_R", "SPROCKET_LF",
+            "SPROCKET_RF", "SPROCKET_LR", "SPROCKET_RR",
+        };
+
         for(int i = 0; i < NUM_TRACKS; ++i) {
             Link* track = body->link(tracknames[i]);
+            if(!usePseudoContinousTrackMode) {
+                track = body->link(agxtracknames[i]);
+            }
             tracks[i] = track;
             if(!track) {
                 os << "Track" << tracknames[i] << " is not found." << endl;
@@ -94,14 +107,24 @@ public:
         }
 
         for(int i = 0; i < NUM_TRACKS / 2; ++i) {
-            double k = 0.5;
             Link* trackL = tracks[2 * i];
             Link* trackR = tracks[2 * i + 1];
-            if(trackL) {
-                trackL->dq_target() = k * (-2.0 * pos[1] + pos[0]);
-            }
-            if(trackR) {
-                trackR->dq_target() = k * (-2.0 * pos[1] - pos[0]);
+            if(usePseudoContinousTrackMode) {
+                double k = 1.0;
+                if(trackL) {
+                    trackL->dq_target() = k * (-2.0 * pos[1] + pos[0]);
+                }
+                if(trackR) {
+                    trackR->dq_target() = k * (-2.0 * pos[1] - pos[0]);
+                }
+            } else {
+                double k = 4.0;
+                if(trackL) {
+                    trackL->dq_target() = k * (-pos[1] + pos[0]);
+                }
+                if(trackR) {
+                    trackR->dq_target() = k * (-pos[1] - pos[0]);
+                }
             }
         }
 

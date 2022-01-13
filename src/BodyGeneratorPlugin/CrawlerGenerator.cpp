@@ -448,26 +448,26 @@ void CrawlerConfigDialog::initialize()
     for(int i = 0; i < NUM_DSPINS; ++i) {
         DoubleSpinInfo info = doubleSpinInfo[i];
         DoubleSpinBox* dspin = dspins[i];
-        dspin->setValue(info.value);
-        dspin->setRange(info.min, info.max);
         dspin->setDecimals(info.decimals);
+        dspin->setRange(info.min, info.max);
+        dspin->setValue(info.value);
         dspin->setEnabled(info.enabled);
     }
 
     for(int i = 0; i < NUM_AGXDSPINS; ++i) {
         DoubleSpinInfo info = agxdoubleSpinInfo[i];
         DoubleSpinBox* agxdspin = agxdspins[i];
-        agxdspin->setValue(info.value);
-        agxdspin->setRange(info.min, info.max);
         agxdspin->setDecimals(info.decimals);
+        agxdspin->setRange(info.min, info.max);
+        agxdspin->setValue(info.value);
         agxdspin->setEnabled(info.enabled);
     }
 
     for(int i = 0; i < NUM_SPINS; ++i) {
         SpinInfo info = agxspinInfo[i];
         SpinBox* spin = agxspins[i];
-        spin->setValue(info.value);
         spin->setRange(info.min, info.max);
+        spin->setValue(info.value);
         spin->setEnabled(info.enabled);
     }
 
@@ -1016,13 +1016,13 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "  nodeThickerThickness: %lf\n", agxdspins[TRK_BNTT]->value());
     fprintf(fp, "  useThickerNodeEvery: %d\n", agxspins[TRK_BUTNE]->value());
     fprintf(fp, "  material: %sTracks\n", bodyName.c_str());
-    fprintf(fp, "#  nodeDistanceTension: %2.1lfe-%d\n", agxdspins[TRK_BNDTM]->value(), agxspins[TRK_BNDTE]->value());
-    fprintf(fp, "#  stabilizingHingeFrictionParameter: %2.1lfe-%d\n", agxdspins[TRK_BSHFPM]->value(), agxspins[TRK_BSHFPE]->value());
-    fprintf(fp, "#  minStabilizingHingeNormalForce: %d\n", agxspins[TRK_BMSHNF]->value());
-    fprintf(fp, "#  hingeCompliance: %2.1lfe-%d\n", agxdspins[TRK_BHCM]->value(), agxspins[TRK_BHCE]->value());
-    fprintf(fp, "#  hingeSpookDamping: %lf\n", agxdspins[TRK_BHSD]->value());
-    fprintf(fp, "#  nodesToWheelsMergeThreshold: %lf\n", agxdspins[TRK_BNWMT]->value());
-    fprintf(fp, "#  nodesToWheelsSplitThreshold: %lf\n", agxdspins[TRK_BNWST]->value());
+    fprintf(fp, "  nodeDistanceTension: %2.1lfe-%d\n", agxdspins[TRK_BNDTM]->value(), agxspins[TRK_BNDTE]->value());
+    fprintf(fp, "  stabilizingHingeFrictionParameter: %2.1lfe-%d\n", agxdspins[TRK_BSHFPM]->value(), agxspins[TRK_BSHFPE]->value());
+    fprintf(fp, "  minStabilizingHingeNormalForce: %d\n", agxspins[TRK_BMSHNF]->value());
+    fprintf(fp, "  hingeCompliance: %2.1lfe-%d\n", agxdspins[TRK_BHCM]->value(), agxspins[TRK_BHCE]->value());
+    fprintf(fp, "  hingeSpookDamping: %lf\n", agxdspins[TRK_BHSD]->value());
+    fprintf(fp, "  nodesToWheelsMergeThreshold: %lf\n", agxdspins[TRK_BNWMT]->value());
+    fprintf(fp, "  nodesToWheelsSplitThreshold: %lf\n", agxdspins[TRK_BNWST]->value());
     fprintf(fp, "\n");
 
     fprintf(fp, "SUBTRACKBELT_COMMON: &SubTrackBeltCommon\n");
@@ -1033,13 +1033,13 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "  nodeThickerThickness: %lf\n", agxdspins[FLP_BNTT]->value());
     fprintf(fp, "  useThickerNodeEvery: %d\n", agxspins[FLP_BUTNE]->value());
     fprintf(fp, "  material: %sTracks\n", bodyName.c_str());
-    fprintf(fp, "#  nodeDistanceTension: %2.1lfe-%d\n", agxdspins[FLP_BNDTM]->value(), agxspins[FLP_BNDTE]->value());
-    fprintf(fp, "#  stabilizingHingeFrictionParameter: %2.1lfe-%d\n", agxdspins[FLP_BSHFPM]->value(), agxspins[FLP_BSHFPE]->value());
-    fprintf(fp, "#  minStabilizingHingeNormalForce: %d\n", agxspins[FLP_BMSHNF]->value());
-    fprintf(fp, "#  hingeCompliance: %2.1lfe-%d\n", agxdspins[FLP_BHCM]->value(), agxspins[FLP_BHCE]->value());
-    fprintf(fp, "#  hingeSpookDamping: %lf\n", agxdspins[FLP_BHSD]->value());
-    fprintf(fp, "#  nodesToWheelsMergeThreshold: %lf\n", agxdspins[FLP_BNWMT]->value());
-    fprintf(fp, "#  nodesToWheelsSplitThreshold: %lf\n", agxdspins[FLP_BNWST]->value());
+    fprintf(fp, "  nodeDistanceTension: %2.1lfe-%d\n", agxdspins[FLP_BNDTM]->value(), agxspins[FLP_BNDTE]->value());
+    fprintf(fp, "  stabilizingHingeFrictionParameter: %2.1lfe-%d\n", agxdspins[FLP_BSHFPM]->value(), agxspins[FLP_BSHFPE]->value());
+    fprintf(fp, "  minStabilizingHingeNormalForce: %d\n", agxspins[FLP_BMSHNF]->value());
+    fprintf(fp, "  hingeCompliance: %2.1lfe-%d\n", agxdspins[FLP_BHCM]->value(), agxspins[FLP_BHCE]->value());
+    fprintf(fp, "  hingeSpookDamping: %lf\n", agxdspins[FLP_BHSD]->value());
+    fprintf(fp, "  nodesToWheelsMergeThreshold: %lf\n", agxdspins[FLP_BNWMT]->value());
+    fprintf(fp, "  nodesToWheelsSplitThreshold: %lf\n", agxdspins[FLP_BNWST]->value());
     fprintf(fp, "\n");
 
     fprintf(fp, "WHEEL_COMMON: &WheelCommon\n");
