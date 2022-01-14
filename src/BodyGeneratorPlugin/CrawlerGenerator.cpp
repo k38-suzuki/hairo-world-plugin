@@ -280,7 +280,6 @@ public:
     void onColorChanged(PushButton* pushbutton);
     void setColor(PushButton* pushbutton, const Vector3& color);
     Vector3 extractColor(PushButton* colorButton);
-    string getSaveFilename(FileDialog& dialog, const string& suffix);
     bool writeYaml(const string& filename);
     bool write(const string& filename);
     bool writeTrack(YAMLWriter& writer);
@@ -594,7 +593,6 @@ bool CrawlerConfigDialog::loadConfig(const string& filename,std::ostream& os )
                     }
                 }
             }
-
         }
     }
     catch (const ValueNode::Exception& ex) {
@@ -631,13 +629,13 @@ void CrawlerConfigDialog::onExportYamlButtonClicked()
         dialog.selectFile(currentProjectName);
     }
 
-    string filename;
     if(dialog.exec() == QDialog::Accepted) {
-        string suffix = ".yaml";
-        filename = getSaveFilename(dialog, suffix);
-    }
-
-    if(!filename.empty()) {
+        string filename = dialog.selectedFiles().front().toStdString();
+        filesystem::path path(filename);
+        string ext = path.extension().string();
+        if(ext.empty()){
+            filename += ".yaml";
+        }
         writeYaml(filename);
     }
 }
@@ -1197,22 +1195,6 @@ Vector3 CrawlerConfigDialog::extractColor(PushButton* colorButton)
 {
     QColor selectedColor = colorButton->palette().color(QPalette::Button);
     return Vector3(selectedColor.red() / 255.0, selectedColor.green() / 255.0, selectedColor.blue() / 255.0);
-}
-
-
-string CrawlerConfigDialog::getSaveFilename(FileDialog& dialog, const string& suffix)
-{
-    string filename;
-    auto filenames = dialog.selectedFiles();
-    if(!filenames.isEmpty()){
-        filename = filenames.front().toStdString();
-        filesystem::path path(filename);
-        string ext = path.extension().string();
-        if(ext != suffix){
-            filename += suffix;
-        }
-    }
-    return filename;
 }
 
 
