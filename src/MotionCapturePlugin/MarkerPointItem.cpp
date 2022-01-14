@@ -31,14 +31,14 @@ bool colorRotation = true;
 
 namespace  {
 
-void putKeyVector3(YAMLWriter* writer, const string& key, const Vector3& value)
+void putKeyVector3(YAMLWriter& writer, const string& key, const Vector3& value)
 {
-    writer->putKey(key);
-    writer->startFlowStyleListing();
-    for(int i = 0; i < 3; i++) {
-        writer->putScalar(value[i]);
-    }
-    writer->endListing();
+    writer.putKey(key);
+    writer.startFlowStyleListing(); {
+        for(int i = 0; i < 3; ++i) {
+            writer.putScalar(value[i]);
+        }
+    } writer.endListing();
 }
 
 
@@ -293,27 +293,24 @@ bool MarkerPointItem::save(MarkerPointItem* item, const string& fileName)
     if((ext == ".yaml") || (ext == ".yml")) {
         if(!name.empty()) {
             YAMLWriter writer(name);
-
-            writer.startMapping();
-            writer.putKey("markers");
-            writer.startListing();
-
-            SgGroupPtr scene = dynamic_cast<SgGroup*>(item->getScene());
-            int numChildren = scene->numChildren();
-            for(size_t i = 0; i < numChildren; i++) {
-                SgPosTransform* pos = dynamic_cast<SgPosTransform*>(scene->child(i));
-                SgShape* shape = dynamic_cast<SgShape*>(pos->child(0));
-                SgMaterial* material = shape->material();
-                writer.startMapping();
-                putKeyVector3(&writer, "point", pos->translation());
-                Vector3f color = material->diffuseColor();
-                putKeyVector3(&writer, "color", Vector3(color[0], color[1], color[2]));
-                writer.putKeyValue("transparency", material->transparency());
-                writer.endMapping();
-            }
-
-            writer.endListing();
-            writer.endMapping();
+            writer.startMapping(); {
+                writer.putKey("markers");
+                writer.startListing(); {
+                    SgGroupPtr scene = dynamic_cast<SgGroup*>(item->getScene());
+                    int numChildren = scene->numChildren();
+                    for(size_t i = 0; i < numChildren; i++) {
+                        SgPosTransform* pos = dynamic_cast<SgPosTransform*>(scene->child(i));
+                        SgShape* shape = dynamic_cast<SgShape*>(pos->child(0));
+                        SgMaterial* material = shape->material();
+                        writer.startMapping(); {
+                            putKeyVector3(writer, "point", pos->translation());
+                            Vector3f color = material->diffuseColor();
+                            putKeyVector3(writer, "color", Vector3(color[0], color[1], color[2]));
+                            writer.putKeyValue("transparency", material->transparency());
+                        } writer.endMapping();
+                    }
+                } writer.endListing();
+            } writer.endMapping();
         }
     } else if(ext == ".csv") {
         ofstream ofs;

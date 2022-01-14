@@ -217,6 +217,7 @@ GratingConfigDialog::GratingConfigDialog()
 bool GratingConfigDialog::writeYaml(const string& filename)
 {
     filesystem::path path(filename);
+    string name = path.stem().string();
 
     double mass = dspins[MASS]->value();
     double frameWidth = dspins[FRAME_WDT]->value();
@@ -232,173 +233,167 @@ bool GratingConfigDialog::writeYaml(const string& filename)
 
     if(!filename.empty()) {
         YAMLWriter writer(filename);
-        string name = path.stem().string();
+        writer.startMapping(); {
+            writer.putKeyValue("format", "ChoreonoidBody");
+            writer.putKeyValue("formatVersion", "1.0");
+            writer.putKeyValue("angleUnit", "degree");
+            writer.putKeyValue("name", name);
+            writer.putKey("links");
+            writer.startListing(); {
+                writer.startMapping(); {
+                    writer.putKeyValue("name", name);
+                    writer.putKeyValue("jointType", "free");
+                    writer.putKey("centerOfMass");
+                    writer.startFlowStyleListing(); {
+                        for(int i = 0; i < 3; ++i) {
+                            writer.putScalar(0.0);
+                        }
+                    } writer.endListing(); // end of centerOfMass list
+                    writer.putKeyValue("mass", mass);
+                    writer.putKey("inertia");
+                    writer.startFlowStyleListing(); {
+                        VectorXd inertia;
+                        inertia.resize(9);
+                        inertia = calcInertia();
+                        for(int i = 0; i < 9; ++i) {
+                            writer.putScalar(inertia[i]);
+                        }
+                    } writer.endListing(); // end of inertia list
+                    writer.putKey("elements");
+                    writer.startMapping(); {
+                        double sx = -1.0 * w / 2.0;
+                        double sy = -1.0 * h / 2.0;
+                        Vector6 spine;
+                        spine << 0.0, 0.0, -height / 2.0, 0.0, 0.0, height / 2.0;
+                        writer.putKey("Visual");
+                        writer.startMapping(); {
+                            writer.putKey("elements");
+                            writer.startMapping(); {
+                                writer.putKey("Shape");
+                                writer.startMapping(); {
+                                    writer.putKey("geometry");
+                                    writer.startMapping(); {
+                                        writer.putKeyValue("type", "Extrusion");
+                                        writer.putKey("crossSection");
+                                        writer.startFlowStyleListing(); {
+                                            writer.putScalar(sx);
+                                            writer.putScalar(sy);
 
-        writer.startMapping(); // start of body map
-        writer.putKeyValue("format", "ChoreonoidBody");
-        writer.putKeyValue("formatVersion", "1.0");
-        writer.putKeyValue("angleUnit", "degree");
-        writer.putKeyValue("name", name);
-        writer.putKey("links");
-        writer.startListing(); // start of links list
-        writer.startMapping(); // start of links map
-        writer.putKeyValue("name", name);
-        writer.putKeyValue("jointType", "free");
-        writer.putKey("centerOfMass");
-        writer.startFlowStyleListing(); // start of centerOfMass list
-        for(int i = 0; i < 3; ++i) {
-            writer.putScalar(0.0);
-        }
-        writer.endListing(); // end of centerOfMass list
-        writer.putKeyValue("mass", mass);
-        writer.putKey("inertia");
-        writer.startFlowStyleListing(); // start of inertia list
-        VectorXd inertia;
-        inertia.resize(9);
-        inertia = calcInertia();
-        for(int i = 0; i < 9; ++i) {
-            writer.putScalar(inertia[i]);
-        }
-        writer.endListing(); // end of inertia list
-        writer.putKey("elements");
-        writer.startMapping(); // start of elements map
-        writer.putKey("Visual");
-        writer.startMapping(); // start of Visual map
-        writer.putKey("elements");
-        writer.startMapping(); // start of elements map
-        writer.putKey("Shape");
-        writer.startMapping(); // start of Shape map
-        writer.putKey("geometry");
-        writer.startMapping(); // start of geometry map
-        writer.putKeyValue("type", "Extrusion");
-        writer.putKey("crossSection");
-        writer.startFlowStyleListing(); // start of crossSection list
-        double sx = -1.0 * w / 2.0;
-        double sy = -1.0 * h / 2.0;
-        writer.putScalar(sx);
-        writer.putScalar(sy);
+                                            for(int i = 0; i < horizontalGrid; ++i) {
+                                                double x = sx + frameWidth + (frameWidth + gridWidth) * i;
+                                                writer.putScalar(x - 0.0002);
+                                                writer.putScalar(sy);
+                                                writer.putScalar(x - 0.0002);
+                                                writer.putScalar(sy + (frameHeight + gridHeight) * verticalGrid);
+                                                writer.putScalar(x - 0.0001);
+                                                writer.putScalar(sy + (frameHeight + gridHeight) * verticalGrid);
+                                                writer.putScalar(x - 0.0001);
+                                                writer.putScalar(sy);
 
-        for(int i = 0; i < horizontalGrid; ++i) {
-            double x = sx + frameWidth + (frameWidth + gridWidth) * i;
-            writer.putScalar(x - 0.0002);
-            writer.putScalar(sy);
-            writer.putScalar(x - 0.0002);
-            writer.putScalar(sy + (frameHeight + gridHeight) * verticalGrid);
-            writer.putScalar(x - 0.0001);
-            writer.putScalar(sy + (frameHeight + gridHeight) * verticalGrid);
-            writer.putScalar(x - 0.0001);
-            writer.putScalar(sy);
+                                                writer.putScalar(x);
+                                                writer.putScalar(sy);
 
-            writer.putScalar(x);
-            writer.putScalar(sy);
+                                                for(int j = 0; j < verticalGrid; ++j) {
+                                                    double y = sy + (frameHeight + gridHeight) * j;
+                                                    writer.putScalar(x + gridWidth - 0.000001);
+                                                    writer.putScalar(y);
+                                                    writer.putScalar(x + gridWidth - 0.000001);
+                                                    writer.putScalar(y + frameHeight);
+                                                    writer.putScalar(x);
+                                                    writer.putScalar(y + frameHeight);
+                                                    writer.putScalar(x);
+                                                    writer.putScalar(y + frameHeight + gridHeight);
+                                                }
+                                                writer.putScalar(x + gridWidth);
+                                                writer.putScalar(sy + (frameHeight + gridHeight) * verticalGrid);
+                                                writer.putScalar(x + gridWidth);
+                                                writer.putScalar(sy);
+                                            }
 
-            for(int j = 0; j < verticalGrid; ++j) {
-                double y = sy + (frameHeight + gridHeight) * j;
-                writer.putScalar(x + gridWidth - 0.000001);
-                writer.putScalar(y);
-                writer.putScalar(x + gridWidth - 0.000001);
-                writer.putScalar(y + frameHeight);
-                writer.putScalar(x);
-                writer.putScalar(y + frameHeight);
-                writer.putScalar(x);
-                writer.putScalar(y + frameHeight + gridHeight);
-            }
-            writer.putScalar(x + gridWidth);
-            writer.putScalar(sy + (frameHeight + gridHeight) * verticalGrid);
-            writer.putScalar(x + gridWidth);
-            writer.putScalar(sy);
-        }
+                                            writer.putScalar(-sx);
+                                            writer.putScalar(sy);
+                                            writer.putScalar(-sx);
+                                            writer.putScalar(-sy);
+                                            writer.putScalar(sx);
+                                            writer.putScalar(-sy);
 
-        writer.putScalar(-sx);
-        writer.putScalar(sy);
-        writer.putScalar(-sx);
-        writer.putScalar(-sy);
-        writer.putScalar(sx);
-        writer.putScalar(-sy);
+                                            writer.putScalar(sx);
+                                            writer.putScalar(-sy - frameHeight + 0.000002);
+                                            writer.putScalar(-sx - 0.000001);
+                                            writer.putScalar(-sy - frameHeight + 0.000002);
+                                            writer.putScalar(-sx - 0.000001);
+                                            writer.putScalar(-sy - frameHeight + 0.000001);
+                                            writer.putScalar(sx);
+                                            writer.putScalar(-sy - frameHeight + 0.000001);
 
-        writer.putScalar(sx);
-        writer.putScalar(-sy - frameHeight + 0.000002);
-        writer.putScalar(-sx - 0.000001);
-        writer.putScalar(-sy - frameHeight + 0.000002);
-        writer.putScalar(-sx - 0.000001);
-        writer.putScalar(-sy - frameHeight + 0.000001);
-        writer.putScalar(sx);
-        writer.putScalar(-sy - frameHeight + 0.000001);
+                                            writer.putScalar(sx);
+                                            writer.putScalar(sy);
+                                        } writer.endListing(); // end of crossSection list
+                                        writer.putKey("spine");
+                                        writer.startFlowStyleListing(); {
+                                            for(int i = 0; i < 6; ++i) {
+                                                writer.putScalar(spine[i]);
+                                            }
+                                        } writer.endListing(); // end of spine list
+                                    } writer.endMapping(); // end of geometry map
+                                    writer.putKey("appearance");
+                                    writer.startFlowStyleMapping(); {
+                                        writer.putKey("material");
+                                        writer.startMapping(); {
+                                            writer.putKey("diffuseColor");
+                                            QPalette palette = colorButton->palette();
+                                            QColor color = palette.color(QPalette::Button);
+                                            double red = (double)color.red() / 255.0;
+                                            double green = (double)color.green() / 255.0;
+                                            double blue = (double)color.blue() / 255.0;
+                                            Vector3 diffuseColor(red, green, blue);
+                                            writer.startFlowStyleListing(); {
+                                                for(int i = 0; i < 3; ++i) {
+                                                    writer.putScalar(diffuseColor[i]);
+                                                }
+                                            } writer.endListing(); // end of diffuseColor list
+                                        } writer.endMapping(); // end of material map
+                                    } writer.endMapping(); // end of appearance map
+                                } writer.endMapping(); // end of Shape map
+                            } writer.endMapping(); // end of elements map
+                        } writer.endMapping(); // end of Visual map
 
-        writer.putScalar(sx);
-        writer.putScalar(sy);
-        writer.endListing(); // end of crossSection list
-        writer.putKey("spine");
-        writer.startFlowStyleListing(); // start of spine list
-        Vector6 spine;
-        spine << 0.0, 0.0, -height / 2.0, 0.0, 0.0, height / 2.0;
-        for(int i = 0; i < 6; ++i) {
-            writer.putScalar(spine[i]);
-        }
-        writer.endListing(); // end of spine list
-        writer.endMapping(); // end of geometry map
-        writer.putKey("appearance");
-        writer.startFlowStyleMapping(); // start of appearance map
-        writer.putKey("material");
-        writer.startMapping(); // start of material map
-        writer.putKey("diffuseColor");
-        QPalette palette = colorButton->palette();
-        QColor color = palette.color(QPalette::Button);
-        double red = (double)color.red() / 255.0;
-        double green = (double)color.green() / 255.0;
-        double blue = (double)color.blue() / 255.0;
-        Vector3 diffuseColor(red, green, blue);
-        writer.startFlowStyleListing(); // start of diffuseColor list
-        for(int i = 0; i < 3; ++i) {
-            writer.putScalar(diffuseColor[i]);
-        }
-        writer.endListing(); // end of diffuseColor list
-        writer.endMapping(); // end of material map
-        writer.endMapping(); // end of appearance map
-        writer.endMapping(); // end of Shape map
-        writer.endMapping(); // end of elements map
-        writer.endMapping(); // end of Visual map
-
-        writer.putKey("Collision");
-        writer.startMapping(); // start of Visual map
-        writer.putKey("elements");
-        writer.startMapping(); // start of elements map
-        writer.putKey("Shape");
-        writer.startMapping(); // start of Shape map
-        writer.putKey("geometry");
-        writer.startMapping(); // start of geometry map
-        writer.putKeyValue("type", "Extrusion");
-        writer.putKey("crossSection");
-        writer.startFlowStyleListing(); // start of crossSection list
-
-        writer.putScalar(sx);
-        writer.putScalar(sy);
-        writer.putScalar(-sx);
-        writer.putScalar(sy);
-        writer.putScalar(-sx);
-        writer.putScalar(-sy);
-        writer.putScalar(sx);
-        writer.putScalar(-sy);
-        writer.putScalar(sx);
-        writer.putScalar(sy);
-
-        writer.endListing(); // end of crossSection list
-        writer.putKey("spine");
-        writer.startFlowStyleListing(); // start of spine list
-
-        for(int i = 0; i < 6; ++i) {
-            writer.putScalar(spine[i]);
-        }
-        writer.endListing(); // end of spine list
-        writer.endMapping(); // end of geometry map
-
-        writer.endMapping(); // end of Shape map
-        writer.endMapping(); // end of elements map
-        writer.endMapping(); // end of Collision map
-        writer.endMapping(); // end of elements map
-        writer.endMapping(); // end of links map
-        writer.endListing(); // end of links list
-        writer.endMapping(); // end of body map
+                        writer.putKey("Collision");
+                        writer.startMapping(); {
+                            writer.putKey("elements");
+                            writer.startMapping(); {
+                                writer.putKey("Shape");
+                                writer.startMapping(); {
+                                    writer.putKey("geometry");
+                                    writer.startMapping(); {
+                                        writer.putKeyValue("type", "Extrusion");
+                                        writer.putKey("crossSection");
+                                        writer.startFlowStyleListing(); {
+                                            writer.putScalar(sx);
+                                            writer.putScalar(sy);
+                                            writer.putScalar(-sx);
+                                            writer.putScalar(sy);
+                                            writer.putScalar(-sx);
+                                            writer.putScalar(-sy);
+                                            writer.putScalar(sx);
+                                            writer.putScalar(-sy);
+                                            writer.putScalar(sx);
+                                            writer.putScalar(sy);
+                                        } writer.endListing(); // end of crossSection list
+                                        writer.putKey("spine");
+                                        writer.startFlowStyleListing(); {
+                                            for(int i = 0; i < 6; ++i) {
+                                                writer.putScalar(spine[i]);
+                                            }
+                                        } writer.endListing(); // end of spine list
+                                    } writer.endMapping(); // end of geometry map
+                                } writer.endMapping(); // end of Shape map
+                            } writer.endMapping(); // end of elements map
+                        } writer.endMapping(); // end of Collision map
+                    } writer.endMapping(); // end of elements map
+                } writer.endMapping(); // end of links map
+            } writer.endListing(); // end of links list
+        } writer.endMapping(); // end of body map
     }
     return true;
 }

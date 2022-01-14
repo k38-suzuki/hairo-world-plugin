@@ -39,14 +39,14 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
-void putKeyVector3(YAMLWriter* writer, const string key, const Vector3 value)
+void putKeyVector3(YAMLWriter& writer, const string key, const Vector3 value)
 {
-    writer->putKey(key);
-    writer->startFlowStyleListing();
-    for(int i = 0; i < 3; i++) {
-        writer->putScalar(value[i]);
+    writer.putKey(key);
+    writer.startFlowStyleListing();
+    for(int i = 0; i < 3; ++i) {
+        writer.putScalar(value[i]);
     }
-    writer->endListing();
+    writer.endListing();
 }
 
 
@@ -1230,7 +1230,7 @@ bool CrawlerConfigDialog::writeYaml(const string& filename)
 
             for(int i = 0; i < NUM_BUTTONS; ++i) {
                 string key = "button" + to_string(i);
-                putKeyVector3(&writer, key, extractColor(buttons[i]));
+                putKeyVector3(writer, key, extractColor(buttons[i]));
             }
 
             writer.putKey("check");
@@ -1265,9 +1265,9 @@ bool CrawlerConfigDialog::write(const string& filename)
         writer.startListing(); {
             writer.startMapping(); {
                 writer.putKeyValue("name", "CHASSIS");
-                putKeyVector3(&writer, "translation", Vector3(0.0, 0.0, 0.0));
+                putKeyVector3(writer, "translation", Vector3(0.0, 0.0, 0.0));
                 writer.putKeyValue("jointType", "free");
-                putKeyVector3(&writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+                putKeyVector3(writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
                 writer.putKeyValue("mass", dspins[CHS_MAS]->value());
                 writer.putKey("inertia");
                 writer.startFlowStyleListing(); {
@@ -1286,7 +1286,7 @@ bool CrawlerConfigDialog::write(const string& filename)
                         writer.putKey("geometry");
                         writer.startFlowStyleMapping(); {
                             writer.putKeyValue("type", "Box");
-                            putKeyVector3(&writer, "size", Vector3(dspins[CHS_XSZ]->value(),
+                            putKeyVector3(writer, "size", Vector3(dspins[CHS_XSZ]->value(),
                                                                    dspins[CHS_YSZ]->value(),
                                                                    dspins[CHS_ZSZ]->value()));
                         } writer.endMapping(); // end geometry mapping
@@ -1294,8 +1294,8 @@ bool CrawlerConfigDialog::write(const string& filename)
                         writer.startFlowStyleMapping(); {
                             writer.putKey("material");
                             writer.startFlowStyleMapping(); {
-                                putKeyVector3(&writer, "diffuseColor", extractColor(buttons[CHS_CLR]));
-                                putKeyVector3(&writer, "specularColor", extractColor(buttons[CHS_CLR]));
+                                putKeyVector3(writer, "diffuseColor", extractColor(buttons[CHS_CLR]));
+                                putKeyVector3(writer, "specularColor", extractColor(buttons[CHS_CLR]));
                                 writer.putKeyValue("shininess", 0.6);
                             } writer.endMapping(); // end material mapping
                         } writer.endMapping(); // end appearance mapping
@@ -1306,7 +1306,7 @@ bool CrawlerConfigDialog::write(const string& filename)
             writer.startMapping(); {
                 writer.putKeyValue("name", "TRACK_L");
                 writer.putKeyValue("parent", "CHASSIS");
-                putKeyVector3(&writer, "translation", Vector3(0.0,
+                putKeyVector3(writer, "translation", Vector3(0.0,
                                                               (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0,
                                                               -dspins[CHS_ZSZ]->value() / 2.0));
                 writeTrack(writer);
@@ -1315,7 +1315,7 @@ bool CrawlerConfigDialog::write(const string& filename)
             writer.startMapping(); {
                 writer.putKeyValue("name", "TRACK_R");
                 writer.putKeyValue("parent", "CHASSIS");
-                putKeyVector3(&writer, "translation", Vector3(0.0,
+                putKeyVector3(writer, "translation", Vector3(0.0,
                                                               -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0,
                                                               -dspins[CHS_ZSZ]->value() / 2.0));
                 writeTrack(writer);
@@ -1325,7 +1325,7 @@ bool CrawlerConfigDialog::write(const string& filename)
                 writer.startMapping(); {
                     writer.putKeyValue("name", "SPACER_LF");
                     writer.putKeyValue("parent", "CHASSIS");
-                    putKeyVector3(&writer, "translation", Vector3(dspins[TRK_WBS]->value() / 2.0,
+                    putKeyVector3(writer, "translation", Vector3(dspins[TRK_WBS]->value() / 2.0,
                                                                   (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(),
                                                                   -dspins[CHS_ZSZ]->value() / 2.0));
                     writer.putKeyValue("jointId", jointId++);
@@ -1335,7 +1335,7 @@ bool CrawlerConfigDialog::write(const string& filename)
                 writer.startMapping(); {
                     writer.putKeyValue("name", "SPACER_RF");
                     writer.putKeyValue("parent", "CHASSIS");
-                    putKeyVector3(&writer, "translation", Vector3(dspins[TRK_WBS]->value() / 2.0,
+                    putKeyVector3(writer, "translation", Vector3(dspins[TRK_WBS]->value() / 2.0,
                                                                   -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(),
                                                                   -dspins[CHS_ZSZ]->value() / 2.0));
                     writer.putKeyValue("jointId", jointId++);
@@ -1345,7 +1345,7 @@ bool CrawlerConfigDialog::write(const string& filename)
                 writer.startMapping(); {
                     writer.putKeyValue("name", "TRACK_LF");
                     writer.putKeyValue("parent", "SPACER_LF");
-                    putKeyVector3(&writer, "translation", Vector3(dspins[FFL_WBS]->value() / 2.0,
+                    putKeyVector3(writer, "translation", Vector3(dspins[FFL_WBS]->value() / 2.0,
                                                                   (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0,
                                                                   0.0));
                     writeSubTrackF(writer);
@@ -1354,7 +1354,7 @@ bool CrawlerConfigDialog::write(const string& filename)
                 writer.startMapping(); {
                     writer.putKeyValue("name", "TRACK_RF");
                     writer.putKeyValue("parent", "SPACER_RF");
-                    putKeyVector3(&writer, "translation", Vector3(dspins[FFL_WBS]->value() / 2.0,
+                    putKeyVector3(writer, "translation", Vector3(dspins[FFL_WBS]->value() / 2.0,
                                                                   -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0,
                                                                   0.0));
                     writeSubTrackF(writer);
@@ -1364,7 +1364,7 @@ bool CrawlerConfigDialog::write(const string& filename)
                 writer.startMapping(); {
                     writer.putKeyValue("name", "SPACER_LR");
                     writer.putKeyValue("parent", "CHASSIS");
-                    putKeyVector3(&writer, "translation", Vector3(-dspins[TRK_WBS]->value() / 2.0,
+                    putKeyVector3(writer, "translation", Vector3(-dspins[TRK_WBS]->value() / 2.0,
                                                                   (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(),
                                                                   -dspins[CHS_ZSZ]->value() / 2.0));
                     writer.putKeyValue("jointId", jointId++);
@@ -1374,7 +1374,7 @@ bool CrawlerConfigDialog::write(const string& filename)
                 writer.startMapping(); {
                     writer.putKeyValue("name", "SPACER_RR");
                     writer.putKeyValue("parent", "CHASSIS");
-                    putKeyVector3(&writer, "translation", Vector3(-dspins[TRK_WBS]->value() / 2.0,
+                    putKeyVector3(writer, "translation", Vector3(-dspins[TRK_WBS]->value() / 2.0,
                                                                   -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(),
                                                                   -dspins[CHS_ZSZ]->value() / 2.0));
                     writer.putKeyValue("jointId", jointId++);
@@ -1384,7 +1384,7 @@ bool CrawlerConfigDialog::write(const string& filename)
                 writer.startMapping(); {
                     writer.putKeyValue("name", "TRACK_LR");
                     writer.putKeyValue("parent", "SPACER_LR");
-                    putKeyVector3(&writer, "translation", Vector3(-dspins[RFL_WBS]->value() / 2.0,
+                    putKeyVector3(writer, "translation", Vector3(-dspins[RFL_WBS]->value() / 2.0,
                                                                   (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0,
                                                                   0.0));
                     writeSubTrackR(writer);
@@ -1393,7 +1393,7 @@ bool CrawlerConfigDialog::write(const string& filename)
                 writer.startMapping(); {
                     writer.putKeyValue("name", "TRACK_RR");
                     writer.putKeyValue("parent", "SPACER_RR");
-                    putKeyVector3(&writer, "translation", Vector3(-dspins[RFL_WBS]->value() / 2.0,
+                    putKeyVector3(writer, "translation", Vector3(-dspins[RFL_WBS]->value() / 2.0,
                                                                   -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0,
                                                                   0.0));
                     writeSubTrackR(writer);
@@ -1409,7 +1409,7 @@ bool CrawlerConfigDialog::writeTrack(YAMLWriter& writer)
 {
     writer.putKeyValue("jointType", "pseudo_continuous_track");
     writer.putKeyValue("jointAxis", "Y");
-    putKeyVector3(&writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    putKeyVector3(writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
     writer.putKeyValue("mass", dspins[TRK_MAS]->value());
     writer.putKey("inertia");
     writer.startFlowStyleListing(); {
@@ -1456,7 +1456,7 @@ bool CrawlerConfigDialog::writeTrack(YAMLWriter& writer)
             writer.startFlowStyleMapping(); {
                 writer.putKey("material");
                 writer.startFlowStyleMapping(); {
-                    putKeyVector3(&writer, "diffuseColor", extractColor(buttons[TRK_CLR]));
+                    putKeyVector3(writer, "diffuseColor", extractColor(buttons[TRK_CLR]));
                 } writer.endMapping(); // end material mapping
             } writer.endMapping(); // end appearance mapping
         } writer.endMapping(); // end shape mapping
@@ -1469,7 +1469,7 @@ bool CrawlerConfigDialog::writeSpacer(YAMLWriter& writer)
 {
     writer.putKeyValue("jointType", "revolute");
     writer.putKeyValue("jointAxis", "-Y");
-    putKeyVector3(&writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    putKeyVector3(writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
     writer.putKeyValue("mass", dspins[SPC_MAS]->value());
     writer.putKey("inertia");
     writer.startFlowStyleListing(); {
@@ -1494,8 +1494,8 @@ bool CrawlerConfigDialog::writeSpacer(YAMLWriter& writer)
             writer.startFlowStyleMapping(); {
                 writer.putKey("material");
                 writer.startFlowStyleMapping(); {
-                    putKeyVector3(&writer, "diffuseColor", extractColor(buttons[SPC_CLR]));
-                    putKeyVector3(&writer, "specularColor", extractColor(buttons[SPC_CLR]));
+                    putKeyVector3(writer, "diffuseColor", extractColor(buttons[SPC_CLR]));
+                    putKeyVector3(writer, "specularColor", extractColor(buttons[SPC_CLR]));
                     writer.putKeyValue("shininess", 0.6);
                 } writer.endMapping(); // end material mapping
             } writer.endMapping(); // end appearance mapping
@@ -1509,7 +1509,7 @@ bool CrawlerConfigDialog::writeSubTrackF(YAMLWriter& writer)
 {
     writer.putKeyValue("jointType", "pseudo_continuous_track");
     writer.putKeyValue("jointAxis", "Y");
-    putKeyVector3(&writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    putKeyVector3(writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
     writer.putKeyValue("mass", dspins[FFL_MAS]->value());
     double frontSubTrackRadius = std::max(dspins[FFL_FRD]->value(), dspins[FFL_RRD]->value());
     writer.putKey("inertia");
@@ -1557,7 +1557,7 @@ bool CrawlerConfigDialog::writeSubTrackF(YAMLWriter& writer)
             writer.startFlowStyleMapping(); {
                 writer.putKey("material");
                 writer.startFlowStyleMapping(); {
-                                    putKeyVector3(&writer, "diffuseColor", extractColor(buttons[FFL_CLR]));
+                    putKeyVector3(writer, "diffuseColor", extractColor(buttons[FFL_CLR]));
                 } writer.endMapping(); // end material mapping
             } writer.endMapping(); // end appearance mapping
         } writer.endMapping(); // end shape mapping
@@ -1570,7 +1570,7 @@ bool CrawlerConfigDialog::writeSubTrackR(YAMLWriter& writer)
 {
     writer.putKeyValue("jointType", "pseudo_continuous_track");
     writer.putKeyValue("jointAxis", "Y");
-    putKeyVector3(&writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    putKeyVector3(writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
     writer.putKeyValue("mass", dspins[RFL_MAS]->value());
     double rearSubTrackRadius = std::max(dspins[RFL_FRD]->value(), dspins[RFL_RRD]->value());
     writer.putKey("inertia");
@@ -1618,8 +1618,7 @@ bool CrawlerConfigDialog::writeSubTrackR(YAMLWriter& writer)
             writer.startFlowStyleMapping(); {
                 writer.putKey("material");
                 writer.startFlowStyleMapping(); {
-                    putKeyVector3(&writer, "diffuseColor", extractColor(buttons[RFL_CLR]));
-
+                    putKeyVector3(writer, "diffuseColor", extractColor(buttons[RFL_CLR]));
                 } writer.endMapping(); // end material mapping
             } writer.endMapping(); // end appearance mapping
         } writer.endMapping(); // end shape mapping

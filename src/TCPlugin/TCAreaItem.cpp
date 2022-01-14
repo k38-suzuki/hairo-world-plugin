@@ -95,14 +95,14 @@ bool loadDocument(TCAreaItem* item, const string& filename)
 }
 
 
-void putKeyVector3(YAMLWriter* writer, const string& key, const Vector3& value)
+void putKeyVector3(YAMLWriter& writer, const string& key, const Vector3& value)
 {
-    writer->putKey(key);
-    writer->startFlowStyleListing();
-    for(int i = 0; i < 3; i++) {
-        writer->putScalar(value[i]);
-    }
-    writer->endListing();
+    writer.putKey(key);
+    writer.startFlowStyleListing(); {
+        for(int i = 0; i < 3; ++i) {
+            writer.putScalar(value[i]);
+        }
+    } writer.endListing();
 }
 
 }
@@ -213,44 +213,38 @@ bool TCAreaItem::save(TCAreaItem* item, const string& filename)
 {
     if(!filename.empty()) {
         YAMLWriter writer(filename);
-
-        writer.startMapping();
-        writer.putKey("traffics");
-        writer.startListing();
-
-        writer.startMapping();
-        writer.putKeyValue("name", item->name());
-        putKeyVector3(&writer, "translation", item->translation());
-        putKeyVector3(&writer, "rotation", item->rotation());
-        writer.putKeyValue("type", item->type());
-        if(item->type() == AreaItem::BOX) {
-            putKeyVector3(&writer, "size", item->size());
-        } else if(item->type() == AreaItem::CYLINDER) {
-            writer.putKeyValue("radius", item->radius());
-            writer.putKeyValue("height", item->height());
-        } else if(item->type() == AreaItem::SPHERE) {
-            writer.putKeyValue("radius", item->radius());
-        }
-        writer.putKeyValue("inboundDelay", item->inboundDelay());
-        writer.putKeyValue("inboundRate", item->inboundRate());
-        writer.putKeyValue("inboundLoss", item->inboundLoss());
-        writer.putKeyValue("outboundDelay", item->outboundDelay());
-        writer.putKeyValue("outboundRate", item->outboundRate());
-        writer.putKeyValue("outboundLoss", item->outboundLoss());
-
-        writer.putKeyValue("sourceIP", item->source());
-        writer.putKeyValue("destinationIP", item->destination());
-
-        putKeyVector3(&writer, "diffuseColor", item->diffuseColor());
-        putKeyVector3(&writer, "emissiveColor", item->emissiveColor());
-        putKeyVector3(&writer, "specularColor", item->specularColor());
-
-        writer.putKeyValue("shininess", item->shininess());
-        writer.putKeyValue("transparency", item->transparency());
-        writer.endMapping();
-
-        writer.endListing();
-        writer.endMapping();
+        writer.startMapping(); {
+            writer.putKey("traffics");
+            writer.startListing(); {
+                writer.startMapping(); {
+                    writer.putKeyValue("name", item->name());
+                    putKeyVector3(writer, "translation", item->translation());
+                    putKeyVector3(writer, "rotation", item->rotation());
+                    writer.putKeyValue("type", item->type());
+                    if(item->type() == AreaItem::BOX) {
+                        putKeyVector3(writer, "size", item->size());
+                    } else if(item->type() == AreaItem::CYLINDER) {
+                        writer.putKeyValue("radius", item->radius());
+                        writer.putKeyValue("height", item->height());
+                    } else if(item->type() == AreaItem::SPHERE) {
+                        writer.putKeyValue("radius", item->radius());
+                    }
+                    writer.putKeyValue("inboundDelay", item->inboundDelay());
+                    writer.putKeyValue("inboundRate", item->inboundRate());
+                    writer.putKeyValue("inboundLoss", item->inboundLoss());
+                    writer.putKeyValue("outboundDelay", item->outboundDelay());
+                    writer.putKeyValue("outboundRate", item->outboundRate());
+                    writer.putKeyValue("outboundLoss", item->outboundLoss());
+                    writer.putKeyValue("sourceIP", item->source());
+                    writer.putKeyValue("destinationIP", item->destination());
+                    putKeyVector3(writer, "diffuseColor", item->diffuseColor());
+                    putKeyVector3(writer, "emissiveColor", item->emissiveColor());
+                    putKeyVector3(writer, "specularColor", item->specularColor());
+                    writer.putKeyValue("shininess", item->shininess());
+                    writer.putKeyValue("transparency", item->transparency());
+                } writer.endMapping();
+            } writer.endListing();
+        } writer.endMapping();
     }
     return true;
 }
