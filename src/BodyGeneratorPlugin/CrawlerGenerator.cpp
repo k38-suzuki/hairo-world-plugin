@@ -33,8 +33,8 @@
 #include "FileFormWidget.h"
 #include "gettext.h"
 
-using namespace std;
 using namespace cnoid;
+using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
@@ -71,6 +71,29 @@ string cylinderInertia(double mass, double radius, double height)
     string inertia = to_string(i) + ", 0.0, 0.0, "
             + "0.0, " + to_string(iyy) + ", 0.0, "
             + "0.0, 0.0, " + to_string(i);
+    return inertia;
+}
+
+
+VectorXd calcBoxInertia(double mass, double x, double y, double z)
+{
+    VectorXd inertia;
+    inertia.resize(9);
+    double ixx = mass * (y * y + z * z) / 12.0;
+    double iyy = mass * (z * z + x * x) / 12.0;
+    double izz = mass * (x * x + y * y) / 12.0;
+    inertia << ixx, 0.0, 0.0, 0.0, iyy, 0.0, 0.0, 0.0, izz;
+    return inertia;
+}
+
+
+VectorXd calcCylinderInertia(double mass, double radius, double height)
+{
+    VectorXd inertia;
+    inertia.resize(9);
+    double i = mass * (3.0 * radius * radius + height * height) / 12.0;
+    double iyy = mass * radius * radius / 2.0;
+    inertia << i, 0.0, 0.0, 0.0, iyy, 0.0, 0.0, 0.0, i;
     return inertia;
 }
 
@@ -253,12 +276,17 @@ public:
     void onImportYamlButtonClicked();
     bool loadConfig(const string& filename, ostream& os = nullout());
     void onEnableAgxCheckToggled(const bool& on);
-    void onExportBody(const string& fileName);
     void onExportAGXBody(const string& fileName);
     void onColorChanged(PushButton* pushbutton);
     void setColor(PushButton* pushbutton, const Vector3& color);
     Vector3 extractColor(PushButton* colorButton);
     string getSaveFilename(FileDialog& dialog, const string& suffix);
+    bool writeYaml(const string& filename);
+    bool write(const string& filename);
+    bool writeTrack(YAMLWriter& writer);
+    bool writeSpacer(YAMLWriter& writer);
+    bool writeSubTrackF(YAMLWriter& writer);
+    bool writeSubTrackR(YAMLWriter& writer);
 };
 
 
@@ -421,7 +449,7 @@ CrawlerConfigDialog::CrawlerConfigDialog()
     vbox->addWidget(buttonBox);
     setLayout(vbox);
 
-    connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     toolButtons[RESET]->sigClicked().connect([&](){ onResetButtonClicked(); });
     toolButtons[IMPORT]->sigClicked().connect([&](){ onImportYamlButtonClicked(); });
     toolButtons[EXPORT]->sigClicked().connect([&](){ onExportYamlButtonClicked(); });
@@ -434,7 +462,7 @@ bool CrawlerConfigDialog::save(const string& filename)
 {
     if(!filename.empty()) {
         if(!checks[AGX_CHK]->isChecked()) {
-            onExportBody(filename);
+            write(filename);
         } else {
             onExportAGXBody(filename);
         }
@@ -610,47 +638,7 @@ void CrawlerConfigDialog::onExportYamlButtonClicked()
     }
 
     if(!filename.empty()) {
-        filesystem::path path(filename);
-        string bodyName = path.stem().string();
-
-        YAMLWriter writer(filename);
-
-        writer.startMapping();
-        writer.putKeyValue("format", "CrawlerRobotBuilderYaml");
-        writer.putKeyValue("formatVersion", "1.0");
-        writer.putKeyValue("name", bodyName);
-        writer.putKey("configs");
-        writer.startListing();
-
-        writer.startMapping();
-        writer.putKey("doubleSpin");
-        writer.startFlowStyleListing();
-        for(int i = 0; i < NUM_DSPINS; ++i) {
-            writer.putScalar(dspins[i]->value());
-        }
-        writer.endListing();
-
-        writer.putKey("spin");
-        writer.startFlowStyleListing();
-        for(int i = 0; i < NUM_SPINS; ++i) {
-            writer.putScalar(agxspins[i]->value());
-        }
-        writer.endListing();
-
-        for(int i = 0; i < NUM_BUTTONS; ++i) {
-            string key = "button" + to_string(i);
-            putKeyVector3(&writer, key, extractColor(buttons[i]));
-        }
-
-        writer.putKey("check");
-        writer.startFlowStyleListing();
-        for(int i = 0; i < NUM_CHECKS; ++i) {
-            writer.putScalar(checks[i]->isChecked());
-        }
-        writer.endListing();
-
-        writer.endListing();
-        writer.endMapping();
+        writeYaml(filename);
     }
 }
 
@@ -692,256 +680,6 @@ void CrawlerConfigDialog::onEnableAgxCheckToggled(const bool& on)
     agxspins[FLP_BSHFPE]->setEnabled(on);
     agxspins[FLP_BMSHNF]->setEnabled(on);
     agxspins[FLP_BHCE]->setEnabled(on);
-}
-
-
-void CrawlerConfigDialog::onExportBody(const string& fileName)
-{
-    filesystem::path path(fileName);
-    string bodyName = path.stem().string();
-
-    FILE* fp = fopen(fileName.c_str(), "w");
-    if(fp == NULL) {
-        return;
-    }
-
-    int id = 0;
-    fprintf(fp, "format: ChoreonoidBody\n");
-    fprintf(fp, "formatVersion: 1.0\n");
-    fprintf(fp, "angleUnit: degree\n");
-    fprintf(fp, "name: %s\n", bodyName.c_str());
-    fprintf(fp, "\n");
-    fprintf(fp, "TRACK_BODY: &TrackBody\n");
-    fprintf(fp, "  parent: CHASSIS\n");
-    fprintf(fp, "  jointType: pseudo_continuous_track\n");
-    fprintf(fp, "  jointAxis: Y\n");
-    fprintf(fp, "  centerOfMass: [ 0, 0, 0 ]\n");
-    fprintf(fp, "  mass: %3.2lf\n", dspins[TRK_MAS]->value());
-    fprintf(fp, "  inertia: [ %s ]\n", boxInertia(dspins[TRK_MAS]->value(), dspins[TRK_WBS]->value(), dspins[TRK_WDT]->value(), dspins[TRK_RAD]->value() * 2.0).c_str());
-    fprintf(fp, "  elements:\n");
-    fprintf(fp, "    -\n");
-    fprintf(fp, "      type: Shape\n");
-    fprintf(fp, "      geometry:\n");
-    fprintf(fp, "        type: Extrusion\n");
-    fprintf(fp, "        crossSection: [\n");
-    for(int i = 0; i < 9; i++) {
-        fprintf(fp, "           %lf, %lf, \n",
-                dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN),
-                dspins[TRK_RAD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
-    }
-    for(int i = 0; i < 9; i++) {
-        fprintf(fp, "           %lf, %lf, \n",
-                -dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos((90.0 + 22.5 * i) * TO_RADIAN),
-                dspins[TRK_RAD]->value() * sin((90.0 + 22.5 * i) * TO_RADIAN));
-    }
-    for(int i = 0; i < 1; i++) {
-        fprintf(fp, "           %lf, %lf, \n",
-                dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN),
-                dspins[TRK_RAD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
-    }
-    fprintf(fp, "          ]\n");
-    fprintf(fp, "        spine: [ 0, %lf, 0, 0, %lf, 0 ]\n", -dspins[TRK_WDT]->value() / 2.0, dspins[TRK_WDT]->value() / 2.0);
-    fprintf(fp, "      appearance:\n");
-    fprintf(fp, "        material:\n");
-    fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[TRK_CLR])[0], extractColor(buttons[TRK_CLR])[1], extractColor(buttons[TRK_CLR])[2]);
-    fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[TRK_CLR])[0], extractColor(buttons[TRK_CLR])[1], extractColor(buttons[TRK_CLR])[2]);
-    fprintf(fp, "          shininess: 0.6\n");
-    fprintf(fp, "\n");
-    fprintf(fp, "SPACER_BODY: &SpacerBody\n");
-    fprintf(fp, "  parent: CHASSIS\n");
-    fprintf(fp, "  jointType: revolute\n");
-    fprintf(fp, "  jointAxis: -Y\n");
-    fprintf(fp, "  mass: %3.2lf\n", dspins[SPC_MAS]->value());
-    fprintf(fp, "  inertia: [ %s ]\n", cylinderInertia(dspins[SPC_MAS]->value(), dspins[SPC_RAD]->value(), dspins[SPC_WDT]->value()).c_str());
-    fprintf(fp, "  elements:\n");
-    fprintf(fp, "    -\n");
-    fprintf(fp, "      type: Shape\n");
-    fprintf(fp, "      geometry:\n");
-    fprintf(fp, "        type: Cylinder\n");
-    fprintf(fp, "        radius: %3.2lf\n", dspins[SPC_RAD]->value());
-    fprintf(fp, "        height: %3.2lf\n", dspins[SPC_WDT]->value());
-    fprintf(fp, "      appearance:\n");
-    fprintf(fp, "        material:\n");
-    fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[SPC_CLR])[0], extractColor(buttons[SPC_CLR])[1], extractColor(buttons[SPC_CLR])[2]);
-    fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[SPC_CLR])[0], extractColor(buttons[SPC_CLR])[1], extractColor(buttons[SPC_CLR])[2]);
-    fprintf(fp, "          shininess: 0.6\n");
-    fprintf(fp, "\n");
-    fprintf(fp, "TRACKF_BODY: &TrackFBody\n");
-    fprintf(fp, "  jointType: pseudo_continuous_track\n");
-    fprintf(fp, "  jointAxis: Y\n");
-    fprintf(fp, "  centerOfMass: [ 0, 0, 0 ]\n");
-    fprintf(fp, "  mass: %3.2lf\n", dspins[FFL_MAS]->value());
-    double frontSubTrackRadius = std::max(dspins[FFL_FRD]->value(), dspins[FFL_RRD]->value());
-    fprintf(fp, "  inertia: [ %s ]\n", boxInertia(dspins[FFL_MAS]->value(), dspins[FFL_WBS]->value(), dspins[FFL_WDT]->value(), frontSubTrackRadius * 2.0).c_str());
-    fprintf(fp, "  elements:\n");
-    fprintf(fp, "    -\n");
-    fprintf(fp, "      type: Shape\n");
-    fprintf(fp, "      geometry:\n");
-    fprintf(fp, "        type: Extrusion\n");
-    fprintf(fp, "        crossSection: [\n");
-    for(int i = 0; i < 9; i++) {
-        fprintf(fp, "           %lf, %lf, \n",
-                dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_FRD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN),
-                dspins[FFL_FRD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
-    }
-    for(int i = 0; i < 9; i++) {
-        fprintf(fp, "           %lf, %lf, \n",
-                -dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_RRD]->value() * cos((90.0 + 22.5 * i) * TO_RADIAN),
-                dspins[FFL_RRD]->value() * sin((90.0 + 22.5 * i) * TO_RADIAN));
-    }
-    for(int i = 0; i < 1; i++) {
-        fprintf(fp, "           %lf, %lf, \n",
-                dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_FRD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN),
-                dspins[FFL_FRD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
-    }
-    fprintf(fp, "          ]\n");
-    fprintf(fp, "        spine: [ 0, %lf, 0, 0, %lf, 0 ]\n", -dspins[FFL_WDT]->value() / 2.0, dspins[FFL_WDT]->value() / 2.0);
-    fprintf(fp, "      appearance:\n");
-    fprintf(fp, "        material:\n");
-    fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[FFL_CLR])[0], extractColor(buttons[FFL_CLR])[1], extractColor(buttons[FFL_CLR])[2]);
-    fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[FFL_CLR])[0], extractColor(buttons[FFL_CLR])[1], extractColor(buttons[FFL_CLR])[2]);
-    fprintf(fp, "          shininess: 0.6\n");
-    fprintf(fp, "\n");
-    fprintf(fp, "TRACKR_BODY: &TrackRBody\n");
-    fprintf(fp, "  jointType: pseudo_continuous_track\n");
-    fprintf(fp, "  jointAxis: Y\n");
-    fprintf(fp, "  centerOfMass: [ 0, 0, 0 ]\n");
-    fprintf(fp, "  mass: %3.2lf\n", dspins[RFL_MAS]->value());
-    double rearSubTrackRadius = std::max(dspins[FFL_FRD]->value(), dspins[FFL_RRD]->value());
-    fprintf(fp, "  inertia: [ %s ]\n", boxInertia(dspins[RFL_MAS]->value(), dspins[RFL_WBS]->value(), dspins[RFL_WDT]->value(), rearSubTrackRadius * 2.0).c_str());
-    fprintf(fp, "  elements:\n");
-    fprintf(fp, "    -\n");
-    fprintf(fp, "      type: Shape\n");
-    fprintf(fp, "      geometry:\n");
-    fprintf(fp, "        type: Extrusion\n");
-    fprintf(fp, "        crossSection: [\n");
-    for(int i = 0; i < 9; i++) {
-        fprintf(fp, "           %lf, %lf, \n",
-                dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_FRD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN),
-                dspins[RFL_FRD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
-    }
-    for(int i = 0; i < 9; i++) {
-        fprintf(fp, "           %lf, %lf, \n",
-                -dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_RRD]->value() * cos((90.0 + 22.5 * i) * TO_RADIAN),
-                dspins[RFL_RRD]->value() * sin((90.0 + 22.5 * i) * TO_RADIAN));
-    }
-    for(int i = 0; i < 1; i++) {
-        fprintf(fp, "           %lf, %lf, \n",
-                dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_FRD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN),
-                dspins[RFL_FRD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
-    }
-    fprintf(fp, "          ]\n");
-    fprintf(fp, "        spine: [ 0, %lf, 0, 0, %lf, 0 ]\n", -dspins[RFL_WDT]->value() / 2.0, dspins[RFL_WDT]->value() / 2.0);
-    fprintf(fp, "      appearance:\n");
-    fprintf(fp, "        material:\n");
-    fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[RFL_CLR])[0], extractColor(buttons[RFL_CLR])[1], extractColor(buttons[RFL_CLR])[2]);
-    fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", extractColor(buttons[RFL_CLR])[0], extractColor(buttons[RFL_CLR])[1], extractColor(buttons[RFL_CLR])[2]);
-    fprintf(fp, "          shininess: 0.6\n");
-    fprintf(fp, "\n");
-    fprintf(fp, "links:\n");
-    fprintf(fp, "  -\n");
-    fprintf(fp, "    name: CHASSIS\n");
-    fprintf(fp, "    translation: [ 0, 0, 0 ]\n");
-    fprintf(fp, "    jointType: free\n");
-    fprintf(fp, "    centerOfMass: [ 0, 0, 0 ]\n");
-    fprintf(fp, "    mass: %3.2lf\n", dspins[CHS_MAS]->value());
-    fprintf(fp, "    inertia: [ %s ]\n", boxInertia(dspins[CHS_MAS]->value(), dspins[CHS_XSZ]->value(), dspins[CHS_YSZ]->value(), dspins[CHS_ZSZ]->value()).c_str());
-    fprintf(fp, "    elements:\n");
-    fprintf(fp, "      -\n");
-    fprintf(fp, "        type: Shape\n");
-    fprintf(fp, "        geometry:\n");
-    fprintf(fp, "          type: Box\n");
-    fprintf(fp, "          size: [ %3.2lf, %3.2lf, %3.2lf ]\n",
-            dspins[CHS_XSZ]->value(),
-            dspins[CHS_YSZ]->value(),
-            dspins[CHS_ZSZ]->value());
-    fprintf(fp, "        appearance:\n");
-    fprintf(fp, "          material:\n");
-    fprintf(fp, "            diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n",
-            extractColor(buttons[CHS_CLR])[0],
-            extractColor(buttons[CHS_CLR])[1],
-            extractColor(buttons[CHS_CLR])[2]);
-    fprintf(fp, "            specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n",
-            extractColor(buttons[CHS_CLR])[0],
-            extractColor(buttons[CHS_CLR])[1],
-            extractColor(buttons[CHS_CLR])[2]);
-    fprintf(fp, "            shininess: 0.6\n");
-    fprintf(fp, "  -\n");
-    fprintf(fp, "    name: TRACK_L\n");
-    fprintf(fp, "    translation: [ 0, %lf, %lf ]\n", (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
-    fprintf(fp, "    <<: *TrackBody\n");
-    fprintf(fp, "  -\n");
-    fprintf(fp, "    name: TRACK_R\n");
-    fprintf(fp, "    translation: [ 0, %lf, %lf ]\n", (-(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0), -dspins[CHS_ZSZ]->value() / 2.0);
-    fprintf(fp, "    <<: *TrackBody\n");
-
-    if(checks[FFL_CHK]->isChecked()) {
-        fprintf(fp, "  -\n");
-        fprintf(fp, "    name: SPACER_LF\n");
-        fprintf(fp, "    translation: [ %lf, %lf, %lf ]\n",
-                dspins[TRK_WBS]->value() / 2.0,
-                (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(),
-                -dspins[CHS_ZSZ]->value() / 2.0);
-        fprintf(fp, "    jointId: %d\n", id++);
-        fprintf(fp, "    <<: *SpacerBody\n");
-        fprintf(fp, "  -\n");
-        fprintf(fp, "    name: SPACER_RF\n");
-        fprintf(fp, "    translation: [ %lf, %lf, %lf ]\n",
-                dspins[TRK_WBS]->value() / 2.0,
-                -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(),
-                -dspins[CHS_ZSZ]->value() / 2.0);
-        fprintf(fp, "    jointId: %d\n", id++);
-        fprintf(fp, "    <<: *SpacerBody\n");
-        fprintf(fp, "  -\n");
-        fprintf(fp, "    name: TRACK_LF\n");
-        fprintf(fp, "    parent: SPACER_LF\n");
-        fprintf(fp, "    translation: [ %lf, %lf, 0 ]\n",
-                dspins[FFL_WBS]->value() / 2.0,
-                (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0);
-        fprintf(fp, "    <<: *TrackFBody\n");
-        fprintf(fp, "  -\n");
-        fprintf(fp, "    name: TRACK_RF\n");
-        fprintf(fp, "    parent: SPACER_RF\n");
-        fprintf(fp, "    translation: [ %lf, %lf, 0 ]\n",
-                dspins[FFL_WBS]->value() / 2.0,
-                -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0);
-        fprintf(fp, "    <<: *TrackFBody\n");
-    }
-
-    if(checks[RFL_CHK]->isChecked()) {
-        fprintf(fp, "  -\n");
-        fprintf(fp, "    name: SPACER_LR\n");
-        fprintf(fp, "    translation: [ %lf, %lf, %lf ]\n",
-                -dspins[TRK_WBS]->value() / 2.0,
-                (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(),
-                -dspins[CHS_ZSZ]->value() / 2.0);
-        fprintf(fp, "    jointId: %d\n", id++);
-        fprintf(fp, "    <<: *SpacerBody\n");
-        fprintf(fp, "  -\n");
-        fprintf(fp, "    name: SPACER_RR\n");
-        fprintf(fp, "    translation: [ %lf, %lf, %lf ]\n",
-                -dspins[TRK_WBS]->value() / 2.0,
-                -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(),
-                -dspins[CHS_ZSZ]->value() / 2.0);
-        fprintf(fp, "    jointId: %d\n", id++);
-        fprintf(fp, "    <<: *SpacerBody\n");
-        fprintf(fp, "  -\n");
-        fprintf(fp, "    name: TRACK_LR\n");
-        fprintf(fp, "    parent: SPACER_LR\n");
-        fprintf(fp, "    translation: [ %lf, %lf, 0 ]\n",
-                -dspins[RFL_WBS]->value() / 2.0,
-                (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0);
-        fprintf(fp, "    <<: *TrackRBody\n");
-        fprintf(fp, "  -\n");
-        fprintf(fp, "    name: TRACK_RR\n");
-        fprintf(fp, "    parent: SPACER_RR\n");
-        fprintf(fp, "    translation: [ %lf, %lf, 0 ]\n",
-                -dspins[RFL_WBS]->value() / 2.0,
-                -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0);
-        fprintf(fp, "    <<: *TrackRBody\n");
-    }
-
-    fclose(fp);
 }
 
 
@@ -1475,4 +1213,434 @@ string CrawlerConfigDialog::getSaveFilename(FileDialog& dialog, const string& su
         }
     }
     return filename;
+}
+
+
+bool CrawlerConfigDialog::writeYaml(const string& filename)
+{
+    if(filename.empty()) {
+        return false;
+    }
+    filesystem::path path(filename);
+    string name = path.stem().string();
+
+    YAMLWriter writer(filename);
+    writer.startMapping(); {
+        writer.putKeyValue("format", "CrawlerRobotBuilderYaml");
+        writer.putKeyValue("formatVersion", "1.0");
+        writer.putKeyValue("name", name);
+        writer.putKey("configs");
+        writer.startListing(); {
+            writer.startMapping();
+            writer.putKey("doubleSpin");
+            writer.startFlowStyleListing(); {
+                for(int i = 0; i < NUM_DSPINS; ++i) {
+                    writer.putScalar(dspins[i]->value());
+                }
+            } writer.endListing();
+
+            writer.putKey("spin");
+            writer.startFlowStyleListing(); {
+                for(int i = 0; i < NUM_SPINS; ++i) {
+                    writer.putScalar(agxspins[i]->value());
+                }
+            } writer.endListing();
+
+            for(int i = 0; i < NUM_BUTTONS; ++i) {
+                string key = "button" + to_string(i);
+                putKeyVector3(&writer, key, extractColor(buttons[i]));
+            }
+
+            writer.putKey("check");
+            writer.startFlowStyleListing(); {
+                for(int i = 0; i < NUM_CHECKS; ++i) {
+                    writer.putScalar(checks[i]->isChecked());
+                }
+            } writer.endListing();
+        } writer.endListing();
+    } writer.endMapping();
+    return true;
+}
+
+
+bool CrawlerConfigDialog::write(const string& filename)
+{
+    if(filename.empty()) {
+        return false;
+    }
+
+    filesystem::path path(filename);
+    string name = path.stem().string();
+
+    YAMLWriter writer(filename);
+    int jointId = 0;
+    writer.startMapping(); {
+        writer.putKeyValue("format", "ChoreonoidBody");
+        writer.putKeyValue("formatVersion", "1.0");
+        writer.putKeyValue("angleUnit", "degree");
+        writer.putKeyValue("name", name);
+        writer.putKey("links");
+        writer.startListing(); {
+            writer.startMapping(); {
+                writer.putKeyValue("name", "CHASSIS");
+                putKeyVector3(&writer, "translation", Vector3(0.0, 0.0, 0.0));
+                writer.putKeyValue("jointType", "free");
+                putKeyVector3(&writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+                writer.putKeyValue("mass", dspins[CHS_MAS]->value());
+                writer.putKey("inertia");
+                writer.startFlowStyleListing(); {
+                    VectorXd inertia = calcBoxInertia(dspins[CHS_MAS]->value(),
+                                                      dspins[CHS_XSZ]->value(),
+                                                      dspins[CHS_YSZ]->value(),
+                                                      dspins[CHS_ZSZ]->value());
+                    for(int i = 0; i < 9; ++i) {
+                        writer.putScalar(inertia[i]);
+                    }
+                } writer.endListing(); // end inertia listing
+                writer.putKey("elements");
+                writer.startMapping(); {
+                    writer.putKey("Shape");
+                    writer.startMapping(); {
+                        writer.putKey("geometry");
+                        writer.startFlowStyleMapping(); {
+                            writer.putKeyValue("type", "Box");
+                            putKeyVector3(&writer, "size", Vector3(dspins[CHS_XSZ]->value(),
+                                                                   dspins[CHS_YSZ]->value(),
+                                                                   dspins[CHS_ZSZ]->value()));
+                        } writer.endMapping(); // end geometry mapping
+                        writer.putKey("appearance");
+                        writer.startFlowStyleMapping(); {
+                            writer.putKey("material");
+                            writer.startFlowStyleMapping(); {
+                                putKeyVector3(&writer, "diffuseColor", extractColor(buttons[CHS_CLR]));
+                                putKeyVector3(&writer, "specularColor", extractColor(buttons[CHS_CLR]));
+                                writer.putKeyValue("shininess", 0.6);
+                            } writer.endMapping(); // end material mapping
+                        } writer.endMapping(); // end appearance mapping
+                    } writer.endMapping(); // end shape mapping
+                } writer.endMapping(); // end elements mapping
+            } writer.endMapping(); // end chassis mapping
+
+            writer.startMapping(); {
+                writer.putKeyValue("name", "TRACK_L");
+                writer.putKeyValue("parent", "CHASSIS");
+                putKeyVector3(&writer, "translation", Vector3(0.0,
+                                                              (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0,
+                                                              -dspins[CHS_ZSZ]->value() / 2.0));
+                writeTrack(writer);
+            } writer.endMapping(); // end trackl mapping
+
+            writer.startMapping(); {
+                writer.putKeyValue("name", "TRACK_R");
+                writer.putKeyValue("parent", "CHASSIS");
+                putKeyVector3(&writer, "translation", Vector3(0.0,
+                                                              -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0,
+                                                              -dspins[CHS_ZSZ]->value() / 2.0));
+                writeTrack(writer);
+            } writer.endMapping(); // end trackr mapping
+
+            if(checks[FFL_CHK]->isChecked()) {
+                writer.startMapping(); {
+                    writer.putKeyValue("name", "SPACER_LF");
+                    writer.putKeyValue("parent", "CHASSIS");
+                    putKeyVector3(&writer, "translation", Vector3(dspins[TRK_WBS]->value() / 2.0,
+                                                                  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(),
+                                                                  -dspins[CHS_ZSZ]->value() / 2.0));
+                    writer.putKeyValue("jointId", jointId++);
+                    writeSpacer(writer);
+                } writer.endMapping(); // end spacerlf mapping
+
+                writer.startMapping(); {
+                    writer.putKeyValue("name", "SPACER_RF");
+                    writer.putKeyValue("parent", "CHASSIS");
+                    putKeyVector3(&writer, "translation", Vector3(dspins[TRK_WBS]->value() / 2.0,
+                                                                  -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(),
+                                                                  -dspins[CHS_ZSZ]->value() / 2.0));
+                    writer.putKeyValue("jointId", jointId++);
+                    writeSpacer(writer);
+                } writer.endMapping(); // end spacerrf mapping
+
+                writer.startMapping(); {
+                    writer.putKeyValue("name", "TRACK_LF");
+                    writer.putKeyValue("parent", "SPACER_LF");
+                    putKeyVector3(&writer, "translation", Vector3(dspins[FFL_WBS]->value() / 2.0,
+                                                                  (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0,
+                                                                  0.0));
+                    writeSubTrackF(writer);
+                } writer.endMapping(); // end tracklf mapping
+
+                writer.startMapping(); {
+                    writer.putKeyValue("name", "TRACK_RF");
+                    writer.putKeyValue("parent", "SPACER_RF");
+                    putKeyVector3(&writer, "translation", Vector3(dspins[FFL_WBS]->value() / 2.0,
+                                                                  -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0,
+                                                                  0.0));
+                    writeSubTrackF(writer);
+                } writer.endMapping(); // end trackrf mapping
+            }
+            if(checks[RFL_CHK]->isChecked()) {
+                writer.startMapping(); {
+                    writer.putKeyValue("name", "SPACER_LR");
+                    writer.putKeyValue("parent", "CHASSIS");
+                    putKeyVector3(&writer, "translation", Vector3(-dspins[TRK_WBS]->value() / 2.0,
+                                                                  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(),
+                                                                  -dspins[CHS_ZSZ]->value() / 2.0));
+                    writer.putKeyValue("jointId", jointId++);
+                    writeSpacer(writer);
+                } writer.endMapping(); // end spacerlr mapping
+
+                writer.startMapping(); {
+                    writer.putKeyValue("name", "SPACER_RR");
+                    writer.putKeyValue("parent", "CHASSIS");
+                    putKeyVector3(&writer, "translation", Vector3(-dspins[TRK_WBS]->value() / 2.0,
+                                                                  -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(),
+                                                                  -dspins[CHS_ZSZ]->value() / 2.0));
+                    writer.putKeyValue("jointId", jointId++);
+                    writeSpacer(writer);
+                } writer.endMapping(); // end spacerrr mapping
+
+                writer.startMapping(); {
+                    writer.putKeyValue("name", "TRACK_LR");
+                    writer.putKeyValue("parent", "SPACER_LR");
+                    putKeyVector3(&writer, "translation", Vector3(-dspins[RFL_WBS]->value() / 2.0,
+                                                                  (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0,
+                                                                  0.0));
+                    writeSubTrackR(writer);
+                } writer.endMapping(); // end tracklr mapping
+
+                writer.startMapping(); {
+                    writer.putKeyValue("name", "TRACK_RR");
+                    writer.putKeyValue("parent", "SPACER_RR");
+                    putKeyVector3(&writer, "translation", Vector3(-dspins[RFL_WBS]->value() / 2.0,
+                                                                  -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0,
+                                                                  0.0));
+                    writeSubTrackR(writer);
+                } writer.endMapping(); // end trackrr mapping
+            }
+        } writer.endListing(); // end links listing
+    } writer.endMapping(); // end body mapping
+    return true;
+}
+
+
+bool CrawlerConfigDialog::writeTrack(YAMLWriter& writer)
+{
+    writer.putKeyValue("jointType", "pseudo_continuous_track");
+    writer.putKeyValue("jointAxis", "Y");
+    putKeyVector3(&writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    writer.putKeyValue("mass", dspins[TRK_MAS]->value());
+    writer.putKey("inertia");
+    writer.startFlowStyleListing(); {
+        VectorXd inertia = calcBoxInertia(dspins[TRK_MAS]->value(),
+                                          dspins[TRK_WBS]->value(),
+                                          dspins[TRK_WDT]->value(),
+                                          dspins[TRK_RAD]->value() * 2.0);
+        for(int i = 0; i < 9; ++i) {
+            writer.putScalar(inertia[i]);
+        }
+    } writer.endListing(); // end inertia listing
+    writer.putKey("elements");
+    writer.startMapping(); {
+        writer.putKey("Shape");
+        writer.startMapping(); {
+            writer.putKey("geometry");
+            writer.startMapping(); {
+                writer.putKeyValue("type", "Extrusion");
+                writer.putKey("crossSection");
+                writer.startFlowStyleListing(); {
+                    for(int i = 0; i < 9; ++i) {
+                        writer.putScalar(dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN));
+                        writer.putScalar(dspins[TRK_RAD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
+                    }
+                    for(int i = 0; i < 9; ++i) {
+                        writer.putScalar(-dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos((90.0 + 22.5 * i) * TO_RADIAN));
+                        writer.putScalar(dspins[TRK_RAD]->value() * sin((90.0 + 22.5 * i) * TO_RADIAN));
+                    }
+                    for(int i = 0; i < 1; ++i) {
+                        writer.putScalar(dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN));
+                        writer.putScalar(dspins[TRK_RAD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
+                    }
+                } writer.endListing(); // end crosssection listing;
+                Vector6 spine;
+                spine << 0.0, -dspins[TRK_WDT]->value() / 2.0, 0.0, 0.0, dspins[TRK_WDT]->value() / 2.0, 0.0;
+                writer.putKey("spine");
+                writer.startFlowStyleListing(); {
+                    for(int i = 0; i < 6; ++i) {
+                        writer.putScalar(spine[i]);
+                    }
+                } writer.endListing(); // end spine listing
+            } writer.endMapping(); // end geometry mapping
+            writer.putKey("appearance");
+            writer.startFlowStyleMapping(); {
+                writer.putKey("material");
+                writer.startFlowStyleMapping(); {
+                    putKeyVector3(&writer, "diffuseColor", extractColor(buttons[TRK_CLR]));
+                } writer.endMapping(); // end material mapping
+            } writer.endMapping(); // end appearance mapping
+        } writer.endMapping(); // end shape mapping
+    } writer.endMapping(); // end elements mapping
+    return true;
+}
+
+
+bool CrawlerConfigDialog::writeSpacer(YAMLWriter& writer)
+{
+    writer.putKeyValue("jointType", "revolute");
+    writer.putKeyValue("jointAxis", "-Y");
+    putKeyVector3(&writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    writer.putKeyValue("mass", dspins[SPC_MAS]->value());
+    writer.putKey("inertia");
+    writer.startFlowStyleListing(); {
+        VectorXd inertia = calcCylinderInertia(dspins[SPC_MAS]->value(),
+                                               dspins[SPC_RAD]->value(),
+                                               dspins[SPC_WDT]->value());
+        for(int i = 0; i < 9; ++i) {
+            writer.putScalar(inertia[i]);
+        }
+    } writer.endListing(); // end inertia listing
+    writer.putKey("elements");
+    writer.startMapping(); {
+        writer.putKey("Shape");
+        writer.startMapping(); {
+            writer.putKey("geometry");
+            writer.startFlowStyleMapping(); {
+                writer.putKeyValue("type", "Cylinder");
+                writer.putKeyValue("radius", dspins[SPC_RAD]->value());
+                writer.putKeyValue("height", dspins[SPC_WDT]->value());
+            } writer.endMapping(); // end geometry mapping
+            writer.putKey("appearance");
+            writer.startFlowStyleMapping(); {
+                writer.putKey("material");
+                writer.startFlowStyleMapping(); {
+                    putKeyVector3(&writer, "diffuseColor", extractColor(buttons[SPC_CLR]));
+                    putKeyVector3(&writer, "specularColor", extractColor(buttons[SPC_CLR]));
+                    writer.putKeyValue("shininess", 0.6);
+                } writer.endMapping(); // end material mapping
+            } writer.endMapping(); // end appearance mapping
+        } writer.endMapping(); // end shape mapping
+    } writer.endMapping(); // end elements mapping
+    return true;
+}
+
+
+bool CrawlerConfigDialog::writeSubTrackF(YAMLWriter& writer)
+{
+    writer.putKeyValue("jointType", "pseudo_continuous_track");
+    writer.putKeyValue("jointAxis", "Y");
+    putKeyVector3(&writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    writer.putKeyValue("mass", dspins[FFL_MAS]->value());
+    double frontSubTrackRadius = std::max(dspins[FFL_FRD]->value(), dspins[FFL_RRD]->value());
+    writer.putKey("inertia");
+    writer.startFlowStyleListing(); {
+        VectorXd inertia = calcBoxInertia(dspins[FFL_MAS]->value(),
+                                          dspins[FFL_WBS]->value(),
+                                          dspins[FFL_WDT]->value(),
+                                          frontSubTrackRadius * 2.0);
+        for(int i = 0; i < 9; ++i) {
+            writer.putScalar(inertia[i]);
+        }
+    } writer.endListing(); // end inertia listing
+    writer.putKey("elements");
+    writer.startMapping(); {
+        writer.putKey("Shape");
+        writer.startMapping(); {
+            writer.putKey("geometry");
+            writer.startMapping(); {
+                writer.putKeyValue("type", "Extrusion");
+                writer.putKey("crossSection");
+                writer.startFlowStyleListing(); {
+                    for(int i = 0; i < 9; i++) {
+                        writer.putScalar(dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_FRD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN));
+                        writer.putScalar(dspins[FFL_FRD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
+                    }
+                    for(int i = 0; i < 9; i++) {
+                        writer.putScalar(-dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_RRD]->value() * cos((90.0 + 22.5 * i) * TO_RADIAN));
+                        writer.putScalar(dspins[FFL_RRD]->value() * sin((90.0 + 22.5 * i) * TO_RADIAN));
+                    }
+                    for(int i = 0; i < 1; i++) {
+                        writer.putScalar(dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_FRD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN));
+                        writer.putScalar(dspins[FFL_FRD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
+                    }
+                } writer.endListing(); // end crosssection listing;
+                Vector6 spine;
+                spine << 0.0, -dspins[FFL_WDT]->value() / 2.0, 0.0, 0.0, dspins[FFL_WDT]->value() / 2.0, 0.0;
+                writer.putKey("spine");
+                writer.startFlowStyleListing(); {
+                    for(int i = 0; i < 6; ++i) {
+                        writer.putScalar(spine[i]);
+                    }
+                } writer.endListing(); // end spine listing
+            } writer.endMapping(); // end geometry mapping
+            writer.putKey("appearance");
+            writer.startFlowStyleMapping(); {
+                writer.putKey("material");
+                writer.startFlowStyleMapping(); {
+                                    putKeyVector3(&writer, "diffuseColor", extractColor(buttons[FFL_CLR]));
+                } writer.endMapping(); // end material mapping
+            } writer.endMapping(); // end appearance mapping
+        } writer.endMapping(); // end shape mapping
+    } writer.endMapping(); // end elements mapping
+    return true;
+}
+
+
+bool CrawlerConfigDialog::writeSubTrackR(YAMLWriter& writer)
+{
+    writer.putKeyValue("jointType", "pseudo_continuous_track");
+    writer.putKeyValue("jointAxis", "Y");
+    putKeyVector3(&writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    writer.putKeyValue("mass", dspins[RFL_MAS]->value());
+    double rearSubTrackRadius = std::max(dspins[RFL_FRD]->value(), dspins[RFL_RRD]->value());
+    writer.putKey("inertia");
+    writer.startFlowStyleListing(); {
+        VectorXd inertia = calcBoxInertia(dspins[RFL_MAS]->value(),
+                                          dspins[RFL_WBS]->value(),
+                                          dspins[RFL_WDT]->value(),
+                                          rearSubTrackRadius * 2.0);
+        for(int i = 0; i < 9; ++i) {
+            writer.putScalar(inertia[i]);
+        }
+    } writer.endListing(); // end inertia listing
+    writer.putKey("elements");
+    writer.startMapping(); {
+        writer.putKey("Shape");
+        writer.startMapping(); {
+            writer.putKey("geometry");
+            writer.startMapping(); {
+                writer.putKeyValue("type", "Extrusion");
+                writer.putKey("crossSection");
+                writer.startFlowStyleListing(); {
+                    for(int i = 0; i < 9; i++) {
+                        writer.putScalar(dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_FRD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN));
+                        writer.putScalar(dspins[RFL_FRD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
+                    }
+                    for(int i = 0; i < 9; i++) {
+                        writer.putScalar(-dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_RRD]->value() * cos((90.0 + 22.5 * i) * TO_RADIAN));
+                        writer.putScalar(dspins[RFL_RRD]->value() * sin((90.0 + 22.5 * i) * TO_RADIAN));
+                    }
+                    for(int i = 0; i < 1; i++) {
+                        writer.putScalar(dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_FRD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN));
+                        writer.putScalar(dspins[RFL_FRD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
+                    }
+                } writer.endListing(); // end crosssection listing;
+                Vector6 spine;
+                spine << 0.0, -dspins[RFL_WDT]->value() / 2.0, 0.0, 0.0, dspins[RFL_WDT]->value() / 2.0, 0.0;
+                writer.putKey("spine");
+                writer.startFlowStyleListing(); {
+                    for(int i = 0; i < 6; ++i) {
+                        writer.putScalar(spine[i]);
+                    }
+                } writer.endListing(); // end spine listing
+            } writer.endMapping(); // end geometry mapping
+            writer.putKey("appearance");
+            writer.startFlowStyleMapping(); {
+                writer.putKey("material");
+                writer.startFlowStyleMapping(); {
+                    putKeyVector3(&writer, "diffuseColor", extractColor(buttons[RFL_CLR]));
+
+                } writer.endMapping(); // end material mapping
+            } writer.endMapping(); // end appearance mapping
+        } writer.endMapping(); // end shape mapping
+    } writer.endMapping(); // end elements mapping
+    return true;
 }
