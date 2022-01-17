@@ -1,0 +1,168 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: aistcrawler
+links: 
+  - 
+    name: CHASSIS
+    translation: [ 0, 0, 0 ]
+    jointType: free
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 8
+    inertia: [ 0.0666667, 0, 0, 0, 0.141667, 0, 0, 0, 0.195 ]
+    elements: 
+      Shape: 
+        geometry: { type: Box, size: [ 0.45, 0.3, 0.1 ] }
+        appearance: { material: { diffuseColor: [ 0, 0.6, 0 ], specularColor: [ 0, 0.6, 0 ], shininess: 0.6 } }
+  - 
+    name: TRACK_L
+    parent: CHASSIS
+    translation: [ 0, 0.2, -0.05 ]
+    jointType: pseudo_continuous_track
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 1
+    inertia: [ 0.00296667, 0, 0, 0, 0.0168333, 0, 0, 0, 0.0155333 ]
+    elements: 
+      Shape: 
+        geometry: 
+          type: Extrusion
+          crossSection: [ 0.21, -0.08, 0.240615, -0.0739104, 0.266569, -0.0565685, 0.28391, -0.0306147, 0.29, 0, 0.28391, 0.0306147, 0.266569, 0.0565685, 0.240615, 0.0739104, 0.21, 0.08, -0.21, 0.08, -0.240615, 0.0739104, -0.266569, 0.0565685, -0.28391, 0.0306147, -0.29, 9.79717e-18, -0.28391, -0.0306147, -0.266569, -0.0565685, -0.240615, -0.0739104, -0.21, -0.08, 0.21, -0.08 ]
+          spine: [ 0, -0.05, 0, 0, 0.05, 0 ]
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
+    name: TRACK_R
+    parent: CHASSIS
+    translation: [ 0, -0.2, -0.05 ]
+    jointType: pseudo_continuous_track
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 1
+    inertia: [ 0.00296667, 0, 0, 0, 0.0168333, 0, 0, 0, 0.0155333 ]
+    elements: 
+      Shape: 
+        geometry: 
+          type: Extrusion
+          crossSection: [ 0.21, -0.08, 0.240615, -0.0739104, 0.266569, -0.0565685, 0.28391, -0.0306147, 0.29, 0, 0.28391, 0.0306147, 0.266569, 0.0565685, 0.240615, 0.0739104, 0.21, 0.08, -0.21, 0.08, -0.240615, 0.0739104, -0.266569, 0.0565685, -0.28391, 0.0306147, -0.29, 9.79717e-18, -0.28391, -0.0306147, -0.266569, -0.0565685, -0.240615, -0.0739104, -0.21, -0.08, 0.21, -0.08 ]
+          spine: [ 0, -0.05, 0, 0, 0.05, 0 ]
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
+    name: SPACER_LF
+    parent: CHASSIS
+    translation: [ 0.21, 0.2565, -0.05 ]
+    jointId: 0
+    jointType: revolute
+    jointAxis: -Y
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.2
+    inertia: [ 0.000182817, 0, 0, 0, 0.00036, 0, 0, 0, 0.000182817 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.06, height: 0.013 }
+        appearance: { material: { diffuseColor: [ 1, 0, 0 ], specularColor: [ 1, 0, 0 ], shininess: 0.6 } }
+  - 
+    name: SPACER_RF
+    parent: CHASSIS
+    translation: [ 0.21, -0.2565, -0.05 ]
+    jointId: 1
+    jointType: revolute
+    jointAxis: -Y
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.2
+    inertia: [ 0.000182817, 0, 0, 0, 0.00036, 0, 0, 0, 0.000182817 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.06, height: 0.013 }
+        appearance: { material: { diffuseColor: [ 1, 0, 0 ], specularColor: [ 1, 0, 0 ], shininess: 0.6 } }
+  - 
+    name: TRACK_LF
+    parent: SPACER_LF
+    translation: [ 0.065, 0.0465, 0 ]
+    jointType: pseudo_continuous_track
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.25
+    inertia: [ 0.000666667, 0, 0, 0, 0.000885417, 0, 0, 0, 0.000485417 ]
+    elements: 
+      Shape: 
+        geometry: 
+          type: Extrusion
+          crossSection: [ 0.065, -0.08, 0.0956147, -0.0739104, 0.121569, -0.0565685, 0.13891, -0.0306147, 0.145, 0, 0.13891, 0.0306147, 0.121569, 0.0565685, 0.0956147, 0.0739104, 0.065, 0.08, -0.065, 0.08, -0.0956147, 0.0739104, -0.121569, 0.0565685, -0.13891, 0.0306147, -0.145, 9.79717e-18, -0.13891, -0.0306147, -0.121569, -0.0565685, -0.0956147, -0.0739104, -0.065, -0.08, 0.065, -0.08 ]
+          spine: [ 0, -0.04, 0, 0, 0.04, 0 ]
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
+    name: TRACK_RF
+    parent: SPACER_RF
+    translation: [ 0.065, -0.0465, 0 ]
+    jointType: pseudo_continuous_track
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.25
+    inertia: [ 0.000666667, 0, 0, 0, 0.000885417, 0, 0, 0, 0.000485417 ]
+    elements: 
+      Shape: 
+        geometry: 
+          type: Extrusion
+          crossSection: [ 0.065, -0.08, 0.0956147, -0.0739104, 0.121569, -0.0565685, 0.13891, -0.0306147, 0.145, 0, 0.13891, 0.0306147, 0.121569, 0.0565685, 0.0956147, 0.0739104, 0.065, 0.08, -0.065, 0.08, -0.0956147, 0.0739104, -0.121569, 0.0565685, -0.13891, 0.0306147, -0.145, 9.79717e-18, -0.13891, -0.0306147, -0.121569, -0.0565685, -0.0956147, -0.0739104, -0.065, -0.08, 0.065, -0.08 ]
+          spine: [ 0, -0.04, 0, 0, 0.04, 0 ]
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
+    name: SPACER_LR
+    parent: CHASSIS
+    translation: [ -0.21, 0.2565, -0.05 ]
+    jointId: 2
+    jointType: revolute
+    jointAxis: -Y
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.2
+    inertia: [ 0.000182817, 0, 0, 0, 0.00036, 0, 0, 0, 0.000182817 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.06, height: 0.013 }
+        appearance: { material: { diffuseColor: [ 1, 0, 0 ], specularColor: [ 1, 0, 0 ], shininess: 0.6 } }
+  - 
+    name: SPACER_RR
+    parent: CHASSIS
+    translation: [ -0.21, -0.2565, -0.05 ]
+    jointId: 3
+    jointType: revolute
+    jointAxis: -Y
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.2
+    inertia: [ 0.000182817, 0, 0, 0, 0.00036, 0, 0, 0, 0.000182817 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.06, height: 0.013 }
+        appearance: { material: { diffuseColor: [ 1, 0, 0 ], specularColor: [ 1, 0, 0 ], shininess: 0.6 } }
+  - 
+    name: TRACK_LR
+    parent: SPACER_LR
+    translation: [ -0.065, 0.0465, 0 ]
+    jointType: pseudo_continuous_track
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.25
+    inertia: [ 0.000666667, 0, 0, 0, 0.000885417, 0, 0, 0, 0.000485417 ]
+    elements: 
+      Shape: 
+        geometry: 
+          type: Extrusion
+          crossSection: [ 0.065, -0.08, 0.0956147, -0.0739104, 0.121569, -0.0565685, 0.13891, -0.0306147, 0.145, 0, 0.13891, 0.0306147, 0.121569, 0.0565685, 0.0956147, 0.0739104, 0.065, 0.08, -0.065, 0.08, -0.0956147, 0.0739104, -0.121569, 0.0565685, -0.13891, 0.0306147, -0.145, 9.79717e-18, -0.13891, -0.0306147, -0.121569, -0.0565685, -0.0956147, -0.0739104, -0.065, -0.08, 0.065, -0.08 ]
+          spine: [ 0, -0.04, 0, 0, 0.04, 0 ]
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
+    name: TRACK_RR
+    parent: SPACER_RR
+    translation: [ -0.065, -0.0465, 0 ]
+    jointType: pseudo_continuous_track
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.25
+    inertia: [ 0.000666667, 0, 0, 0, 0.000885417, 0, 0, 0, 0.000485417 ]
+    elements: 
+      Shape: 
+        geometry: 
+          type: Extrusion
+          crossSection: [ 0.065, -0.08, 0.0956147, -0.0739104, 0.121569, -0.0565685, 0.13891, -0.0306147, 0.145, 0, 0.13891, 0.0306147, 0.121569, 0.0565685, 0.0956147, 0.0739104, 0.065, 0.08, -0.065, 0.08, -0.0956147, 0.0739104, -0.121569, 0.0565685, -0.13891, 0.0306147, -0.145, 9.79717e-18, -0.13891, -0.0306147, -0.121569, -0.0565685, -0.0956147, -0.0739104, -0.065, -0.08, 0.065, -0.08 ]
+          spine: [ 0, -0.04, 0, 0, 0.04, 0 ]
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
