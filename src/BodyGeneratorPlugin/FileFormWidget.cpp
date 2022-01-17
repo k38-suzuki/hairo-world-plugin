@@ -4,12 +4,14 @@
 */
 
 #include "FileFormWidget.h"
+#include <cnoid/BodyItem>
 #include <cnoid/Button>
 #include <cnoid/FileDialog>
 #include <cnoid/LineEdit>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/ProjectManager>
+#include <cnoid/RootItem>
 #include <cnoid/Separator>
 #include <cnoid/stdx/filesystem>
 #include <QGridLayout>
@@ -32,7 +34,7 @@ public:
     FileFormWidgetImpl(FileFormWidget* self);
     FileFormWidget* self;
 
-    enum DialogButtonId { SAVE, SAVEAS, NUM_BUTTONS };
+    enum DialogButtonId { UPDATE, SAVE, SAVEAS, NUM_BUTTONS };
 
     LineEdit* fileLine;
     PushButton* buttons[NUM_BUTTONS];
@@ -44,8 +46,7 @@ public:
 
     void openSaveDialog();
     void save(const bool& overwrite);
-    void onAccepted();
-    void onRejected();
+    void onUpdated();
 };
 
 }
@@ -68,7 +69,7 @@ FileFormWidgetImpl::FileFormWidgetImpl(FileFormWidget* self)
     fhbox->addWidget(new QLabel(_("File")));
     fhbox->addWidget(fileLine);
 
-    const char* labels[] = { _("&Save"), _("&Save As...") };
+    const char* labels[] = { _("&Update"), _("&Save"), _("&Save As...") };
     QHBoxLayout* bhbox = new QHBoxLayout();
     bhbox->addStretch();
     for(int i = 0; i < NUM_BUTTONS; ++i) {
@@ -81,6 +82,7 @@ FileFormWidgetImpl::FileFormWidgetImpl(FileFormWidget* self)
     vbox->addLayout(bhbox);
     self->setLayout(vbox);
 
+    buttons[UPDATE]->sigClicked().connect([&](){ onUpdated(); });
     buttons[SAVE]->sigClicked().connect([&](){ save(true); });
     buttons[SAVEAS]->sigClicked().connect([&](){ save(false); });
 }
@@ -149,5 +151,20 @@ void FileFormWidgetImpl::save(const bool &overwrite)
         }
 
         sigClicked_(filename);
+    }
+}
+
+
+void FileFormWidgetImpl::onUpdated()
+{
+    RootItem* rootItem = RootItem::instance();
+    ItemList<BodyItem> bodyItems = rootItem->checkedItems<BodyItem>();
+    for(size_t i = 0; i < bodyItems.size(); ++i) {
+        BodyItem* bodyItem = bodyItems[i];
+        string filename0 = fileLine->text().toStdString();
+        string filename1 = bodyItem->filePath().c_str();
+        if(filename0 == filename1) {
+            bodyItem->reload();
+        }
     }
 }

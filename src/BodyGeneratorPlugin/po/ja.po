@@ -224,6 +224,10 @@ msgstr "上書き保存"
 msgid "&Save As..."
 msgstr "保存"
 
+#: ../FileFormWidget.cpp:71
+msgid "&Update"
+msgstr "ボディの再読み込み"
+
 #: ../FileFormWidget.cpp:104
 msgid "Save a Body file"
 msgstr "ボディを保存"
