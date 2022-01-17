@@ -225,8 +225,8 @@ msgid "&Save As..."
 msgstr "保存"
 
 #: ../FileFormWidget.cpp:71
-msgid "&Update"
-msgstr "ボディの再読み込み"
+msgid "&Reload"
+msgstr "再読み込み"
 
 #: ../FileFormWidget.cpp:104
 msgid "Save a Body file"

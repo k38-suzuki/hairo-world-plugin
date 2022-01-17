@@ -34,7 +34,7 @@ public:
     FileFormWidgetImpl(FileFormWidget* self);
     FileFormWidget* self;
 
-    enum DialogButtonId { UPDATE, SAVE, SAVEAS, NUM_BUTTONS };
+    enum DialogButtonId { RELOAD, SAVE, SAVEAS, NUM_BUTTONS };
 
     LineEdit* fileLine;
     PushButton* buttons[NUM_BUTTONS];
@@ -46,7 +46,7 @@ public:
 
     void openSaveDialog();
     void save(const bool& overwrite);
-    void onUpdated();
+    void onReloadButtonClicked();
 };
 
 }
@@ -69,7 +69,7 @@ FileFormWidgetImpl::FileFormWidgetImpl(FileFormWidget* self)
     fhbox->addWidget(new QLabel(_("File")));
     fhbox->addWidget(fileLine);
 
-    const char* labels[] = { _("&Update"), _("&Save"), _("&Save As...") };
+    static const char* labels[] = { _("&Reload"), _("&Save"), _("&Save As...") };
     QHBoxLayout* bhbox = new QHBoxLayout();
     bhbox->addStretch();
     for(int i = 0; i < NUM_BUTTONS; ++i) {
@@ -82,7 +82,7 @@ FileFormWidgetImpl::FileFormWidgetImpl(FileFormWidget* self)
     vbox->addLayout(bhbox);
     self->setLayout(vbox);
 
-    buttons[UPDATE]->sigClicked().connect([&](){ onUpdated(); });
+    buttons[RELOAD]->sigClicked().connect([&](){ onReloadButtonClicked(); });
     buttons[SAVE]->sigClicked().connect([&](){ save(true); });
     buttons[SAVEAS]->sigClicked().connect([&](){ save(false); });
 }
@@ -155,7 +155,7 @@ void FileFormWidgetImpl::save(const bool &overwrite)
 }
 
 
-void FileFormWidgetImpl::onUpdated()
+void FileFormWidgetImpl::onReloadButtonClicked()
 {
     RootItem* rootItem = RootItem::instance();
     ItemList<BodyItem> bodyItems = rootItem->checkedItems<BodyItem>();
