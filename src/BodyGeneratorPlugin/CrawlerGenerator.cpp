@@ -284,6 +284,7 @@ public:
     SpinBox* agxspins[NUM_SPINS];
     PushButton* toolButtons[NUMTBUTTONS];
     FileFormWidget* formWidget;
+    string bodyname;
 
     bool save(const string& filename);
     void initialize();
@@ -452,6 +453,7 @@ CrawlerConfigDialog::CrawlerConfigDialog()
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
 
     initialize();
+    bodyname.clear();
 
     QVBoxLayout* vbox = new QVBoxLayout();
     QHBoxLayout* hbox = new QHBoxLayout();
@@ -476,6 +478,8 @@ CrawlerConfigDialog::CrawlerConfigDialog()
 bool CrawlerConfigDialog::save(const string& filename)
 {
     if(!filename.empty()) {
+        filesystem::path path(filename);
+        bodyname = path.stem().string();
         if(!checks[AGX_CHK]->isChecked()) {
             write(filename);
         } else {
@@ -699,9 +703,6 @@ void CrawlerConfigDialog::onEnableAgxCheckToggled(const bool& on)
 
 void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
 {
-    filesystem::path path(fileName);
-    string bodyName = path.stem().string();
-
     FILE* fp = fopen(fileName.c_str(), "w");
     if(fp == NULL) {
         return;
@@ -711,7 +712,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "format: ChoreonoidBody\n");
     fprintf(fp, "formatVersion: 1.0\n");
     fprintf(fp, "angleUnit: degree\n");
-    fprintf(fp, "name: %s\n", bodyName.c_str());
+    fprintf(fp, "name: %s\n", bodyname.c_str());
     fprintf(fp, "\n");
 
     fprintf(fp, "TRACK_COMMON: &TrackCommon\n");
@@ -746,8 +747,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "  mass: %3.2lf\n", dspins[SPC_MAS]->value());
     fprintf(fp, "  inertia: [ %s ]\n", cylinderInertia(dspins[SPC_MAS]->value(), dspins[SPC_RAD]->value(), dspins[SPC_WDT]->value()).c_str());
     fprintf(fp, "  elements:\n");
-    fprintf(fp, "    -\n");
-    fprintf(fp, "      type: Shape\n");
+    fprintf(fp, "    Shape:\n");
     fprintf(fp, "      geometry:\n");
     fprintf(fp, "        type: Cylinder\n");
     fprintf(fp, "        radius: %3.2lf\n", dspins[SPC_RAD]->value());
@@ -767,7 +767,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "  nodeWidth:  %lf\n", agxdspins[TRK_BNW]->value());
     fprintf(fp, "  nodeThickerThickness: %lf\n", agxdspins[TRK_BNTT]->value());
     fprintf(fp, "  useThickerNodeEvery: %d\n", agxspins[TRK_BUTNE]->value());
-    fprintf(fp, "  material: %sTracks\n", bodyName.c_str());
+    fprintf(fp, "  material: %sTracks\n", bodyname.c_str());
     fprintf(fp, "  nodeDistanceTension: %2.1lfe-%d\n", agxdspins[TRK_BNDTM]->value(), agxspins[TRK_BNDTE]->value());
     fprintf(fp, "  stabilizingHingeFrictionParameter: %2.1lfe-%d\n", agxdspins[TRK_BSHFPM]->value(), agxspins[TRK_BSHFPE]->value());
     fprintf(fp, "  minStabilizingHingeNormalForce: %d\n", agxspins[TRK_BMSHNF]->value());
@@ -784,7 +784,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "  nodeWidth: %lf\n", agxdspins[FLP_BNW]->value());
     fprintf(fp, "  nodeThickerThickness: %lf\n", agxdspins[FLP_BNTT]->value());
     fprintf(fp, "  useThickerNodeEvery: %d\n", agxspins[FLP_BUTNE]->value());
-    fprintf(fp, "  material: %sTracks\n", bodyName.c_str());
+    fprintf(fp, "  material: %sTracks\n", bodyname.c_str());
     fprintf(fp, "  nodeDistanceTension: %2.1lfe-%d\n", agxdspins[FLP_BNDTM]->value(), agxspins[FLP_BNDTE]->value());
     fprintf(fp, "  stabilizingHingeFrictionParameter: %2.1lfe-%d\n", agxdspins[FLP_BSHFPM]->value(), agxspins[FLP_BSHFPE]->value());
     fprintf(fp, "  minStabilizingHingeNormalForce: %d\n", agxspins[FLP_BMSHNF]->value());
@@ -798,7 +798,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "  jointType: revolute\n");
     fprintf(fp, "  jointAxis: Y\n");
     fprintf(fp, "  centerOfMass: [ 0.0, 0.0, 0.0 ]\n");
-    fprintf(fp, "  material: %sWheel\n", bodyName.c_str());
+    fprintf(fp, "  material: %sWheel\n", bodyname.c_str());
     fprintf(fp, "\n");
 
     fprintf(fp, "MAINWHEEL_COMMON: &MainWheelCommon\n");
@@ -807,8 +807,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "  inertia: [ %s ]\n", cylinderInertia(dspins[TRK_MAS]->value(), dspins[TRK_RAD]->value(), dspins[TRK_WDT]->value()).c_str());
     fprintf(fp, "  <<: *WheelCommon\n");
     fprintf(fp, "  elements:\n");
-    fprintf(fp, "    -\n");
-    fprintf(fp, "      type: Shape\n");
+    fprintf(fp, "    Shape:\n");
     fprintf(fp, "      geometry:\n");
     fprintf(fp, "        type: Cylinder\n");
     fprintf(fp, "        radius: %3.2lf\n", dspins[TRK_RAD]->value());
@@ -817,8 +816,6 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "        material:\n");
     Vector3 trackColor = extractColor(buttons[TRK_CLR]);
     fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", trackColor[0], trackColor[1], trackColor[2]);
-    fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", trackColor[0], trackColor[1], trackColor[2]);
-    fprintf(fp, "          shininess: 0.6\n");
     fprintf(fp, "\n");
 
     double r2spf = dspins[FFL_RRD]->value() * dspins[FFL_RRD]->value();
@@ -833,8 +830,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "  inertia: [ %s ]\n", cylinderInertia(spmassf, dspins[FFL_RRD]->value(), dspins[FFL_WDT]->value()).c_str());
     fprintf(fp, "  <<: *WheelCommon\n");
     fprintf(fp, "  elements:\n");
-    fprintf(fp, "    -\n");
-    fprintf(fp, "      type: Shape\n");
+    fprintf(fp, "    Shape:\n");
     fprintf(fp, "      geometry:\n");
     fprintf(fp, "        type: Cylinder\n");
     fprintf(fp, "        radius: %3.2lf\n", dspins[FFL_RRD]->value());
@@ -843,8 +839,6 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "        material:\n");
     Vector3 subtrackfColor = extractColor(buttons[FFL_CLR]);
     fprintf(fp, "          diffuseColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", subtrackfColor[0], subtrackfColor[1], subtrackfColor[2]);
-    fprintf(fp, "          specularColor: [ %3.2lf, %3.2lf, %3.2lf ]\n", subtrackfColor[0], subtrackfColor[1], subtrackfColor[2]);
-    fprintf(fp, "          shininess: 0.6\n");
     fprintf(fp, "\n");
 
     fprintf(fp, "ROLLER_F_COMMON: &RollerFCommon\n");
@@ -852,8 +846,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "  inertia: [ %s ]\n", cylinderInertia(romassf, (dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0, dspins[FFL_WDT]->value()).c_str());
     fprintf(fp, "  <<: *WheelCommon\n");
     fprintf(fp, "  elements:\n");
-    fprintf(fp, "    -\n");
-    fprintf(fp, "      type: Shape\n");
+    fprintf(fp, "    Shape:\n");
     fprintf(fp, "      geometry:\n");
     fprintf(fp, "        type: Cylinder\n");
     fprintf(fp, "        radius: %3.2lf\n", (dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
@@ -866,8 +859,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "  inertia: [ %s ]\n", cylinderInertia(idmassf, dspins[FFL_FRD]->value(), dspins[FFL_WDT]->value()).c_str());
     fprintf(fp, "  <<: *WheelCommon\n");
     fprintf(fp, "  elements:\n");
-    fprintf(fp, "    -\n");
-    fprintf(fp, "      type: Shape\n");
+    fprintf(fp, "    Shape:\n");
     fprintf(fp, "      geometry:\n");
     fprintf(fp, "        type: Cylinder\n");
     fprintf(fp, "        radius: %3.2lf\n", dspins[FFL_FRD]->value());
@@ -887,8 +879,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "  inertia: [ %s ]\n", cylinderInertia(spmassr, dspins[RFL_FRD]->value(), dspins[RFL_WDT]->value()).c_str());
     fprintf(fp, "  <<: *WheelCommon\n");
     fprintf(fp, "  elements:\n");
-    fprintf(fp, "    -\n");
-    fprintf(fp, "      type: Shape\n");
+    fprintf(fp, "    Shape:\n");
     fprintf(fp, "      geometry:\n");
     fprintf(fp, "        type: Cylinder\n");
     fprintf(fp, "        radius: %3.2lf\n", dspins[RFL_FRD]->value());
@@ -906,8 +897,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "  inertia: [ %s ]\n", cylinderInertia(romassr, (dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0, dspins[RFL_WDT]->value()).c_str());
     fprintf(fp, "  <<: *WheelCommon\n");
     fprintf(fp, "  elements:\n");
-    fprintf(fp, "    -\n");
-    fprintf(fp, "      type: Shape\n");
+    fprintf(fp, "    Shape:\n");
     fprintf(fp, "      geometry:\n");
     fprintf(fp, "        type: Cylinder\n");
     fprintf(fp, "        radius: %3.2lf\n", (dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
@@ -920,8 +910,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "  inertia: [ %s ]\n", cylinderInertia(idmassr, dspins[RFL_RRD]->value(), dspins[RFL_WDT]->value()).c_str());
     fprintf(fp, "  <<: *WheelCommon\n");
     fprintf(fp, "  elements:\n");
-    fprintf(fp, "    -\n");
-    fprintf(fp, "      type: Shape\n");
+    fprintf(fp, "    Shape:\n");
     fprintf(fp, "      geometry:\n");
     fprintf(fp, "        type: Cylinder\n");
     fprintf(fp, "        radius: %3.2lf\n", dspins[RFL_RRD]->value());
@@ -939,8 +928,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     fprintf(fp, "    inertia: [ %s ]\n", boxInertia(dspins[CHS_MAS]->value(), dspins[CHS_XSZ]->value(),
                                                        dspins[CHS_YSZ]->value(), dspins[CHS_ZSZ]->value()).c_str());
     fprintf(fp, "    elements:\n");
-    fprintf(fp, "      -\n");
-    fprintf(fp, "        type: Shape\n");
+    fprintf(fp, "      Shape:\n");
     fprintf(fp, "        geometry:\n");
     fprintf(fp, "          type: Box\n");
     fprintf(fp, "          size: [ %3.2lf, %3.2lf, %3.2lf ]\n", dspins[CHS_XSZ]->value(),dspins[CHS_YSZ]->value(), dspins[CHS_ZSZ]->value() );
@@ -966,7 +954,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
 
     fprintf(fp, "  -\n");
     fprintf(fp, "    name: TRACK_R\n");
-    fprintf(fp, "    translation: [ 0, -%lf, %lf ]\n", (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+    fprintf(fp, "    translation: [ 0, %lf, %lf ]\n", -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
     fprintf(fp, "    <<: *TrackCommon\n");
     fprintf(fp, "    elements:\n");
     fprintf(fp, "      -\n");
@@ -992,25 +980,25 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
 
     fprintf(fp, "  -\n");
     fprintf(fp, "    name: IDLER_L\n");
-    fprintf(fp, "    translation: [ -%lf, %lf, %lf ]\n", dspins[TRK_WBS]->value() / 2.0, (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+    fprintf(fp, "    translation: [ %lf, %lf, %lf ]\n", -dspins[TRK_WBS]->value() / 2.0, (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
     fprintf(fp, "    jointId: %d\n", id++);
     fprintf(fp, "    <<: *MainWheelCommon\n");
 
     fprintf(fp, "  -\n");
     fprintf(fp, "    name: SPROCKET_R\n");
-    fprintf(fp, "    translation: [ %lf, -%lf, %lf ]\n", dspins[TRK_WBS]->value() / 2.0, (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+    fprintf(fp, "    translation: [ %lf, %lf, %lf ]\n", dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
     fprintf(fp, "    jointId: %d\n", id++);
     fprintf(fp, "    <<: *MainWheelCommon\n");
 
     fprintf(fp, "  -\n");
     fprintf(fp, "    name: ROLLER_R\n");
-    fprintf(fp, "    translation: [ 0, -%lf, %lf ]\n", (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+    fprintf(fp, "    translation: [ 0, %lf, %lf ]\n", -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
     fprintf(fp, "    jointId: %d\n", id++);
     fprintf(fp, "    <<: *MainWheelCommon\n");
 
     fprintf(fp, "  -\n");
     fprintf(fp, "    name: IDLER_R\n");
-    fprintf(fp, "    translation: [ -%lf, -%lf, %lf ]\n", dspins[TRK_WBS]->value() / 2.0, (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+    fprintf(fp, "    translation: [ %lf, %lf, %lf ]\n", -dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
     fprintf(fp, "    jointId: %d\n", id++);
     fprintf(fp, "    <<: *MainWheelCommon\n");
 
@@ -1024,9 +1012,9 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
         fprintf(fp, "    <<: *SpacerCommon\n");
         fprintf(fp, "  -\n");
         fprintf(fp, "    name: SPACER_RF\n");
-        fprintf(fp, "    translation: [ %lf, -%lf, %lf ]\n",
+        fprintf(fp, "    translation: [ %lf, %lf, %lf ]\n",
                 dspins[TRK_WBS]->value() / 2.0,
-                (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+                -((dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value()), -dspins[CHS_ZSZ]->value() / 2.0);
         fprintf(fp, "    jointId: %d\n", id++);
         fprintf(fp, "    <<: *SpacerCommon\n");
         fprintf(fp, "  -\n");
@@ -1045,7 +1033,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
         fprintf(fp, "  -\n");
         fprintf(fp, "    name: TRACK_RF\n");
         fprintf(fp, "    parent: SPACER_RF\n");
-        fprintf(fp, "    translation: [ 0.0, -%lf, 0 ]\n", (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0);
+        fprintf(fp, "    translation: [ 0.0, %lf, 0 ]\n", -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0);
         fprintf(fp, "    <<: *SubTrackFCommon\n");
         fprintf(fp, "    elements:\n");
         fprintf(fp, "      -\n");
@@ -1076,19 +1064,19 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
         fprintf(fp, "  -\n");
         fprintf(fp, "    name: IDLER_RF\n");
         fprintf(fp, "    parent: SPACER_RF\n");
-        fprintf(fp, "    translation: [ %lf, -%lf, 0.0 ]\n", dspins[FFL_WBS]->value(), (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0);
+        fprintf(fp, "    translation: [ %lf, %lf, 0.0 ]\n", dspins[FFL_WBS]->value(), -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0);
         fprintf(fp, "    jointId: %d\n", id++);
         fprintf(fp, "    <<: *IdlerFCommon\n");
         fprintf(fp, "  -\n");
         fprintf(fp, "    name: ROLLER_RF\n");
         fprintf(fp, "    parent: SPACER_RF\n");
-        fprintf(fp, "    translation: [ %lf, -%lf, 0.0 ]\n", dspins[FFL_WBS]->value() / 2.0, (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0);
+        fprintf(fp, "    translation: [ %lf, %lf, 0.0 ]\n", dspins[FFL_WBS]->value() / 2.0, -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0);
         fprintf(fp, "    jointId: %d\n", id++);
         fprintf(fp, "    <<: *RollerFCommon\n");
         fprintf(fp, "  -\n");
         fprintf(fp, "    name: SPROCKET_RF\n");
         fprintf(fp, "    parent: SPACER_RF\n");
-        fprintf(fp, "    translation: [ 0.0, -%lf, 0.0 ]\n", (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0);
+        fprintf(fp, "    translation: [ 0.0, %lf, 0.0 ]\n", -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0);
         fprintf(fp, "    jointId: %d\n", id++);
         fprintf(fp, "    <<: *SprocketFCommon\n");
     }
@@ -1096,16 +1084,16 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
     if(checks[RFL_CHK]->isChecked()) {
         fprintf(fp, "  -\n");
         fprintf(fp, "    name: SPACER_LR\n");
-        fprintf(fp, "    translation: [ -%lf, %lf, %lf ]\n",
-                dspins[TRK_WBS]->value() / 2.0,
+        fprintf(fp, "    translation: [ %lf, %lf, %lf ]\n",
+                -dspins[TRK_WBS]->value() / 2.0,
                 (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
         fprintf(fp, "    jointId: %d\n", id++);
         fprintf(fp, "    <<: *SpacerCommon\n");
         fprintf(fp, "  -\n");
         fprintf(fp, "    name: SPACER_RR\n");
-        fprintf(fp, "    translation: [ -%lf, -%lf, %lf ]\n",
-                dspins[TRK_WBS]->value() / 2.0,
-                (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+        fprintf(fp, "    translation: [ %lf, %lf, %lf ]\n",
+                -dspins[TRK_WBS]->value() / 2.0,
+                -((dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value()), -dspins[CHS_ZSZ]->value() / 2.0);
         fprintf(fp, "    jointId: %d\n", id++);
         fprintf(fp, "    <<: *SpacerCommon\n");
         fprintf(fp, "  -\n");
@@ -1124,7 +1112,7 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
         fprintf(fp, "  -\n");
         fprintf(fp, "    name: TRACK_RR\n");
         fprintf(fp, "    parent: SPACER_RR\n");
-        fprintf(fp, "    translation: [ 0.0, -%lf, 0 ]\n", (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0);
+        fprintf(fp, "    translation: [ 0.0, %lf, 0 ]\n", -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0);
         fprintf(fp, "    <<: *SubTrackFCommon\n");
         fprintf(fp, "    elements:\n");
         fprintf(fp, "      -\n");
@@ -1137,13 +1125,13 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
         fprintf(fp, "  -\n");
         fprintf(fp, "    name: IDLER_LR\n");
         fprintf(fp, "    parent: SPACER_LR\n");
-        fprintf(fp, "    translation: [ -%lf, %lf, 0.0 ]\n", dspins[RFL_WBS]->value(), (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0);
+        fprintf(fp, "    translation: [ %lf, %lf, 0.0 ]\n", -dspins[RFL_WBS]->value(), (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0);
         fprintf(fp, "    jointId: %d\n", id++);
         fprintf(fp, "    <<: *IdlerRCommon\n");
         fprintf(fp, "  -\n");
         fprintf(fp, "    name: ROLLER_LR\n");
         fprintf(fp, "    parent: SPACER_LR\n");
-        fprintf(fp, "    translation: [ -%lf, %lf, 0.0 ]\n", dspins[RFL_WBS]->value() / 2.0, (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0);
+        fprintf(fp, "    translation: [ %lf, %lf, 0.0 ]\n", -dspins[RFL_WBS]->value() / 2.0, (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0);
         fprintf(fp, "    jointId: %d\n", id++);
         fprintf(fp, "    <<: *RollerRCommon\n");
         fprintf(fp, "  -\n");
@@ -1155,19 +1143,19 @@ void CrawlerConfigDialog::onExportAGXBody(const string& fileName)
         fprintf(fp, "  -\n");
         fprintf(fp, "    name: IDLER_RR\n");
         fprintf(fp, "    parent: SPACER_RR\n");
-        fprintf(fp, "    translation: [ -%lf, -%lf, 0.0 ]\n", dspins[RFL_WBS]->value(), (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0);
+        fprintf(fp, "    translation: [ %lf, %lf, 0.0 ]\n", -dspins[RFL_WBS]->value(), -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0);
         fprintf(fp, "    jointId: %d\n", id++);
         fprintf(fp, "    <<: *IdlerRCommon\n");
         fprintf(fp, "  -\n");
         fprintf(fp, "    name: ROLLER_RR\n");
         fprintf(fp, "    parent: SPACER_RR\n");
-        fprintf(fp, "    translation: [ -%lf, -%lf, 0.0 ]\n", dspins[RFL_WBS]->value() / 2.0, (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0);
+        fprintf(fp, "    translation: [ %lf, %lf, 0.0 ]\n", -dspins[RFL_WBS]->value() / 2.0, -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0);
         fprintf(fp, "    jointId: %d\n", id++);
         fprintf(fp, "    <<: *RollerRCommon\n");
         fprintf(fp, "  -\n");
         fprintf(fp, "    name: SPROCKET_RR\n");
         fprintf(fp, "    parent: SPACER_RR\n");
-        fprintf(fp, "    translation: [ 0.0, -%lf, 0.0 ]\n", (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0);
+        fprintf(fp, "    translation: [ 0.0, %lf, 0.0 ]\n", -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0);
         fprintf(fp, "    jointId: %d\n", id++);
         fprintf(fp, "    <<: *SprocketRCommon\n");
     }
@@ -1267,16 +1255,13 @@ bool CrawlerConfigDialog::write(const string& filename)
         return false;
     }
 
-    filesystem::path path(filename);
-    string name = path.stem().string();
-
     YAMLWriter writer(filename);
     int jointId = 0;
     writer.startMapping(); {
         writer.putKeyValue("format", "ChoreonoidBody");
         writer.putKeyValue("formatVersion", "1.0");
         writer.putKeyValue("angleUnit", "degree");
-        writer.putKeyValue("name", name);
+        writer.putKeyValue("name", bodyname);
         writer.putKey("links");
         writer.startListing(); {
             writer.startMapping(); {
