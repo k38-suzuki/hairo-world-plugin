@@ -2,402 +2,515 @@ format: ChoreonoidBody
 formatVersion: 1.0
 angleUnit: degree
 name: agxcrawler
-
-TRACK_COMMON: &TrackCommon
-  parent: CHASSIS
-  jointType: fixed
-  centerOfMass: [ 0, 0, 0 ]
-  mass: 0.33
-  inertia: [ 0.000989, 0.0, 0.0, 0.0, 0.005611, 0.0, 0.0, 0.0, 0.005178 ]
-
-SUBTRACK_F_COMMON: &SubTrackFCommon
-  jointType: fixed
-  centerOfMass: [ 0, 0, 0 ]
-  mass: 0.08
-  inertia: [ 0.000089, 0.0, 0.0, 0.0, 0.000162, 0.0, 0.0, 0.0, 0.000162 ]
-
-SUBTRACK_R_COMMON: &SubTrackRCommon
-  jointType: fixed
-  centerOfMass: [ 0, 0, 0 ]
-  mass: 0.08
-  inertia: [ 0.000089, 0.0, 0.0, 0.0, 0.000162, 0.0, 0.0, 0.0, 0.000162 ]
-
-SPACER_COMMON: &SpacerCommon
-  parent: CHASSIS
-  jointType: revolute
-  jointAxis: -Y
-  mass: 0.20
-  inertia: [ 0.000183, 0.0, 0.0, 0.0, 0.000360, 0.0, 0.0, 0.0, 0.000183 ]
-  elements:
-    -
-      type: Shape
-      geometry:
-        type: Cylinder
-        radius: 0.06
-        height: 0.01
-      appearance:
-        material:
-          diffuseColor: [ 1.00, 0.00, 0.00 ]
-          specularColor: [ 1.00, 0.00, 0.00 ]
-          shininess: 0.6
-
-TRACKBELT_COMMON: &TrackBeltCommon
-  upAxis: [ 0, 0, 1 ]
-  numberOfNodes: 42
-  nodeThickness: 0.010000
-  nodeWidth:  0.100000
-  nodeThickerThickness: 0.020000
-  useThickerNodeEvery: 3
-  material: agxcrawlerTracks
-  nodeDistanceTension: 9.0e-4
-  stabilizingHingeFrictionParameter: 4.0e-7
-  minStabilizingHingeNormalForce: 100
-  hingeCompliance: 9.0e-7
-  hingeSpookDamping: 0.010000
-  nodesToWheelsMergeThreshold: -0.001000
-  nodesToWheelsSplitThreshold: -0.009000
-
-SUBTRACKBELT_COMMON: &SubTrackBeltCommon
-  upAxis: [ 0, 0, 1 ]
-  numberOfNodes: 42
-  nodeThickness: 0.010000
-  nodeWidth: 0.080000
-  nodeThickerThickness: 0.020000
-  useThickerNodeEvery: 3
-  material: agxcrawlerTracks
-  nodeDistanceTension: 9.0e-4
-  stabilizingHingeFrictionParameter: 4.0e-7
-  minStabilizingHingeNormalForce: 100
-  hingeCompliance: 9.0e-7
-  hingeSpookDamping: 0.010000
-  nodesToWheelsMergeThreshold: -0.001000
-  nodesToWheelsSplitThreshold: -0.009000
-
-WHEEL_COMMON: &WheelCommon
-  jointType: revolute
-  jointAxis: Y
-  centerOfMass: [ 0.0, 0.0, 0.0 ]
-  material: agxcrawlerWheel
-
-MAINWHEEL_COMMON: &MainWheelCommon
-  parent: CHASSIS
-  mass: 0.22
-  inertia: [ 0.002433, 0.0, 0.0, 0.0, 0.003200, 0.0, 0.0, 0.0, 0.002433 ]
-  <<: *WheelCommon
-  elements:
-    -
-      type: Shape
-      geometry:
-        type: Cylinder
-        radius: 0.08
-        height: 0.10
-      appearance: &WheelAppearance
-        material:
-          diffuseColor: [ 0.20, 0.20, 0.20 ]
-          specularColor: [ 0.20, 0.20, 0.20 ]
-          shininess: 0.6
-
-SPROCKET_F_COMMON: &SprocketFCommon
-  mass: 0.00
-  inertia: [ 0.000001, 0.0, 0.0, 0.0, 0.000002, 0.0, 0.0, 0.0, 0.000001 ]
-  <<: *WheelCommon
-  elements:
-    -
-      type: Shape
-      geometry:
-        type: Cylinder
-        radius: 0.08
-        height: 0.08
-      appearance: &SubWheelFAppearance
-        material:
-          diffuseColor: [ 0.20, 0.20, 0.20 ]
-          specularColor: [ 0.20, 0.20, 0.20 ]
-          shininess: 0.6
-
-ROLLER_F_COMMON: &RollerFCommon
-  mass: 0.00
-  inertia: [ 0.000001, 0.0, 0.0, 0.0, 0.000002, 0.0, 0.0, 0.0, 0.000001 ]
-  <<: *WheelCommon
-  elements:
-    -
-      type: Shape
-      geometry:
-        type: Cylinder
-        radius: 0.08
-        height: 0.08
-      appearance: *SubWheelFAppearance
-
-IDLER_F_COMMON: &IdlerFCommon
-  mass: 0.00
-  inertia: [ 0.000001, 0.0, 0.0, 0.0, 0.000002, 0.0, 0.0, 0.0, 0.000001 ]
-  <<: *WheelCommon
-  elements:
-    -
-      type: Shape
-      geometry:
-        type: Cylinder
-        radius: 0.08
-        height: 0.08
-      appearance: *SubWheelFAppearance
-
-SPROCKET_R_COMMON: &SprocketRCommon
-  mass: 0.00
-  inertia: [ 0.000001, 0.0, 0.0, 0.0, 0.000002, 0.0, 0.0, 0.0, 0.000001 ]
-  <<: *WheelCommon
-  elements:
-    -
-      type: Shape
-      geometry:
-        type: Cylinder
-        radius: 0.08
-        height: 0.08
-      appearance: &SubWheelRAppearance
-        material:
-          diffuseColor: [ 0.20, 0.20, 0.20 ]
-          specularColor: [ 0.20, 0.20, 0.20 ]
-          shininess: 0.6
-
-ROLLER_R_COMMON: &RollerRCommon
-  mass: 0.00
-  inertia: [ 0.000001, 0.0, 0.0, 0.0, 0.000002, 0.0, 0.0, 0.0, 0.000001 ]
-  <<: *WheelCommon
-  elements:
-    -
-      type: Shape
-      geometry:
-        type: Cylinder
-        radius: 0.08
-        height: 0.08
-      appearance: *SubWheelRAppearance
-
-IDLER_R_COMMON: &IdlerRCommon
-  mass: 0.00
-  inertia: [ 0.000001, 0.0, 0.0, 0.0, 0.000002, 0.0, 0.0, 0.0, 0.000001 ]
-  <<: *WheelCommon
-  elements:
-    -
-      type: Shape
-      geometry:
-        type: Cylinder
-        radius: 0.08
-        height: 0.08
-      appearance: *SubWheelRAppearance
-
-links:
-  -
+links: 
+  - 
     name: CHASSIS
     translation: [ 0, 0, 0 ]
     jointType: free
     centerOfMass: [ 0, 0, 0 ]
-    mass: 8.00
-    inertia: [ 0.066667, 0.0, 0.0, 0.0, 0.141667, 0.0, 0.0, 0.0, 0.195000 ]
-    elements:
-      -
-        type: Shape
-        geometry:
-          type: Box
-          size: [ 0.45, 0.30, 0.10 ]
-        appearance:
-          material:
-            diffuseColor: [ 0.00, 0.60, 0.00 ]
-            specularColor: [ 0.00, 0.60, 0.00 ]
-            shininess: 0.6
-  -
+    mass: 8
+    inertia: [ 0.0666667, 0, 0, 0, 0.141667, 0, 0, 0, 0.195 ]
+    elements: 
+      Shape: 
+        geometry: { type: Box, size: [ 0.45, 0.3, 0.1 ] }
+        appearance: { material: { diffuseColor: [ 0, 0.6, 0 ], specularColor: [ 0, 0.6, 0 ], shininess: 0.6 } }
+  - 
     name: TRACK_L
-    translation: [ 0, 0.200000, -0.050000 ]
-    <<: *TrackCommon
-    elements:
-      -
+    parent: CHASSIS
+    translation: [ 0, 0.2, -0.05 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.333333
+    inertia: [ 0.000988889, 0, 0, 0, 0.00561111, 0, 0, 0, 0.00517778 ]
+    elements: 
+      - 
         type: AGXVehicleContinuousTrackDevice
         name: TRACK_L
         sprocketNames: [ SPROCKET_L ]
         rollerNames: [ ROLLER_L ]
         idlerNames: [ IDLER_L ]
-        <<: *TrackBeltCommon
-  -
+        upAxis: [ 0, 0, 1 ]
+        numberOfNodes: 42
+        nodeThickness: 0.01
+        nodeWidth: 0.1
+        nodeThickerThickness: 0.02
+        useThickerNodeEvery: 3
+        material: agxcrawlerTracks
+        nodeDistanceTension: 0.0009
+        stabilizingHingeFrictionParameter: 4e-07
+        minStabilizingHingeNormalForce: 100
+        hingeCompliance: 9e-07
+        hingeSpookDamping: 0.01
+        nodesToWheelsMergeThreshold: -0.001
+        nodesToWheelsSplitThreshold: -0.009
+  - 
     name: TRACK_R
-    translation: [ 0, -0.200000, -0.050000 ]
-    <<: *TrackCommon
-    elements:
-      -
+    parent: CHASSIS
+    translation: [ 0, -0.2, -0.05 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.333333
+    inertia: [ 0.000988889, 0, 0, 0, 0.00561111, 0, 0, 0, 0.00517778 ]
+    elements: 
+      - 
         type: AGXVehicleContinuousTrackDevice
-        name: TRACK_R
+        name: TRACK_L
         sprocketNames: [ SPROCKET_R ]
         rollerNames: [ ROLLER_R ]
         idlerNames: [ IDLER_R ]
-        nodeWidth: 0.10
-        <<: *TrackBeltCommon
-  -
+        upAxis: [ 0, 0, 1 ]
+        numberOfNodes: 42
+        nodeThickness: 0.01
+        nodeWidth: 0.1
+        nodeThickerThickness: 0.02
+        useThickerNodeEvery: 3
+        material: agxcrawlerTracks
+        nodeDistanceTension: 0.0009
+        stabilizingHingeFrictionParameter: 4e-07
+        minStabilizingHingeNormalForce: 100
+        hingeCompliance: 9e-07
+        hingeSpookDamping: 0.01
+        nodesToWheelsMergeThreshold: -0.001
+        nodesToWheelsSplitThreshold: -0.009
+  - 
     name: SPROCKET_L
-    translation: [ 0.210000, 0.200000, -0.050000 ]
+    parent: CHASSIS
+    translation: [ 0.21, 0.2, -0.05 ]
     jointId: 0
-    <<: *MainWheelCommon
-  -
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.222222
+    inertia: [ 0.00243333, 0, 0, 0, 0.0032, 0, 0, 0, 0.00243333 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.1 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
     name: ROLLER_L
-    translation: [ 0, 0.200000, -0.050000 ]
+    parent: CHASSIS
+    translation: [ 0, 0.2, -0.05 ]
     jointId: 1
-    <<: *MainWheelCommon
-  -
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.222222
+    inertia: [ 0.00243333, 0, 0, 0, 0.0032, 0, 0, 0, 0.00243333 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.1 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
     name: IDLER_L
-    translation: [ -0.210000, 0.200000, -0.050000 ]
+    parent: CHASSIS
+    translation: [ -0.21, 0.2, -0.05 ]
     jointId: 2
-    <<: *MainWheelCommon
-  -
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.222222
+    inertia: [ 0.00243333, 0, 0, 0, 0.0032, 0, 0, 0, 0.00243333 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.1 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
     name: SPROCKET_R
-    translation: [ 0.210000, -0.200000, -0.050000 ]
+    parent: CHASSIS
+    translation: [ 0.21, -0.2, -0.05 ]
     jointId: 3
-    <<: *MainWheelCommon
-  -
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.222222
+    inertia: [ 0.00243333, 0, 0, 0, 0.0032, 0, 0, 0, 0.00243333 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.1 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
     name: ROLLER_R
-    translation: [ 0, -0.200000, -0.050000 ]
+    parent: CHASSIS
+    translation: [ 0, -0.2, -0.05 ]
     jointId: 4
-    <<: *MainWheelCommon
-  -
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.222222
+    inertia: [ 0.00243333, 0, 0, 0, 0.0032, 0, 0, 0, 0.00243333 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.1 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
     name: IDLER_R
-    translation: [ -0.210000, -0.200000, -0.050000 ]
+    parent: CHASSIS
+    translation: [ -0.21, -0.2, -0.05 ]
     jointId: 5
-    <<: *MainWheelCommon
-  -
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.222222
+    inertia: [ 0.00243333, 0, 0, 0, 0.0032, 0, 0, 0, 0.00243333 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.1 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
     name: SPACER_LF
-    translation: [ 0.210000, 0.256500, -0.050000 ]
+    parent: CHASSIS
+    translation: [ 0.21, 0.2565, -0.05 ]
     jointId: 6
-    <<: *SpacerCommon
-  -
+    jointType: revolute
+    jointAxis: -Y
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.2
+    inertia: [ 0.000182817, 0, 0, 0, 0.00036, 0, 0, 0, 0.000182817 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.06, height: 0.013 }
+        appearance: { material: { diffuseColor: [ 1, 0, 0 ], specularColor: [ 1, 0, 0 ], shininess: 0.6 } }
+  - 
     name: SPACER_RF
-    translation: [ 0.210000, -0.256500, -0.050000 ]
+    parent: CHASSIS
+    translation: [ 0.21, -0.2565, -0.05 ]
     jointId: 7
-    <<: *SpacerCommon
-  -
+    jointType: revolute
+    jointAxis: -Y
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.2
+    inertia: [ 0.000182817, 0, 0, 0, 0.00036, 0, 0, 0, 0.000182817 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.06, height: 0.013 }
+        appearance: { material: { diffuseColor: [ 1, 0, 0 ], specularColor: [ 1, 0, 0 ], shininess: 0.6 } }
+  - 
     name: TRACK_LF
     parent: SPACER_LF
-    translation: [ 0.0, 0.046500, 0 ]
-    <<: *SubTrackFCommon
-    elements:
-      -
+    translation: [ 0, 0.0465, 0 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.0833333
+    inertia: [ 8.88889e-05, 0, 0, 0, 0.000161806, 0, 0, 0, 0.000161806 ]
+    elements: 
+      - 
         type: AGXVehicleContinuousTrackDevice
         name: TRACK_LF
         sprocketNames: [ SPROCKET_LF ]
         rollerNames: [ ROLLER_LF ]
         idlerNames: [ IDLER_LF ]
-        <<: *SubTrackBeltCommon
-  -
+        upAxis: [ 0, 0, 1 ]
+        numberOfNodes: 42
+        nodeThickness: 0.01
+        nodeWidth: 0.08
+        nodeThickerThickness: 0.02
+        useThickerNodeEvery: 3
+        material: agxcrawlerTracks
+        nodeDistanceTension: 0.0009
+        stabilizingHingeFrictionParameter: 4e-07
+        minStabilizingHingeNormalForce: 100
+        hingeCompliance: 9e-07
+        hingeSpookDamping: 0.01
+        nodesToWheelsMergeThreshold: -0.001
+        nodesToWheelsSplitThreshold: -0.009
+  - 
     name: TRACK_RF
     parent: SPACER_RF
-    translation: [ 0.0, -0.046500, 0 ]
-    <<: *SubTrackFCommon
-    elements:
-      -
+    translation: [ 0, -0.0465, 0 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.0833333
+    inertia: [ 8.88889e-05, 0, 0, 0, 0.000161806, 0, 0, 0, 0.000161806 ]
+    elements: 
+      - 
         type: AGXVehicleContinuousTrackDevice
         name: TRACK_RF
         sprocketNames: [ SPROCKET_RF ]
         rollerNames: [ ROLLER_RF ]
         idlerNames: [ IDLER_RF ]
-        <<: *SubTrackBeltCommon
-  -
-    name: IDLER_LF
-    parent: SPACER_LF
-    translation: [ 0.130000, 0.046500, 0.0 ]
-    jointId: 8
-    <<: *IdlerFCommon
-  -
-    name: ROLLER_LF
-    parent: SPACER_LF
-    translation: [ 0.065000, 0.046500, 0.0 ]
-    jointId: 9
-    <<: *RollerFCommon
-  -
+        upAxis: [ 0, 0, 1 ]
+        numberOfNodes: 42
+        nodeThickness: 0.01
+        nodeWidth: 0.08
+        nodeThickerThickness: 0.02
+        useThickerNodeEvery: 3
+        material: agxcrawlerTracks
+        nodeDistanceTension: 0.0009
+        stabilizingHingeFrictionParameter: 4e-07
+        minStabilizingHingeNormalForce: 100
+        hingeCompliance: 9e-07
+        hingeSpookDamping: 0.01
+        nodesToWheelsMergeThreshold: -0.001
+        nodesToWheelsSplitThreshold: -0.009
+  - 
     name: SPROCKET_LF
     parent: SPACER_LF
-    translation: [ 0.0, 0.046500, 0.0 ]
+    translation: [ 0, 0.0465, 0 ]
+    jointId: 8
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.000533333
+    inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.08 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
+    name: ROLLER_LF
+    parent: SPACER_LF
+    translation: [ 0.065, 0.0465, 0 ]
+    jointId: 9
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.000533333
+    inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.08 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
+    name: IDLER_LF
+    parent: SPACER_LF
+    translation: [ 0.13, 0.0465, 0 ]
     jointId: 10
-    <<: *SprocketFCommon
-  -
-    name: IDLER_RF
-    parent: SPACER_RF
-    translation: [ 0.130000, -0.046500, 0.0 ]
-    jointId: 11
-    <<: *IdlerFCommon
-  -
-    name: ROLLER_RF
-    parent: SPACER_RF
-    translation: [ 0.065000, -0.046500, 0.0 ]
-    jointId: 12
-    <<: *RollerFCommon
-  -
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.000533333
+    inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.08 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
     name: SPROCKET_RF
     parent: SPACER_RF
-    translation: [ 0.0, -0.046500, 0.0 ]
+    translation: [ 0, -0.0465, 0 ]
+    jointId: 11
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.000533333
+    inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.08 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
+    name: ROLLER_RF
+    parent: SPACER_RF
+    translation: [ 0.065, -0.0465, 0 ]
+    jointId: 12
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.000533333
+    inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.08 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
+    name: IDLER_RF
+    parent: SPACER_RF
+    translation: [ 0.13, -0.0465, 0 ]
     jointId: 13
-    <<: *SprocketFCommon
-  -
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.000533333
+    inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.08 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
     name: SPACER_LR
-    translation: [ -0.210000, 0.256500, -0.050000 ]
+    parent: CHASSIS
+    translation: [ -0.21, 0.2565, -0.05 ]
     jointId: 14
-    <<: *SpacerCommon
-  -
+    jointType: revolute
+    jointAxis: -Y
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.2
+    inertia: [ 0.000182817, 0, 0, 0, 0.00036, 0, 0, 0, 0.000182817 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.06, height: 0.013 }
+        appearance: { material: { diffuseColor: [ 1, 0, 0 ], specularColor: [ 1, 0, 0 ], shininess: 0.6 } }
+  - 
     name: SPACER_RR
-    translation: [ -0.210000, -0.256500, -0.050000 ]
+    parent: CHASSIS
+    translation: [ -0.21, -0.2565, -0.05 ]
     jointId: 15
-    <<: *SpacerCommon
-  -
+    jointType: revolute
+    jointAxis: -Y
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.2
+    inertia: [ 0.000182817, 0, 0, 0, 0.00036, 0, 0, 0, 0.000182817 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.06, height: 0.013 }
+        appearance: { material: { diffuseColor: [ 1, 0, 0 ], specularColor: [ 1, 0, 0 ], shininess: 0.6 } }
+  - 
     name: TRACK_LR
     parent: SPACER_LR
-    translation: [ 0.0, 0.046500, 0 ]
-    <<: *SubTrackFCommon
-    elements:
-      -
+    translation: [ 0, 0.0465, 0 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.0833333
+    inertia: [ 8.88889e-05, 0, 0, 0, 0.000161806, 0, 0, 0, 0.000161806 ]
+    elements: 
+      - 
         type: AGXVehicleContinuousTrackDevice
         name: TRACK_LR
         sprocketNames: [ SPROCKET_LR ]
         rollerNames: [ ROLLER_LR ]
         idlerNames: [ IDLER_LR ]
-        <<: *SubTrackBeltCommon
-  -
+        upAxis: [ 0, 0, 1 ]
+        numberOfNodes: 42
+        nodeThickness: 0.01
+        nodeWidth: 0.08
+        nodeThickerThickness: 0.02
+        useThickerNodeEvery: 3
+        material: agxcrawlerTracks
+        nodeDistanceTension: 0.0009
+        stabilizingHingeFrictionParameter: 4e-07
+        minStabilizingHingeNormalForce: 100
+        hingeCompliance: 9e-07
+        hingeSpookDamping: 0.01
+        nodesToWheelsMergeThreshold: -0.001
+        nodesToWheelsSplitThreshold: -0.009
+  - 
     name: TRACK_RR
     parent: SPACER_RR
-    translation: [ 0.0, -0.046500, 0 ]
-    <<: *SubTrackFCommon
-    elements:
-      -
+    translation: [ 0, -0.0465, 0 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.0833333
+    inertia: [ 8.88889e-05, 0, 0, 0, 0.000161806, 0, 0, 0, 0.000161806 ]
+    elements: 
+      - 
         type: AGXVehicleContinuousTrackDevice
         name: TRACK_RR
         sprocketNames: [ SPROCKET_RR ]
         rollerNames: [ ROLLER_RR ]
         idlerNames: [ IDLER_RR ]
-        <<: *SubTrackBeltCommon
-  -
-    name: IDLER_LR
-    parent: SPACER_LR
-    translation: [ -0.130000, 0.046500, 0.0 ]
-    jointId: 16
-    <<: *IdlerRCommon
-  -
-    name: ROLLER_LR
-    parent: SPACER_LR
-    translation: [ -0.065000, 0.046500, 0.0 ]
-    jointId: 17
-    <<: *RollerRCommon
-  -
+        upAxis: [ 0, 0, 1 ]
+        numberOfNodes: 42
+        nodeThickness: 0.01
+        nodeWidth: 0.08
+        nodeThickerThickness: 0.02
+        useThickerNodeEvery: 3
+        material: agxcrawlerTracks
+        nodeDistanceTension: 0.0009
+        stabilizingHingeFrictionParameter: 4e-07
+        minStabilizingHingeNormalForce: 100
+        hingeCompliance: 9e-07
+        hingeSpookDamping: 0.01
+        nodesToWheelsMergeThreshold: -0.001
+        nodesToWheelsSplitThreshold: -0.009
+  - 
     name: SPROCKET_LR
     parent: SPACER_LR
-    translation: [ 0.0, 0.046500, 0.0 ]
+    translation: [ 0, 0.0465, 0 ]
+    jointId: 16
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.000533333
+    inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.08 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
+    name: ROLLER_LR
+    parent: SPACER_LR
+    translation: [ -0.065, 0.0465, 0 ]
+    jointId: 17
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.000533333
+    inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.08 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
+    name: IDLER_LR
+    parent: SPACER_LR
+    translation: [ -0.13, 0.0465, 0 ]
     jointId: 18
-    <<: *SprocketRCommon
-  -
-    name: IDLER_RR
-    parent: SPACER_RR
-    translation: [ -0.130000, -0.046500, 0.0 ]
-    jointId: 19
-    <<: *IdlerRCommon
-  -
-    name: ROLLER_RR
-    parent: SPACER_RR
-    translation: [ -0.065000, -0.046500, 0.0 ]
-    jointId: 20
-    <<: *RollerRCommon
-  -
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.000533333
+    inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.08 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
     name: SPROCKET_RR
     parent: SPACER_RR
-    translation: [ 0.0, -0.046500, 0.0 ]
+    translation: [ 0, -0.0465, 0 ]
+    jointId: 19
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.000533333
+    inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.08 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
+    name: ROLLER_RR
+    parent: SPACER_RR
+    translation: [ -0.065, -0.0465, 0 ]
+    jointId: 20
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.000533333
+    inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.08 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+  - 
+    name: IDLER_RR
+    parent: SPACER_RR
+    translation: [ -0.13, -0.0465, 0 ]
     jointId: 21
-    <<: *SprocketRCommon
+    jointType: revolute
+    jointAxis: Y
+    centerOfMass: [ 0, 0, 0 ]
+    material: agxcrawlerWheel
+    mass: 0.000533333
+    inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
+    elements: 
+      Shape: 
+        geometry: { type: Cylinder, radius: 0.08, height: 0.08 }
+        appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
