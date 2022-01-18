@@ -10,6 +10,7 @@ if(UNIX)
 endif()
 
 install(DIRECTORY
+  default
   model
   project
   DESTINATION ${CNOID_SHARE_SUBDIR}/HAIROWorld)

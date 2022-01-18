@@ -22,19 +22,19 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "aistcrawler.body"
+            file: "${SHARE}/HAIROWorld/model/aistcrawler.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0.2 ]
             rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+              -1, -1.2246468e-16, 0, 
+              1.2246468e-16, -1, 0, 
               0, 0, 1 ]
             jointDisplacements: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
             jointPositions: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
             initialRootPosition: [ 0, 0, 0.2 ]
             initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+              -1, -1.2246468e-16, 0, 
+              1.2246468e-16, -1, 0, 
               0, 0, 1 ]
             initialJointPositions: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
             staticModel: false
@@ -294,17 +294,17 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 1403, 446 ]
+      sizes: [ 1287, 409 ]
       children: 
         - 
           type: splitter
           orientation: horizontal
-          sizes: [ 363, 1036 ]
+          sizes: [ 333, 950 ]
           children: 
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 509, 508 ]
+              sizes: [ 430, 429 ]
               children: 
                 - 
                   type: pane
@@ -316,7 +316,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 763, 254 ]
+              sizes: [ 644, 215 ]
               children: 
                 - 
                   type: pane
@@ -328,7 +328,7 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 224, 793 ]
+          sizes: [ 198, 661 ]
           children: 
             - 
               type: pane
@@ -336,7 +336,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 309, 480 ]
+              sizes: [ 286, 371 ]
               children: 
                 - 
                   type: pane
