@@ -4,11 +4,13 @@
 */
 
 #include "BookmarkManager.h"
+#include <cnoid/Action>
 #include <cnoid/AppConfig>
 #include <cnoid/Button>
 #include <cnoid/Dialog>
 #include <cnoid/FileDialog>
 #include <cnoid/MainWindow>
+#include <cnoid/Menu>
 #include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include <cnoid/RootItem>
@@ -53,11 +55,13 @@ public:
 
     TreeWidget* treeWidget;
     PushButton* buttons[NUM_BUTTONS];
+    Menu menu;
 
     void addItem(const string& filename);
     void removeItem();
     void onAddButtonClicked();
     void onOpenButtonClicked();
+    void onCustomContextMenuRequested(const QPoint& pos);
     bool openDialogToLoadProject(const string& filename);
     bool store(Mapping& archive);
     void restore(const Mapping& archive);
@@ -167,6 +171,22 @@ ConfigDialog::ConfigDialog()
     vbox->addWidget(treeWidget);
     vbox->addWidget(buttonBox);
     setLayout(vbox);
+
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    Action* addAct = new Action();
+    addAct->setText(_("Add"));
+    menu.addAction(addAct);
+    Action* removeAct = new Action();
+    removeAct->setText(_("Remove"));
+    menu.addAction(removeAct);
+    Action* openAct = new Action();
+    openAct->setText(_("Open"));
+    menu.addAction(openAct);
+
+    addAct->sigTriggered().connect([&](){ onAddButtonClicked(); });
+    removeAct->sigTriggered().connect([&](){ removeItem(); });
+    openAct->sigTriggered().connect([&](){ onOpenButtonClicked(); });
+    connect(this, &ConfigDialog::customContextMenuRequested, [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
 }
 
 
@@ -225,6 +245,12 @@ void ConfigDialog::onOpenButtonClicked()
             return;
         }
     }
+}
+
+
+void ConfigDialog::onCustomContextMenuRequested(const QPoint& pos)
+{
+    menu.exec(this->mapToGlobal(pos));
 }
 
 

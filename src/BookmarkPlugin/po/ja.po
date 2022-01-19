@@ -53,12 +53,20 @@ msgstr "キャンセル"
 msgid "&Ok"
 msgstr "Ｏｋ"
 
+#: ../BookmarkManagerDialog.cpp:177
+msgid "Add"
+msgstr "登録"
+
+#: ../BookmarkManagerDialog.cpp:180
+msgid "Remove"
+msgstr "削除"
+
 #: ../BookmarkManagerDialog.cpp:165 ../BookmarkManagerView.cpp:188
 msgid "Select a Choreonoid project file"
 msgstr "Choreonoidプロジェクトファイルの選択"
 
 #: ../BookmarkManagerDialog.cpp:168 ../BookmarkManagerView.cpp:80
-#: ../BookmarkManagerView.cpp:191
+#: ../BookmarkManagerView.cpp:191 ../BookmarkManagerView.cpp:183
 msgid "Open"
 msgstr "開く"
 
