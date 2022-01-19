@@ -172,7 +172,7 @@ ConfigDialog::ConfigDialog()
     vbox->addWidget(buttonBox);
     setLayout(vbox);
 
-    setContextMenuPolicy(Qt::CustomContextMenu);
+    treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     Action* addAct = new Action();
     addAct->setText(_("Add"));
     menu.addAction(addAct);
@@ -186,7 +186,7 @@ ConfigDialog::ConfigDialog()
     addAct->sigTriggered().connect([&](){ onAddButtonClicked(); });
     removeAct->sigTriggered().connect([&](){ removeItem(); });
     openAct->sigTriggered().connect([&](){ onOpenButtonClicked(); });
-    connect(this, &ConfigDialog::customContextMenuRequested, [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
+    connect(treeWidget, &TreeWidget::customContextMenuRequested, [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
 }
 
 
@@ -250,7 +250,7 @@ void ConfigDialog::onOpenButtonClicked()
 
 void ConfigDialog::onCustomContextMenuRequested(const QPoint& pos)
 {
-    menu.exec(this->mapToGlobal(pos));
+    menu.exec(treeWidget->mapToGlobal(pos));
 }
 
 
