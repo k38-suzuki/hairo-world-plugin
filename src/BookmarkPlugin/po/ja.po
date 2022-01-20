@@ -57,7 +57,7 @@ msgstr "Ｏｋ"
 msgid "Add"
 msgstr "登録"
 
-#: ../BookmarkManagerDialog.cpp:180
+#: ../BookmarkManagerDialog.cpp:180 ../BookmarkList.cpp:65
 msgid "Remove"
 msgstr "削除"
 
@@ -116,3 +116,11 @@ msgstr "クリア"
 #: ../BookmarkPlugin.cpp:65 ../HistoryManager.cpp:86
 msgid "History"
 msgstr "履歴"
+
+#: ../BookmarkList.cpp:53
+msgid "Bookmark"
+msgstr "ブックマーク"
+
+#: ../BookmarkList.cpp:57
+msgid "Add current project"
+msgstr "現在のプロジェクトを登録"

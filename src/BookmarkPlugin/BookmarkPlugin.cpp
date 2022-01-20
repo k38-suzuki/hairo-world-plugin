@@ -5,6 +5,7 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
+#include "BookmarkList.h"
 #include "BookmarkManager.h"
 #include "HistoryManager.h"
 
@@ -23,6 +24,7 @@ public:
 
     virtual bool initialize() override
     {
+        BookmarkList::initialize(this);
         BookmarkManager::initialize(this);
         HistoryManager::initialize(this);
         return true;
