@@ -50,7 +50,7 @@ BookmarkListImpl::BookmarkListImpl(BookmarkList* self, ExtensionManager* ext)
     : self(self),
       pm(ProjectManager::instance())
 {
-    MenuManager& mm = ext->menuManager().setPath(_("Bookmark"));
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Bookmark"));
     currentMenu = mm.currentMenu();
     currentMenu->setContextMenuPolicy(Qt::CustomContextMenu);
     addProject = new Action;

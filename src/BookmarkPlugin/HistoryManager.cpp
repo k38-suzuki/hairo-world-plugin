@@ -21,8 +21,8 @@ public:
     virtual ~HistoryManagerImpl();
     HistoryManager* self;
 
+    Menu* currentMenu;
     ProjectManager* pm;
-    Menu* menu;
 
     void onActionTriggered(const QAction* action);
     void onProjectLoaded();
@@ -44,9 +44,9 @@ HistoryManagerImpl::HistoryManagerImpl(HistoryManager* self, ExtensionManager* e
       pm(ProjectManager::instance())
 {
     MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("History"));
-    menu = mm.currentMenu();
+    currentMenu = mm.currentMenu();
 
-    menu->sigTriggered().connect([&](QAction* action){ onActionTriggered(action); });
+    currentMenu->sigTriggered().connect([&](QAction* action){ onActionTriggered(action); });
     pm->sigProjectLoaded().connect([&](int level){ onProjectLoaded(); });
 
     Mapping& config = *AppConfig::archive()->openMapping("history");
@@ -76,8 +76,7 @@ void HistoryManager::initialize(ExtensionManager* ext)
 
 void HistoryManagerImpl::onActionTriggered(const QAction* action)
 {
-    string filename = action->text().toStdString();
-    pm->loadProject(filename);
+    pm->loadProject(action->text().toStdString());
 }
 
 
@@ -87,13 +86,12 @@ void HistoryManagerImpl::onProjectLoaded()
     if(!filename.empty()) {
         Action* action = new Action();
         action->setText(filename.c_str());
-        menu->addAction(action);
+        currentMenu->addAction(action);
 
         int maxHistory = 10;
-        int numHistories = menu->actions().size();
+        int numHistories = currentMenu->actions().size();
         if(numHistories > maxHistory) {
-            Action* action = dynamic_cast<Action*>(menu->actions()[0]);
-            menu->removeAction(action);
+            currentMenu->removeAction(currentMenu->actions()[0]);
         }
     }
 }
@@ -101,10 +99,10 @@ void HistoryManagerImpl::onProjectLoaded()
 
 bool HistoryManagerImpl::store(Mapping& archive)
 {
-    int numHistories = menu->actions().size();
-    archive.write("num_history", numHistories);
+    int numHistories = currentMenu->actions().size();
+    archive.write("num_histories", numHistories);
     for(int i = 0; i < numHistories; ++i) {
-        Action* action = dynamic_cast<Action*>(menu->actions()[i]);
+        QAction* action = currentMenu->actions()[i];
         string key = "history_" + to_string(i);
         string filename = action->text().toStdString();
         archive.write(key, filename);
@@ -115,12 +113,12 @@ bool HistoryManagerImpl::store(Mapping& archive)
 
 void HistoryManagerImpl::restore(const Mapping& archive)
 {
-    int numHistories = archive.get("num_history", 0);
+    int numHistories = archive.get("num_histories", 0);
     for(int i = 0; i < numHistories; ++i) {
         string key = "history_" + to_string(i);
         string filename = archive.get(key, "");
         Action* action = new Action();
         action->setText(filename.c_str());
-        menu->addAction(action);
+        currentMenu->addAction(action);
     }
 }
