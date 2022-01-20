@@ -117,6 +117,10 @@ msgstr "クリア"
 msgid "History"
 msgstr "履歴"
 
+#: ../HistoryManager.cpp:53
+msgid "Clear all histories"
+msgstr "全ての履歴を削除"
+
 #: ../BookmarkList.cpp:53
 msgid "Bookmark"
 msgstr "ブックマーク"
