@@ -24,11 +24,15 @@ public:
     HistoryManager* self;
 
     Menu* currentMenu;
+    Menu* contextMenu;
     Action* clearProject;
     ProjectManager* pm;
+    QPoint pos;
 
     void onClearProjectTriggered();
+    void onRemoveProjectTriggered();
     void onCurrentMenuTriggered(QAction* action);
+    void onCustomContextMenuRequested(const QPoint& pos);
     void onProjectLoaded();
     bool store(Mapping& archive);
     void restore(const Mapping& archive);
@@ -49,12 +53,21 @@ HistoryManagerImpl::HistoryManagerImpl(HistoryManager* self, ExtensionManager* e
 {
     MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("History"));
     currentMenu = mm.currentMenu();
+    currentMenu->setContextMenuPolicy(Qt::CustomContextMenu);
     clearProject = new Action;
     clearProject->setText(_("Clear all histories"));
     clearProject->sigTriggered().connect([&](){ onClearProjectTriggered(); });
     currentMenu->addAction(clearProject);
     currentMenu->addSeparator();
     currentMenu->sigTriggered().connect([&](QAction* action){ onCurrentMenuTriggered(action); });
+
+    contextMenu = new Menu;
+    Action* removeProject = new Action;
+    removeProject->setText(_("Remove"));
+    removeProject->sigTriggered().connect([&](){ onRemoveProjectTriggered(); });
+    contextMenu->addAction(removeProject);
+
+    QObject::connect(currentMenu, &Menu::customContextMenuRequested, [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
 
     pm->sigProjectLoaded().connect([&](int level){ onProjectLoaded(); });
 
@@ -92,11 +105,26 @@ void HistoryManagerImpl::onClearProjectTriggered()
 }
 
 
+void HistoryManagerImpl::onRemoveProjectTriggered()
+{
+    currentMenu->removeAction(currentMenu->actionAt(pos));
+}
+
+
 void HistoryManagerImpl::onCurrentMenuTriggered(QAction* action)
 {
     Action* triggeredProject = dynamic_cast<Action*>(action);
     if(triggeredProject != clearProject) {
         pm->loadProject(action->text().toStdString());
+    }
+}
+
+
+void HistoryManagerImpl::onCustomContextMenuRequested(const QPoint& pos)
+{
+    this->pos = pos;
+    if(currentMenu->actionAt(this->pos) != clearProject) {
+        contextMenu->exec(currentMenu->mapToGlobal(pos));
     }
 }
 
