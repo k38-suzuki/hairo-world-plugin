@@ -14,8 +14,8 @@
 #include <cnoid/EigenTypes>
 #include <fmt/format.h>
 #include <QDialogButtonBox>
+#include <QGridLayout>
 #include <QLabel>
-#include <QHBoxLayout>
 #include <QStackedLayout>
 #include <QVBoxLayout>
 #include "gettext.h"
@@ -28,10 +28,35 @@ struct ButtonInfo {
     QDialogButtonBox::ButtonRole role;
 };
 
-
 ButtonInfo buttonInfo[] = {
     { QDialogButtonBox::ActionRole },
     { QDialogButtonBox::AcceptRole }
+};
+
+struct DoubleSpinInfo {
+    int row;
+    int column;
+    int page;
+};
+
+DoubleSpinInfo dspinInfo[] = {
+    { 0, 1, 0 }, { 0, 3, 0 }, { 0, 5, 0 }, { 0, 7, 0 },
+    { 0, 1, 1 }, { 0, 3, 1 },
+    { 0, 1, 2 }, { 0, 3, 2 }, { 0, 5, 2 },
+    { 0, 1, 3 }, { 0, 3, 3 }, { 0, 5, 3 }
+};
+
+struct LabelInfo {
+    int row;
+    int column;
+    int page;
+};
+
+LabelInfo labelInfo[] = {
+    { 0, 0, 0 }, { 0, 2, 0 }, { 0, 4, 0 }, { 0, 6, 0 },
+    { 0, 0, 1 }, { 0, 2, 1 },
+    { 0, 0, 2 }, { 0, 2, 2 }, { 0, 4, 2 }, { 0, 6, 2 },
+    { 0, 0, 3 }, { 0, 2, 3 }, { 0, 4, 3 }, { 0, 6, 3 }
 };
 
 }
@@ -44,8 +69,15 @@ class ConfigDialog : public Dialog
 public:
     ConfigDialog();
 
-    enum ShapeID { BOX, SPHERE, CYLINDER, CONE, NUM_SHAPE };
-    enum AxisID { X, Y, Z, NUM_AXIS };
+    enum DoubleSpinID {
+        BOX_MAS, BOX_X, BOX_Y, BOX_Z,
+        SPR_MAS, SPR_RAD,
+        CLD_MAS, CLD_RAD, CLD_HGT,
+        CON_MAS, CON_RAD, CON_HGT,
+        NUM_DSPINS
+    };
+    enum PageID { BOX, SPHERE, CYLINDER, CONE, NUM_PAGES };
+    enum AxisID { X, Y, Z, NUM_AXES };
     enum DialogButtonID { CALC, OK, NUM_DBUTTONS };
 
     ComboBox* shapeCombo;
@@ -53,7 +85,7 @@ public:
     MessageView* mv;
     ComboBox* cylinderAxisCombo;
     ComboBox* coneAxisCombo;
-    DoubleSpinBox* dspins[12];
+    DoubleSpinBox* dspins[NUM_DSPINS];
     PushButton* dialogButtons[NUM_DBUTTONS];
 
     void calcBoxInertia();
@@ -85,10 +117,13 @@ InertiaCalculator::InertiaCalculator(ExtensionManager* ext)
 InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self, ExtensionManager* ext)
     : self(self)
 {
-    dialog = new ConfigDialog();
+    dialog = new ConfigDialog;
 
     MenuManager& mm = ext->menuManager().setPath("/Tools");
-    mm.addItem(_("InertiaCalculator"))->sigTriggered().connect([&](){ dialog->show(); });
+    mm.addItem(_("InertiaCalculator"))->sigTriggered().connect([&](){
+        dialog->mv->clear();
+        dialog->show();
+    });
 }
 
 
@@ -109,100 +144,68 @@ ConfigDialog::ConfigDialog()
 {
     setWindowTitle(_("InertiaCalculator"));
 
-    shapeCombo = new ComboBox();
-    QStringList items = { _("Box"), _("Sphere"), _("Cylinder"), _("Cone") };
-    shapeCombo->addItems(items);
-    QHBoxLayout* sbox = new QHBoxLayout();
+    shapeCombo = new ComboBox;
+    QStringList shapeList = { _("Box"), _("Sphere"), _("Cylinder"), _("Cone") };
+    shapeCombo->addItems(shapeList);
+    QHBoxLayout* sbox = new QHBoxLayout;
     sbox->addWidget(new QLabel(_("Shape")));
     sbox->addWidget(shapeCombo);
     sbox->addStretch();
 
-    stbox = new QStackedLayout();
+    stbox = new QStackedLayout;
+    QGridLayout* gbox[NUM_PAGES];
+    for(int i = 0; i < NUM_PAGES; ++i) {
+        Widget* pageWidget = new Widget;
+        gbox[i] = new QGridLayout;
+        pageWidget->setLayout(gbox[i]);
+        stbox->addWidget(pageWidget);
+    }
 
-    for(int i = 0; i < 12; i++) {
-        dspins[i] = new DoubleSpinBox();
+    for(int i = 0; i < NUM_DSPINS; ++i) {
+        dspins[i] = new DoubleSpinBox;
+        DoubleSpinInfo info = dspinInfo[i];
         dspins[i]->setDecimals(4);
         dspins[i]->setSingleStep(0.01);
         dspins[i]->setRange(0.0000, 1000.0);
+        gbox[info.page]->addWidget(dspins[i], info.row, info.column);
     }
-    cylinderAxisCombo = new ComboBox();
-    coneAxisCombo = new ComboBox();
+
+    static const char* labels[] = {
+        _("mass [kg]"), _("x [m]"), _("y [m]"), _("z [m]"),
+        _("mass [kg]"), _("radius [m]"),
+        _("mass [kg]"), _("radius [m]"), _("height [m]"), _("axis [-]"),
+        _("mass [kg]"), _("radius [m]"), _("height [m]"), _("axis [-]")
+    };
+
+    for(int i = 0; i < 14; ++i) {
+        LabelInfo info = labelInfo[i];
+        gbox[info.page]->addWidget(new QLabel(labels[i]), info.row, info.column);
+    }
+
+    cylinderAxisCombo = new ComboBox;
+    gbox[CYLINDER]->addWidget(cylinderAxisCombo, 0, 7);
+    coneAxisCombo = new ComboBox;
+    gbox[CONE]->addWidget(coneAxisCombo, 0, 7);
     QStringList axisList = { "x", "y", "z" };
     cylinderAxisCombo->addItems(axisList);
     coneAxisCombo->addItems(axisList);
 
-    QHBoxLayout* bhbox = new QHBoxLayout();
-    bhbox->addWidget(new QLabel(_("mass [kg]")));
-    bhbox->addWidget(dspins[0]);
-    bhbox->addWidget(new QLabel(_("x [m]")));
-    bhbox->addWidget(dspins[1]);
-    bhbox->addWidget(new QLabel(_("y [m]")));
-    bhbox->addWidget(dspins[2]);
-    bhbox->addWidget(new QLabel(_("z [m]")));
-    bhbox->addWidget(dspins[3]);
-    bhbox->addStretch();
-    Widget* boxWidget = new Widget();
-    boxWidget->setLayout(bhbox);
-
-    QHBoxLayout* shbox = new QHBoxLayout();
-    shbox->addWidget(new QLabel(_("mass [kg]")));
-    shbox->addWidget(dspins[4]);
-    shbox->addWidget(new QLabel(_("radius [m]")));
-    shbox->addWidget(dspins[5]);
-    shbox->addStretch();
-    Widget* sphereWidget = new Widget();
-    sphereWidget->setLayout(shbox);
-
-    QHBoxLayout* cyhbox = new QHBoxLayout();
-    cyhbox->addWidget(new QLabel(_("mass [kg]")));
-    cyhbox->addWidget(dspins[6]);
-    cyhbox->addWidget(new QLabel(_("radius [m]")));
-    cyhbox->addWidget(dspins[7]);
-    cyhbox->addWidget(new QLabel(_("height [m]")));
-    cyhbox->addWidget(dspins[8]);
-    cyhbox->addWidget(new QLabel(_("axis [-]")));
-    cyhbox->addWidget(cylinderAxisCombo);
-    cyhbox->addStretch();
-    Widget* cylinderWidget = new Widget();
-    cylinderWidget->setLayout(cyhbox);
-
-    QHBoxLayout* cnhbox = new QHBoxLayout();
-    cnhbox->addWidget(new QLabel(_("mass [kg]")));
-    cnhbox->addWidget(dspins[9]);
-    cnhbox->addWidget(new QLabel(_("radius [m]")));
-    cnhbox->addWidget(dspins[10]);
-    cnhbox->addWidget(new QLabel(_("height [m]")));
-    cnhbox->addWidget(dspins[11]);
-    cnhbox->addWidget(new QLabel(_("axis [-]")));
-    cnhbox->addWidget(coneAxisCombo);
-    cnhbox->addStretch();
-    Widget* coneWidget = new Widget();
-    coneWidget->setLayout(cnhbox);
-
-    stbox->addWidget(boxWidget);
-    stbox->addWidget(sphereWidget);
-    stbox->addWidget(cylinderWidget);
-    stbox->addWidget(coneWidget);
-
-    const char* labels[] = { _("&Calc"), _ ("&Ok") };
+    static const char* button_labels[] = { _("&Calc"), _ ("&Ok") };
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
     for(int i = 0; i < NUM_DBUTTONS; ++i) {
         ButtonInfo info = buttonInfo[i];
-        dialogButtons[i] = new PushButton(labels[i]);
+        dialogButtons[i] = new PushButton(button_labels[i]);
         PushButton* dialogButton = dialogButtons[i];
         buttonBox->addButton(dialogButton, info.role);
-        if(i == OK) {
-            dialogButton->setDefault(true);
-        }
     }
     connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
 
-    QVBoxLayout* vbox = new QVBoxLayout();
+    QVBoxLayout* vbox = new QVBoxLayout;
     vbox->addLayout(sbox);
     vbox->addLayout(stbox);
     vbox->addWidget(mv);
-    vbox->addWidget(new HSeparator());
+    vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);
     setLayout(vbox);
 
@@ -327,5 +330,6 @@ void ConfigDialog::calcConeInertia()
 
 void ConfigDialog::printIntertia(const Vector3& inertia)
 {
-    mv->putln(fmt::format(_("inertia: [ {0}, 0, 0, 0, {1}, 0, 0, 0, {2} ]\n"), inertia[0], inertia[1], inertia[2]));
+    mv->putln(fmt::format(_("inertia: [ {0}, 0, 0, 0, {1}, 0, 0, 0, {2} ]\n"),
+                          inertia[0], inertia[1], inertia[2]));
 }
