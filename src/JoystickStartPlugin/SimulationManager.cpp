@@ -39,6 +39,7 @@ public:
   virtual ~SimulationManagerImpl();
   SimulationManager* self;
 
+  MessageView* mv;
   bool startState;
   bool pauseState;
   string currentProjectName;
@@ -70,7 +71,8 @@ SimulationManager::SimulationManager(ExtensionManager* ext)
 
 
 SimulationManagerImpl::SimulationManagerImpl(SimulationManager* self, ExtensionManager* ext)
-    : self(self)
+    : self(self),
+      mv(MessageView::instance())
 {
     MenuManager& mm = ext->menuManager().setPath("/Options").setPath(N_("Joystick"));
     useStartButton = mm.addCheckItem(_("Start simulation (StartButton)"));
@@ -172,7 +174,6 @@ void SimulationManagerImpl::pauseSimulation(SimulatorItem* simulatorItem)
 
 void SimulationManagerImpl::forEachSimulator(std::function<void(SimulatorItem* simulatorItem)> callback, bool doSelect)
 {
-    MessageView* mv = MessageView::instance();
     RootItem* rootItem = RootItem::instance();
     ItemList<SimulatorItem> simulatorItems = rootItem->selectedItems<SimulatorItem>();
 
@@ -230,7 +231,6 @@ void SimulationManagerImpl::forEachSimulator(std::function<void(SimulatorItem* s
 void SimulationManagerImpl::openDialogToLoadProject()
 {
     ProjectManager* pm = ProjectManager::instance();
-    MessageView* mv = MessageView::instance();
     auto mw = MainWindow::instance();
     int numItems = RootItem::instance()->countDescendantItems();
     if(numItems > 0) {

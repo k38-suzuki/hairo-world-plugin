@@ -7,13 +7,12 @@
 #define CNOID_JOYSTICKSTARTPLUGIN_SIMULATIONMANAGER_H
 
 #include <cnoid/ExtensionManager>
-#include "exportdecl.h"
 
 namespace cnoid {
 
 class SimulationManagerImpl;
 
-class CNOID_EXPORT SimulationManager
+class SimulationManager
 {
 public:
     SimulationManager(ExtensionManager* ext);
