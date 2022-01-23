@@ -23,7 +23,6 @@
 #include <cnoid/YAMLReader>
 #include <cnoid/YAMLWriter>
 #include <QColorDialog>
-#include <QDialogButtonBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPalette>
@@ -440,10 +439,6 @@ CrawlerConfigDialog::CrawlerConfigDialog()
 
     formWidget = new FileFormWidget();
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
-    PushButton* okButton = new PushButton(_("&Ok"));
-    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
-
     initialize();
     bodyname.clear();
 
@@ -455,10 +450,8 @@ CrawlerConfigDialog::CrawlerConfigDialog()
     vbox->addLayout(hbox);
     vbox->addWidget(new HSeparator());
     vbox->addWidget(formWidget);
-    vbox->addWidget(buttonBox);
     setLayout(vbox);
 
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     toolButtons[RESET]->sigClicked().connect([&](){ onResetButtonClicked(); });
     toolButtons[IMPORT]->sigClicked().connect([&](){ onImportYamlButtonClicked(); });
     toolButtons[EXPORT]->sigClicked().connect([&](){ onExportYamlButtonClicked(); });

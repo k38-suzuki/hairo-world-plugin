@@ -14,6 +14,7 @@
 #include <cnoid/RootItem>
 #include <cnoid/Separator>
 #include <cnoid/stdx/filesystem>
+#include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -24,7 +25,11 @@ using namespace cnoid;
 using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
+namespace {
+
 FileFormWidget* formWidget = nullptr;
+
+}
 
 namespace cnoid {
 
@@ -70,16 +75,15 @@ FileFormWidgetImpl::FileFormWidgetImpl(FileFormWidget* self)
     fhbox->addWidget(fileLine);
 
     static const char* labels[] = { _("&Reload"), _("&Save"), _("&Save As...") };
-    QHBoxLayout* bhbox = new QHBoxLayout();
-    bhbox->addStretch();
+
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
     for(int i = 0; i < NUM_BUTTONS; ++i) {
         buttons[i] = new PushButton(labels[i]);
-        PushButton* button = buttons[i];
-        bhbox->addWidget(button);
+        buttonBox->addButton(buttons[i], QDialogButtonBox::ActionRole);
     }
 
     vbox->addLayout(fhbox);
-    vbox->addLayout(bhbox);
+    vbox->addWidget(buttonBox);
     self->setLayout(vbox);
 
     buttons[RELOAD]->sigClicked().connect([&](){ onReloadButtonClicked(); });

@@ -24,15 +24,6 @@ using namespace cnoid;
 
 namespace {
 
-struct ButtonInfo {
-    QDialogButtonBox::ButtonRole role;
-};
-
-ButtonInfo buttonInfo[] = {
-    { QDialogButtonBox::ActionRole },
-    { QDialogButtonBox::AcceptRole }
-};
-
 struct DoubleSpinInfo {
     int row;
     int column;
@@ -78,7 +69,6 @@ public:
     };
     enum PageID { BOX, SPHERE, CYLINDER, CONE, NUM_PAGES };
     enum AxisID { X, Y, Z, NUM_AXES };
-    enum DialogButtonID { CALC, OK, NUM_DBUTTONS };
 
     ComboBox* shapeCombo;
     QStackedLayout* stbox;
@@ -86,7 +76,6 @@ public:
     ComboBox* cylinderAxisCombo;
     ComboBox* coneAxisCombo;
     DoubleSpinBox* dspins[NUM_DSPINS];
-    PushButton* dialogButtons[NUM_DBUTTONS];
 
     void calcBoxInertia();
     void calcSphereInertia();
@@ -147,10 +136,10 @@ ConfigDialog::ConfigDialog()
     shapeCombo = new ComboBox;
     QStringList shapeList = { _("Box"), _("Sphere"), _("Cylinder"), _("Cone") };
     shapeCombo->addItems(shapeList);
-    QHBoxLayout* sbox = new QHBoxLayout;
-    sbox->addWidget(new QLabel(_("Shape")));
-    sbox->addWidget(shapeCombo);
-    sbox->addStretch();
+    QHBoxLayout* shbox = new QHBoxLayout;
+    shbox->addWidget(new QLabel(_("Shape")));
+    shbox->addWidget(shapeCombo);
+    shbox->addStretch();
 
     stbox = new QStackedLayout;
     QGridLayout* gbox[NUM_PAGES];
@@ -190,26 +179,11 @@ ConfigDialog::ConfigDialog()
     cylinderAxisCombo->addItems(axisList);
     coneAxisCombo->addItems(axisList);
 
-    static const char* button_labels[] = { _("&Calc"), _ ("&Ok") };
-
     QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
-    for(int i = 0; i < NUM_DBUTTONS; ++i) {
-        ButtonInfo info = buttonInfo[i];
-        dialogButtons[i] = new PushButton(button_labels[i]);
-        PushButton* dialogButton = dialogButtons[i];
-        buttonBox->addButton(dialogButton, info.role);
-    }
-    connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
+    PushButton* calcButton = new PushButton(_("&Calc"));
+    buttonBox->addButton(calcButton, QDialogButtonBox::ActionRole);
 
-    QVBoxLayout* vbox = new QVBoxLayout;
-    vbox->addLayout(sbox);
-    vbox->addLayout(stbox);
-    vbox->addWidget(mv);
-    vbox->addWidget(new HSeparator);
-    vbox->addWidget(buttonBox);
-    setLayout(vbox);
-
-    dialogButtons[CALC]->sigClicked().connect([&](){
+    calcButton->sigClicked().connect([&](){
         int index = shapeCombo->currentIndex();
         switch (index) {
         case BOX:
@@ -230,6 +204,14 @@ ConfigDialog::ConfigDialog()
     });
 
     shapeCombo->sigCurrentIndexChanged().connect([&](int index){ stbox->setCurrentIndex(index); });
+
+    QVBoxLayout* vbox = new QVBoxLayout;
+    vbox->addLayout(shbox);
+    vbox->addLayout(stbox);
+    vbox->addWidget(mv);
+    vbox->addWidget(new HSeparator);
+    vbox->addWidget(buttonBox);
+    setLayout(vbox);
 }
 
 

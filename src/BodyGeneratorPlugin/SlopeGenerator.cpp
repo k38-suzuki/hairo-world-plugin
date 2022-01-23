@@ -15,7 +15,6 @@
 #include <cnoid/YAMLWriter>
 #include <cnoid/stdx/filesystem>
 #include <QColorDialog>
-#include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QLabel>
 #include <QVBoxLayout>
@@ -140,17 +139,11 @@ SlopeConfigDialog::SlopeConfigDialog()
 
     formWidget = new FileFormWidget();
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
-    PushButton* okButton = new PushButton(_("&Ok"));
-    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
-
     vbox->addLayout(gbox);
     vbox->addWidget(new HSeparator());
     vbox->addWidget(formWidget);
-    vbox->addWidget(buttonBox);
     setLayout(vbox);
 
-    connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
     formWidget->sigClicked().connect([&](string filename){ writeYaml(filename); });
 }

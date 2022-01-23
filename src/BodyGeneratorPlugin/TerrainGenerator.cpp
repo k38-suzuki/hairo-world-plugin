@@ -15,7 +15,6 @@
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/stdx/filesystem>
-#include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QLabel>
 #include <QVBoxLayout>
@@ -146,17 +145,11 @@ TerrainConfigDialog::TerrainConfigDialog()
 
     formWidget = new FileFormWidget();
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
-    PushButton* okButton = new PushButton(_("&Ok"));
-    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
-
     vbox->addLayout(gbox);
     vbox->addWidget(new HSeparator());
     vbox->addWidget(formWidget);
-    vbox->addWidget(buttonBox);
     setLayout(vbox);
 
-    connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
     loadButton->sigClicked().connect([&](){ onLoadButtonClicked(); });
     formWidget->sigClicked().connect([&](string filename){ save(filename); });
 }
