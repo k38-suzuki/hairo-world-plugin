@@ -28,3 +28,7 @@ msgstr "ジョイスティック状態の記録"
 #: ../JoystickStatusView.cpp:141
 msgid "Joystick Status"
 msgstr "ジョイスティック状態"
+
+#: ../JoystickStatusView.cpp:417
+msgid "Hide indicators"
+msgstr "インジケータを隠す"

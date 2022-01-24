@@ -4,10 +4,14 @@
 */
 
 #include "JoystickStatusView.h"
-#include <cnoid/ViewManager>
+#include <cnoid/ActionGroup>
+#include <cnoid/Archive>
 #include <cnoid/Buttons>
 #include <cnoid/ExtJoystick>
 #include <cnoid/JoystickCapture>
+#include <cnoid/MenuManager>
+#include <cnoid/ViewManager>
+#include <cnoid/Widget>
 #include <QBoxLayout>
 #include <QGridLayout>
 #include <QHBoxLayout>
@@ -110,6 +114,7 @@ public:
     vector<bool> buttonStates;
     vector<QProgressBar*> bars;
     JoystickCapture joystick;
+    Widget* rightWidget;
 
     JoystickStatusViewImpl(JoystickStatusView* self);
     bool onKeyStateChanged(int key, bool on);
@@ -196,9 +201,12 @@ JoystickStatusViewImpl::JoystickStatusViewImpl(JoystickStatusView* self)
     vbox->addLayout(hbox);
     vbox->addStretch();
 
-    QHBoxLayout* mainbox = new QHBoxLayout();
+    QHBoxLayout* mainbox = new QHBoxLayout;
     mainbox->addLayout(vbox);
-    mainbox->addLayout(gbox);
+    rightWidget = new Widget;
+    rightWidget->setHidden(false);
+    rightWidget->setLayout(gbox);
+    mainbox->addWidget(rightWidget);
     self->setLayout(mainbox);
 
     ExtJoystick::registerJoystick("JoystickStatusView", this);
@@ -404,13 +412,28 @@ SignalProxy<void(int id, double position)> JoystickStatusViewImpl::sigAxis()
 }
 
 
-bool JoystickStatusView::storeState(Archive&)
+void JoystickStatusView::onAttachedMenuRequest(MenuManager& menuManager)
 {
+    Action* hideIndicators = menuManager.setPath("/").addItem(_("Hide indicators"));
+    hideIndicators->setCheckable(true);
+    hideIndicators->setChecked(impl->rightWidget->isHidden());
+    hideIndicators->sigToggled().connect([&](bool on){ impl->rightWidget->setHidden(on); });
+    menuManager.setPath("/");
+    menuManager.addSeparator();
+}
+
+
+bool JoystickStatusView::storeState(Archive& archive)
+{
+    archive.write("hide_indicators", impl->rightWidget->isHidden());
     return true;
 }
 
 
-bool JoystickStatusView::restoreState(const Archive&)
+bool JoystickStatusView::restoreState(const Archive& archive)
 {
+    bool checked = false;
+    archive.read("hide_indicators", checked);
+    impl->rightWidget->setHidden(checked);
     return true;
 }
