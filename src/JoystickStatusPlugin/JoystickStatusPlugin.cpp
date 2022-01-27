@@ -6,6 +6,7 @@
 #include <fmt/format.h>
 #include "JoystickLoggerItem.h"
 #include "JoystickStatusView.h"
+#include "KeyConfigView.h"
 
 using namespace cnoid;
 
@@ -24,6 +25,7 @@ public:
     {
         JoystickLoggerItem::initializeClass(this);
         JoystickStatusView::initializeClass(this);
+        KeyConfigView::initializeClass(this);
         return true;
     }
 

@@ -3,14 +3,19 @@ set(sources
     JoystickLoggerItem.cpp
     JoystickStatusPlugin.cpp
     JoystickStatusView.cpp
+    KeyConfigView.cpp
     )
 
 set(headers
+    ConfigurableJoystick.h
     JoystickLoggerItem.h
     JoystickStatusView.h
+    KeyConfigView.h
     exportdecl.h
     gettext.h
     )
+
+choreonoid_make_header_public(ConfigurableJoystick.h)
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
