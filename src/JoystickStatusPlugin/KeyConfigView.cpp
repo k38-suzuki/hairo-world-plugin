@@ -81,6 +81,8 @@ KeyConfigView::KeyConfigView()
 KeyConfigViewImpl::KeyConfigViewImpl(KeyConfigView* self)
     : self(self)
 {
+    self->setDefaultLayoutArea(View::BottomCenterArea);
+
     Widget* topWidget = new Widget;
     topWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
 

@@ -32,3 +32,7 @@ msgstr "ジョイスティック状態"
 #: ../JoystickStatusView.cpp:417
 msgid "Hide indicators"
 msgstr "インジケータを隠す"
+
+#: ../KeyConfigView.cpp:150
+msgid "KeyConfig"
+msgstr "キーコンフィグ"
