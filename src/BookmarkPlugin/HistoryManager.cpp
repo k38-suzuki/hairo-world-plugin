@@ -34,7 +34,7 @@ public:
     void onCurrentMenuTriggered(QAction* action);
     void onCustomContextMenuRequested(const QPoint& pos);
     void onProjectLoaded();
-    bool store(Mapping& archive);
+    void store(Mapping& archive);
     void restore(const Mapping& archive);
 };
 
@@ -146,7 +146,7 @@ void HistoryManagerImpl::onProjectLoaded()
 }
 
 
-bool HistoryManagerImpl::store(Mapping& archive)
+void HistoryManagerImpl::store(Mapping& archive)
 {
     int numHistories = currentMenu->actions().size() - 2;
     archive.write("num_histories", numHistories);
@@ -156,7 +156,6 @@ bool HistoryManagerImpl::store(Mapping& archive)
         string filename = action->text().toStdString();
         archive.write(key, filename);
     }
-    return true;
 }
 
 

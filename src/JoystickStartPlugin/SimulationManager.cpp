@@ -57,7 +57,7 @@ public:
   void forEachSimulator(std::function<void(SimulatorItem* simulatorItem)> callback, bool doSelect = false);
   void openDialogToLoadProject();
   void onButton(const int& id, const bool& isPressed);
-  bool store(Mapping& archive);
+  void store(Mapping& archive);
   void restore(const Mapping& archive);
 };
 
@@ -313,11 +313,10 @@ void SimulationManagerImpl::onButton(const int& id, const bool& isPressed)
 }
 
 
-bool SimulationManagerImpl::store(Mapping& archive)
+void SimulationManagerImpl::store(Mapping& archive)
 {
     archive.write("use_start_button", useStartButton->isChecked());
     archive.write("use_logo_button", useLogoButton->isChecked());
-    return true;
 }
 
 

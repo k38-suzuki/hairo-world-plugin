@@ -63,7 +63,7 @@ public:
     void onOpenButtonClicked();
     void onCustomContextMenuRequested(const QPoint& pos);
     bool openDialogToLoadProject(const string& filename);
-    bool store(Mapping& archive);
+    void store(Mapping& archive);
     void restore(const Mapping& archive);
 };
 
@@ -77,7 +77,7 @@ public:
 
     ConfigDialog* dialog;
 
-    bool store(Mapping& archive);
+    void store(Mapping& archive);
     void restore(const Mapping& archive);
 };
 
@@ -127,9 +127,9 @@ void BookmarkManager::initialize(ExtensionManager* ext)
 }
 
 
-bool BookmarkManagerImpl::store(Mapping& archive)
+void BookmarkManagerImpl::store(Mapping& archive)
 {
-    return dialog->store(archive);
+    dialog->store(archive);
 }
 
 
@@ -302,7 +302,7 @@ bool ConfigDialog::openDialogToLoadProject(const string& filename)
 }
 
 
-bool ConfigDialog::store(Mapping& archive)
+void ConfigDialog::store(Mapping& archive)
 {
     int size = treeWidget->topLevelItemCount();
     archive.write("num_bookmark", size);
@@ -314,7 +314,6 @@ bool ConfigDialog::store(Mapping& archive)
             archive.write(key, filename);
         }
     }
-    return true;
 }
 
 

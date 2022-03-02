@@ -33,7 +33,7 @@ public:
     void onRemoveProjectTriggered();
     void onCurrentMenuTriggered(QAction* action);
     void onCustomContextMenuRequested(const QPoint& pos);
-    bool store(Mapping& archive);
+    void store(Mapping& archive);
     void restore(const Mapping& archive);
 };
 
@@ -128,7 +128,7 @@ void BookmarkListImpl::onCustomContextMenuRequested(const QPoint& pos)
 }
 
 
-bool BookmarkListImpl::store(Mapping& archive)
+void BookmarkListImpl::store(Mapping& archive)
 {
     int numBookmarks = currentMenu->actions().size() - 2;
     archive.write("num_bookmarks", numBookmarks);
@@ -138,7 +138,6 @@ bool BookmarkListImpl::store(Mapping& archive)
         string filename = action->text().toStdString();
         archive.write(key, filename);
     }
-    return true;
 }
 
 
