@@ -611,9 +611,7 @@ bool AreaItemImpl::restore(const Archive& archive)
 {
     read(archive, "translation", translation);
     read(archive, "rotation", rotation);
-    int t = 0;
-    archive.read("type", t);
-    type.selectIndex(t);
+    type.selectIndex(archive.get("type", 0));
     read(archive, "size", size);
     radius = archive.get("radius", radius.string());
     height = archive.get("height", height.string());

@@ -8,6 +8,7 @@
 #include <cnoid/AppConfig>
 #include <cnoid/Menu>
 #include <cnoid/MenuManager>
+#include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include "gettext.h"
 
@@ -115,6 +116,8 @@ void HistoryManagerImpl::onCurrentMenuTriggered(QAction* action)
 {
     Action* triggeredProject = dynamic_cast<Action*>(action);
     if(triggeredProject != clearProject) {
+        pm->clearProject();
+        MessageView::instance()->flush();
         pm->loadProject(action->text().toStdString());
     }
 }

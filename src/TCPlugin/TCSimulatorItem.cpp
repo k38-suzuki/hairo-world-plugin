@@ -261,13 +261,8 @@ bool TCSimulatorItem::restore(const Archive& archive)
 
 bool TCSimulatorItemImpl::restore(const Archive& archive)
 {
-    string symbol;
-    if(archive.read("interface", symbol)) {
-        interface.select(symbol);
-    }
-    if(archive.read("ifb_device", symbol)) {
-        ifbDevice.select(symbol);
-    }
+    interface.select(archive.get("interface", ""));
+    ifbDevice.select(archive.get("ifb_device", ""));
     return true;
 }
 

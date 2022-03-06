@@ -214,15 +214,11 @@ bool KeyConfigViewImpl::restoreState(const Archive& archive)
 {
     for(int i = 0; i < Joystick::NUM_STD_AXES; ++i) {
         string key = "axis_id_" + to_string(i);
-        int index = 0;
-        archive.read(key, index);
-        axisCombos[i]->setCurrentIndex(index);
+        axisCombos[i]->setCurrentIndex(archive.get(key, 0));
     }
     for(int i = 0; i < Joystick::NUM_STD_BUTTONS; ++i) {
         string key = "button_id_" + to_string(i);
-        int index = 0;
-        archive.read(key, index);
-        buttonCombos[i]->setCurrentIndex(index);
+        buttonCombos[i]->setCurrentIndex(archive.get(key, 0));
     }
     return true;
 }

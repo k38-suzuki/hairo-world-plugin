@@ -406,13 +406,13 @@ bool MarkerPointItemImpl::restore(const Archive& archive)
     archive.read("children", numChildren);
     for(size_t i = 0; i < numChildren; i++) {
         string name = "point" + to_string(i);
-        Vector3 point;
+        Vector3 point(0.0, 0.0, 0.0);
         read(archive, name, point);
         name = "color" + to_string(i);
-        Vector3f color;
+        Vector3f color(0.0, 0.0, 0.0);
         read(archive, name, color);
         name = "transparency" + to_string(i);
-        double transparency;
+        double transparency = 0.0;
         archive.read(name, transparency);
         addPoint(point, 0.03, color, transparency);
     }

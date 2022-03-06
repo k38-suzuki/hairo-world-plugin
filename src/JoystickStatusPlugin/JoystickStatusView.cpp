@@ -432,8 +432,6 @@ bool JoystickStatusView::storeState(Archive& archive)
 
 bool JoystickStatusView::restoreState(const Archive& archive)
 {
-    bool checked = false;
-    archive.read("hide_indicators", checked);
-    impl->rightWidget->setHidden(checked);
+    impl->rightWidget->setHidden(archive.get("hide_indicators", false));
     return true;
 }
