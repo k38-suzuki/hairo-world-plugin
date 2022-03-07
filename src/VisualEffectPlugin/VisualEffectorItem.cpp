@@ -4,6 +4,7 @@
 */
 
 #include "VisualEffectorItem.h"
+#include <cnoid/Action>
 #include <cnoid/Archive>
 #include <cnoid/Body>
 #include <cnoid/BodyItem>
@@ -13,16 +14,17 @@
 #include <cnoid/ConnectionSet>
 #include <cnoid/Dialog>
 #include <cnoid/ImageableItem>
+#include <cnoid/ImageView>
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
+#include <cnoid/Menu>
 #include <cnoid/MenuManager>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/RootItem>
-#include "gettext.h"
-#include "VEAreaItem.h"
 #include <cnoid/RangeCamera>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
+#include <cnoid/ViewManager>
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QLabel>
@@ -30,28 +32,49 @@
 #include <QVBoxLayout>
 #include <math.h>
 #include "ImageGenerator.h"
+#include "VEAreaItem.h"
+#include "gettext.h"
+
 
 using namespace cnoid;
 using namespace std;
 
 namespace {
 
+Menu contextMenu;
+
+enum DoubleSpinID {
+    HUE, SATURATION, VALUE,
+    RED, GREEN, BLUE,
+    COEFB, COEFD, STDDEV,
+    SALT, PEPPER, NUM_DSPINS
+};
+
+struct WidgetInfo {
+    int row;
+    int column;
+};
+
+WidgetInfo dspinInfo[] = {
+    { 0, 1 }, { 0, 3 }, { 0, 5 },
+    { 1, 1 }, { 1, 3 }, { 1, 5 },
+    { 2, 1 }, { 2, 3 },
+    { 3, 1 }, { 3, 3 }, { 3, 5 }
+};
+
+WidgetInfo labelInfo[] = {
+    { 0, 0 }, { 0, 2 }, { 0, 4 },
+    { 1, 0 }, { 1, 2 }, { 1, 4 },
+    { 2, 0 }, { 2, 2 },
+    { 3, 0 }, { 3, 2 }, { 3, 4 }
+};
+
 class EffectConfigDialog : public Dialog
 {
 public:
     EffectConfigDialog();
 
-    DoubleSpinBox* hueSpin;
-    DoubleSpinBox* saturationSpin;
-    DoubleSpinBox* valueSpin;
-    DoubleSpinBox* redSpin;
-    DoubleSpinBox* greenSpin;
-    DoubleSpinBox* blueSpin;
-    DoubleSpinBox* coefBSpin;
-    DoubleSpinBox* coefDSpin;
-    DoubleSpinBox* stdDevSpin;
-    DoubleSpinBox* saltSpin;
-    DoubleSpinBox* pepperSpin;
+    DoubleSpinBox* dspins[NUM_DSPINS];
     CheckBox* flipCheck;
     ComboBox* filterCombo;
 
@@ -98,6 +121,28 @@ protected:
     virtual bool restore(const Archive& archive) override;
 };
 
+
+void onViewCreated(View* view)
+{
+    ImageView* imageView = dynamic_cast<ImageView*>(view);
+    if(imageView) {
+        imageView->setContextMenuPolicy(Qt::CustomContextMenu);
+        QObject::connect(imageView, &ImageView::customContextMenuRequested,
+                [=](const QPoint& pos){ contextMenu.exec( imageView->mapToGlobal(pos)); });
+    }
+}
+
+void onShowConfigTriggered()
+{
+    ImageableItem* imageableItem = ImageViewBar::instance()->getSelectedImageableItem();
+    if(imageableItem) {
+        VEImageVisualizerItem* visualizerItem = dynamic_cast<VEImageVisualizerItem*>(imageableItem);
+        if(visualizerItem) {
+            visualizerItem->config->show();
+        }
+    }
+}
+
 }
 
 
@@ -135,6 +180,12 @@ void VisualEffectorItem::initializeClass(ExtensionManager* ext)
             menuManager.addSeparator();
             menuFunction.dispatchAs<Item>(item);
         });
+
+    Action* showConfig = new Action;
+    showConfig->setText(_("Visual Effect"));
+    contextMenu.addAction(showConfig);
+    showConfig->sigTriggered().connect([&](){ onShowConfigTriggered(); });
+    ext->viewManager().sigViewCreated().connect([&](View* view){ onViewCreated(view); });
 }
 
 
@@ -358,18 +409,18 @@ void VEImageVisualizerItem::enableVisualization(bool on)
 void VEImageVisualizerItem::doUpdateVisualization()
 {
     if(camera){
-        double hue = config->hueSpin->value();
-        double saturation = config->saturationSpin->value();
-        double value = config->valueSpin->value();
-        double red = config->redSpin->value();
-        double green = config->greenSpin->value();
-        double blue = config->blueSpin->value();
+        double hue = config->dspins[HUE]->value();
+        double saturation = config->dspins[SATURATION]->value();
+        double value = config->dspins[VALUE]->value();
+        double red = config->dspins[RED]->value();
+        double green = config->dspins[GREEN]->value();
+        double blue = config->dspins[BLUE]->value();
         bool flipped = config->flipCheck->isChecked();
-        double coefB = config->coefBSpin->value();
-        double coefD = config->coefDSpin->value();
-        double stdDev = config->stdDevSpin->value();
-        double salt = config->saltSpin->value();
-        double pepper = config->pepperSpin->value();
+        double coefB = config->dspins[COEFB]->value();
+        double coefD = config->dspins[COEFD]->value();
+        double stdDev = config->dspins[STDDEV]->value();
+        double salt = config->dspins[SALT]->value();
+        double pepper = config->dspins[PEPPER]->value();
         int filter = config->filterCombo->currentIndex();
 
         RootItem* rootItem = RootItem::instance();
@@ -459,72 +510,41 @@ EffectConfigDialog::EffectConfigDialog()
         {  0.0, 1.0 }, {  0.0,  1.0 }, {  0.0, 1.0 }
     };
 
-    hueSpin = new DoubleSpinBox();
-    saturationSpin = new DoubleSpinBox();
-    valueSpin = new DoubleSpinBox();
-    redSpin = new DoubleSpinBox();
-    greenSpin = new DoubleSpinBox();
-    blueSpin = new DoubleSpinBox();
-    coefBSpin = new DoubleSpinBox();
-    coefDSpin = new DoubleSpinBox();
-    stdDevSpin = new DoubleSpinBox();
-    saltSpin = new DoubleSpinBox();
-    pepperSpin = new DoubleSpinBox();
-    flipCheck = new CheckBox();
-    filterCombo = new ComboBox();
+    static const char* labels[] = {
+        _("Hue"), _("Saturation"), _("Value"),
+        _("Red"), _("Green"), _("Blue"),
+        _("CoefB"), _("CoefD"),
+        _("Std_dev"), _("Salt"), _("Pepper")
+    };
 
-    vector<DoubleSpinBox*> dspins;
-    dspins.push_back(hueSpin);
-    dspins.push_back(saturationSpin);
-    dspins.push_back(valueSpin);
-    dspins.push_back(redSpin);
-    dspins.push_back(greenSpin);
-    dspins.push_back(blueSpin);
-    dspins.push_back(coefBSpin);
-    dspins.push_back(coefDSpin);
-    dspins.push_back(stdDevSpin);
-    dspins.push_back(saltSpin);
-    dspins.push_back(pepperSpin);
-
-    for(size_t i = 0; i < dspins.size(); ++i) {
+    QGridLayout* gbox = new QGridLayout;
+    for(int i = 0; i < NUM_DSPINS; ++i) {
+        dspins[i] = new DoubleSpinBox;
         DoubleSpinBox* dspin = dspins[i];
+        WidgetInfo dinfo = dspinInfo[i];
+        WidgetInfo linfo = labelInfo[i];
         dspin->setRange(ranges[i][0], ranges[i][1]);
         dspin->setSingleStep(0.1);
+        gbox->addWidget(new QLabel(labels[i]), linfo.row, linfo.column);
+        gbox->addWidget(dspin, dinfo.row, dinfo.column);
     }
-    coefDSpin->setValue(1.0);
+    dspins[COEFD]->setValue(1.0);
+
+
+    flipCheck = new CheckBox;
     flipCheck->setText(_("Flip"));
     flipCheck->setChecked(false);
-    QStringList filters = { _("No filter"), _("Gaussian 3x3"), _("Gaussian 5x5"), _("Sobel"), _("Prewitt") };
+    gbox->addWidget(flipCheck, 4, 0);
+
+    filterCombo = new ComboBox;
+    QStringList filters = {
+        _("No filter"), _("Gaussian 3x3"), _("Gaussian 5x5"),
+        _("Sobel"), _("Prewitt")
+    };
     filterCombo->addItems(filters);
     filterCombo->setCurrentIndex(0);
-
-    QGridLayout* gbox = new QGridLayout();
-    int index = 0;
-    gbox->addWidget(new QLabel(_("Hue")), index, 0);
-    gbox->addWidget(hueSpin, index, 1);
-    gbox->addWidget(new QLabel(_("Saturation")), index, 2);
-    gbox->addWidget(saturationSpin, index, 3);
-    gbox->addWidget(new QLabel(_("Value")), index, 4);
-    gbox->addWidget(valueSpin, index++, 5);
-    gbox->addWidget(new QLabel(_("Red")), index, 0);
-    gbox->addWidget(redSpin, index, 1);
-    gbox->addWidget(new QLabel(_("Green")), index, 2);
-    gbox->addWidget(greenSpin, index, 3);
-    gbox->addWidget(new QLabel(_("Blue")), index, 4);
-    gbox->addWidget(blueSpin, index++, 5);
-    gbox->addWidget(new QLabel(_("CoefB")), index, 0);
-    gbox->addWidget(coefBSpin, index, 1);
-    gbox->addWidget(new QLabel(_("CoefD")), index, 2);
-    gbox->addWidget(coefDSpin, index++, 3);
-    gbox->addWidget(new QLabel(_("Std_dev")), index, 0);
-    gbox->addWidget(stdDevSpin, index, 1);
-    gbox->addWidget(new QLabel(_("Salt")), index, 2);
-    gbox->addWidget(saltSpin, index, 3);
-    gbox->addWidget(new QLabel(_("Pepper")), index, 4);
-    gbox->addWidget(pepperSpin, index++, 5);
-    gbox->addWidget(flipCheck, index, 0);
-    gbox->addWidget(new QLabel(_("Filter")), index, 2);
-    gbox->addWidget(filterCombo, index++, 3);
+    gbox->addWidget(new QLabel(_("Filter")), 4, 2);
+    gbox->addWidget(filterCombo, 4, 3);
 
     PushButton* resetButton = new PushButton(_("&Reset"));
     QPushButton* okButton = new QPushButton(_("&Ok"));
@@ -534,9 +554,9 @@ EffectConfigDialog::EffectConfigDialog()
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
     connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
 
-    QVBoxLayout* vbox = new QVBoxLayout();
+    QVBoxLayout* vbox = new QVBoxLayout;
     vbox->addLayout(gbox);
-    vbox->addWidget(new HSeparator());
+    vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);
     setLayout(vbox);
 
@@ -546,17 +566,10 @@ EffectConfigDialog::EffectConfigDialog()
 
 void EffectConfigDialog::onResetButtonClicked()
 {
-    hueSpin->setValue(0.0);
-    saturationSpin->setValue(0.0);
-    valueSpin->setValue(0.0);
-    redSpin->setValue(0.0);
-    greenSpin->setValue(0.0);
-    blueSpin->setValue(0.0);
-    coefBSpin->setValue(0.0);
-    coefDSpin->setValue(1.0);
-    stdDevSpin->setValue(0.0);
-    saltSpin->setValue(0.0);
-    pepperSpin->setValue(0.0);
+    for(int i = 0; i < NUM_DSPINS; ++i) {
+        dspins[i]->setValue(0.0);
+    }
+    dspins[COEFD]->setValue(1.0);
     flipCheck->setChecked(false);
     filterCombo->setCurrentIndex(0);
 }
@@ -564,17 +577,17 @@ void EffectConfigDialog::onResetButtonClicked()
 
 bool EffectConfigDialog::storeState(Archive& archive)
 {
-    archive.write("hue", hueSpin->value());
-    archive.write("saturation", saturationSpin->value());
-    archive.write("value", valueSpin->value());
-    archive.write("red", redSpin->value());
-    archive.write("green", greenSpin->value());
-    archive.write("blue", blueSpin->value());
-    archive.write("coef_b", coefBSpin->value());
-    archive.write("coef_d", coefDSpin->value());
-    archive.write("std_dev", stdDevSpin->value());
-    archive.write("salt", saltSpin->value());
-    archive.write("pepper", pepperSpin->value());
+    archive.write("hue", dspins[HUE]->value());
+    archive.write("saturation", dspins[SATURATION]->value());
+    archive.write("value", dspins[VALUE]->value());
+    archive.write("red", dspins[RED]->value());
+    archive.write("green", dspins[GREEN]->value());
+    archive.write("blue", dspins[BLUE]->value());
+    archive.write("coef_b", dspins[COEFB]->value());
+    archive.write("coef_d", dspins[COEFD]->value());
+    archive.write("std_dev", dspins[STDDEV]->value());
+    archive.write("salt", dspins[SALT]->value());
+    archive.write("pepper", dspins[PEPPER]->value());
     archive.write("flip", flipCheck->isChecked());
     archive.write("filter", filterCombo->currentIndex());
     return true;
@@ -583,70 +596,18 @@ bool EffectConfigDialog::storeState(Archive& archive)
 
 bool EffectConfigDialog::restoreState(const Archive& archive)
 {
-    double value;
-    archive.read("hue", value);
-    if(fabs(value) < 0.01) {
-        value = 0.0;
-    }
-    hueSpin->setValue(value);
-    if(fabs(value) < 0.01) {
-        value = 0.0;
-    }
-    archive.read("saturation", value);
-    if(fabs(value) < 0.01) {
-        value = 0.0;
-    }
-    saturationSpin->setValue(value);
-    archive.read("value", value);
-    if(fabs(value) < 0.01) {
-        value = 0.0;
-    }
-    valueSpin->setValue(value);
-    archive.read("red", value);
-    if(fabs(value) < 0.01) {
-        value = 0.0;
-    }
-    redSpin->setValue(value);
-    archive.read("green", value);
-    if(fabs(value) < 0.01) {
-        value = 0.0;
-    }
-    greenSpin->setValue(value);
-    archive.read("blue", value);
-    if(fabs(value) < 0.01) {
-        value = 0.0;
-    }
-    blueSpin->setValue(value);
-    archive.read("coef_b", value);
-    if(fabs(value) < 0.01) {
-        value = 0.0;
-    }
-    coefBSpin->setValue(value);
-    archive.read("coef_d", value);
-    if(fabs(value) < 1.0) {
-        value = 1.0;
-    }
-    coefDSpin->setValue(value);
-    archive.read("std_dev", value);
-    if(fabs(value) < 0.01) {
-        value = 0.0;
-    }
-    stdDevSpin->setValue(value);
-    archive.read("salt", value);
-    if(fabs(value) < 0.01) {
-        value = 0.0;
-    }
-    saltSpin->setValue(value);
-    archive.read("pepper", value);
-    if(fabs(value) < 0.01) {
-        value = 0.0;
-    }
-    pepperSpin->setValue(value);
-    bool flip;
-    archive.read("flip", flip);
-    flipCheck->setChecked(flip);
-    int filter = 0;
-    archive.read("filter", filter);
-    filterCombo->setCurrentIndex(filter);
+    dspins[HUE]->setValue(archive.get("hue", 0.0));
+    dspins[SATURATION]->setValue(archive.get("saturation", 0.0));
+    dspins[VALUE]->setValue(archive.get("value", 0.0));
+    dspins[RED]->setValue(archive.get("red", 0.0));
+    dspins[GREEN]->setValue(archive.get("green", 0.0));
+    dspins[BLUE]->setValue(archive.get("blue", 0.0));
+    dspins[COEFB]->setValue(archive.get("coef_b", 0.0));
+    dspins[COEFD]->setValue(archive.get("coef_d", 1.0));
+    dspins[STDDEV]->setValue(archive.get("std_dev", 0.0));
+    dspins[SALT]->setValue(archive.get("salt", 0.0));
+    dspins[PEPPER]->setValue(archive.get("pepper", 0.0));
+    flipCheck->setChecked(archive.get("flip", false));
+    filterCombo->setCurrentIndex(archive.get("filter", 0));
     return true;
 }
