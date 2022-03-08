@@ -1,0 +1,126 @@
+# Japanese translations for PACKAGE package.
+# Copyright (C) 2022 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Choreonoid package.
+# k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-01 16:21-0800\n"
+"PO-Revision-Date: 2022-03-01 16:21-0800\n"
+"Last-Translator: k38-suzuki <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../BookmarkWidget.cpp:71
+msgid "Lock"
+msgstr "ロック"
+
+#: ../BookmarkWidget.cpp:71
+msgid "Memo"
+msgstr "メモ"
+
+#: ../BookmarkWidget.cpp:64
+msgid "File"
+msgstr "ファイル"
+
+#: ../BookmarkWidget.cpp:67
+msgid "+"
+msgstr ""
+
+#: ../BookmarkWidget.cpp:67
+msgid "-"
+msgstr ""
+
+#: ../BookmarkWidget.cpp:94
+msgid "Add"
+msgstr "登録"
+
+#: ../BookmarkWidget.cpp:97
+msgid "Remove"
+msgstr "削除"
+
+#: ../BookmarkWidget.cpp:100 ../BookmarkWidget.cpp:147
+msgid "Open"
+msgstr "開く"
+
+#: ../BookmarkWidget.cpp:144
+msgid "Select a Choreonoid project file"
+msgstr "Choreonoidプロジェクトファイルの選択"
+
+#: ../BookmarkWidget.cpp:148
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: ../BookmarkWidget.cpp:151
+msgid "Project files (*.cnoid)"
+msgstr "プロジェクトファイル (*.cnoid)"
+
+#: ../BookmarkWidget.cpp:152
+msgid "Any files (*)"
+msgstr "全てのファイル(*)"
+
+#: ../KIOSKManager.cpp:53
+msgid "Enable KIOSK"
+msgstr "KIOSKモード"
+
+#: ../KIOSKManager.cpp:55
+msgid "Hide menu bar"
+msgstr "メニューバーを隠す"
+
+#: ../KIOSKManager.cpp:62
+msgid "Hide tool bar"
+msgstr "ツールバーを隠す"
+
+#: ../KIOSKView.cpp:73
+msgid "Bookmark"
+msgstr "ブックマーク"
+
+#: ../KIOSKView.cpp:74
+msgid "Log"
+msgstr "ログ"
+
+#: ../KIOSKView.cpp:152
+msgid "KIOSK"
+msgstr ""
+
+#: ../KIOSKView.cpp:218
+msgid "Would you like to return to the home screen?"
+msgstr "ホーム画面に戻りますか？"
+
+#: ../SimpleSimulationView.cpp:120
+msgid "Start simulation from the beginning"
+msgstr "初期位置からのシミュレーションを開始"
+
+#: ../SimpleSimulationView.cpp:121
+msgid "Start simulation from the current state"
+msgstr "現在位置からのシミュレーションを開始"
+
+#: ../SimpleSimulationView.cpp:122
+msgid "Pause simulation"
+msgstr "シミュレーションの一時停止"
+
+#: ../SimpleSimulationView.cpp:123
+msgid "Stop simulation"
+msgstr "シミュレーションの停止"
+
+#: ../SimpleSimulationView.cpp:145
+msgid "Time"
+msgstr "時間"
+
+#: ../SimpleSimulationView.cpp:146
+msgid "Seek time"
+msgstr "シーク時間"
+
+#: ../SimpleSimulationView.cpp:176
+msgid "SimpleSimulationView"
+msgstr "簡易シミュレーションビュー"
+
+#: ../SimpleSimulationView.cpp:176
+msgid "SimpleSimulation"
+msgstr "簡易シミュレーション"
