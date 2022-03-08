@@ -86,6 +86,8 @@ public:
     double minTime;
     double maxTime;
 
+
+    void onSimulationAboutToStart(SimulatorItem* simulatorItem);
     void onButtonClicked(const int& id);
     void onValueChanged(const double& value);
     void onValueChanged(const int& value);
@@ -175,8 +177,8 @@ SimpleSimulationViewImpl::SimpleSimulationViewImpl(SimpleSimulationView* self)
     gbox->addWidget(timeSlider, 1, 1, 1, 2);
     topVBox->addLayout(gbox);
 
-    sb->sigSimulationAboutToStart()
-            .connect([&](SimulatorItem* simulatorItem){ this->simulatorItem = simulatorItem; });
+    sb->sigSimulationAboutToStart().connect(
+                [&](SimulatorItem* simulatorItem){ onSimulationAboutToStart(simulatorItem); });
     tb->sigTimeChanged().connect([&](double time){ onTimeChanged(time); return true; });
     dspins[TIME]->sigValueChanged().connect([&](double value){ onValueChanged(value); });
     timeSlider->sigValueChanged().connect([&](int value){ onValueChanged(value); });
@@ -200,6 +202,19 @@ SimpleSimulationView* SimpleSimulationView::instance()
 {
     static SimpleSimulationView* instance_ = ViewManager::findView<SimpleSimulationView>();
     return instance_;
+}
+
+
+void SimpleSimulationViewImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
+{
+    this->simulatorItem = simulatorItem;
+    ButtonState state = buttonState[START];
+    if(simulatorItem) {
+        buttons[START]->setEnabled(state.start);
+        buttons[RESTART]->setEnabled(state.restart);
+        buttons[PAUSE]->setEnabled(state.pause);
+        buttons[STOP]->setEnabled(state.stop);
+    }
 }
 
 

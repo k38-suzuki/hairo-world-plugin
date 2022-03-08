@@ -12,7 +12,6 @@
 #include <cnoid/Menu>
 #include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
-#include <cnoid/RootItem>
 #include <cnoid/TimeBar>
 #include <cnoid/TreeWidget>
 #include <QFileInfo>
@@ -189,10 +188,7 @@ void LogWidgetImpl::onStartButtonClicked()
     QTreeWidgetItem* item = treeWidget->currentItem();
     if(item) {
         string filename = item->text(FILE).toStdString();
-        bool on = onOpenButtonClicked(filename);
-        if(!on) {
-            return;
-        }
+        onOpenButtonClicked(filename);
     }
 }
 
@@ -205,44 +201,10 @@ void LogWidgetImpl::onCustomContextMenuRequested(const QPoint& pos)
 
 bool LogWidgetImpl::onOpenButtonClicked(const string& filename)
 {
-    bool result = true;
-    MainWindow* mw = MainWindow::instance();
     MessageView* mv = MessageView::instance();
     ProjectManager* pm = ProjectManager::instance();
     TimeBar* tb = TimeBar::instance();
-    int numItems = RootItem::instance()->countDescendantItems();
-    string currentProjectFile = pm->currentProjectFile();
-    QString projectFile = QString::fromStdString(currentProjectFile);
-    QFileInfo info(projectFile);
-    string currentProjectName = info.baseName().toStdString();
-    if(numItems > 0){
-        QString title = _("Warning");
-        QString message;
-        QMessageBox::StandardButton clicked;
-        if(currentProjectFile.empty()){
-            if(numItems == 1){
-                message = _("A project item exists. "
-                            "Do you want to save it as a project file before loading a new project?");
-            } else {
-                message = _("Project items exist. "
-                            "Do you want to save them as a project file before loading a new project?");
-            }
-            clicked = QMessageBox::warning(
-                mw, title, message, QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Ignore);
-        } else {
-            message = _("Project \"%1\" exists. Do you want to save it before loading a new project?");
-            clicked = QMessageBox::warning(
-                mw, title, message.arg(currentProjectName.c_str()),
-                QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Ignore);
-        }
-        if(clicked == QMessageBox::Cancel){
-            result = false;
-        }
-        if(clicked == QMessageBox::Save){
-            pm->overwriteCurrentProject();
-        }
-    }
-
+    bool result = pm->tryToCloseProject();
     if(result) {
         pm->clearProject();
         mv->flush();

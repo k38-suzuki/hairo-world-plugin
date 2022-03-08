@@ -16,6 +16,7 @@
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
+#include <cnoid/TimeBar>
 #include <cnoid/UTF8>
 #include <cnoid/ViewArea>
 #include <cnoid/WorldItem>
@@ -188,6 +189,11 @@ void KIOSKManagerImpl::onEnableKIOSKToggled(const bool& on)
     mw->statusBar()->setVisible(!on);
     hide_menuBar->setEnabled(on);
     hide_toolBar->setChecked(on);
+    TimeBar* tb = TimeBar::instance();
+    if(tb->isDoingPlayback()) {
+        tb->stopPlayback(true);
+        tb->setTime(0.0);
+    }
 
     if(isInitialized) {
         loadProject(on);
