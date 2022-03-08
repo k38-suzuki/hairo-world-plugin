@@ -110,6 +110,30 @@ msgid "Stop simulation"
 msgstr "シミュレーションの停止"
 
 #: ../SimpleSimulationView.cpp:145
+msgid "Seek backward"
+msgstr "戻る"
+
+#: ../SimpleSimulationView.cpp:145
+msgid "Seek forward"
+msgstr "進む"
+
+#: ../SimpleSimulationView.cpp:146
+msgid "Start playback"
+msgstr "再生開始"
+
+#: ../SimpleSimulationView.cpp:146
+msgid "Resume playback"
+msgstr "再生再開"
+
+#: ../SimpleSimulationView.cpp:146
+msgid "Stop animation"
+msgstr "アニメーションの停止"
+
+#: ../SimpleSimulationView.cpp:146
+msgid "Resume animation"
+msgstr "アニメーションの再生・停止"
+
+#: ../SimpleSimulationView.cpp:145
 msgid "Time"
 msgstr "時間"
 

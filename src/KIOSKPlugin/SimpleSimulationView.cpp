@@ -31,7 +31,7 @@ struct ButtonState {
     bool stop;
 };
 
-ButtonState buttonState[] = {
+ButtonState buttonStates[] = {
     { false, false,  true,  true },
     { false, false,  true,  true },
     { false, false,  true,  true },
@@ -53,7 +53,9 @@ ButtonInfo buttonInfo[] = {
     { 0, 2, 1, 1, false,   ":/Body/icon/pause-simulation.svg" },
     { 0, 3, 1, 1, false,    ":/Body/icon/stop-simulation.svg" },
     { 2, 2, 1, 1,  true,                                   "" },
-    { 2, 3, 1, 1,  true,                                   "" }
+    { 2, 3, 1, 1,  true,                                   "" },
+    { 3, 0, 1, 1,  true,               ":/Base/icon/play.svg" },
+    { 3, 1, 1, 1,  true,             ":/Base/icon/resume.svg" }
 };
 
 }
@@ -69,7 +71,8 @@ public:
 
     enum ButtonID {
         START, RESTART, PAUSE, STOP,
-        BACKWARD, FORWARD, NUM_BUTTONS
+        BACKWARD, FORWARD, PLAY, RESUME,
+        NUM_BUTTONS
     };
 
     enum DoubleSpinID { SEEKTIME, TIME, NUM_DSPINS };
@@ -85,13 +88,17 @@ public:
     int decimals;
     double minTime;
     double maxTime;
-
+    QIcon resumeIcon;
+    QIcon stopIcon;
 
     void onSimulationAboutToStart(SimulatorItem* simulatorItem);
     void onButtonClicked(const int& id);
     void onValueChanged(const double& value);
     void onValueChanged(const int& value);
     void onTimeChanged(const double& time);
+    void onPlaybackStarted(const double& time);
+    void onPlaybackStopped(const double& time, const bool& isStoppedManually);
+    void updateButtonStates(const int& state);
 };
 
 }
@@ -106,7 +113,9 @@ SimpleSimulationView::SimpleSimulationView()
 SimpleSimulationViewImpl::SimpleSimulationViewImpl(SimpleSimulationView* self)
     : self(self),
       sb(SimulationBar::instance()),
-      tb(TimeBar::instance())
+      tb(TimeBar::instance()),
+      resumeIcon(QIcon(":/Base/icon/resume.svg")),
+      stopIcon(QIcon(":/Base/icon/stop.svg"))
 {
     simulatorItem = nullptr;
     decimals = 2;
@@ -131,9 +140,9 @@ SimpleSimulationViewImpl::SimpleSimulationViewImpl(SimpleSimulationView* self)
     baseLayout->addWidget(&scrollArea);
     self->setLayout(baseLayout);
 
-    static const char* toolTips[] = { _("Start simulation from the beginning"),
-                                      _("Start simulation from the current state"),
-                                      _("Pause simulation"), _("Stop simulation"), "", "" };
+    static const char* toolTips[] = { _("Start simulation from the beginning"), _("Start simulation from the current state"),
+                                      _("Pause simulation"), _("Stop simulation"), _("Seek backward"), _("Seek forward"),
+                                      _("Start playback"), _("Resume playback") };
     QGridLayout* gbox = new QGridLayout;
     MainWindow* mw = MainWindow::instance();
     for(int i = 0; i < NUM_BUTTONS; ++i) {
@@ -180,6 +189,9 @@ SimpleSimulationViewImpl::SimpleSimulationViewImpl(SimpleSimulationView* self)
     sb->sigSimulationAboutToStart().connect(
                 [&](SimulatorItem* simulatorItem){ onSimulationAboutToStart(simulatorItem); });
     tb->sigTimeChanged().connect([&](double time){ onTimeChanged(time); return true; });
+    tb->sigPlaybackStarted().connect([&](double time){ onPlaybackStarted(time); });
+    tb->sigPlaybackStopped().connect(
+                [&](double time, bool isStoppedManually){ onPlaybackStopped(time , isStoppedManually); });
     dspins[TIME]->sigValueChanged().connect([&](double value){ onValueChanged(value); });
     timeSlider->sigValueChanged().connect([&](int value){ onValueChanged(value); });
 }
@@ -208,20 +220,15 @@ SimpleSimulationView* SimpleSimulationView::instance()
 void SimpleSimulationViewImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
     this->simulatorItem = simulatorItem;
-    ButtonState state = buttonState[START];
-    if(simulatorItem) {
-        buttons[START]->setEnabled(state.start);
-        buttons[RESTART]->setEnabled(state.restart);
-        buttons[PAUSE]->setEnabled(state.pause);
-        buttons[STOP]->setEnabled(state.stop);
-    }
+    updateButtonStates(START);
 }
 
 
 void SimpleSimulationViewImpl::onButtonClicked(const int& id)
 {
+    double timestep = 0.0;
+
     if(id < BACKWARD) {
-        ButtonState state = buttonState[id];
         if(id == START) {
             sb->startSimulation(true);
         } else if(id == RESTART) {
@@ -240,14 +247,18 @@ void SimpleSimulationViewImpl::onButtonClicked(const int& id)
                 buttons[PAUSE]->setChecked(false);
             }
         }
-        if(simulatorItem) {
-            buttons[START]->setEnabled(state.start);
-            buttons[RESTART]->setEnabled(state.restart);
-            buttons[PAUSE]->setEnabled(state.pause);
-            buttons[STOP]->setEnabled(state.stop);
+        updateButtonStates(id);
+    } else if(id == PLAY) {
+        tb->stopPlayback(true);
+        tb->startPlayback(minTime);
+    } else if(id == RESUME) {
+        if(tb->isDoingPlayback()) {
+            tb->stopPlayback(true);
+        } else {
+            tb->stopPlayback(true);
+            tb->startPlayback();
         }
     } else {
-        double timestep = 0.0;
         if(id == BACKWARD) {
             timestep = dspins[SEEKTIME]->value() * -1.0;
         } else if(id == FORWARD) {
@@ -263,29 +274,19 @@ void SimpleSimulationViewImpl::onButtonClicked(const int& id)
 
 void SimpleSimulationViewImpl::onValueChanged(const double& value)
 {
-    double time = value;
-    if(simulatorItem) {
-        if(time < 0.0) {
-            time = 0.0;
-        } else if(time > simulatorItem->currentTime()) {
-            time = simulatorItem->currentTime();
-        }
-        tb->setTime(time);
+    if(tb->isDoingPlayback()) {
+        tb->stopPlayback(true);
     }
+    tb->setTime(value);
 }
 
 
-void SimpleSimulationViewImpl::onValueChanged(const int&value)
+void SimpleSimulationViewImpl::onValueChanged(const int& value)
 {
-    double time = value;
-    if(simulatorItem) {
-        if(time < 0.0) {
-            time = 0.0;
-        } else if(time > simulatorItem->currentTime()) {
-            time = simulatorItem->currentTime();
-        }
-        tb->setTime(value / pow(10.0, decimals));
+    if(tb->isDoingPlayback()) {
+        tb->stopPlayback(true);
     }
+    tb->setTime(value / pow(10.0, decimals));
 }
 
 
@@ -308,4 +309,30 @@ void SimpleSimulationViewImpl::onTimeChanged(const double& time)
     timeSlider->setSingleStep(timeStep * r);
     timeSlider->setValue((int)nearbyint(time * pow(10.0, decimals)));
     timeSlider->blockSignals(false);
+}
+
+
+void SimpleSimulationViewImpl::onPlaybackStarted(const double& time)
+{
+    const static QString tip(_("Stop animation"));
+    buttons[RESUME]->setIcon(stopIcon);
+    buttons[RESUME]->setToolTip(tip);
+}
+
+
+void SimpleSimulationViewImpl::onPlaybackStopped(const double& time, const bool& isStoppedManually)
+{
+    const static QString tip(_("Resume animation"));
+    buttons[RESUME]->setIcon(resumeIcon);
+    buttons[RESUME]->setToolTip(tip);
+}
+
+
+void SimpleSimulationViewImpl::updateButtonStates(const int& state)
+{
+    ButtonState buttonState = buttonStates[state];
+    buttons[START]->setEnabled(buttonState.start);
+    buttons[RESTART]->setEnabled(buttonState.restart);
+    buttons[PAUSE]->setEnabled(buttonState.pause);
+    buttons[STOP]->setEnabled(buttonState.stop);
 }
