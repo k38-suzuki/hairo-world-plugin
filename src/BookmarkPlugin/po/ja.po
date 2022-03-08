@@ -17,102 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../BookmarkBar.cpp:30
-msgid "BookmarkBar"
-msgstr "ブックマークバー"
-
-#: ../BookmarkBar.cpp:42
-msgid "Show the bookmark manager"
-msgstr "ブックマークマネージャの表示"
-
-#: ../BookmarkManagerDialog.cpp:78 ../BookmarkManagerView.cpp:110
-msgid "BookmarkManager"
-msgstr "ブックマークマネージャ"
-
-#: ../BookmarkManagerDialog.cpp:82
-msgid "Project file"
-msgstr "プロジェクトファイル"
-
-#: ../BookmarkManagerDialog.cpp:95 ../BookmarkManagerView.cpp:77
-msgid "+"
-msgstr "＋"
-
-#: ../BookmarkManagerDialog.cpp:95 ../BookmarkManagerView.cpp:78
-msgid "-"
-msgstr "ー"
-
-#: ../BookmarkManagerDialog.cpp:95
-msgid "&Open"
-msgstr "開く"
-
-#: ../BookmarkManagerDialog.cpp:95
-msgid "&Cancel"
-msgstr "キャンセル"
-
-#: ../BookmarkManagerDialog.cpp:95
-msgid "&Ok"
-msgstr "Ｏｋ"
-
-#: ../BookmarkManagerDialog.cpp:177
-msgid "Add"
-msgstr "登録"
-
-#: ../BookmarkManagerDialog.cpp:180 ../BookmarkList.cpp:65
-msgid "Remove"
-msgstr "削除"
-
-#: ../BookmarkManagerDialog.cpp:165 ../BookmarkManagerView.cpp:188
-msgid "Select a Choreonoid project file"
-msgstr "Choreonoidプロジェクトファイルの選択"
-
-#: ../BookmarkManagerDialog.cpp:168 ../BookmarkManagerView.cpp:80
-#: ../BookmarkManagerView.cpp:191 ../BookmarkManagerView.cpp:183
-msgid "Open"
-msgstr "開く"
-
-#: ../BookmarkManagerDialog.cpp:169 ../BookmarkManagerView.cpp:192
-msgid "Cancel"
-msgstr "キャンセル"
-
-#: ../BookmarkManagerDialog.cpp:172 ../BookmarkManagerView.cpp:195
-msgid "Project files (*.cnoid)"
-msgstr "プロジェクトファイル (*.cnoid)"
-
-#: ../BookmarkManagerDialog.cpp:173 ../BookmarkManagerView.cpp:196
-msgid "Any files (*)"
-msgstr "全てのファイル(*)"
-
-#: ../BookmarkManagerDialog.cpp:213 ../BookmarkManagerView.cpp:126
-msgid "Warning"
-msgstr "警告"
-
-#: ../BookmarkManagerDialog.cpp:218 ../BookmarkManagerView.cpp:131
-msgid ""
-"A project item exists. Do you want to save it as a project file before "
-"loading a new project?"
-msgstr ""
-"プロジェクトアイテムがあります．新しいプロジェクトを読み込む前にこのアイテム"
-"を保存しますか？"
-
-#: ../BookmarkManagerDialog.cpp:221 ../BookmarkManagerView.cpp:134
-msgid ""
-"Project items exist. Do you want to save them as a project file before "
-"loading a new project?"
-msgstr ""
-"プロジェクトアイテムあります．新しいプロジェクトを読み込む前にこのアイテムを"
-"保存しますか？"
-
-#: ../BookmarkManagerDialog.cpp:227 ../BookmarkManagerView.cpp:140
-msgid ""
-"Project \"%1\" exists. Do you want to save it before loading a new project?"
-msgstr ""
-"既存のプロジェクト \"%1\" があります．新しいプロジェクトを読み込む前にこのプ"
-"ロジェクトを保存しますか？"
-
-#: ../BookmarkManagerView.cpp:79
-msgid "Clear"
-msgstr "クリア"
-
 #: ../BookmarkPlugin.cpp:65 ../HistoryManager.cpp:86
 msgid "History"
 msgstr "履歴"
@@ -128,3 +32,7 @@ msgstr "ブックマーク"
 #: ../BookmarkList.cpp:57
 msgid "Add current project"
 msgstr "現在のプロジェクトを登録"
+
+#: ../BookmarkList.cpp:66 ../HistoryManager.cpp:67
+msgid "Remove"
+msgstr "削除"
