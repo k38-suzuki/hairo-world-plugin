@@ -17,8 +17,8 @@
 #include "MotionCaptureCamera.h"
 #include "PassiveMarker.h"
 
-using namespace std;
 using namespace cnoid;
+using namespace std;
 
 namespace cnoid {
 
@@ -31,12 +31,10 @@ public:
     MotionCaptureSimulatorItem* self;
     DeviceList<PassiveMarker> markers;
     DeviceList<MotionCaptureCamera> cameras;
-    MarkerPointItem* item;
+    MarkerPointItemPtr pointItem;
     double cycleTime;
     bool record;
-    double timeStep;
-    string fileName;
-    int frame;
+    SimulatorItem* simulatorItem;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void finalizeSimulation();
@@ -61,13 +59,10 @@ MotionCaptureSimulatorItemImpl::MotionCaptureSimulatorItemImpl(MotionCaptureSimu
 {
     markers.clear();
     cameras.clear();
-
-    item = nullptr;
+    pointItem = nullptr;
     cycleTime = 0.1;
     record = true;
-    timeStep = 0.0;
-    fileName.clear();
-    frame = 0;
+    simulatorItem = nullptr;
 }
 
 
@@ -85,13 +80,9 @@ MotionCaptureSimulatorItemImpl::MotionCaptureSimulatorItemImpl(MotionCaptureSimu
 {
     markers = org.markers;
     cameras = org.cameras;
-
-    item = org.item;
+    pointItem = org.pointItem;
     cycleTime = org.cycleTime;
     record = org.record;
-    timeStep = org.timeStep;
-    fileName = org.fileName;
-    frame = org.frame;
 }
 
 
@@ -116,10 +107,9 @@ bool MotionCaptureSimulatorItem::initializeSimulation(SimulatorItem* simulatorIt
 
 bool MotionCaptureSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 {
+    this->simulatorItem = simulatorItem;
     markers.clear();
     cameras.clear();
-    timeStep = simulatorItem->worldTimeStep();
-    frame = 0;
 
     vector<SimulationBody*> simulationBodies = simulatorItem->simulationBodies();
     for(size_t i = 0; i < simulationBodies.size(); i++) {
@@ -128,27 +118,27 @@ bool MotionCaptureSimulatorItemImpl::initializeSimulation(SimulatorItem* simulat
         cameras << body->devices();
     }
 
-    QDateTime dateTime = QDateTime::currentDateTime();
-    string date = dateTime.toString("yyyyMMddhhmmss").toStdString();
-
     if(record) {
-        item = new MarkerPointItem();
-        string name = "Marker Points - " + date;
-        item->setName(name);
-        self->addChildItem(item);
-        item->setChecked(false);
+        pointItem = new MarkerPointItem;
+        QDateTime recordingStartTime = QDateTime::currentDateTime();
+        string suffix = recordingStartTime.toString("yyyy-MM-dd-hh-mm-ss").toStdString();
+        string name = "Marker Points - " + suffix;
+        pointItem->setName(name);
+        self->addSubItem(pointItem);
+        pointItem->setChecked(false);
+
         int numParts = markers.size();
-        shared_ptr<MultiSE3Seq> markerPosSeq = item->seq();
-        markerPosSeq->setSeqContentName("MarkerPosSeq");
-        markerPosSeq->setNumParts(numParts);
-        markerPosSeq->setDimension(0, numParts, 1);
-        markerPosSeq->setFrameRate(1.0 / cycleTime);
+        shared_ptr<MultiSE3Seq> markerPointSeq = pointItem->seq();
+        markerPointSeq->setSeqContentName("MarkerPointSeq");
+        markerPointSeq->setFrameRate(1.0 / simulatorItem->worldTimeStep());
+        markerPointSeq->setDimension(0, numParts, false);
+        markerPointSeq->setOffsetTime(0.0);
 
         for(size_t i = 0; i < markers.size(); ++i) {
             PassiveMarker* marker = markers[i];
             Body* body = marker->body();
             string label = body->name() + ":" + marker->name();
-            item->addLabel(label);
+            pointItem->addLabel(label);
         }
 
         simulatorItem->addPreDynamicsFunction([&](){ onMarkerGeneration(); });
@@ -167,7 +157,7 @@ void MotionCaptureSimulatorItem::finalizeSimulation()
 
 void MotionCaptureSimulatorItemImpl::finalizeSimulation()
 {
-    item->setChecked(true);
+    pointItem->setChecked(true);
 }
 
 
@@ -237,12 +227,13 @@ void MotionCaptureSimulatorItemImpl::onMarkerDetection()
 void MotionCaptureSimulatorItemImpl::onMarkerGeneration()
 {
     static double timeCounter = 0.0;
-    timeCounter += timeStep;
+    timeCounter += simulatorItem->worldTimeStep();
+    int currentFrame = simulatorItem->currentFrame();
 
     if(timeCounter >= cycleTime) {
-        shared_ptr<MultiSE3Seq> markerPosSeq = item->seq();
-        markerPosSeq->setNumFrames(frame + 1);
-        MultiSE3Seq::Frame p = markerPosSeq->frame(frame);
+        shared_ptr<MultiSE3Seq> markerPointSeq = pointItem->seq();
+        markerPointSeq->setNumFrames(currentFrame);
+        MultiSE3Seq::Frame p = markerPointSeq->frame(currentFrame - 1);
 
         for(size_t i = 0; i < markers.size(); ++i) {
             PassiveMarker* marker = markers[i];
@@ -252,13 +243,12 @@ void MotionCaptureSimulatorItemImpl::onMarkerGeneration()
                 Matrix3 R = link->R() * marker->R_local();
                 Vector3 color = marker->color();
                 p[i].set(point, R);
-                item->addPoint(point, marker->radius(),
+                pointItem->addPoint(point, marker->radius(),
                                Vector3f(color[0], color[1], color[2]), marker->transparency());
             }
         }
 
         timeCounter -= cycleTime;
-        frame++;
     }
 }
 
