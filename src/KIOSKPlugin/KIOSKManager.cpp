@@ -84,7 +84,6 @@ public:
 
     Action* hide_menuBar;
     Action* hide_toolBar;
-    QDateTime recordingStartTime;
     bool isInitialized;
     JoystickCapture joystick;
     int password;
@@ -186,6 +185,18 @@ SignalProxy<void(bool)> KIOSKManager::sigLoggingEnabled()
 
 void KIOSKManagerImpl::loadProject(const bool& enabled)
 {
+    if(simulatorItem) {
+        if(simulatorItem->isRunning()) {
+            simulatorItem->stopSimulation(true);
+        }
+    }
+
+    TimeBar* tb = TimeBar::instance();
+    if(tb->isDoingPlayback()) {
+        tb->stopPlayback(true);
+    }
+    tb->setTime(0.0);
+
     ProjectManager* pm = ProjectManager::instance();
     string filename;
     if(enabled) {
@@ -208,11 +219,6 @@ void KIOSKManagerImpl::onEnableKIOSKToggled(const bool& on)
     mw->statusBar()->setVisible(!on);
     hide_menuBar->setEnabled(on);
     hide_toolBar->setChecked(on);
-    TimeBar* tb = TimeBar::instance();
-    if(tb->isDoingPlayback()) {
-        tb->stopPlayback(true);
-        tb->setTime(0.0);
-    }
 
     if(isInitialized) {
         loadProject(on);
@@ -255,7 +261,7 @@ void KIOSKManagerImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
         dir.mkdir("logs");
     }
 
-    recordingStartTime = QDateTime::currentDateTime();
+    QDateTime recordingStartTime = QDateTime::currentDateTime();
     string suffix = recordingStartTime.toString("yyyy-MM-dd-hh-mm-ss").toStdString();
     string filename = directory + "/logs/" + suffix;
     string projectFile = filename + ".cnoid";
@@ -306,9 +312,6 @@ void KIOSKManagerImpl::onButton(const int& id, const bool& isPressed)
         if(enable_kiosk->isChecked()) {
             int ret = QMessageBox::question(MainWindow::instance(), _("KIOSK"), _("Would you like to return to the home screen?"));
             if(ret == QMessageBox::Yes) {
-                if(simulatorItem) {
-                    simulatorItem->stopSimulation(true);
-                }
                 loadProject(true);
             } else {
                 hide_menuBar->setChecked(false);
