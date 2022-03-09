@@ -67,6 +67,7 @@ JoystickLoggerItem::JoystickLoggerItem(const JoystickLoggerItem& org)
 JoystickLoggerItemImpl::JoystickLoggerItemImpl(JoystickLoggerItem* self, const JoystickLoggerItemImpl& org)
     : self(self)
 {
+    device = org.device;
     joystickStateSeqItem = org.joystickStateSeqItem;
 }
 

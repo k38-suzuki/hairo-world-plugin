@@ -21,9 +21,9 @@ msgstr ""
 msgid "JoystickLoggerItem"
 msgstr "ジョイスティックロガーアイテム"
 
-#: ../JoystickLoggerItem.cpp:169
-msgid "Record joystick states"
-msgstr "ジョイスティック状態の記録"
+#: ../JoystickLoggerItem.cpp:150
+msgid "Device"
+msgstr "デバイス"
 
 #: ../JoystickStatusView.cpp:141
 msgid "Joystick Status"
