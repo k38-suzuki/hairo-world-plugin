@@ -20,7 +20,6 @@ public:
     virtual ~BookmarkWidget();
 
     std::string memo() const;
-    bool isLoggingEnabled() const;
 
     void store(Mapping& archive);
     void restore(const Mapping& archive);

@@ -15,6 +15,12 @@
 
 using namespace cnoid;
 
+namespace {
+
+KIOSKView* instance_ = nullptr;
+
+}
+
 namespace cnoid {
 
 class KIOSKViewImpl
@@ -99,7 +105,9 @@ void KIOSKView::initializeClass(ExtensionManager* ext)
 
 KIOSKView* KIOSKView::instance()
 {
-    static KIOSKView* instance_ = ViewManager::findView<KIOSKView>();
+    if(!instance_) {
+        instance_ = ViewManager::findView<KIOSKView>();
+    }
     return instance_;
 }
 

@@ -18,6 +18,7 @@
 #include <QHBoxLayout>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
+#include "KIOSKManager.h"
 #include "gettext.h"
 
 using namespace cnoid;
@@ -96,6 +97,8 @@ BookmarkWidgetImpl::BookmarkWidgetImpl(BookmarkWidget* self)
     loggingCheck = new CheckBox;
     loggingCheck->setText(_("Logging"));
     loggingCheck->setChecked(false);
+    loggingCheck->sigToggled().connect([&](bool on){ KIOSKManager::setLoggingEnabled(on); });
+    KIOSKManager::sigLoggingEnabled().connect([&](bool on){ loggingCheck->setChecked(on); });
 
     MainWindow* mw = MainWindow::instance();
     QHBoxLayout* hbox = new QHBoxLayout;
@@ -156,12 +159,6 @@ BookmarkWidget::~BookmarkWidget()
 string BookmarkWidget::memo() const
 {
     return impl->memoLine->text().toStdString();
-}
-
-
-bool BookmarkWidget::isLoggingEnabled() const
-{
-    return impl->loggingCheck->isChecked();
 }
 
 
@@ -282,7 +279,6 @@ void BookmarkWidgetImpl::store(Mapping& archive)
         }
     }
     archive.write("bookmark_lock", buttons[LOCK]->isChecked());
-    archive.write("enable_logging", loggingCheck->isChecked());
 }
 
 
@@ -305,5 +301,4 @@ void BookmarkWidgetImpl::restore(const Mapping& archive)
         }
     }
     buttons[LOCK]->setChecked(archive.get("bookmark_lock", false));
-    loggingCheck->setChecked(archive.get("enable_logging", false));
 }

@@ -67,6 +67,8 @@ Command konamiCommand[] = {
 };
 
 Action* enable_kiosk = nullptr;
+Action* enable_logging = nullptr;
+Signal<void(bool)> sigLoggingEnabled_;
 
 }
 
@@ -92,6 +94,7 @@ public:
     void onEnableKIOSKToggled(const bool& on);
     void onHideMenuBarToggled(const bool& on);
     void onHideToolBarToggled(const bool& on);
+    void onEnableLoggingToggled(const bool& on);
     void onProjectLoaded(const int& recursiveLevel);
     void onSimulationAboutToStart(SimulatorItem* simulatorItem);
     void onAxis(const int& id, const double& position);
@@ -122,6 +125,8 @@ KIOSKManagerImpl::KIOSKManagerImpl(ExtensionManager* ext, KIOSKManager* self)
     hide_menuBar->sigToggled().connect([&](bool on){ onHideMenuBarToggled(on); });
     hide_toolBar = mm.addCheckItem(_("Hide tool bar"));
     hide_toolBar->sigToggled().connect([&](bool on){ onHideToolBarToggled(on); });
+    enable_logging = mm.addCheckItem(_("Enable logging"));
+    enable_logging->sigToggled().connect([&](bool on){ onEnableLoggingToggled(on); });
     isInitialized = false;
     joystick.setDevice("/dev/input/js0");
     joystick.sigAxis().connect([&](int id, double position){ onAxis(id, position); });
@@ -162,6 +167,20 @@ void KIOSKManager::initialize(ExtensionManager* ext)
     if(CNOID_USE_KIOSK && (strcmp(CNOID_USE_KIOSK, "0") == 0)) {
         enable_kiosk->setChecked(true);
     }
+}
+
+
+void KIOSKManager::setLoggingEnabled(const bool& on)
+{
+    enable_logging->blockSignals(true);
+    enable_logging->setChecked(on);
+    enable_logging->blockSignals(false);
+}
+
+
+SignalProxy<void(bool)> KIOSKManager::sigLoggingEnabled()
+{
+    return sigLoggingEnabled_;
 }
 
 
@@ -215,6 +234,12 @@ void KIOSKManagerImpl::onHideToolBarToggled(const bool& on)
 }
 
 
+void KIOSKManagerImpl::onEnableLoggingToggled(const bool& on)
+{
+    sigLoggingEnabled_(on);
+}
+
+
 void KIOSKManagerImpl::onProjectLoaded(const int& recursiveLevel)
 {
     isInitialized = true;
@@ -235,12 +260,7 @@ void KIOSKManagerImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
     string filename = directory + "/logs/" + suffix;
     string projectFile = filename + ".cnoid";
 
-    bool isLoggingEnabled = false;
-    KIOSKView* kioskView = KIOSKView::instance();
-    if(kioskView) {
-        isLoggingEnabled = kioskView->bookmarkWidget()->isLoggingEnabled();
-    }
-    if(isLoggingEnabled) {
+    if(enable_logging->isChecked()) {
         WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
         if(worldItem) {
             ItemList<WorldLogFileItem> logItems = worldItem->descendantItems<WorldLogFileItem>();
@@ -259,8 +279,11 @@ void KIOSKManagerImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 
             ProjectManager* pm = ProjectManager::instance();
             pm->saveProject(projectFile);
-            string memo = kioskView->bookmarkWidget()->memo();
-            kioskView->logWidget()->addItem(projectFile, memo);
+            KIOSKView* kioskView = KIOSKView::instance();
+            if(kioskView) {
+                string memo = kioskView->bookmarkWidget()->memo();
+                kioskView->logWidget()->addItem(projectFile, memo);
+            }
         }
     }
 }
@@ -312,6 +335,7 @@ void KIOSKManagerImpl::store(Mapping& archive)
     archive.write("enable_kiosk", enable_kiosk->isChecked());
     archive.write("hide_menu_bar", hide_menuBar->isChecked());
     archive.write("hide_tool_bar", hide_toolBar->isChecked());
+    archive.write("enable_logging", enable_logging->isChecked());
 }
 
 
@@ -320,4 +344,5 @@ void KIOSKManagerImpl::restore(const Mapping& archive)
     enable_kiosk->setChecked(archive.get("enable_kiosk", false));
     hide_menuBar->setChecked(archive.get("hide_menu_bar", false));
     hide_toolBar->setChecked(archive.get("hide_tool_bar", false));
+    enable_logging->setChecked(archive.get("enable_logging", false));
 }

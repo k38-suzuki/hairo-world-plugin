@@ -7,6 +7,7 @@
 #define CNOID_KIOSKPLUGIN_KIOSKMANAGER_H
 
 #include <cnoid/ExtensionManager>
+#include <cnoid/Signal>
 
 namespace cnoid {
 
@@ -19,6 +20,10 @@ public:
     virtual ~KIOSKManager();
 
     static void initialize(ExtensionManager* ext);
+
+    static void setLoggingEnabled(const bool& on);
+
+    static SignalProxy<void(bool)> sigLoggingEnabled();
 
 private:
     KIOSKManagerImpl* impl;

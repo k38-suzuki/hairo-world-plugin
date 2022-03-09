@@ -75,11 +75,15 @@ msgstr "KIOSKモード"
 
 #: ../KIOSKManager.cpp:55
 msgid "Hide menu bar"
-msgstr "メニューバーを隠す"
+msgstr "メニューバーの非表示"
 
 #: ../KIOSKManager.cpp:62
 msgid "Hide tool bar"
-msgstr "ツールバーを隠す"
+msgstr "ツールバーの非表示"
+
+#: ../KIOSKManager.cpp:128
+msgid "Enable logging"
+msgstr "ログの保存"
 
 #: ../KIOSKView.cpp:73
 msgid "Bookmark"
