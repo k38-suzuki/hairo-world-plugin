@@ -6,6 +6,7 @@
 #include "BookmarkWidget.h"
 #include <cnoid/Action>
 #include <cnoid/Button>
+#include <cnoid/CheckBox>
 #include <cnoid/FileDialog>
 #include <cnoid/LineEdit>
 #include <cnoid/MainWindow>
@@ -58,6 +59,7 @@ public:
     PushButton* buttons[NUM_BUTTONS];
     Menu menu;
     LineEdit* memoLine;
+    CheckBox* loggingCheck;
 
     void addItem(const string& filename, const string& text);
     void removeItem();
@@ -91,6 +93,10 @@ BookmarkWidgetImpl::BookmarkWidgetImpl(BookmarkWidget* self)
     memoLine = new LineEdit;
     memoLine->setPlaceholderText(_("Memo"));
 
+    loggingCheck = new CheckBox;
+    loggingCheck->setText(_("Logging"));
+    loggingCheck->setChecked(false);
+
     MainWindow* mw = MainWindow::instance();
     QHBoxLayout* hbox = new QHBoxLayout;
     for(int i = 0; i < NUM_BUTTONS; ++i) {
@@ -107,6 +113,7 @@ BookmarkWidgetImpl::BookmarkWidgetImpl(BookmarkWidget* self)
         if(i == LOCK) {
             hbox->addStretch();
             hbox->addWidget(memoLine);
+            hbox->addWidget(loggingCheck);
         }
     }
 
@@ -146,9 +153,15 @@ BookmarkWidget::~BookmarkWidget()
 }
 
 
-string BookmarkWidget::memo()
+string BookmarkWidget::memo() const
 {
     return impl->memoLine->text().toStdString();
+}
+
+
+bool BookmarkWidget::isLoggingEnabled() const
+{
+    return impl->loggingCheck->isChecked();
 }
 
 
@@ -269,6 +282,7 @@ void BookmarkWidgetImpl::store(Mapping& archive)
         }
     }
     archive.write("bookmark_lock", buttons[LOCK]->isChecked());
+    archive.write("enable_logging", loggingCheck->isChecked());
 }
 
 
@@ -291,4 +305,5 @@ void BookmarkWidgetImpl::restore(const Mapping& archive)
         }
     }
     buttons[LOCK]->setChecked(archive.get("bookmark_lock", false));
+    loggingCheck->setChecked(archive.get("enable_logging", false));
 }

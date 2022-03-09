@@ -25,6 +25,10 @@ msgstr "ロック"
 msgid "Memo"
 msgstr "メモ"
 
+#: ../KIOSKManager.cpp:97
+msgid "Logging"
+msgstr "ログの保存"
+
 #: ../BookmarkWidget.cpp:64
 msgid "File"
 msgstr "ファイル"

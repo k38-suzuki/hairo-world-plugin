@@ -224,7 +224,6 @@ void KIOSKManagerImpl::onProjectLoaded(const int& recursiveLevel)
 void KIOSKManagerImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
     this->simulatorItem = simulatorItem;
-    WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
     string directory = toUTF8((shareDirPath() / "kiosk").string());
     QDir dir(directory.c_str());
     if(!dir.exists("logs")) {
@@ -234,27 +233,35 @@ void KIOSKManagerImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
     recordingStartTime = QDateTime::currentDateTime();
     string suffix = recordingStartTime.toString("yyyy-MM-dd-hh-mm-ss").toStdString();
     string filename = directory + "/logs/" + suffix;
+    string projectFile = filename + ".cnoid";
 
-    if(worldItem) {
-        ItemList<WorldLogFileItem> logItems = worldItem->descendantItems<WorldLogFileItem>();
-        if(logItems.size() == 0) {
-            WorldLogFileItemPtr logItem = new WorldLogFileItem;
-            worldItem->addChildItem(logItem);
+    bool isLoggingEnabled = false;
+    KIOSKView* kioskView = KIOSKView::instance();
+    if(kioskView) {
+        isLoggingEnabled = kioskView->bookmarkWidget()->isLoggingEnabled();
+    }
+    if(isLoggingEnabled) {
+        WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
+        if(worldItem) {
+            ItemList<WorldLogFileItem> logItems = worldItem->descendantItems<WorldLogFileItem>();
+            WorldLogFileItemPtr logItem;
+            if(logItems.size()) {
+                logItem = logItems[0];
+            } else {
+                logItem = new WorldLogFileItem;
+                worldItem->addChildItem(logItem);
+            }
             if(recordingStartTime.isValid()) {
                 logItem->setLogFile(filename);
                 logItem->setTimeStampSuffixEnabled(false);
                 logItem->setSelected(true);
             }
-        }
-    }
 
-    string projectFile = filename + ".cnoid";
-    ProjectManager* pm = ProjectManager::instance();
-    pm->saveProject(projectFile);
-    KIOSKView* kioskView = KIOSKView::instance();
-    if(kioskView) {
-        string memo = kioskView->bookmarkWidget()->memo();
-        kioskView->logWidget()->addItem(projectFile, memo);
+            ProjectManager* pm = ProjectManager::instance();
+            pm->saveProject(projectFile);
+            string memo = kioskView->bookmarkWidget()->memo();
+            kioskView->logWidget()->addItem(projectFile, memo);
+        }
     }
 }
 
