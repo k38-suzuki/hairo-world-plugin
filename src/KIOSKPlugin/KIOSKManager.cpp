@@ -351,17 +351,11 @@ void KIOSKManagerImpl::onButton(const int& id, const bool& isPressed)
 
 void KIOSKManagerImpl::store(Mapping& archive)
 {
-    archive.write("enable_kiosk", enable_kiosk->isChecked());
-    archive.write("hide_menu_bar", hide_menuBar->isChecked());
-    archive.write("hide_tool_bar", hide_toolBar->isChecked());
     archive.write("enable_logging", enable_logging->isChecked());
 }
 
 
 void KIOSKManagerImpl::restore(const Mapping& archive)
 {
-    enable_kiosk->setChecked(archive.get("enable_kiosk", false));
-    hide_menuBar->setChecked(archive.get("hide_menu_bar", false));
-    hide_toolBar->setChecked(archive.get("hide_tool_bar", false));
     enable_logging->setChecked(archive.get("enable_logging", false));
 }
