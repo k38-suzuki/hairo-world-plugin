@@ -115,7 +115,7 @@ GratingGenerator::GratingGenerator(ExtensionManager* ext)
 GratingGeneratorImpl::GratingGeneratorImpl(GratingGenerator* self, ExtensionManager* ext)
     : self(self)
 {
-    dialog = new GratingConfigDialog();
+    dialog = new GratingConfigDialog;
 
     MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
     mm.addItem(_("Grating"))->sigTriggered().connect([&](){ dialog->show(); });
@@ -137,8 +137,8 @@ void GratingGenerator::initialize(ExtensionManager* ext)
 GratingConfigDialog::GratingConfigDialog()
 {
     setWindowTitle(_("Grating Builder"));
-    QVBoxLayout* vbox = new QVBoxLayout();
-    QGridLayout* gbox = new QGridLayout();
+    QVBoxLayout* vbox = new QVBoxLayout;
+    QGridLayout* gbox = new QGridLayout;
 
     const char* dlabels[] = {
         _("Mass [kg]"), _("Height [m]"), _("Frame width [m]"),
@@ -149,7 +149,7 @@ GratingConfigDialog::GratingConfigDialog()
 
     for(int i = 0; i < NUM_DSPINS; ++i) {
         DoubleSpinInfo info = doubleSpinInfo[i];
-        dspins[i] = new DoubleSpinBox();
+        dspins[i] = new DoubleSpinBox;
         DoubleSpinBox* dspin = dspins[i];
         dspin->setRange(info.min, info.max);
         dspin->setSingleStep(info.step);
@@ -161,7 +161,7 @@ GratingConfigDialog::GratingConfigDialog()
 
     for(int i = 0; i < NUM_SPINS; ++i) {
         SpinInfo info = spinInfo[i];
-        spins[i] = new SpinBox();
+        spins[i] = new SpinBox;
         SpinBox* spin = spins[i];
         spin->setRange(info.min, info.max);
         spin->setValue(info.value);
@@ -170,7 +170,7 @@ GratingConfigDialog::GratingConfigDialog()
     }
 
     sizeLabel = new QLabel(_(" "));
-    colorButton = new PushButton();
+    colorButton = new PushButton;
 
     dspins[MASS]->setValue(1.0);
     dspins[FRAME_WDT]->setValue(0.005);
@@ -186,10 +186,10 @@ GratingConfigDialog::GratingConfigDialog()
     gbox->addWidget(new QLabel(_("Size [m, m, m]")), 5, 0);
     gbox->addWidget(sizeLabel, 5, 1, 1, 3);
 
-    formWidget = new FileFormWidget();
+    formWidget = new FileFormWidget;
 
     vbox->addLayout(gbox);
-    vbox->addWidget(new HSeparator());
+    vbox->addWidget(new HSeparator);
     vbox->addWidget(formWidget);
     setLayout(vbox);
 

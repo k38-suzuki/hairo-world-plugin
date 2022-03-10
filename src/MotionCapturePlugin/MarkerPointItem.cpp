@@ -166,7 +166,7 @@ MarkerPointItem::MarkerPointItem()
 MarkerPointItemImpl::MarkerPointItemImpl(MarkerPointItem* self)
     : self(self)
 {   
-    scene = new SgGroup();
+    scene = new SgGroup;
     labels.clear();
 }
 
@@ -222,13 +222,13 @@ void MarkerPointItem::addPoint(const Vector3& point, const double& radius, const
 void MarkerPointItemImpl::addPoint(const Vector3& point, const double& radius, const Vector3f color, const double& transparency)
 {
     MeshGenerator generator;
-    SgShape* shape = new SgShape();
+    SgShape* shape = new SgShape;
     shape->setMesh(generator.generateBox(Vector3(radius, radius, radius)));
-    SgMaterial* material = new SgMaterial();
+    SgMaterial* material = new SgMaterial;
     material->setDiffuseColor(color);
     material->setTransparency(transparency);
     shape->setMaterial(material);
-    SgPosTransform* transform = new SgPosTransform();
+    SgPosTransform* transform = new SgPosTransform;
     transform->addChild(shape);
     transform->setTranslation(point);
     scene->addChild(transform, true);

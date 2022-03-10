@@ -99,7 +99,7 @@ void FileExplorerImpl::execute(const int argc, const char* argv[])
         messages += " " + string(argv[i]);
     }
 
-    Process* process = new Process();
+    Process* process = new Process;
     process->start(messages.c_str());
     if(process->waitForStarted()) {}
     processes.push_back(process);

@@ -37,6 +37,8 @@ public:
 
     void store(Mapping& archive);
     void restore(const Mapping& archive);
+    bool storeState(Archive& archive);
+    bool restoreState(const Archive& archive);
 };
 
 }
@@ -135,4 +137,30 @@ void KIOSKViewImpl::restore(const Mapping& archive)
 {
     bookmarkWidget->restore(archive);
     logWidget->restore(archive);
+}
+
+
+bool KIOSKView::storeState(Archive& archive)
+{
+    return impl->storeState(archive);
+}
+
+
+bool KIOSKViewImpl::storeState(Archive& archive)
+{
+    bookmarkWidget->storeState(archive);
+    return true;
+}
+
+
+bool KIOSKView::restoreState(const Archive& archive)
+{
+    return impl->restoreState(archive);
+}
+
+
+bool KIOSKViewImpl::restoreState(const Archive& archive)
+{
+    bookmarkWidget->restoreState(archive);
+    return true;
 }

@@ -99,7 +99,7 @@ TerrainGenerator::TerrainGenerator(ExtensionManager* ext)
 TerrainGeneratorImpl::TerrainGeneratorImpl(TerrainGenerator* self, ExtensionManager* ext)
     : self(self)
 {
-    dialog = new TerrainConfigDialog();
+    dialog = new TerrainConfigDialog;
 
     MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
     mm.addItem(_("BoxTerrain"))->sigTriggered().connect([&](){ dialog->show(); });
@@ -123,19 +123,19 @@ TerrainConfigDialog::TerrainConfigDialog()
 {
     setWindowTitle(_("BoxTerrain Builder"));
 
-    scaleSpin = new DoubleSpinBox();
+    scaleSpin = new DoubleSpinBox;
     scaleSpin->setDecimals(1);
     scaleSpin->setSingleStep(0.1);
     scaleSpin->setValue(1.0);
     scaleSpin->setRange(0.1, 10.0);
 
-    inputFileLine = new LineEdit();
+    inputFileLine = new LineEdit;
     inputFileLine->setEnabled(false);
 
     loadButton = new PushButton(_("&Load"));
 
-    QVBoxLayout* vbox = new QVBoxLayout();
-    QGridLayout* gbox = new QGridLayout();
+    QVBoxLayout* vbox = new QVBoxLayout;
+    QGridLayout* gbox = new QGridLayout;
     int index = 0;
     gbox->addWidget(new QLabel(_("Input File (.csv)")), index, 0);
     gbox->addWidget(inputFileLine, index, 1, 1, 2);
@@ -143,10 +143,10 @@ TerrainConfigDialog::TerrainConfigDialog()
     gbox->addWidget(new QLabel(_("scale[0.1-10.0]")), index, 0);
     gbox->addWidget(scaleSpin, index++, 1);
 
-    formWidget = new FileFormWidget();
+    formWidget = new FileFormWidget;
 
     vbox->addLayout(gbox);
-    vbox->addWidget(new HSeparator());
+    vbox->addWidget(new HSeparator);
     vbox->addWidget(formWidget);
     setLayout(vbox);
 
@@ -168,7 +168,7 @@ bool TerrainConfigDialog::save(const string& filename)
         return false;
     }
 
-    TerrainData* data = new TerrainData();
+    TerrainData* data = new TerrainData;
     if(!data->read(inputFile)) {
         mv->putln(_("cannot csv body file."));
         return false;

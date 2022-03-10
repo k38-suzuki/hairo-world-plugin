@@ -159,18 +159,18 @@ JoystickStatusViewImpl::JoystickStatusViewImpl(JoystickStatusView* self)
     self->setDefaultLayoutArea(View::BOTTOM);
     self->setFocusPolicy(Qt::WheelFocus);
     
-    for(int i=0; i < NUM_JOYSTICK_ELEMENTS; ++i){
+    for(int i=0; i < NUM_JOYSTICK_ELEMENTS; ++i) {
         ButtonInfo& info = buttonInfo[i];
         ToolButton& button = buttons[i];
         button.setText(info.label);
         grid.addWidget(&buttons[i], info.row, info.column);
         keyToButtonMap[info.key] = i;
-        if(info.isAxis){
-            if(info.id >= static_cast<int>(axisPositions.size())){
+        if(info.isAxis) {
+            if(info.id >= static_cast<int>(axisPositions.size())) {
                 axisPositions.resize(info.id + 1, 0.0);
             }
         } else {
-            if(info.id >= static_cast<int>(buttonStates.size())){
+            if(info.id >= static_cast<int>(buttonStates.size())) {
                 buttonStates.resize(info.id + 1, false);
             }
         }
@@ -179,9 +179,9 @@ JoystickStatusViewImpl::JoystickStatusViewImpl(JoystickStatusView* self)
         button.sigReleased().connect([=](){ onButtonReleased(i); });
     }
 
-    QGridLayout* gbox = new QGridLayout();
+    QGridLayout* gbox = new QGridLayout;
     for(size_t i = 0; i < axisPositions.size(); ++i) {
-        QProgressBar* bar = new QProgressBar();
+        QProgressBar* bar = new QProgressBar;
         bar->setValue(0);
         gbox->addWidget(new QLabel(labels[i]), i, 0);
         gbox->addWidget(bar, i, 1);
@@ -221,7 +221,7 @@ JoystickStatusView::~JoystickStatusView()
 
 void JoystickStatusView::keyPressEvent(QKeyEvent* event)
 {
-    if(!impl->onKeyStateChanged(event->key(), true)){
+    if(!impl->onKeyStateChanged(event->key(), true)) {
         View::keyPressEvent(event);
     }
 }
@@ -229,7 +229,7 @@ void JoystickStatusView::keyPressEvent(QKeyEvent* event)
 
 void JoystickStatusView::keyReleaseEvent(QKeyEvent* event)
 {
-    if(!impl->onKeyStateChanged(event->key(), false)){
+    if(!impl->onKeyStateChanged(event->key(), false)) {
         View::keyPressEvent(event);
     }
 }
@@ -238,7 +238,7 @@ void JoystickStatusView::keyReleaseEvent(QKeyEvent* event)
 bool JoystickStatusViewImpl::onKeyStateChanged(int key, bool on)
 {
     KeyToButtonMap::iterator p = keyToButtonMap.find(key);
-    if(p == keyToButtonMap.end()){
+    if(p == keyToButtonMap.end()) {
         return false;
     } else {
         int index = p->second;
@@ -353,9 +353,9 @@ bool JoystickStatusViewImpl::readCurrentState()
 
     {
         std::lock_guard<std::mutex> lock(mutex);
-        for(int i=0; i < NUM_JOYSTICK_ELEMENTS; ++i){
+        for(int i=0; i < NUM_JOYSTICK_ELEMENTS; ++i) {
             ButtonInfo& info = buttonInfo[i];
-            if(info.isAxis){
+            if(info.isAxis) {
                 axisPositions[info.id] += keyValues[i];
             } else {
                 buttonStates[info.id] = keyValues[i];
@@ -368,7 +368,7 @@ bool JoystickStatusViewImpl::readCurrentState()
 
 double JoystickStatusViewImpl::getPosition(int axis) const
 {
-    if(axis >=0 && axis < static_cast<int>(axisPositions.size())){
+    if(axis >=0 && axis < static_cast<int>(axisPositions.size())) {
         return axisPositions[axis];
     }
     return 0.0;
@@ -377,7 +377,7 @@ double JoystickStatusViewImpl::getPosition(int axis) const
 
 bool JoystickStatusViewImpl::getButtonState(int button) const
 {
-    if(button >= 0 && button < static_cast<int>(buttonStates.size())){
+    if(button >= 0 && button < static_cast<int>(buttonStates.size())) {
         return buttonStates[button];
     }
     return false;
@@ -386,13 +386,13 @@ bool JoystickStatusViewImpl::getButtonState(int button) const
 
 bool JoystickStatusViewImpl::isActive() const
 {
-    for(size_t i=0; i < axisPositions.size(); ++i){
-        if(axisPositions[i] != 0.0){
+    for(size_t i=0; i < axisPositions.size(); ++i) {
+        if(axisPositions[i] != 0.0) {
             return true;
         }
     }
-    for(size_t i=0; i < buttonStates.size(); ++i){
-        if(buttonStates[i]){
+    for(size_t i=0; i < buttonStates.size(); ++i) {
+        if(buttonStates[i]) {
             return true;
         }
     }

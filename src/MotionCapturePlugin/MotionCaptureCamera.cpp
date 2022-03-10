@@ -32,9 +32,9 @@ SceneMotionCaptureCamera::SceneMotionCaptureCamera(Device* device)
     : SceneDevice(device)
 {
     camera = static_cast<MotionCaptureCamera*>(device);
-    transform = new SgPosTransform();
-    SgShape* shape = new SgShape();
-    SgMesh* mesh = shape->setMesh(new SgMesh());
+    transform = new SgPosTransform;
+    SgShape* shape = new SgShape;
+    SgMesh* mesh = shape->setMesh(new SgMesh);
 
     SgVertexArray& vertices = *mesh->setVertices(new SgVertexArray());
     vertices.resize(5);
@@ -54,7 +54,7 @@ SceneMotionCaptureCamera::SceneMotionCaptureCamera(Device* device)
     mesh->setTriangle(4, 1, 2, 3);
     mesh->setTriangle(5, 1, 3, 4);
 
-    SgMaterial* material = new SgMaterial();
+    SgMaterial* material = new SgMaterial;
     float s = 127.0f * std::max(0.0f, std::min((float)camera->shininess(), 1.0f)) + 1.0f;
     material->setDiffuseColor(camera->diffuseColor());
     material->setEmissiveColor(camera->emissiveColor());
@@ -137,7 +137,7 @@ void MotionCaptureCamera::copyStateFrom(const MotionCaptureCamera& other)
 
 void MotionCaptureCamera::copyStateFrom(const DeviceState& other)
 {
-    if(typeid(other) != typeid(MotionCaptureCamera)){
+    if(typeid(other) != typeid(MotionCaptureCamera)) {
         throw std::invalid_argument("Type mismatch in the Device::copyStateFrom function");
 
     }
@@ -160,7 +160,7 @@ Referenced* MotionCaptureCamera::doClone(CloneMap*) const
 
 void MotionCaptureCamera::forEachActualType(std::function<bool(const std::type_info& type)> func)
 {
-    if(!func(typeid(MotionCaptureCamera))){
+    if(!func(typeid(MotionCaptureCamera))) {
         Device::forEachActualType(func);
 
     }
@@ -269,7 +269,7 @@ struct MotionCaptureCameraRegistration
     MotionCaptureCameraRegistration() {
         StdBodyLoader::registerNodeType("MotionCaptureCamera", readMotionCaptureCamera);
         StdBodyWriter::registerDeviceWriter<MotionCaptureCamera>("MotionCaptureCamera",
-                                                                 [](StdBodyWriter* /* writer */, Mapping* info, const MotionCaptureCamera* camera){
+                                                                 [](StdBodyWriter* /* writer */, Mapping* info, const MotionCaptureCamera* camera) {
             return camera->writeSpecifications(info);
         });
         SceneDevice::registerSceneDeviceFactory<MotionCaptureCamera>(createSceneMotionCaptureCamera);

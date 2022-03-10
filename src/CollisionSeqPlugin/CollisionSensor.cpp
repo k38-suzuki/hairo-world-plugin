@@ -33,7 +33,7 @@ const char* CollisionSensor::typeName() const
 
 void CollisionSensor::copyStateFrom(const DeviceState& other)
 {
-    if(typeid(other) != typeid(CollisionSensor)){
+    if(typeid(other) != typeid(CollisionSensor)) {
         throw std::invalid_argument("Type mismatch in the Device::copyStateFrom function");
     }
     copyStateFrom(static_cast<const CollisionSensor&>(other));
@@ -67,7 +67,7 @@ DeviceState* CollisionSensor::cloneState() const
 
 void CollisionSensor::forEachActualType(std::function<bool(const std::type_info& type)> func)
 {
-    if(!func(typeid(CollisionSensor))){
+    if(!func(typeid(CollisionSensor))) {
         ForceSensor::forEachActualType(func);
     }
 }
@@ -110,7 +110,7 @@ double* CollisionSensor::writeState(double* out_buf) const
 
 bool CollisionSensor::readSpecifications(const Mapping* info)
 {
-    if(!ForceSensor::readSpecifications(info)){
+    if(!ForceSensor::readSpecifications(info)) {
         return false;
     }
 
@@ -122,7 +122,7 @@ bool CollisionSensor::readSpecifications(const Mapping* info)
 
 bool CollisionSensor::writeSpecifications(Mapping* info) const
 {
-    if(!ForceSensor::writeSpecifications(info)){
+    if(!ForceSensor::writeSpecifications(info)) {
         return false;
     }
 
@@ -137,9 +137,9 @@ namespace {
 StdBodyFileDeviceTypeRegistration<CollisionSensor>
 registerHolderDevice(
     "CollisionSensor",
-     [](StdBodyLoader* loader, const Mapping* info){
+     [](StdBodyLoader* loader, const Mapping* info) {
          CollisionSensorPtr sensor = new CollisionSensor;
-         if(sensor->readSpecifications(info)){
+         if(sensor->readSpecifications(info)) {
             return loader->readDevice(sensor, info);
         }
         return false;

@@ -38,11 +38,11 @@ SceneThruster::SceneThruster(Device* device)
 {
     MeshGenerator generator;
     thrusterDevice = static_cast<Thruster*>(device);
-    scene = new SgPosTransform();
-    SgShape* shape = new SgShape();
+    scene = new SgPosTransform;
+    SgShape* shape = new SgShape;
     shape->setMesh(generator.generateArrow(0.01, 0.05, 0.02, 0.05));
     shape->setName(device->name());
-    SgMaterial* material = new SgMaterial();
+    SgMaterial* material = new SgMaterial;
     material->setDiffuseColor(Vector3(1.0, 0.0, 0.0));
     material->setTransparency(0.5);
     shape->setMaterial(material);
@@ -111,7 +111,7 @@ void Thruster::copyStateFrom(const Thruster& other)
 
 void Thruster::copyStateFrom(const DeviceState& other)
 {
-    if(typeid(other) != typeid(Thruster)){
+    if(typeid(other) != typeid(Thruster)) {
         throw std::invalid_argument("Type mismatch in the Device::copyStateFrom function");
     }
     copyStateFrom(static_cast<const Thruster&>(other));
@@ -144,7 +144,7 @@ Referenced* Thruster::doClone(CloneMap*) const
 
 void Thruster::forEachActualType(std::function<bool(const std::type_info& type)> func)
 {
-    if(!func(typeid(Thruster))){
+    if(!func(typeid(Thruster))) {
         Device::forEachActualType(func);
     }
 }
@@ -252,7 +252,7 @@ struct ThrusterRegistration
         StdBodyLoader::registerNodeType("Thruster", readThruster);
         StdBodyWriter::registerDeviceWriter<Thruster>(
                     "Thruster",
-                    [](StdBodyWriter* /* writer */, Mapping* info, const Thruster* thruster){
+                    [](StdBodyWriter* /* writer */, Mapping* info, const Thruster* thruster) {
             return thruster->writeSpecifications(info);
         });
         SceneDevice::registerSceneDeviceFactory<Thruster>(createSceneThruster);

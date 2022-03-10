@@ -111,16 +111,16 @@ LogWidgetImpl::LogWidgetImpl(LogWidget* self)
     buttons[LOCK]->sigToggled().connect([&](bool on){ onLockButtonToggled(on); });
     buttons[START]->sigClicked().connect([&](){ onStartButtonClicked(); });
 
-    QVBoxLayout* vbox = new QVBoxLayout();
+    QVBoxLayout* vbox = new QVBoxLayout;
     vbox->addLayout(hbox);
     vbox->addWidget(treeWidget);
     self->setLayout(vbox);
 
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    Action* removeAct = new Action();
+    Action* removeAct = new Action;
     removeAct->setText(_("Remove"));
     menu.addAction(removeAct);
-    Action* openAct = new Action();
+    Action* openAct = new Action;
     openAct->setText(_("Open"));
     menu.addAction(openAct);
 

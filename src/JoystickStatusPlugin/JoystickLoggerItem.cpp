@@ -95,7 +95,7 @@ bool JoystickLoggerItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     this->simulatorItem = simulatorItem;
     joystick = new Joystick(device.c_str());
-    joystickStateSeqItem = new MultiValueSeqItem();
+    joystickStateSeqItem = new MultiValueSeqItem;
     QDateTime loggingStartTime = QDateTime::currentDateTime();
     string suffix = loggingStartTime.toString("yyyy-MM-dd-hh-mm-ss").toStdString();
     string name = suffix + " - " + device;

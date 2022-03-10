@@ -92,7 +92,7 @@ SlopeGenerator::SlopeGenerator(ExtensionManager* ext)
 SlopeGeneratorImpl::SlopeGeneratorImpl(SlopeGenerator* self, ExtensionManager* ext)
     : self(self)
 {
-    dialog = new SlopeConfigDialog();
+    dialog = new SlopeConfigDialog;
 
     MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
     mm.addItem(_("Slope"))->sigTriggered().connect([&](){ dialog->show(); });
@@ -114,8 +114,8 @@ void SlopeGenerator::initialize(ExtensionManager* ext)
 SlopeConfigDialog::SlopeConfigDialog()
 {
     setWindowTitle(_("Slope Builder"));
-    QVBoxLayout* vbox = new QVBoxLayout();
-    QGridLayout* gbox = new QGridLayout();
+    QVBoxLayout* vbox = new QVBoxLayout;
+    QGridLayout* gbox = new QGridLayout;
 
     const char* dlabels[] = {
         _("Mass [kg]"),  _("Width [m]"),
@@ -124,7 +124,7 @@ SlopeConfigDialog::SlopeConfigDialog()
 
     for(int i = 0; i < NUM_DSPINS; ++i) {
         DoubleSpinInfo info = doubleSpinInfo[i];
-        dspins[i] = new DoubleSpinBox();
+        dspins[i] = new DoubleSpinBox;
         dspins[i]->setRange(info.min, info.max);
         dspins[i]->setSingleStep(info.step);
         dspins[i]->setDecimals(info.decimals);
@@ -133,14 +133,14 @@ SlopeConfigDialog::SlopeConfigDialog()
         gbox->addWidget(dspins[i], info.row, info.column);
     }
 
-    colorButton = new PushButton();
+    colorButton = new PushButton;
     gbox->addWidget(new QLabel(_("Color [-]")), 2, 0);
     gbox->addWidget(colorButton, 2, 1);
 
-    formWidget = new FileFormWidget();
+    formWidget = new FileFormWidget;
 
     vbox->addLayout(gbox);
-    vbox->addWidget(new HSeparator());
+    vbox->addWidget(new HSeparator);
     vbox->addWidget(formWidget);
     setLayout(vbox);
 

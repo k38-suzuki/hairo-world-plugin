@@ -36,10 +36,10 @@ ScenePassiveMarker::ScenePassiveMarker(Device* device)
 {
     MeshGenerator generator;
     passiveMarker = static_cast<PassiveMarker*>(device);
-    shape = new SgShape();
+    shape = new SgShape;
     shape->setMesh(generator.generateSphere(passiveMarker->radius()));
     shape->setName(device->name());
-    SgMaterial* material = new SgMaterial();
+    SgMaterial* material = new SgMaterial;
     material->setDiffuseColor(passiveMarker->color());
     material->setTransparency(passiveMarker->transparency());
     shape->setMaterial(material);
@@ -113,7 +113,7 @@ void PassiveMarker::copyStateFrom(const PassiveMarker& other)
 
 void PassiveMarker::copyStateFrom(const DeviceState& other)
 {
-    if(typeid(other) != typeid(PassiveMarker)){
+    if(typeid(other) != typeid(PassiveMarker)) {
         throw std::invalid_argument("Type mismatch in the Device::copyStateFrom function");
     }
     copyStateFrom(static_cast<const PassiveMarker&>(other));
@@ -134,7 +134,7 @@ Referenced* PassiveMarker::doClone(CloneMap*) const
 
 void PassiveMarker::forEachActualType(std::function<bool(const std::type_info& type)> func)
 {
-    if(!func(typeid(PassiveMarker))){
+    if(!func(typeid(PassiveMarker))) {
         Device::forEachActualType(func);
     }
 }
@@ -238,7 +238,7 @@ struct PassiveMarkerRegistration
     PassiveMarkerRegistration() {
         StdBodyLoader::registerNodeType("PassiveMarker", readPassiveMarker);
         StdBodyWriter::registerDeviceWriter<PassiveMarker>("PassiveMarker",
-                                                           [](StdBodyWriter* /* writer */, Mapping* info, const PassiveMarker* marker){
+                                                           [](StdBodyWriter* /* writer */, Mapping* info, const PassiveMarker* marker) {
             return marker->writeSpecifications(info);
         });
         SceneDevice::registerSceneDeviceFactory<PassiveMarker>(createScenePassiveMarker);

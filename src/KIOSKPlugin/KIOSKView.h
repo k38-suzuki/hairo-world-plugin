@@ -27,6 +27,9 @@ public:
     BookmarkWidget* bookmarkWidget();
     LogWidget* logWidget();
 
+    virtual bool storeState(Archive& archive) override;
+    virtual bool restoreState(const Archive& archive) override;
+
 private:
     KIOSKViewImpl* impl;
     friend class KIOSKViewImpl;

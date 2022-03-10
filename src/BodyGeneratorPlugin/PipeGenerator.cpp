@@ -110,7 +110,7 @@ PipeGenerator::PipeGenerator(ExtensionManager* ext)
 PipeGeneratorImpl::PipeGeneratorImpl(PipeGenerator* self, ExtensionManager* ext)
     : self(self)
 {
-    dialog = new PipeConfigDialog();
+    dialog = new PipeConfigDialog;
 
     MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
     mm.addItem(_("Pipe"))->sigTriggered().connect([&](){ dialog->show(); });
@@ -132,8 +132,8 @@ void PipeGenerator::initialize(ExtensionManager* ext)
 PipeConfigDialog::PipeConfigDialog()
 {
     setWindowTitle(_("Pipe Builder"));
-    QVBoxLayout* vbox = new QVBoxLayout();
-    QGridLayout* gbox = new QGridLayout();
+    QVBoxLayout* vbox = new QVBoxLayout;
+    QGridLayout* gbox = new QGridLayout;
 
     const char* dlabels[] = { _("Mass [kg]"), _("Length [m]"),
                               _("Inner diameter [m]"), _("Outer diameter [m]")
@@ -143,7 +143,7 @@ PipeConfigDialog::PipeConfigDialog()
 
     for(int i = 0; i < NUM_DSPINS; ++i) {
         DoubleSpinInfo info = doubleSpinInfo[i];
-        dspins[i] = new DoubleSpinBox();
+        dspins[i] = new DoubleSpinBox;
         DoubleSpinBox* dspin = dspins[i];
         dspin->setRange(info.min, info.max);
         dspin->setSingleStep(info.step);
@@ -155,7 +155,7 @@ PipeConfigDialog::PipeConfigDialog()
 
     for(int i = 0; i < NUM_SPINS; ++i) {
         SpinInfo info = spinInfo[i];
-        spins[i] = new SpinBox();
+        spins[i] = new SpinBox;
         SpinBox* spin = spins[i];
         spin->setRange(info.min, info.max);
         spin->setValue(info.value);
@@ -163,14 +163,14 @@ PipeConfigDialog::PipeConfigDialog()
         gbox->addWidget(spin, info.row, info.column);
     }
 
-    colorButton = new PushButton();
+    colorButton = new PushButton;
     gbox->addWidget(new QLabel(_("Color [-]")), 3, 0);
     gbox->addWidget(colorButton, 3, 1);
 
-    formWidget = new FileFormWidget();
+    formWidget = new FileFormWidget;
 
     vbox->addLayout(gbox);
-    vbox->addWidget(new HSeparator());
+    vbox->addWidget(new HSeparator);
     vbox->addWidget(formWidget);
     setLayout(vbox);
 

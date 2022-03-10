@@ -47,7 +47,6 @@ void putKeyVector3(YAMLWriter& writer, const string key, const Vector3 value)
     writer.endListing();
 }
 
-
 VectorXd calcBoxInertia(double mass, double x, double y, double z)
 {
     VectorXd inertia;
@@ -59,7 +58,6 @@ VectorXd calcBoxInertia(double mass, double x, double y, double z)
     return inertia;
 }
 
-
 VectorXd calcCylinderInertia(double mass, double radius, double height)
 {
     VectorXd inertia;
@@ -70,20 +68,17 @@ VectorXd calcCylinderInertia(double mass, double radius, double height)
     return inertia;
 }
 
-
 struct CheckInfo {
     int row;
     int column;
     bool checked;
 };
 
-
 CheckInfo checkInfo[] = {
     { 0, 0,  true },
     { 0, 1,  true },
     { 0, 2, false }
 };
-
 
 struct ButtonInfo {
     int row;
@@ -93,7 +88,6 @@ struct ButtonInfo {
     double blue;
 };
 
-
 ButtonInfo buttonInfo[] = {
     {  2, 3,   0.0 / 255.0, 153.0 / 255.0,  0.0 / 255.0 },
     {  5, 3,  51.0 / 255.0,  51.0 / 255.0, 51.0 / 255.0 },
@@ -101,7 +95,6 @@ ButtonInfo buttonInfo[] = {
     { 13, 3,  51.0 / 255.0,  51.0 / 255.0, 51.0 / 255.0 },
     { 17, 3, 255.0 / 255.0,   0.0 / 255.0,  0.0 / 255.0 }
 };
-
 
 struct DoubleSpinInfo {
     int row;
@@ -113,7 +106,6 @@ struct DoubleSpinInfo {
     bool enabled;
 };
 
-
 DoubleSpinInfo doubleSpinInfo[] = {
     {  2, 1,  8.000, 0.0, 1000.000, 3,  true }, {  3, 1,  0.450, 0.0, 1000.000, 3,  true }, {  3, 2,  0.300, 0.0, 1000.000, 3,  true }, {  3, 3,  0.100, 0.0, 1000.000, 3,  true },
     {  5, 1,  1.000, 0.0, 1000.000, 3,  true }, {  6, 1,  0.080, 0.0, 1000.000, 3,  true }, {  7, 1,  0.100, 0.0, 1000.000, 3,  true }, {  7, 3,  0.420, 0.0, 1000.000, 3,  true },
@@ -122,7 +114,6 @@ DoubleSpinInfo doubleSpinInfo[] = {
     { 17, 1,  0.200, 0.0, 1000.000, 3,  true }, { 18, 1,  0.060, 0.0, 1000.000, 3,  true }, { 19, 1,  0.013, 0.0, 1000.000, 3,  true }
 };
 
-
 //DoubleSpinInfo agxdoubleSpinInfo[] = {
 //    {  1, 4,  0.010, 0.0, 1000.000, 3, false }, {  2, 1,  0.090, 0.0, 1000.000, 3, false }, {  2, 4,  0.020,       0.0, 1000.000, 3, false }, {  3, 4,  2.000,       0.0, 1000.000, 3, false }, {  4, 1,  1.000, 0.0, 1000.000, 3, false },
 //    {  5, 1,  9.000, 0.0, 1000.000, 3, false }, {  5, 4,  0.010, 0.0, 1000.000, 3, false }, {  6, 1, -0.001, -1000.000, 1000.000, 3, false }, {  6, 4, -0.009, -1000.000, 1000.000, 3, false },
@@ -130,14 +121,12 @@ DoubleSpinInfo doubleSpinInfo[] = {
 //    { 12, 1,  9.000, 0.0, 1000.000, 3, false }, { 12, 4,  0.010, 0.0, 1000.000, 3, false }, { 13, 1, -0.001, -1000.000, 1000.000, 3, false }, { 13, 4, -0.009, -1000.000, 1000.000, 3, false }
 //};
 
-
 DoubleSpinInfo agxdoubleSpinInfo[] = {
     {  1, 4,  0.010, 0.0, 1000.000, 3, false }, {  2, 1,  0.100, 0.0, 1000.000, 3, false }, {  2, 4,  0.020,       0.0, 1000.000, 3, false }, {  3, 4,  9.000,       0.0, 1000.000, 3, false }, {  4, 1,  4.000, 0.0, 1000.000, 3, false },
     {  5, 1,  9.000, 0.0, 1000.000, 3, false }, {  5, 4,  0.010, 0.0, 1000.000, 3, false }, {  6, 1, -0.001, -1000.000, 1000.000, 3, false }, {  6, 4, -0.009, -1000.000, 1000.000, 3, false },
     {  8, 4,  0.010, 0.0, 1000.000, 3, false }, {  9, 1,  0.080, 0.0, 1000.000, 3, false }, {  9, 4,  0.020,       0.0, 1000.000, 3, false }, { 10, 4,  9.000,       0.0, 1000.000, 3, false }, { 11, 1,  4.000, 0.0, 1000.000, 3, false },
     { 12, 1,  9.000, 0.0, 1000.000, 3, false }, { 12, 4,  0.010, 0.0, 1000.000, 3, false }, { 13, 1, -0.001, -1000.000, 1000.000, 3, false }, { 13, 4, -0.009, -1000.000, 1000.000, 3, false }
 };
-
 
 struct SpinInfo {
     int row;
@@ -148,14 +137,12 @@ struct SpinInfo {
     bool enabled;
 };
 
-
 //SpinInfo agxspinInfo[] = {
 //    {  1, 1, 42, 0, 9999, false }, {  3, 1,   3, 0, 9999, false }, {  3, 5,  4, 0, 9999, false },
 //    {  4, 2,  6, 0, 9999, false }, {  4, 4, 100, 0, 9999, false }, {  5, 2, 10, 0, 9999, false },
 //    {  8, 1, 42, 0, 9999, false }, { 10, 1,   3, 0, 9999, false }, { 10, 5,  4, 0, 9999, false },
 //    { 11, 2,  6, 0, 9999, false }, { 11, 4, 100, 0, 9999, false }, { 12, 2, 10, 0, 9999, false }
 //};
-
 
 SpinInfo agxspinInfo[] = {
     {  1, 1, 42, 0, 9999, false }, {  3, 1,   3, 0, 9999, false }, {  3, 5,  4, 0, 9999, false },
@@ -164,12 +151,10 @@ SpinInfo agxspinInfo[] = {
     { 11, 2,  7, 0, 9999, false }, { 11, 4, 100, 0, 9999, false }, { 12, 2,  7, 0, 9999, false }
 };
 
-
 struct LabelInfo {
     int row;
     int column;
 };
-
 
 LabelInfo labelInfo[] = {
     {  2, 0 }, {  2, 2 }, {  3, 0 },
@@ -178,7 +163,6 @@ LabelInfo labelInfo[] = {
     { 13, 0 }, { 13, 2 }, { 14, 0 }, { 15, 0 }, { 15, 2 },
     { 17, 0 }, { 17, 2 }, { 18, 0 }, { 19, 0 }
 };
-
 
 LabelInfo agxlabelInfo[] = {
     {  1, 0 }, {  1, 3 },
@@ -195,17 +179,14 @@ LabelInfo agxlabelInfo[] = {
     { 13, 0 }, { 13, 3 }
 };
 
-
 struct Info {
     int row;
     int column;
 };
 
-
 Info separatorInfo[] = {
     { 1, 0 }, { 4, 0 }, { 8, 0 }, { 12, 0 }, { 16, 0 }
 };
-
 
 Info agxseparatorInfo[] = {
     { 0, 0 }, { 7, 0 }
@@ -318,7 +299,7 @@ CrawlerGenerator::CrawlerGenerator(ExtensionManager* ext)
 CrawlerGeneratorImpl::CrawlerGeneratorImpl(CrawlerGenerator* self, ExtensionManager* ext)
     : self(self)
 {
-    dialog = new CrawlerConfigDialog();
+    dialog = new CrawlerConfigDialog;
 
     MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
     mm.addItem(_("CrawlerRobot"))->sigTriggered().connect([&](){ dialog->show(); });
@@ -340,25 +321,25 @@ void CrawlerGenerator::initialize(ExtensionManager* ext)
 CrawlerConfigDialog::CrawlerConfigDialog()
 {
     setWindowTitle(_("CrawlerRobot Builder"));
-    QGridLayout* gbox = new QGridLayout();
-    QGridLayout* agbox = new QGridLayout();
+    QGridLayout* gbox = new QGridLayout;
+    QGridLayout* agbox = new QGridLayout;
 
     for(int i = 0; i < NUM_DSPINS; ++i) {
         DoubleSpinInfo info = doubleSpinInfo[i];
-        dspins[i] = new DoubleSpinBox();
+        dspins[i] = new DoubleSpinBox;
         DoubleSpinBox* dspin = dspins[i];
         gbox->addWidget(dspin, info.row, info.column);
     }
 
     for(int i = 0; i < NUM_AGXDSPINS; ++i) {
         DoubleSpinInfo info = agxdoubleSpinInfo[i];
-        agxdspins[i] = new DoubleSpinBox();
+        agxdspins[i] = new DoubleSpinBox;
         DoubleSpinBox* agxdspin = agxdspins[i];
         agbox->addWidget(agxdspin, info.row, info.column);
     }
 
     for(int i = 0; i < NUM_SPINS; ++i) {
-        agxspins[i] = new SpinBox();
+        agxspins[i] = new SpinBox;
         SpinInfo info = agxspinInfo[i];
         SpinBox* spin = agxspins[i];
         agbox->addWidget(spin, info.row, info.column);
@@ -366,7 +347,7 @@ CrawlerConfigDialog::CrawlerConfigDialog()
 
     for(int i = 0; i < NUM_BUTTONS; ++i) {
         ButtonInfo info = buttonInfo[i];
-        buttons[i] = new PushButton();
+        buttons[i] = new PushButton;
         PushButton* button = buttons[i];
         gbox->addWidget(button, info.row, info.column);
         button->sigClicked().connect([&, button](){ onColorChanged(button); });
@@ -374,10 +355,10 @@ CrawlerConfigDialog::CrawlerConfigDialog()
 
     static const char* clabels[] = { _("Front SubTrack"), _("Rear SubTrack"), _("AGX") };
 
-    QHBoxLayout* chbox = new QHBoxLayout();
+    QHBoxLayout* chbox = new QHBoxLayout;
     for(int i = 0; i < NUM_CHECKS; ++i) {
         CheckInfo info = checkInfo[i];
-        checks[i] = new CheckBox();
+        checks[i] = new CheckBox;
         CheckBox* check = checks[i];
         check->setText(clabels[i]);
         chbox->addWidget(check);
@@ -429,7 +410,7 @@ CrawlerConfigDialog::CrawlerConfigDialog()
 
     static const char* tlabels[] = { _("&Reset"), _("&Import"), _("&Export") };
 
-    QHBoxLayout* thbox = new QHBoxLayout();
+    QHBoxLayout* thbox = new QHBoxLayout;
     thbox->addStretch();
     for(int i = 0; i < NUMTBUTTONS; ++i) {
         toolButtons[i] = new PushButton(tlabels[i]);
@@ -437,18 +418,18 @@ CrawlerConfigDialog::CrawlerConfigDialog()
         thbox->addWidget(button);
     }
 
-    formWidget = new FileFormWidget();
+    formWidget = new FileFormWidget;
 
     initialize();
     bodyname.clear();
 
-    QVBoxLayout* vbox = new QVBoxLayout();
-    QHBoxLayout* hbox = new QHBoxLayout();
+    QVBoxLayout* vbox = new QVBoxLayout;
+    QHBoxLayout* hbox = new QHBoxLayout;
     vbox->addLayout(thbox);
     hbox->addLayout(gbox);
 //    hbox->addLayout(agbox);
     vbox->addLayout(hbox);
-    vbox->addWidget(new HSeparator());
+    vbox->addWidget(new HSeparator);
     vbox->addWidget(formWidget);
     setLayout(vbox);
 
@@ -638,7 +619,7 @@ void CrawlerConfigDialog::onExportYamlButtonClicked()
         string filename = dialog.selectedFiles().front().toStdString();
         filesystem::path path(filename);
         string ext = path.extension().string();
-        if(ext.empty()){
+        if(ext.empty()) {
             filename += ".yaml";
         }
         writeYaml(filename);

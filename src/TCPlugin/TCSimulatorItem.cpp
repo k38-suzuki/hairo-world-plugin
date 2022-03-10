@@ -269,7 +269,7 @@ bool TCSimulatorItemImpl::restore(const Archive& archive)
 
 void TCSimulatorItemImpl::onPreDynamicsFunction()
 {
-    TCAreaItem* currentItem = new TCAreaItem();
+    TCAreaItem* currentItem = new TCAreaItem;
     for(size_t i = 0; i < bodies.size(); i++) {
         Body* body = bodies[i];
         if(!body->isStaticModel()) {

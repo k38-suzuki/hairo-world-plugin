@@ -168,11 +168,6 @@ KIOSKManagerImpl::~KIOSKManagerImpl()
 void KIOSKManager::initialize(ExtensionManager* ext)
 {
     ext->manage(new KIOSKManager(ext));
-
-    char* CNOID_USE_KIOSK = getenv("CNOID_USE_KIOSK");
-    if(CNOID_USE_KIOSK && (strcmp(CNOID_USE_KIOSK, "0") == 0)) {
-        enable_kiosk->setChecked(true);
-    }
 }
 
 
@@ -220,7 +215,15 @@ void KIOSKManagerImpl::loadProject(const bool& enabled)
 
 void KIOSKManagerImpl::onProjectOptionsParsed(boost::program_options::variables_map& v)
 {
+    bool result = false;
+    char* CNOID_USE_KIOSK = getenv("CNOID_USE_KIOSK");
     if(v.count("kiosk")) {
+        result = true;
+    } else if(CNOID_USE_KIOSK && (strcmp(CNOID_USE_KIOSK, "0") == 0)) {
+        result = true;
+    }
+
+    if(result) {
         enable_kiosk->setChecked(false);
         enable_kiosk->setChecked(true);
     }

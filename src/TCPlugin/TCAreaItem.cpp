@@ -60,7 +60,7 @@ bool loadDocument(const string& filename)
         auto& trafficList = *node->findListing("traffics");
         if(trafficList.isValid()) {
             for(int i = 0; i < trafficList.size(); i++) {
-                TCAreaItem* item = new TCAreaItem();
+                TCAreaItem* item = new TCAreaItem;
                 Mapping* info = trafficList[i].toMapping();
                 loadItem(*info, item);
             }

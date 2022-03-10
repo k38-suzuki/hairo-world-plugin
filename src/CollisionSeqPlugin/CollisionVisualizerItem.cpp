@@ -178,7 +178,7 @@ bool CollisionVisualizerItemImpl::initializeSimulation(SimulatorItem* simulatorI
             if(!body->isStaticModel()) {
                 bodies.push_back(body);
                 if(isCollisionStatesRecordingEnabled) {
-                    MultiValueSeqItem* collisionStateSeqItem = new MultiValueSeqItem();
+                    MultiValueSeqItem* collisionStateSeqItem = new MultiValueSeqItem;
                     QDateTime loggingStartTime = QDateTime::currentDateTime();
                     string suffix = loggingStartTime.toString("yyyy-MM-dd-hh-mm-ss").toStdString();
                     string name = suffix + " - " + body->name();

@@ -17,7 +17,7 @@ class MotionCaptureSimulatorItem : public SubSimulatorItem
 public:
     MotionCaptureSimulatorItem();
     MotionCaptureSimulatorItem(const MotionCaptureSimulatorItem& org);
-    ~MotionCaptureSimulatorItem();
+    virtual ~MotionCaptureSimulatorItem();
 
     static void initializeClass(ExtensionManager* ext);
 

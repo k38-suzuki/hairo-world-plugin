@@ -25,8 +25,8 @@ public:
     int axisID(const int& axis);
     int buttonID(const int& button);
 
-    virtual bool storeState(Archive& archive);
-    virtual bool restoreState(const Archive& archive);
+    virtual bool storeState(Archive& archive) override;
+    virtual bool restoreState(const Archive& archive) override;
 
 private:
     KeyConfigViewImpl* impl;

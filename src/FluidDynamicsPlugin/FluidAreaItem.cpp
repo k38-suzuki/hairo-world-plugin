@@ -56,7 +56,7 @@ bool loadDocument(const string& filename)
             auto& fluidList = *node->findListing("fluids");
             if(fluidList.isValid()) {
                 for(int i = 0; i < fluidList.size(); i++) {
-                    FluidAreaItem* item = new FluidAreaItem();
+                    FluidAreaItem* item = new FluidAreaItem;
                     Mapping* info = fluidList[i].toMapping();
                     loadItem(*info, item);
                 }

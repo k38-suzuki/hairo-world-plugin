@@ -38,8 +38,8 @@ SceneRotor::SceneRotor(Device* device)
 {
     MeshGenerator generator;
     rotorDevice = static_cast<Rotor*>(device);
-    scene = new SgPosTransform();
-    SgShape* shape = new SgShape();
+    scene = new SgPosTransform;
+    SgShape* shape = new SgShape;
     shape->setMesh(generator.generateArrow(0.01, 0.05, 0.02, 0.05));
     shape->setName(device->name());
     SgMaterial* material = new SgMaterial();
@@ -112,7 +112,7 @@ void Rotor::copyStateFrom(const Rotor& other)
 
 void Rotor::copyStateFrom(const DeviceState& other)
 {
-    if(typeid(other) != typeid(Rotor)){
+    if(typeid(other) != typeid(Rotor)) {
         throw std::invalid_argument("Type mismatch in the Device::copyStateFrom function");
     }
     copyStateFrom(static_cast<const Rotor&>(other));
@@ -144,7 +144,7 @@ Referenced* Rotor::doClone(CloneMap*) const
 
 void Rotor::forEachActualType(std::function<bool(const std::type_info& type)> func)
 {
-    if(!func(typeid(Rotor))){
+    if(!func(typeid(Rotor))) {
         Thruster::forEachActualType(func);
     }
 }
@@ -245,7 +245,7 @@ struct RotorRegistration
     RotorRegistration() {
         StdBodyLoader::registerNodeType("Rotor", readRotor);
         StdBodyWriter::registerDeviceWriter<Rotor>("Rotor",
-                                                   [](StdBodyWriter* /* writer */, Mapping* info, const Rotor* rotor){
+                                                   [](StdBodyWriter* /* writer */, Mapping* info, const Rotor* rotor) {
             return rotor->writeSpecifications(info);
         });
         SceneDevice::registerSceneDeviceFactory<Rotor>(createSceneRotor);

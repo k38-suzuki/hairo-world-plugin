@@ -70,6 +70,8 @@ public:
     void onCustomContextMenuRequested(const QPoint& pos);
     void store(Mapping& archive);
     void restore(const Mapping& archive);
+    bool storeState(Archive& archive);
+    bool restoreState(const Archive& archive);
 };
 
 }
@@ -127,19 +129,19 @@ BookmarkWidgetImpl::BookmarkWidgetImpl(BookmarkWidget* self)
     buttons[LOCK]->sigToggled().connect([&](bool on){ onLockButtonToggled(on); });
     buttons[START]->sigClicked().connect([&](){ onStartButtonClicked(); });
 
-    QVBoxLayout* vbox = new QVBoxLayout();
+    QVBoxLayout* vbox = new QVBoxLayout;
     vbox->addLayout(hbox);
     vbox->addWidget(treeWidget);
     self->setLayout(vbox);
 
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    Action* addAct = new Action();
+    Action* addAct = new Action;
     addAct->setText(_("Add"));
     menu.addAction(addAct);
-    Action* removeAct = new Action();
+    Action* removeAct = new Action;
     removeAct->setText(_("Remove"));
     menu.addAction(removeAct);
-    Action* openAct = new Action();
+    Action* openAct = new Action;
     openAct->setText(_("Open"));
     menu.addAction(openAct);
 
@@ -203,7 +205,7 @@ void BookmarkWidgetImpl::onAddButtonClicked()
 
     dialog.updatePresetDirectories();
 
-    if(dialog.exec()){
+    if(dialog.exec()) {
         int numFiles = dialog.selectedFiles().size();
         for(int i = 0; i < numFiles; ++i) {
             QString filename = dialog.selectedFiles()[i];
@@ -301,4 +303,30 @@ void BookmarkWidgetImpl::restore(const Mapping& archive)
         }
     }
     buttons[LOCK]->setChecked(archive.get("bookmark_lock", false));
+}
+
+
+bool BookmarkWidget::storeState(Archive& archive)
+{
+    return impl->storeState(archive);
+}
+
+
+bool BookmarkWidgetImpl::storeState(Archive& archive)
+{
+    archive.write("enable_logging", loggingCheck->isChecked());
+    return true;
+}
+
+
+bool BookmarkWidget::restoreState(const Archive& archive)
+{
+    return impl->restoreState(archive);
+}
+
+
+bool BookmarkWidgetImpl::restoreState(const Archive& archive)
+{
+    loggingCheck->setChecked(archive.get("enable_logging", false));
+    return true;
 }

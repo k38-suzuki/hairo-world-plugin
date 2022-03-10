@@ -24,6 +24,9 @@ public:
     void store(Mapping& archive);
     void restore(const Mapping& archive);
 
+    bool storeState(Archive& archive);
+    bool restoreState(const Archive& archive);
+
 private:
     BookmarkWidgetImpl* impl;
     friend class BookmarkWidgetImpl;

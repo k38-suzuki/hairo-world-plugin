@@ -66,11 +66,11 @@ FileFormWidget::FileFormWidget()
 FileFormWidgetImpl::FileFormWidgetImpl(FileFormWidget* self)
     : self(self)
 {
-    QVBoxLayout* vbox = new QVBoxLayout();
+    QVBoxLayout* vbox = new QVBoxLayout;
 
-    fileLine = new LineEdit();
+    fileLine = new LineEdit;
     fileLine->setEnabled(false);
-    QHBoxLayout* fhbox = new QHBoxLayout();
+    QHBoxLayout* fhbox = new QHBoxLayout;
     fhbox->addWidget(new QLabel(_("File")));
     fhbox->addWidget(fileLine);
 

@@ -223,7 +223,7 @@ Item* VisualEffectorItem::doDuplicate() const
 
 void VisualEffectorItem::onPositionChanged()
 {
-    if(parentItem()){
+    if(parentItem()) {
         impl->onPositionChanged();
     }
 }
@@ -232,9 +232,9 @@ void VisualEffectorItem::onPositionChanged()
 void VisualEffectorItemImpl::onPositionChanged()
 {
     BodyItem* newBodyItem = self->findOwnerItem<BodyItem>();
-    if(newBodyItem != bodyItem){
+    if(newBodyItem != bodyItem) {
         bodyItem = newBodyItem;
-        for(size_t i=0; i < subItems.size(); i++){
+        for(size_t i=0; i < subItems.size(); i++) {
             subItems[i]->removeFromParentItem();
         }
         subItems.clear();
@@ -242,15 +242,15 @@ void VisualEffectorItemImpl::onPositionChanged()
         int n = restoredSubItems.size();
         int j = 0;
 
-        if(bodyItem){
+        if(bodyItem) {
             Body* body = bodyItem->body();
 
             DeviceList<Camera> cameras = body->devices<Camera>();
-            for(size_t i=0; i < cameras.size(); ++i){
-                if(cameras[i]->imageType()!=Camera::NO_IMAGE){
+            for(size_t i=0; i < cameras.size(); ++i) {
+                if(cameras[i]->imageType()!=Camera::NO_IMAGE) {
                     VEImageVisualizerItem* cameraImageVisualizerItem =
-                            j<n ? dynamic_cast<VEImageVisualizerItem*>(restoredSubItems[j++].get()) : new VEImageVisualizerItem();
-                    if(cameraImageVisualizerItem){
+                            j<n ? dynamic_cast<VEImageVisualizerItem*>(restoredSubItems[j++].get()) : new VEImageVisualizerItem;
+                    if(cameraImageVisualizerItem) {
                         cameraImageVisualizerItem->setBodyItem(bodyItem, cameras[i]);
                         self->addSubItem(cameraImageVisualizerItem);
                         subItems.push_back(cameraImageVisualizerItem);
@@ -266,7 +266,7 @@ void VisualEffectorItemImpl::onPositionChanged()
 
 void VisualEffectorItem::onDisconnectedFromRoot()
 {
-    for(size_t i=0; i < impl->subItems.size(); i++){
+    for(size_t i=0; i < impl->subItems.size(); i++) {
         impl->subItems[i]->removeFromParentItem();
     }
     impl->subItems.clear();
@@ -277,18 +277,18 @@ bool VisualEffectorItem::store(Archive& archive)
 {
     ListingPtr subItems = new Listing();
 
-    for(size_t i=0; i < impl->subItems.size(); i++){
+    for(size_t i=0; i < impl->subItems.size(); i++) {
         Item* item = impl->subItems[i];
         string pluginName, className;
         ItemManager::getClassIdentifier(item, pluginName, className);
 
-        ArchivePtr subArchive = new Archive();
+        ArchivePtr subArchive = new Archive;
         subArchive->write("class", className);
         subArchive->write("name", item->name());
-        if(item->isSelected()){
+        if(item->isSelected()) {
             subArchive->write("is_selected", true);
         }
-        if(item->isChecked()){
+        if(item->isChecked()) {
             subArchive->write("is_checked", true);
         }
         item->store(*subArchive);
@@ -307,22 +307,22 @@ bool VisualEffectorItem::restore(const Archive& archive)
     impl->restoredSubItems.clear();
 
     ListingPtr subItems = archive.findListing("sub_items");
-    if(!subItems->isValid()){
+    if(!subItems->isValid()) {
         subItems = archive.findListing("subItems"); // Old
     }
-    if(subItems->isValid()){
-        for(int i=0; i < subItems->size(); i++){
+    if(subItems->isValid()) {
+        for(int i=0; i < subItems->size(); i++) {
             Archive* subArchive = dynamic_cast<Archive*>(subItems->at(i)->toMapping());
             string className, itemName;
             subArchive->read("class", className);
             subArchive->read("name", itemName);
-            if(ItemPtr item = ItemManager::createItem("VisualEffect", className)){
+            if(ItemPtr item = ItemManager::createItem("VisualEffect", className)) {
                 item->setName(itemName);
                 item->restore(*subArchive);
-                if(subArchive->get("is_selected", false)){
+                if(subArchive->get("is_selected", false)) {
                     item->setSelected(true);
                 }
-                if(subArchive->get("is_checked", false)){
+                if(subArchive->get("is_checked", false)) {
                     item->setChecked(true);
                 }
                 impl->restoredSubItems.push_back(item);
@@ -352,7 +352,7 @@ void VisualEffectorItemBase::setBodyItem(BodyItem* bodyItem)
 
 void VisualEffectorItemBase::updateVisualization()
 {
-    if(visualizerItem->isChecked(Item::LogicalSumOfAllChecks)){
+    if(visualizerItem->isChecked(Item::LogicalSumOfAllChecks)) {
         doUpdateVisualization();
     }
 }
@@ -361,7 +361,7 @@ void VisualEffectorItemBase::updateVisualization()
 VEImageVisualizerItem::VEImageVisualizerItem()
     : VisualEffectorItemBase(this)
 {
-    config = new EffectConfigDialog();
+    config = new EffectConfigDialog;
 }
 
 
@@ -379,7 +379,7 @@ SignalProxy<void()> VEImageVisualizerItem::sigImageUpdated()
 
 void VEImageVisualizerItem::setBodyItem(BodyItem* bodyItem, Camera* camera)
 {
-    if(name().empty()){
+    if(name().empty()) {
         string name = camera->name();
         if(dynamic_cast<RangeCamera*>(camera))
             name += "_Image";
@@ -396,10 +396,10 @@ void VEImageVisualizerItem::enableVisualization(bool on)
 {
     connections.disconnect();
 
-    if(camera && on){
+    if(camera && on) {
         connections.add(
             camera->sigStateChanged().connect(
-                [&](){ doUpdateVisualization(); }));
+                [&]() { doUpdateVisualization(); }));
 
         doUpdateVisualization();
     }
@@ -408,7 +408,7 @@ void VEImageVisualizerItem::enableVisualization(bool on)
 
 void VEImageVisualizerItem::doUpdateVisualization()
 {
-    if(camera){
+    if(camera) {
         double hue = config->dspins[HUE]->value();
         double saturation = config->dspins[SATURATION]->value();
         double value = config->dspins[VALUE]->value();

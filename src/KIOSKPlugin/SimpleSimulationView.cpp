@@ -135,7 +135,7 @@ SimpleSimulationViewImpl::SimpleSimulationViewImpl(SimpleSimulationView* self)
     scrollArea.setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea.setWidget(topWidget);
     topWidget->setAutoFillBackground(false);
-    QVBoxLayout* baseLayout = new QVBoxLayout();
+    QVBoxLayout* baseLayout = new QVBoxLayout;
     scrollArea.setWidgetResizable(true);
     baseLayout->addWidget(&scrollArea);
     self->setLayout(baseLayout);

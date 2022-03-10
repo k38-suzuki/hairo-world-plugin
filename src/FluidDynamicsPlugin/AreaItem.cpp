@@ -91,7 +91,7 @@ AreaItemImpl::AreaItemImpl(AreaItem* self)
     specularColor << 0.0, 0.0, 0.0;
     shininess = 0.0;
     transparency = 0.8;
-    scene = new SgPosTransform();
+    scene = new SgPosTransform;
     positionDragger = nullptr;
     generateShape();
     updateScene();
@@ -120,7 +120,7 @@ AreaItemImpl::AreaItemImpl(AreaItem* self, const AreaItemImpl& org)
     specularColor = org.specularColor;
     shininess = org.shininess;
     transparency = org.transparency;
-    scene = new SgPosTransform();
+    scene = new SgPosTransform;
     positionDragger = org.positionDragger;
     generateShape();
     updateScene();
@@ -415,9 +415,9 @@ void AreaItemImpl::onPositionDragged()
 
 void AreaItemImpl::generateShape()
 {
-    SgGroup* group = new SgGroup();
-    SgShape* shape = new SgShape();
-    SgMaterial* material = new SgMaterial();
+    SgGroup* group = new SgGroup;
+    SgShape* shape = new SgShape;
+    SgMaterial* material = new SgMaterial;
     shape->setMaterial(material);
     positionDragger = new PositionDragger(
                 PositionDragger::TranslationAxes, PositionDragger::WideHandle);

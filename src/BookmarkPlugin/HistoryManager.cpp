@@ -139,7 +139,7 @@ void HistoryManagerImpl::onProjectLoaded()
 {
     string filename = pm->currentProjectFile();
     if(!filename.empty()) {
-        Action* action = new Action();
+        Action* action = new Action;
         action->setText(filename.c_str());
         currentMenu->addAction(action);
 
@@ -171,7 +171,7 @@ void HistoryManagerImpl::restore(const Mapping& archive)
     for(int i = 0; i < numHistories; ++i) {
         string key = "history_" + to_string(i);
         string filename = archive.get(key, "");
-        Action* action = new Action();
+        Action* action = new Action;
         action->setText(filename.c_str());
         currentMenu->addAction(action);
     }
