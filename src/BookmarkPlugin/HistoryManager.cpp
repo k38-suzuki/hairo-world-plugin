@@ -116,9 +116,12 @@ void HistoryManagerImpl::onCurrentMenuTriggered(QAction* action)
 {
     Action* triggeredProject = dynamic_cast<Action*>(action);
     if(triggeredProject != clearProject) {
-        pm->clearProject();
-        MessageView::instance()->flush();
-        pm->loadProject(action->text().toStdString());
+        bool result = pm->tryToCloseProject();
+        if(result) {
+            pm->clearProject();
+            MessageView::instance()->flush();
+            pm->loadProject(action->text().toStdString());
+        }
     }
 }
 

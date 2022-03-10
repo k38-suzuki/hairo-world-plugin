@@ -115,9 +115,12 @@ void BookmarkListImpl::onCurrentMenuTriggered(QAction* action)
 {
     Action* triggeredProject = dynamic_cast<Action*>(action);
     if(triggeredProject != addProject) {
-        pm->clearProject();
-        MessageView::instance()->flush();
-        pm->loadProject(triggeredProject->text().toStdString());
+        bool result = pm->tryToCloseProject();
+        if(result) {
+            pm->clearProject();
+            MessageView::instance()->flush();
+            pm->loadProject(triggeredProject->text().toStdString());
+        }
     }
 }
 
