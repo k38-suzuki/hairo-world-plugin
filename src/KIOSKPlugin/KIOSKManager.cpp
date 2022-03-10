@@ -13,6 +13,7 @@
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/MessageView>
+#include <cnoid/OptionManager>
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
@@ -90,6 +91,7 @@ public:
     SimulatorItem* simulatorItem;
 
     void loadProject(const bool& enabled);
+    void onProjectOptionsParsed(boost::program_options::variables_map& v);
     void onEnableKIOSKToggled(const bool& on);
     void onHideMenuBarToggled(const bool& on);
     void onHideToolBarToggled(const bool& on);
@@ -126,6 +128,11 @@ KIOSKManagerImpl::KIOSKManagerImpl(ExtensionManager* ext, KIOSKManager* self)
     hide_toolBar->sigToggled().connect([&](bool on){ onHideToolBarToggled(on); });
     enable_logging = mm.addCheckItem(_("Enable logging"));
     enable_logging->sigToggled().connect([&](bool on){ onEnableLoggingToggled(on); });
+
+    OptionManager& om = ext->optionManager().addOption("kiosk", "start kiosk mode automatically");
+    om.sigOptionsParsed(1).connect(
+                [&](boost::program_options::variables_map& v){ onProjectOptionsParsed(v); });
+
     isInitialized = false;
     joystick.setDevice("/dev/input/js0");
     joystick.sigAxis().connect([&](int id, double position){ onAxis(id, position); });
@@ -208,6 +215,15 @@ void KIOSKManagerImpl::loadProject(const bool& enabled)
     MessageView::instance()->flush();
     pm->loadProject(filename);
     pm->clearProject();
+}
+
+
+void KIOSKManagerImpl::onProjectOptionsParsed(boost::program_options::variables_map& v)
+{
+    if(v.count("kiosk")) {
+        enable_kiosk->setChecked(false);
+        enable_kiosk->setChecked(true);
+    }
 }
 
 
