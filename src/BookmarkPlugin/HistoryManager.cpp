@@ -52,7 +52,7 @@ HistoryManagerImpl::HistoryManagerImpl(HistoryManager* self, ExtensionManager* e
     : self(self),
       pm(ProjectManager::instance())
 {
-    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("History"));
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("History"));
     currentMenu = mm.currentMenu();
     currentMenu->setContextMenuPolicy(Qt::CustomContextMenu);
     clearProject = new Action;

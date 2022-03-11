@@ -108,7 +108,7 @@ InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self, ExtensionM
 {
     dialog = new ConfigDialog;
 
-    MenuManager& mm = ext->menuManager().setPath("/Tools");
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
     mm.addItem(_("InertiaCalculator"))->sigTriggered().connect([&](){
         dialog->mv->clear();
         dialog->show();

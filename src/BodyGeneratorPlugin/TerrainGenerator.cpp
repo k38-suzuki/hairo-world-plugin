@@ -101,7 +101,7 @@ TerrainGeneratorImpl::TerrainGeneratorImpl(TerrainGenerator* self, ExtensionMana
 {
     dialog = new TerrainConfigDialog;
 
-    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
     mm.addItem(_("BoxTerrain"))->sigTriggered().connect([&](){ dialog->show(); });
 }
 

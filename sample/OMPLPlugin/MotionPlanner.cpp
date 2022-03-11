@@ -145,7 +145,7 @@ MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self, ExtensionManager* ext)
 {
     dialog = new ConfigDialog();
 
-    MenuManager& mm = ext->menuManager().setPath("/Tools");
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
     mm.addItem(_("Motion Planner"))->sigTriggered().connect([&](){ dialog->show(); });
 }
 

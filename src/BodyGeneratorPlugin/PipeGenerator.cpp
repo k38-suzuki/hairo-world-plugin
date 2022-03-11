@@ -112,7 +112,7 @@ PipeGeneratorImpl::PipeGeneratorImpl(PipeGenerator* self, ExtensionManager* ext)
 {
     dialog = new PipeConfigDialog;
 
-    MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("BodyGenerator"));
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
     mm.addItem(_("Pipe"))->sigTriggered().connect([&](){ dialog->show(); });
 }
 

@@ -52,7 +52,7 @@ SimulationManagerImpl::SimulationManagerImpl(SimulationManager* self, ExtensionM
     : self(self),
       sb(SimulationBar::instance())
 {
-    MenuManager& mm = ext->menuManager().setPath("/Options").setPath(N_("Joystick"));
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Options")).setPath(N_("Joystick"));
     useStartButton = mm.addCheckItem(_("Start simulation (StartButton)"));
 //    useLogoButton = mm.addCheckItem(_("Open a project (LogoButton)"));
     useLogoButton = new Action;
