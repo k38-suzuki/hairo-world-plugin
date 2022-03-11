@@ -7,6 +7,7 @@
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
 #include <cnoid/Archive>
+#include <cnoid/Dialog>
 #include <cnoid/ExecutablePath>
 #include <cnoid/Joystick>
 #include <cnoid/JoystickCapture>
@@ -24,6 +25,7 @@
 #include <src/BodyPlugin/WorldLogFileItem.h>
 #include <QDateTime>
 #include <QDir>
+#include <QKeyEvent>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QStatusBar>
@@ -67,8 +69,20 @@ Command konamiCommand[] = {
     {               Joystick::B_BUTTON,  1.0, false },
 };
 
+class EventFilterDialog : public Dialog
+{
+public:
+    EventFilterDialog();
+
+    virtual bool eventFilter(QObject* watched, QEvent* event);
+
+private:
+    MainWindow* mw;
+};
+
 Action* enable_kiosk = nullptr;
 Action* enable_logging = nullptr;
+Action* hide_menuBar = nullptr;
 Signal<void(bool)> sigLoggingEnabled_;
 
 }
@@ -83,7 +97,6 @@ public:
     KIOSKManager* self;
     virtual ~KIOSKManagerImpl();
 
-    Action* hide_menuBar;
     Action* hide_toolBar;
     bool isInitialized;
     JoystickCapture joystick;
@@ -168,6 +181,7 @@ KIOSKManagerImpl::~KIOSKManagerImpl()
 void KIOSKManager::initialize(ExtensionManager* ext)
 {
     ext->manage(new KIOSKManager(ext));
+    ext->manage(new EventFilterDialog);
     MainWindow::instance()->setFullScreen(false);
 }
 
@@ -362,4 +376,26 @@ void KIOSKManagerImpl::store(Mapping& archive)
 void KIOSKManagerImpl::restore(const Mapping& archive)
 {
     enable_logging->setChecked(archive.get("enable_logging", false));
+}
+
+
+EventFilterDialog::EventFilterDialog()
+    : mw(MainWindow::instance())
+{
+    mw->installEventFilter(this);
+}
+
+
+bool EventFilterDialog::eventFilter(QObject* watched, QEvent* event)
+{
+    MainWindow* w = dynamic_cast<MainWindow*>(watched);
+    if(mw == w) {
+        if(event->type() == QEvent::KeyPress) {
+            QKeyEvent* e = dynamic_cast<QKeyEvent*>(event);
+            if(e->key() == Qt::Key_Escape) {
+                hide_menuBar->setChecked(!hide_menuBar->isChecked());
+            }
+        }
+    }
+    return false;
 }
