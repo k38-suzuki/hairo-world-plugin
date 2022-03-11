@@ -9,6 +9,8 @@
 #include <cnoid/Archive>
 #include <cnoid/Dialog>
 #include <cnoid/ExecutablePath>
+#include <cnoid/Joystick>
+#include <cnoid/JoystickCapture>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/MessageView>
@@ -17,14 +19,15 @@
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
 #include <cnoid/TimeBar>
-#include <cnoid/ViewArea>
 #include <cnoid/UTF8>
+#include <cnoid/ViewArea>
 #include <cnoid/WorldItem>
 #include <src/BodyPlugin/WorldLogFileItem.h>
 #include <QDateTime>
 #include <QDir>
 #include <QKeyEvent>
 #include <QMenuBar>
+#include <QMessageBox>
 #include <QStatusBar>
 #include "src/Base/ToolBarArea.h"
 #include "KIOSKView.h"
@@ -65,6 +68,7 @@ public:
 
     Action* hide_toolBar;
     bool isInitialized;
+    JoystickCapture joystick;
     SimulatorItem* simulatorItem;
 
     void loadProject(const bool& enabled);
@@ -74,6 +78,7 @@ public:
     void onHideToolBarToggled(const bool& on);
     void onEnableLoggingToggled(const bool& on);
     void onSimulationAboutToStart(SimulatorItem* simulatorItem);
+    void onButton(const int& id, const bool& isPressed);
     void store(Mapping& archive);
     void restore(const Mapping& archive);
 };
@@ -104,6 +109,9 @@ KIOSKManagerImpl::KIOSKManagerImpl(ExtensionManager* ext, KIOSKManager* self)
     hide_menuBar->sigToggled().connect([&](bool on){ onHideMenuBarToggled(on); });
     hide_toolBar = mm.addCheckItem(_("Hide tool bar"));
     hide_toolBar->sigToggled().connect([&](bool on){ onHideToolBarToggled(on); });
+
+    joystick.setDevice("/dev/input/js0");
+    joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
 
     OptionManager& om = ext->optionManager().addOption("kiosk", "start kiosk mode automatically");
     om.sigOptionsParsed(1).connect(
@@ -270,6 +278,22 @@ void KIOSKManagerImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
             if(kioskView) {
                 string memo = kioskView->bookmarkWidget()->memo();
                 kioskView->logWidget()->addItem(projectFile, memo);
+            }
+        }
+    }
+}
+
+
+void KIOSKManagerImpl::onButton(const int& id, const bool& isPressed)
+{
+    if(id == Joystick::LOGO_BUTTON && isPressed) {
+        if(enable_kiosk->isChecked()) {
+            int ret = QMessageBox::question(MainWindow::instance(),
+                                            _("KIOSK"), _("Would you like to return to the home screen?"));
+            if(ret == QMessageBox::Yes) {
+                loadProject(true);
+            } else {
+                hide_menuBar->setChecked(false);
             }
         }
     }
