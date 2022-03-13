@@ -13,6 +13,7 @@ install(FILES project/layout_kiosk.cnoid DESTINATION ${CNOID_SHARE_SUBDIR}/proje
 
 set(sources
     BookmarkWidget.cpp
+    JoyKey.cpp
     KIOSKManager.cpp
     KIOSKPlugin.cpp
     KIOSKView.cpp
@@ -23,6 +24,7 @@ set(sources
 set(headers
     exportdecl.h
     BookmarkWidget.h
+    JoyKey.h
     KIOSKManager.h
     KIOSKView.h
     LogWidget.h

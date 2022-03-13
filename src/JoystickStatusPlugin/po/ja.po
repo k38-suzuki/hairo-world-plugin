@@ -36,3 +36,11 @@ msgstr "インジケータを隠す"
 #: ../KeyConfigView.cpp:150
 msgid "KeyConfig"
 msgstr "キーコンフィグ"
+
+#: ../DraggableJoystickView.cpp:115
+msgid "DraggableJoystickView"
+msgstr "仮想ジョイスティックビュー（デバッグ用）"
+
+#: ../DraggableJoystickView.cpp:115
+msgid "Draggable Joystick"
+msgstr "仮想ジョイスティック（デバッグ用）"

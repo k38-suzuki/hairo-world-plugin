@@ -5,8 +5,11 @@
 
 #include "KIOSKView.h"
 #include <cnoid/AppConfig>
+#include <cnoid/MainWindow>
 #include <cnoid/ViewManager>
 #include <cnoid/Widget>
+#include <QKeyEvent>
+#include <QMenuBar>
 #include <QScrollArea>
 #include <QStackedWidget>
 #include <QTabWidget>
@@ -163,4 +166,14 @@ bool KIOSKViewImpl::restoreState(const Archive& archive)
 {
     bookmarkWidget->restoreState(archive);
     return true;
+}
+
+
+void KIOSKView::keyPressEvent(QKeyEvent* event)
+{
+    if(event->key() == Qt::Key_Escape) {
+        MainWindow* mw = MainWindow::instance();
+        QMenuBar* menuBar = mw->menuBar();
+        menuBar->setVisible(!menuBar->isVisible());
+    }
 }

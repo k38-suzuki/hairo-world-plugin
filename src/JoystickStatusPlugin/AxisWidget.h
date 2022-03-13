@@ -1,0 +1,36 @@
+/**
+   \file
+   \author Kenta Suzuki
+*/
+
+#ifndef CNOID_JOYSTICKSTATUSPLUGIN_AXISWIDGET_H
+#define CNOID_JOYSTICKSTATUSPLUGIN_AXISWIDGET_H
+
+#include <cnoid/Signal>
+#include <cnoid/Widget>
+#include <QMouseEvent>
+
+namespace cnoid {
+
+class AxisWidgetImpl;
+
+class AxisWidget : public Widget
+{
+public:
+    AxisWidget();
+    virtual ~AxisWidget();
+
+    SignalProxy<void(double h_position, double v_position)> sigAxis();
+
+    virtual void mousePressEvent(QMouseEvent* event) override;
+    virtual void mouseReleaseEvent(QMouseEvent* event) override;
+    virtual void mouseMoveEvent(QMouseEvent* event) override;
+
+private:
+    AxisWidgetImpl* impl;
+    friend class AxisWidgetImpl;
+};
+
+}
+
+#endif // CNOID_JOYSTICKSTATUSPLUGIN_AXISWIDGET_H

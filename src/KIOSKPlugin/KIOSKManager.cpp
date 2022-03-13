@@ -7,7 +7,6 @@
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
 #include <cnoid/Archive>
-#include <cnoid/Dialog>
 #include <cnoid/ExecutablePath>
 #include <cnoid/Joystick>
 #include <cnoid/JoystickCapture>
@@ -25,11 +24,11 @@
 #include <src/BodyPlugin/WorldLogFileItem.h>
 #include <QDateTime>
 #include <QDir>
-#include <QKeyEvent>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QStatusBar>
 #include "src/Base/ToolBarArea.h"
+#include "JoyKey.h"
 #include "KIOSKView.h"
 #include "gettext.h"
 
@@ -38,20 +37,8 @@ using namespace std;
 
 namespace {
 
-class EventFilterDialog : public Dialog
-{
-public:
-    EventFilterDialog();
-
-    virtual bool eventFilter(QObject* watched, QEvent* event);
-
-private:
-    MainWindow* mw;
-};
-
 Action* enable_kiosk = nullptr;
 Action* enable_logging = nullptr;
-Action* hide_menuBar = nullptr;
 Signal<void(bool)> sigLoggingEnabled_;
 
 }
@@ -70,6 +57,7 @@ public:
     bool isInitialized;
     JoystickCapture joystick;
     SimulatorItem* simulatorItem;
+    JoyKey* key;
 
     void loadProject(const bool& enabled);
     void onProjectOptionsParsed(boost::program_options::variables_map& v);
@@ -104,14 +92,14 @@ KIOSKManagerImpl::KIOSKManagerImpl(ExtensionManager* ext, KIOSKManager* self)
     enable_logging->sigToggled().connect([&](bool on){ onEnableLoggingToggled(on); });
 
     mm.setPath("/" N_("View"));
-    hide_menuBar = mm.addCheckItem(_("Hide menu bar"));
-    hide_menuBar->setEnabled(false);
-    hide_menuBar->sigToggled().connect([&](bool on){ onHideMenuBarToggled(on); });
     hide_toolBar = mm.addCheckItem(_("Hide tool bar"));
     hide_toolBar->sigToggled().connect([&](bool on){ onHideToolBarToggled(on); });
 
     joystick.setDevice("/dev/input/js0");
     joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
+
+    key = new JoyKey(true);
+    key->sigUnlocked().connect([&](){ onHideMenuBarToggled(false); });
 
     OptionManager& om = ext->optionManager().addOption("kiosk", "start kiosk mode automatically");
     om.sigOptionsParsed(1).connect(
@@ -144,7 +132,6 @@ KIOSKManagerImpl::~KIOSKManagerImpl()
 void KIOSKManager::initialize(ExtensionManager* ext)
 {
     ext->manage(new KIOSKManager(ext));
-    ext->manage(new EventFilterDialog);
     MainWindow::instance()->setFullScreen(false);
 }
 
@@ -214,7 +201,7 @@ void KIOSKManagerImpl::onEnableKIOSKToggled(const bool& on)
     mw->setFullScreen(on);
     mw->viewArea()->setViewTabsVisible(!on);
     mw->statusBar()->setVisible(!on);
-    hide_menuBar->setEnabled(on);
+    onHideMenuBarToggled(on);
     hide_toolBar->setChecked(on);
 
     loadProject(on);
@@ -293,7 +280,7 @@ void KIOSKManagerImpl::onButton(const int& id, const bool& isPressed)
             if(ret == QMessageBox::Yes) {
                 loadProject(true);
             } else {
-                hide_menuBar->setChecked(false);
+                onHideMenuBarToggled(false);
             }
         }
     }
@@ -309,28 +296,4 @@ void KIOSKManagerImpl::store(Mapping& archive)
 void KIOSKManagerImpl::restore(const Mapping& archive)
 {
     enable_logging->setChecked(archive.get("enable_logging", false));
-}
-
-
-EventFilterDialog::EventFilterDialog()
-    : mw(MainWindow::instance())
-{
-    mw->installEventFilter(this);
-}
-
-
-bool EventFilterDialog::eventFilter(QObject* watched, QEvent* event)
-{
-    MainWindow* w = dynamic_cast<MainWindow*>(watched);
-    if(mw == w) {
-        if(event->type() == QEvent::KeyPress) {
-            QKeyEvent* e = dynamic_cast<QKeyEvent*>(event);
-            if(e->key() == Qt::Key_Escape) {
-                if(enable_kiosk->isChecked()) {
-                    hide_menuBar->setChecked(!hide_menuBar->isChecked());
-                }
-            }
-        }
-    }
-    return false;
 }

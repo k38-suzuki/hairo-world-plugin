@@ -4,6 +4,7 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
+#include "DraggableJoystickView.h"
 #include "JoystickLoggerItem.h"
 #include "JoystickStatusView.h"
 #include "KeyConfigView.h"
@@ -23,6 +24,7 @@ public:
 
     virtual bool initialize() override
     {
+        DraggableJoystickView::initializeClass(this);
         JoystickLoggerItem::initializeClass(this);
         JoystickStatusView::initializeClass(this);
         KeyConfigView::initializeClass(this);

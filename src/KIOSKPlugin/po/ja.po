@@ -73,10 +73,6 @@ msgstr "全てのファイル(*)"
 msgid "Enable KIOSK"
 msgstr "KIOSKモード"
 
-#: ../KIOSKManager.cpp:55
-msgid "Hide menu bar"
-msgstr "メニューバーの非表示"
-
 #: ../KIOSKManager.cpp:62
 msgid "Hide tool bar"
 msgstr "ツールバーの非表示"

@@ -30,6 +30,9 @@ public:
     virtual bool storeState(Archive& archive) override;
     virtual bool restoreState(const Archive& archive) override;
 
+protected:
+    virtual void keyPressEvent(QKeyEvent* event) override;
+
 private:
     KIOSKViewImpl* impl;
     friend class KIOSKViewImpl;

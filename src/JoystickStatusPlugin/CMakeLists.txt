@@ -1,5 +1,7 @@
 
 set(sources
+    AxisWidget.cpp
+    DraggableJoystickView.cpp
     JoystickLoggerItem.cpp
     JoystickStatusPlugin.cpp
     JoystickStatusView.cpp
@@ -7,7 +9,9 @@ set(sources
     )
 
 set(headers
+    AxisWidget.h
     ConfigurableJoystick.h
+    DraggableJoystickView.h
     JoystickLoggerItem.h
     JoystickStatusView.h
     KeyConfigView.h
