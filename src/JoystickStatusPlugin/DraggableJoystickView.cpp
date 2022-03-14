@@ -7,6 +7,7 @@
 #include <cnoid/Button>
 #include <cnoid/ExtJoystick>
 #include <cnoid/Joystick>
+#include <cnoid/JoystickCapture>
 #include <cnoid/ViewManager>
 #include <mutex>
 #include <vector>
@@ -17,6 +18,27 @@
 
 using namespace cnoid;
 using namespace std;
+
+namespace {
+
+struct AxisInfo {
+    int index;
+    int id;
+};
+
+AxisInfo axisInfo[] = {
+    { 0, 0 },
+    { 0, 1 },
+    { 1, 0 },
+    { 1, 1 },
+    { 2, 0 },
+    { 2, 1 },
+    { 3, 1 },
+    { 4, 1 },
+};
+
+}
+
 
 namespace cnoid {
 
@@ -40,10 +62,13 @@ public:
     vector<bool> buttonStates;
     AxisWidget* axes[NUM_AXES];
     ToolButton* buttons[Joystick::NUM_STD_BUTTONS];
+    JoystickCapture joystick;
 
     Signal<void(int id, double position)> sigAxis_;
     Signal<void(int id, bool isPressed)> sigButton_;
 
+    void onAxis(const int& id, const double& position);
+    void onButton(const int& id, const bool& isPressed);
     void onAxis(const int& index, const double& h_position, const double& v_position);
     void onButtonPressed(const int& index);
     void onButtonReleased(const int& index);
@@ -99,6 +124,10 @@ DraggableJoystickViewImpl::DraggableJoystickViewImpl(DraggableJoystickView* self
     vbox->addLayout(hbox1);
     self->setLayout(vbox);
 
+    joystick.setDevice("/dev/input/js0");
+    joystick.sigAxis().connect([&](int id, double position){ onAxis(id, position); });
+    joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
+
     ExtJoystick::registerJoystick("DraggableJoystickView", this);
 }
 
@@ -113,6 +142,24 @@ void DraggableJoystickView::initializeClass(ExtensionManager* ext)
 {
     ext->viewManager().registerClass<DraggableJoystickView>(
                 N_("DraggableJoystickView"), N_("Draggable Joystick"), ViewManager::SINGLE_OPTIONAL);
+}
+
+
+void DraggableJoystickViewImpl::onAxis(const int& id, const double& position)
+{
+    AxisInfo info = axisInfo[id];
+    axes[info.index]->setValue(info.id, position);
+    axisPositions[id] = position;
+}
+
+
+void DraggableJoystickViewImpl::onButton(const int& id, const bool& isPressed)
+{
+    if(isPressed) {
+        onButtonPressed(id);
+    } else {
+        onButtonReleased(id);
+    }
 }
 
 
@@ -145,6 +192,9 @@ void DraggableJoystickViewImpl::onButtonPressed(const int& index)
     std::lock_guard<std::mutex> lock(mutex);
     buttonStates[index] = true;
     sigButton_(index, true);
+    QPalette palette;
+    palette.setColor(QPalette::Button, QColor(Qt::red));
+    buttons[index]->setPalette(palette);
 }
 
 
@@ -153,6 +203,8 @@ void DraggableJoystickViewImpl::onButtonReleased(const int& index)
     std::lock_guard<std::mutex> lock(mutex);
     buttonStates[index] = false;
     sigButton_(index, false);
+    QPalette palette;
+    buttons[index]->setPalette(palette);
 }
 
 

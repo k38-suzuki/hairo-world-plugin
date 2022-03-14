@@ -35,6 +35,7 @@ public:
   SimulationBar* sb;
 
   void onButton(const int& id, const bool& isPressed);
+  void onSimulationAboutToStart(SimulatorItem* simulatorItem);
   void store(Mapping& archive);
   void restore(const Mapping& archive);
 };
@@ -63,7 +64,7 @@ SimulationManagerImpl::SimulationManagerImpl(SimulationManager* self, ExtensionM
     joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
 
     sb->sigSimulationAboutToStart().connect(
-                [&](SimulatorItem* simulatorItem){ this->simulatoritem = simulatorItem; });
+                [&](SimulatorItem* simulatorItem){ onSimulationAboutToStart(simulatorItem); });
 
     Mapping& config = *AppConfig::archive()->openMapping("simulation_manager");
     if(config.isValid()) {
@@ -97,7 +98,6 @@ void SimulationManagerImpl::onButton(const int& id, const bool& isPressed)
             if(id == Joystick::START_BUTTON) {
                 if(!startState) {
                     sb->startSimulation(true);
-                    startState = true;
                 } else {
                     if(simulatoritem) {
                         if(!pauseState) {
@@ -111,7 +111,6 @@ void SimulationManagerImpl::onButton(const int& id, const bool& isPressed)
             } else if(id == Joystick::SELECT_BUTTON) {
                 if(!startState) {
                     sb->startSimulation(false);
-                    startState = true;
                 } else {
                     if(simulatoritem) {
                         simulatoritem->stopSimulation(true);
@@ -129,6 +128,13 @@ void SimulationManagerImpl::onButton(const int& id, const bool& isPressed)
             }
         }
     }
+}
+
+
+void SimulationManagerImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
+{
+    this->simulatoritem = simulatorItem;
+    startState = true;
 }
 
 

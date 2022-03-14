@@ -92,6 +92,18 @@ AxisWidget::~AxisWidget()
 }
 
 
+void AxisWidget::setValue(const int& id, const double& value)
+{
+    double r = (value + 1.0) / 2.0;
+    if(id == 0) {
+        impl->pos_x = r * width();
+    } else if(id == 1) {
+        impl->pos_y = r * height();
+    }
+    update();
+}
+
+
 SignalProxy<void(double h_position, double v_position)> AxisWidget::sigAxis()
 {
     return impl->sigAxis;

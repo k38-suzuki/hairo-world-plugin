@@ -21,6 +21,8 @@ public:
     AxisWidget();
     virtual ~AxisWidget();
 
+    void setValue(const int& id, const double& value);
+
     SignalProxy<void(double h_position, double v_position)> sigAxis();
 
 protected:
