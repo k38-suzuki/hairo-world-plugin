@@ -9,6 +9,7 @@
 #include <cnoid/Signal>
 #include <cnoid/Widget>
 #include <QMouseEvent>
+#include <QPaintEvent>
 
 namespace cnoid {
 
@@ -22,6 +23,8 @@ public:
 
     SignalProxy<void(double h_position, double v_position)> sigAxis();
 
+protected:
+    virtual void paintEvent(QPaintEvent* event) override;
     virtual void mousePressEvent(QMouseEvent* event) override;
     virtual void mouseReleaseEvent(QMouseEvent* event) override;
     virtual void mouseMoveEvent(QMouseEvent* event) override;
