@@ -1,0 +1,71 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-15 15:46-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../SceneImageView.cpp:55
+msgid "SceneImageView"
+msgstr "シーン画像"
+
+#: ../SceneImageView.cpp:55
+msgid "Scene Image"
+msgstr "シーン画像"
+
+#: ../SceneImageWidget.cpp:196
+msgid "Configuration of cursor"
+msgstr "カーソルの設定"
+
+#: ../SceneImageWidget.cpp:198
+msgid "Red"
+msgstr "赤"
+
+#: ../SceneImageWidget.cpp:198
+msgid "Green"
+msgstr "緑"
+
+#: ../SceneImageWidget.cpp:198
+msgid "Blue"
+msgstr "青"
+
+#: ../SceneImageWidget.cpp:199
+msgid "Cyan"
+msgstr "シアン"
+
+#: ../SceneImageWidget.cpp:199
+msgid "Magenta"
+msgstr "マゼンタ"
+
+#: ../SceneImageWidget.cpp:199
+msgid "Yellow"
+msgstr "イエロー"
+
+#: ../SceneImageWidget.cpp:211
+msgid "Radius"
+msgstr "半径"
+
+#: ../SceneImageWidget.cpp:211
+msgid "Color"
+msgstr "色"
+
+#: ../SceneImageWidget.cpp:220
+msgid "&Ok"
+msgstr "Ｏｋ"
+
+#: ../SceneImageWidget.cpp:227
+msgid "Cursor"
+msgstr "カーソル"
