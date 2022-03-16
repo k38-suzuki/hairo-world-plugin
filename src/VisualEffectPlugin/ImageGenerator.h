@@ -7,6 +7,7 @@
 #define CNOID_VISUALEFFECTPLUGIN_IMAGEGENERATOR_H
 
 #include <cnoid/Image>
+#include <QImage>
 
 namespace cnoid {
 
@@ -29,6 +30,9 @@ public:
     void medianFilter(Image& image, const int& matrix);
     void sobelFilter(Image& image);
     void prewittFilter(Image& image);
+
+    Image toCnoidImage(const QImage& image);
+    QImage toQImage(const Image& image);
 
 private:
     ImageGeneratorImpl* impl;

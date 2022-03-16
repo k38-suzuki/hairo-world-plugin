@@ -473,3 +473,40 @@ void ImageGeneratorImpl::differentialFilter(Image& image, const double kernel[2]
         }
     }
 }
+
+
+Image ImageGenerator::toCnoidImage(const QImage& image)
+{
+    int width = image.width();
+    int height = image.height();
+    Image cnoid_image;
+    cnoid_image.setSize(width, height, 3);
+    unsigned char* pixels = cnoid_image.pixels();
+    for(int j = 0 ; j < height ; j++) {
+        for(int i = 0 ; i < width ; i++) {
+            int index = i * 3 + j * width * 3;
+            QRgb rgba = image.pixel(i,j);
+            pixels[index] = qRed(rgba);
+            pixels[index + 1] = qGreen(rgba);
+            pixels[index + 2] = qBlue(rgba);
+        }
+    }
+    return cnoid_image;
+}
+
+
+QImage ImageGenerator::toQImage(const Image& image)
+{
+    int width = image.width();
+    int height = image.height();
+    QImage qImage(width, height, QImage::Format_ARGB32);
+    const unsigned char* pixels = image.pixels();
+    for(int j = 0 ; j < height ; j++) {
+        for(int i = 0 ; i < width ; i++) {
+            int index = i * 3 + j * width * 3;
+            QColor color(pixels[index], pixels[index + 1], pixels[index + 2]);
+            qImage.setPixelColor(i, j, color);
+        }
+    }
+    return qImage;
+}
