@@ -42,7 +42,7 @@ SceneRotor::SceneRotor(Device* device)
     SgShape* shape = new SgShape;
     shape->setMesh(generator.generateArrow(0.01, 0.05, 0.02, 0.05));
     shape->setName(device->name());
-    SgMaterial* material = new SgMaterial();
+    SgMaterial* material = new SgMaterial;
     material->setDiffuseColor(Vector3(0.0, 1.0, 0.0));
     material->setTransparency(0.5);
     shape->setMaterial(material);

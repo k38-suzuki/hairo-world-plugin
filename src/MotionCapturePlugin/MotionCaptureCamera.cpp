@@ -36,7 +36,7 @@ SceneMotionCaptureCamera::SceneMotionCaptureCamera(Device* device)
     SgShape* shape = new SgShape;
     SgMesh* mesh = shape->setMesh(new SgMesh);
 
-    SgVertexArray& vertices = *mesh->setVertices(new SgVertexArray());
+    SgVertexArray& vertices = *mesh->setVertices(new SgVertexArray);
     vertices.resize(5);
     double rangehy = camera->focalLength() * tan((double)camera->fieldOfView() / 2.0 * TO_RADIAN);
     double rangehz = rangehy * 2.0 / camera->aspectRatio()[0] * camera->aspectRatio()[1] / 2.0;

@@ -275,7 +275,7 @@ void VisualEffectorItem::onDisconnectedFromRoot()
 
 bool VisualEffectorItem::store(Archive& archive)
 {
-    ListingPtr subItems = new Listing();
+    ListingPtr subItems = new Listing;
 
     for(size_t i=0; i < impl->subItems.size(); i++) {
         Item* item = impl->subItems[i];

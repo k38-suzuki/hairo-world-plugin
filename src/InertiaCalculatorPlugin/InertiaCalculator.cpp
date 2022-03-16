@@ -129,7 +129,7 @@ void InertiaCalculator::initialize(ExtensionManager* ext)
 
 
 ConfigDialog::ConfigDialog()
-    : mv(new MessageView())
+    : mv(new MessageView)
 {
     setWindowTitle(_("InertiaCalculator"));
 

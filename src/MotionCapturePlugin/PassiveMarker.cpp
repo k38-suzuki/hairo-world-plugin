@@ -63,7 +63,7 @@ void ScenePassiveMarker::updateScene()
 
     MeshGenerator generator;
     shape->setMesh(generator.generateSphere(passiveMarker->radius()));
-    SgMaterial* material = new SgMaterial();
+    SgMaterial* material = new SgMaterial;
     material->setDiffuseColor(passiveMarker->color());
     material->setTransparency(passiveMarker->transparency());
     shape->setMaterial(material);

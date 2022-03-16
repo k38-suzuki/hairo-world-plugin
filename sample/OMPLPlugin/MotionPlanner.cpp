@@ -143,7 +143,7 @@ MotionPlanner::MotionPlanner(ExtensionManager* ext)
 MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self, ExtensionManager* ext)
     : self(self)
 {
-    dialog = new ConfigDialog();
+    dialog = new ConfigDialog;
 
     MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
     mm.addItem(_("Motion Planner"))->sigTriggered().connect([&](){ dialog->show(); });
@@ -182,14 +182,14 @@ ConfigDialog::ConfigDialog()
     time = 0.0;
     timeStep = 0.001;
     timeLength = 1.0;
-    timer = new Timer();
+    timer = new Timer;
     timer->start(1);
     isSolved = false;
     startDragger = nullptr;
     goalDragger = nullptr;
 
     MeshGenerator generator;
-    startScene = new SgSwitchableGroup();
+    startScene = new SgSwitchableGroup;
     startScene->setTurnedOn(false);
     startDragger = new PositionDragger(
                 PositionDragger::TranslationAxes, PositionDragger::WideHandle);
@@ -197,11 +197,11 @@ ConfigDialog::ConfigDialog()
     startDragger->setOverlayMode(true);
     startDragger->setPixelSize(48, 2);
     startDragger->setDisplayMode(PositionDragger::DisplayInEditMode);
-    SgPosTransform* startPos = new SgPosTransform();
-    SgGroup* startGroup = new SgGroup();
-    SgShape* startShape = new SgShape();
+    SgPosTransform* startPos = new SgPosTransform;
+    SgGroup* startGroup = new SgGroup;
+    SgShape* startShape = new SgShape;
     SgMesh* startMesh = generator.generateSphere(0.05);
-    SgMaterial* startMaterial = new SgMaterial();
+    SgMaterial* startMaterial = new SgMaterial;
     startMaterial->setDiffuseColor(Vector3(0.0, 0.0, 1.0));
     startShape->setMesh(startMesh);
     startShape->setMaterial(startMaterial);
@@ -212,7 +212,7 @@ ConfigDialog::ConfigDialog()
     startDragger->adjustSize(startShape->boundingBox());
     startDragger->sigPositionDragged().connect([&](){ onStartPositionDragged(); });
 
-    goalScene = new SgSwitchableGroup();
+    goalScene = new SgSwitchableGroup;
     goalScene->setTurnedOn(false);
     goalDragger = new PositionDragger(
                 PositionDragger::TranslationAxes, PositionDragger::WideHandle);
@@ -221,10 +221,10 @@ ConfigDialog::ConfigDialog()
     goalDragger->setPixelSize(48, 2);
     goalDragger->setDisplayMode(PositionDragger::DisplayInEditMode);
     SgPosTransform* goalPos = new SgPosTransform();
-    SgGroup* goalGroup = new SgGroup();
-    SgShape* goalShape = new SgShape();
+    SgGroup* goalGroup = new SgGroup;
+    SgShape* goalShape = new SgShape;
     SgMesh* goalMesh = generator.generateSphere(0.05);
-    SgMaterial* goalMaterial = new SgMaterial();
+    SgMaterial* goalMaterial = new SgMaterial;
     goalMaterial->setDiffuseColor(Vector3(1.0, 0.0, 0.0));
     goalShape->setMesh(goalMesh);
     goalShape->setMaterial(goalMaterial);
@@ -235,9 +235,9 @@ ConfigDialog::ConfigDialog()
     goalDragger->adjustSize(goalShape->boundingBox());
     goalDragger->sigPositionDragged().connect([&](){ onGoalPositionDragged(); });
 
-    statesScene = new SgSwitchableGroup();
+    statesScene = new SgSwitchableGroup;
     statesScene->setTurnedOn(false);
-    solutionScene = new SgSwitchableGroup();
+    solutionScene = new SgSwitchableGroup;
     solutionScene->setTurnedOn(false);
 
     SceneWidget* sceneWidget = SceneView::instance()->sceneWidget();
@@ -246,14 +246,14 @@ ConfigDialog::ConfigDialog()
     sceneWidget->sceneRoot()->addChild(statesScene);
     sceneWidget->sceneRoot()->addChild(solutionScene);
 
-    QVBoxLayout* vbox = new QVBoxLayout();
+    QVBoxLayout* vbox = new QVBoxLayout;
 
     HSeparatorBox* tbsbox = new HSeparatorBox(new QLabel(_("Target Body")));
     vbox->addLayout(tbsbox);
-    QGridLayout* tbgbox = new QGridLayout();
-    bodyCombo = new ComboBox();
-    baseCombo = new ComboBox();
-    endCombo = new ComboBox();
+    QGridLayout* tbgbox = new QGridLayout;
+    bodyCombo = new ComboBox;
+    baseCombo = new ComboBox;
+    endCombo = new ComboBox;
     tbgbox->addWidget(new QLabel(_("Body")), 0, 0);
     tbgbox->addWidget(bodyCombo, 0, 1);
     tbgbox->addWidget(new QLabel(_("Base Link")), 1, 0);
@@ -265,37 +265,37 @@ ConfigDialog::ConfigDialog()
     HSeparatorBox* bbsbox = new HSeparatorBox(new QLabel(_("Bounding Box")));
     vbox->addLayout(bbsbox);
 
-    QGridLayout* bbgbox = new QGridLayout();
-    cubicCheck = new CheckBox();
+    QGridLayout* bbgbox = new QGridLayout;
+    cubicCheck = new CheckBox;
     cubicCheck->setText(_("Cubic BB"));
-    cubicSpin = new DoubleSpinBox();
+    cubicSpin = new DoubleSpinBox;
     cubicSpin->setRange(0.0, 1000.0);
     cubicSpin->setValue(1.0);
     cubicSpin->setAlignment(Qt::AlignCenter);
     cubicSpin->setEnabled(false);
-    xminSpin = new DoubleSpinBox();
+    xminSpin = new DoubleSpinBox;
     xminSpin->setRange(-1000.0, 0.0);
     xminSpin->setValue(-1.0);
     xminSpin->setAlignment(Qt::AlignCenter);
-    xmaxSpin = new DoubleSpinBox();
+    xmaxSpin = new DoubleSpinBox;
     xmaxSpin->setRange(0.0, 1000.0);
     xmaxSpin->setValue(1.0);
     xmaxSpin->setAlignment(Qt::AlignCenter);
 
-    yminSpin = new DoubleSpinBox();
+    yminSpin = new DoubleSpinBox;
     yminSpin->setRange(-1000.0, 0.0);
     yminSpin->setValue(-1.0);
     yminSpin->setAlignment(Qt::AlignCenter);
-    ymaxSpin = new DoubleSpinBox();
+    ymaxSpin = new DoubleSpinBox;
     ymaxSpin->setRange(0.0, 1000.0);
     ymaxSpin->setValue(1.0);
     ymaxSpin->setAlignment(Qt::AlignCenter);
 
-    zminSpin = new DoubleSpinBox();
+    zminSpin = new DoubleSpinBox;
     zminSpin->setRange(-1000.0, 0.0);
     zminSpin->setValue(-1.0);
     zminSpin->setAlignment(Qt::AlignCenter);
-    zmaxSpin = new DoubleSpinBox();
+    zmaxSpin = new DoubleSpinBox;
     zmaxSpin->setRange(0.0, 1000.0);
     zmaxSpin->setValue(1.0);
     zmaxSpin->setAlignment(Qt::AlignCenter);
@@ -315,54 +315,54 @@ ConfigDialog::ConfigDialog()
     HSeparatorBox* ctsbox = new HSeparatorBox(new QLabel(_("Path Generation")));
     vbox->addLayout(ctsbox);
 
-    QGridLayout* pgbox = new QGridLayout();
-    plannerCombo = new ComboBox();
+    QGridLayout* pgbox = new QGridLayout;
+    plannerCombo = new ComboBox;
     QStringList planners = { "RRT", "RRTConnect", "RRT*", "pRRT" };
     plannerCombo->addItems(planners);
-    timeSpin = new DoubleSpinBox();
+    timeSpin = new DoubleSpinBox;
     timeSpin->setRange(0.0, 1000.0);
     timeSpin->setValue(1.0);
     timeSpin->setAlignment(Qt::AlignCenter);
-    statesCheck = new CheckBox();
+    statesCheck = new CheckBox;
     statesCheck->setText(_("Show states"));
     statesCheck->setChecked(false);
-    solutionCheck = new CheckBox();
+    solutionCheck = new CheckBox;
     solutionCheck->setText(_("Show solution"));
     solutionCheck->setChecked(false);
 
-    startCheck = new CheckBox();
+    startCheck = new CheckBox;
     startCheck->setChecked(false);
     startCheck->setText(_("Start[x, y, z]"));
-    startxSpin = new DoubleSpinBox();
+    startxSpin = new DoubleSpinBox;
     startxSpin->setRange(-1000.0, 1000.0);
     startxSpin->setSingleStep(0.01);
     startxSpin->setValue(0.0);
     startxSpin->setAlignment(Qt::AlignCenter);
-    startySpin = new DoubleSpinBox();
+    startySpin = new DoubleSpinBox;
     startySpin->setRange(-1000.0, 1000.0);
     startySpin->setSingleStep(0.01);
     startySpin->setValue(0.0);
     startySpin->setAlignment(Qt::AlignCenter);
-    startzSpin = new DoubleSpinBox();
+    startzSpin = new DoubleSpinBox;
     startzSpin->setRange(-1000.0, 1000.0);
     startzSpin->setSingleStep(0.01);
     startzSpin->setValue(0.0);
     startzSpin->setAlignment(Qt::AlignCenter);
 
-    goalCheck = new CheckBox();
+    goalCheck = new CheckBox;
     goalCheck->setChecked(false);
     goalCheck->setText(_("Goal[x, y, z]"));
-    goalxSpin = new DoubleSpinBox();
+    goalxSpin = new DoubleSpinBox;
     goalxSpin->setRange(-1000.0, 1000.0);
     goalxSpin->setSingleStep(0.01);
     goalxSpin->setValue(0.0);
     goalxSpin->setAlignment(Qt::AlignCenter);
-    goalySpin = new DoubleSpinBox();
+    goalySpin = new DoubleSpinBox;
     goalySpin->setRange(-1000.0, 1000.0);
     goalySpin->setSingleStep(0.01);
     goalySpin->setValue(0.0);
     goalySpin->setAlignment(Qt::AlignCenter);
-    goalzSpin = new DoubleSpinBox();
+    goalzSpin = new DoubleSpinBox;
     goalzSpin->setRange(-1000.0, 1000.0);
     goalzSpin->setSingleStep(0.01);
     goalzSpin->setValue(0.0);
@@ -392,11 +392,11 @@ ConfigDialog::ConfigDialog()
 
     PushButton* generateButton = new PushButton(_("Generate"));
     previewButton = new ToggleButton(_("Preview"));
-    timeLengthSpin = new DoubleSpinBox();
+    timeLengthSpin = new DoubleSpinBox;
     timeLengthSpin->setRange(1.0, 1000.0);
     timeLengthSpin->setValue(1.0);
     timeLengthSpin->setAlignment(Qt::AlignCenter);
-    QGridLayout* pvbox = new QGridLayout();
+    QGridLayout* pvbox = new QGridLayout;
     pvbox->addWidget(solutionCheck, 0, 0);
     pvbox->addWidget(statesCheck, 0, 1);
     pvbox->addWidget(generateButton, 0, 2);
@@ -716,16 +716,16 @@ void ConfigDialog::planWithSimpleSetup()
             solutions.push_back(Vector3(x, y, z));
 
             MeshGenerator generator;
-            SgShape* shape = new SgShape();
+            SgShape* shape = new SgShape;
             shape->setMesh(generator.generateSphere(0.02));
-            SgMaterial* material = new SgMaterial();
+            SgMaterial* material = new SgMaterial;
             int hue = 240.0 * (1.0 - (double)i / (double)(numPoints - 1));
             QColor qColor = QColor::fromHsv(hue, 255, 255);
             Vector3f color((double)qColor.red() / 255.0, (double)qColor.green() / 255.0, (double)qColor.blue() / 255.0);
             material->setDiffuseColor(Vector3(color[0], color[1], color[2]));
             material->setTransparency(0.5);
             shape->setMaterial(material);
-            SgPosTransform* transform = new SgPosTransform();
+            SgPosTransform* transform = new SgPosTransform;
             transform->addChild(shape);
             transform->setTranslation(Vector3(x, y, z));
             solutionScene->addChild(transform);
@@ -769,13 +769,13 @@ bool ConfigDialog::isStateValid(const ob::State* state)
     float z = state->as<ob::SE3StateSpace::StateType>()->getZ();
 
     MeshGenerator generator;
-    SgShape* shape = new SgShape();
+    SgShape* shape = new SgShape;
     shape->setMesh(generator.generateSphere(0.02));
-    SgMaterial* material = new SgMaterial();
+    SgMaterial* material = new SgMaterial;
     material->setDiffuseColor(Vector3(0.0, 1.0, 0.0));
     material->setTransparency(0.5);
     shape->setMaterial(material);
-    SgPosTransform* transform = new SgPosTransform();
+    SgPosTransform* transform = new SgPosTransform;
     transform->addChild(shape);
     transform->setTranslation(Vector3(x, y, z));
     statesScene->addChild(transform);
