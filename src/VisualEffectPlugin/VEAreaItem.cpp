@@ -344,9 +344,6 @@ bool VEAreaItemImpl::restore(const Archive& archive)
     archive.read("salt", salt);
     archive.read("pepper", pepper);
     archive.read("flip", flip);
-
-    int i = 0;
-    archive.read("filter", i);
-    filter.selectIndex(i);
+    filter.selectIndex(archive.get("filter", 0));
     return true;
 }
