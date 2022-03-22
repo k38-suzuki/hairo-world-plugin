@@ -19,6 +19,7 @@ set(sources
     KIOSKView.cpp
     LogWidget.cpp
     SimpleSimulationView.cpp
+    SimpleTimeWidget.cpp
     )
 
 set(headers
@@ -29,6 +30,7 @@ set(headers
     KIOSKView.h
     LogWidget.h
     SimpleSimulationView.h
+    SimpleTimeWidget.h
     )
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
