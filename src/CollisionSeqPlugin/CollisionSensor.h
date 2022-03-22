@@ -31,6 +31,9 @@ public:
     virtual const double* readState(const double* buf) override;
     virtual double* writeState(double* out_buf) const override;
 
+    virtual bool on() const override;
+    virtual void on(bool on) override;
+
     bool readSpecifications(const Mapping* info);
     bool writeSpecifications(Mapping* info) const;
 
@@ -38,6 +41,7 @@ protected:
     virtual Referenced* doClone(CloneMap* cloneMap) const override;
 
 private:
+    bool on_;
     Vector3 color_;
 
     void copyCollisionSensorStateFrom(const CollisionSensor& other);

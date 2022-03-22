@@ -44,3 +44,11 @@ msgstr "仮想ジョイスティックビュー（デバッグ用）"
 #: ../DraggableJoystickView.cpp:115
 msgid "Draggable Joystick"
 msgstr "仮想ジョイスティック（デバッグ用）"
+
+#: ../SimulationManager.cpp:54
+msgid "Joystick"
+msgstr "ジョイスティック"
+
+#: ../SimulationManager.cpp:55
+msgid "Start simulation (StartButton)"
+msgstr "シミュレーションを開始（スタートボタン）"

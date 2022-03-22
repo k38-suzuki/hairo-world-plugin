@@ -1,8 +1,9 @@
 items: 
   id: 0
-  name: "Root"
+  name: "RootItem"
   plugin: Base
   class: RootItem
+  is_builtin_item: true
   children: 
     - 
       id: 1
@@ -164,6 +165,7 @@ items:
             controllerThreads: true
             recordCollisionData: false
             controllerOptions: ""
+            scene_view_edit_mode_blocking: false
             dynamicsMode: "Forward dynamics"
             integrationMode: "Runge Kutta"
             gravity: [ 0, 0, -9.80665 ]
@@ -211,16 +213,10 @@ items:
             radius: 0.5
             height: 1
             diffuse_color: [ 0, 1, 0 ]
-            emissive_color: [ 0, 0, 0 ]
-            specular_color: [ 0, 0, 0 ]
             shininess: 0
             transparency: 0.8
-            hue: 0
-            saturation: 0
-            value: 0
-            red: 0.5
-            green: 0
-            blue: 0
+            hsv: [ 0, 0, 0 ]
+            rgb: [ 0.5, 0, 0 ]
             coef_b: 0
             coef_d: 0
             std_dev: 0
@@ -256,7 +252,7 @@ views:
     state: 
       show_rpy: true
       unique_rpy: false
-      show_quoternion: false
+      show_quaternion: false
       show_rotation_matrix: false
       coordinate: parent
   - 
@@ -275,55 +271,41 @@ views:
       visible_polygon_elements: [ face ]
       highlighting: false
       collisionLines: false
-      restrictCameraRoll: true
-      verticalAxis: Z
-      lightingMode: normal
-      cullingMode: enabled
-      defaultHeadLight: true
-      defaultHeadLightIntensity: 0.75
-      headLightLightingFromBack: false
-      worldLight: false
-      worldLightIntensity: 0.1
-      worldLightAmbient: 0
-      additionalLights: true
-      fog: true
-      floorGrid: false
-      floorGridSpan: 10
-      floorGridInterval: 0.5
-      xzGridSpan: 10
-      xzGridInterval: 0.5
-      xzGrid: false
-      yzGridSpan: 10
-      yzGridInterval: 0.5
-      texture: true
-      lineWidth: 1
-      pointSize: 2
-      normalVisualization: false
-      normalLength: 0.01
-      lightweightViewChange: false
-      coordinateAxes: true
-      fpsTestIteration: 1
-      upsideDown: false
       cameras: 
         - 
           camera: [ System, Perspective ]
           isCurrent: true
-          fieldOfView: 0.6978
-          near: 0.01
-          far: 10000
           eye: [ -7.55, -3.78401, 3.39381 ]
           direction: [ 0.8446, 0.410131, -0.344157 ]
           up: [ 0.309587, 0.150333, 0.938912 ]
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
-          near: 0.01
-          far: 10000
+      lightingMode: normal
+      cullingMode: enabled
+      worldLight: false
+      worldLightIntensity: 0.1
+      worldLightAmbient: 0
+      defaultHeadLight: true
+      defaultHeadLightIntensity: 0.75
+      world_light_shadow: true
       backgroundColor: [ 0, 0, 0 ]
-      gridColor: [ 0.9, 0.9, 0.9, 1 ]
-      xzgridColor: [ 0.9, 0.9, 0.9, 1 ]
-      yzgridColor: [ 0.9, 0.9, 0.9, 1 ]
-      isDedicatedItemCheckEnabled: false
+      lineWidth: 1
+      pointSize: 2
+      field_of_view: 39.981
+      clip_distances: [ 0.01, 10000 ]
+      floorGrid: false
+      floorGridSpan: 10
+      floorGridInterval: 0.5
+      xzGrid: false
+      xzGridSpan: 10
+      xzGridInterval: 0.5
+      yzGrid: false
+      yzGridSpan: 10
+      yzGridInterval: 0.5
+      xy_grid_color: [ 0.9, 0.9, 0.9 ]
+      xz_grid_color: [ 0.9, 0.9, 0.9 ]
+      yz_grid_color: [ 0.9, 0.9, 0.9 ]
   - 
     id: 6
     plugin: Base
@@ -342,6 +324,7 @@ views:
       show_sliders: true
       show_dials: false
       show_phases: true
+      limit_ranges: false
   - 
     id: 8
     plugin: Body
@@ -360,7 +343,7 @@ views:
       preferred_coordinate_mode: base
       show_rpy: true
       unique_rpy: false
-      show_quoternion: false
+      show_quaternion: false
       show_rotation_matrix: false
       target_link_type: root_or_ik_link
   - 
@@ -374,15 +357,15 @@ views:
     mounted: true
 toolbars: 
   "TimeBar": 
-    minTime: 0
-    maxTime: 30
-    frameRate: 1000
-    playbackFrameRate: 60
-    idleLoopDrivenMode: false
-    currentTime: 0
-    speedScale: 1
-    syncToOngoingUpdates: true
-    autoExpansion: true
+    current_time: 0
+    min_time: 0
+    max_time: 30
+    frame_rate: 1000
+    playback_frame_rate: 60
+    idle_loop_driven_mode: false
+    playback_speed_ratio: 1
+    sync_to_ongoing_updates: true
+    auto_expansion: true
   "LeggedBodyBar": 
     stanceWidth: 0.15
   "KinematicsBar": 
@@ -395,42 +378,7 @@ toolbars:
     snapDistance: 0.025
     penetrationBlockDepth: 0.0005
     lazyCollisionDetectionMode: true
-  "BodyMotionGenerationBar": 
-    autoGenerationForNewBody: true
-    balancer: false
-    autoGeneration: false
-    timeScaleRatio: 1
-    preInitialDuration: 1
-    postFinalDuration: 1
-    onlyTimeBarRange: false
-    makeNewBodyItem: true
-    stealthyStepMode: true
-    stealthyHeightRatioThresh: 2
-    flatLiftingHeight: 0.005
-    flatLandingHeight: 0.005
-    impactReductionHeight: 0.005
-    impactReductionTime: 0.04
-    autoZmp: true
-    minZmpTransitionTime: 0.1
-    zmpCenteringTimeThresh: 0.03
-    zmpTimeMarginBeforeLiftingSpin: 0
-    zmpMaxDistanceFromCenter: 0.02
-    allLinkPositions: false
-    lipSyncMix: false
-    timeToStartBalancer: 0
-    balancerIterations: 2
-    plainBalancerMode: false
-    boundaryConditionType: position
-    boundarySmootherType: quintic
-    boundarySmootherTime: 0.5
-    boundaryCmAdjustment: false
-    boundaryCmAdjustmentTime: 1
-    waistHeightRelaxation: false
-    gravity: 9.8
-    dynamicsTimeRatio: 1
 Body: 
-  "BodyMotionEngine": 
-    updateJointVelocities: false
   "BodySelectionManager": 
     current_body_item: 2
     current_link: "CHASSIS"
@@ -467,12 +415,12 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 472, 2017 ]
+      sizes: [ 351, 1498 ]
       children: 
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 647, 644 ]
+          sizes: [ 467, 464 ]
           children: 
             - 
               type: pane
@@ -484,12 +432,12 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 1000, 291 ]
+          sizes: [ 721, 210 ]
           children: 
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 943, 1070 ]
+              sizes: [ 700, 794 ]
               children: 
                 - 
                   type: pane
@@ -501,7 +449,7 @@ viewAreas:
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 1159, 854 ]
+              sizes: [ 860, 634 ]
               children: 
                 - 
                   type: pane

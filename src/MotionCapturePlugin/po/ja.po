@@ -17,26 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../MarkerPointItem.cpp:71
-msgid "MarkerPointItem"
-msgstr "マーカポイントアイテム"
-
-#: ../MarkerPointItem.cpp:74
-msgid "Marker Point"
-msgstr "マーカポイント"
-
-#: ../MotionCaptureSimulatorItem.cpp:31
-msgid "MotionCaptureSimulatorItem"
-msgstr "モーションキャプチャシミュレータアイテム"
-
-#: ../MotionCaptureSimulatorItem.cpp:191
-msgid "Record"
-msgstr "記録"
-
-#: ../MotionCaptureSimulatorItem.cpp:192
-msgid "CycleTime"
-msgstr "記録間隔"
-
-#: ../MotionCaptureSimulatorItem.cpp:193
-msgid "Export CSV"
-msgstr "CSV出力"
+#: ../MotionCaptureItem.cpp:90
+msgid "MotionCaptureItem"
+msgstr "モーションキャプチャアイテム"

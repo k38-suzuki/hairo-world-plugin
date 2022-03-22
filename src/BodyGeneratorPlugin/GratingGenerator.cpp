@@ -140,12 +140,12 @@ GratingConfigDialog::GratingConfigDialog()
     QVBoxLayout* vbox = new QVBoxLayout;
     QGridLayout* gbox = new QGridLayout;
 
-    const char* dlabels[] = {
+    static const char* dlabels[] = {
         _("Mass [kg]"), _("Height [m]"), _("Frame width [m]"),
         _("Frame height [m]"), _("Grid width [m]"), _("Grid height [m]")
     };
 
-    const char* slabels[] = { _("Horizontal grid [-]"), _("Vertical grid [-]") };
+    static const char* slabels[] = { _("Horizontal grid [-]"), _("Vertical grid [-]") };
 
     for(int i = 0; i < NUM_DSPINS; ++i) {
         DoubleSpinInfo info = doubleSpinInfo[i];

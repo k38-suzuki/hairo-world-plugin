@@ -135,11 +135,11 @@ PipeConfigDialog::PipeConfigDialog()
     QVBoxLayout* vbox = new QVBoxLayout;
     QGridLayout* gbox = new QGridLayout;
 
-    const char* dlabels[] = { _("Mass [kg]"), _("Length [m]"),
+    static const char* dlabels[] = { _("Mass [kg]"), _("Length [m]"),
                               _("Inner diameter [m]"), _("Outer diameter [m]")
                             };
 
-    const char* slabels[] = { _("Opening angle [deg]"), _("Step angle [deg]") };
+    static const char* slabels[] = { _("Opening angle [deg]"), _("Step angle [deg]") };
 
     for(int i = 0; i < NUM_DSPINS; ++i) {
         DoubleSpinInfo info = doubleSpinInfo[i];

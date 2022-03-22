@@ -1,20 +1,18 @@
 
 set(sources
-    MarkerPointItem.cpp
-    MotionCaptureCamera.cpp
+    MotionCaptureItem.cpp
     MotionCapturePlugin.cpp
-    MotionCaptureSimulatorItem.cpp
     PassiveMarker.cpp
    )
 
 set(headers
-    MarkerPointItem.h
-    MotionCaptureCamera.h
-    MotionCaptureSimulatorItem.h
-    PassiveMarker.h
     exportdecl.h
     gettext.h
+    MotionCaptureItem.h
+    PassiveMarker.h
     )
+
+choreonoid_make_header_public(PassiveMarker.h)
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project

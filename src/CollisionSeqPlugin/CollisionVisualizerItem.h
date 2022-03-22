@@ -21,7 +21,6 @@ public:
 
     static void initializeClass(ExtensionManager* ext);
     virtual bool initializeSimulation(SimulatorItem* simulatorItem) override;
-    virtual void finalizeSimulation() override;
 
 protected:
     virtual Item* doDuplicate() const override;

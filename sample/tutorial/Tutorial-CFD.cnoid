@@ -1,0 +1,364 @@
+items: 
+  id: 0
+  name: "RootItem"
+  plugin: Base
+  class: RootItem
+  is_builtin_item: true
+  children: 
+    - 
+      id: 1
+      name: "World"
+      plugin: Body
+      class: WorldItem
+      data: 
+        collision_detection: false
+        collision_detector: AISTCollisionDetector
+        default_material_table_file: "${SHARE}/default/materials.yaml"
+      children: 
+        - 
+          id: 2
+          name: "BoxROV"
+          plugin: Body
+          class: BodyItem
+          is_checked: true
+          data: 
+            file: "BoxROV.body"
+            format: CHOREONOID-BODY
+            rootPosition: [ 0, 0, 0 ]
+            rootAttitude: [ 
+              1, 0, 0, 
+              0, 1, 0, 
+              0, 0, 1 ]
+            jointPositions: [  ]
+            initialRootPosition: [ 0, 0, 0 ]
+            initialRootAttitude: [ 
+              1, 0, 0, 
+              0, 1, 0, 
+              0, 0, 1 ]
+            staticModel: false
+            collisionDetection: true
+            selfCollisionDetection: false
+            location_editable: false
+            scene_sensitive: true
+            zmp: [ 0, 0, 0 ]
+          children: 
+            - 
+              id: 3
+              name: "BoxROVJoystickController"
+              plugin: Body
+              class: SimpleControllerItem
+              data: 
+                isNoDelayMode: false
+                controllerOptions: ""
+                controller: "BoxROVJoystickController"
+                base_directory: "Controller directory"
+                reloading: false
+                export_symbols: false
+        - 
+          id: 4
+          name: "AISTSimulator"
+          plugin: Body
+          class: AISTSimulatorItem
+          data: 
+            timeStep: 0.001
+            realtimeSync: true
+            recording: "full"
+            timeRangeMode: "Unlimited"
+            timeLength: 180
+            active_control_time_range_mode: false
+            allLinkPositionOutputMode: false
+            deviceStateOutput: true
+            controllerThreads: true
+            recordCollisionData: false
+            controllerOptions: ""
+            scene_view_edit_mode_blocking: false
+            dynamicsMode: "Forward dynamics"
+            integrationMode: "Euler"
+            gravity: [ 0, 0, -9.80665 ]
+            min_friction_coefficient: 0
+            max_friction_coefficient: 100
+            cullingThresh: 0.005
+            contactCullingDepth: 0.05
+            errorCriterion: 0.001
+            maxNumIterations: 1000
+            contactCorrectionDepth: 0.0001
+            contactCorrectionVelocityRatio: 1
+            kinematicWalking: false
+            2Dmode: false
+            oldAccelSensorMode: false
+          children: 
+            - 
+              id: 5
+              name: "CFDSimulator"
+              plugin: CFD
+              class: CFDSimulatorItem
+              data: 
+                enabled: true
+        - 
+          id: 6
+          name: "FluidArea"
+          plugin: CFD
+          class: FluidAreaItem
+          is_checked: true
+          data: 
+            translation: [ 0, 0, 0 ]
+            rotation: [ 0, 0, 0 ]
+            type: 0
+            size: [ 1, 1, 1 ]
+            radius: 1
+            height: 1
+            diffuse_color: [ 0, 1, 1 ]
+            shininess: 0
+            transparency: 0.8
+            density: 1000
+            viscosity: 0.001
+            flow: [ 0, 0, 0 ]
+views: 
+  - 
+    id: 0
+    plugin: Base
+    class: ItemPropertyView
+    mounted: true
+  - 
+    id: 1
+    plugin: Base
+    class: ItemTreeView
+    mounted: true
+    state: 
+      expanded: [ 1, 2, 4 ]
+  - 
+    id: 2
+    plugin: Base
+    class: LocationView
+    mounted: true
+    state: 
+      show_rpy: true
+      unique_rpy: false
+      show_quaternion: false
+      show_rotation_matrix: false
+      coordinate: world
+  - 
+    id: 3
+    plugin: Base
+    class: MessageView
+    mounted: true
+  - 
+    id: 4
+    plugin: Base
+    class: SceneView
+    mounted: true
+    state: 
+      editMode: false
+      viewpointOperationMode: thirdPerson
+      visible_polygon_elements: [ face ]
+      highlighting: false
+      collisionLines: false
+      cameras: 
+        - 
+          camera: [ System, Perspective ]
+          isCurrent: true
+          eye: [ 3.62509, 1.75524, 1.05289 ]
+          direction: [ -0.880451, -0.440225, -0.17609 ]
+          up: [ -0.1575, -0.0787495, 0.984374 ]
+        - 
+          camera: [ System, Orthographic ]
+          orthoHeight: 20
+      lightingMode: normal
+      cullingMode: enabled
+      worldLight: true
+      worldLightIntensity: 0.5
+      worldLightAmbient: 0.25
+      defaultHeadLight: true
+      defaultHeadLightIntensity: 0.75
+      world_light_shadow: true
+      backgroundColor: [ 0.1, 0.1, 0.3 ]
+      lineWidth: 1
+      pointSize: 1
+      field_of_view: 35
+      clip_distances: [ 0.04, 200 ]
+      floorGrid: true
+      floorGridSpan: 10
+      floorGridInterval: 0.5
+      xzGrid: false
+      xzGridSpan: 10
+      xzGridInterval: 0.5
+      yzGrid: false
+      yzGridSpan: 10
+      yzGridInterval: 0.5
+      xy_grid_color: [ 0.9, 0.9, 0.9 ]
+      xz_grid_color: [ 0.9, 0.9, 0.9 ]
+      yz_grid_color: [ 0.9, 0.9, 0.9 ]
+  - 
+    id: 5
+    plugin: Base
+    class: VirtualJoystickView
+  - 
+    id: 6
+    plugin: Body
+    class: BodyLinkView
+    state: 
+      showRotationMatrix: false
+  - 
+    id: 7
+    plugin: Body
+    class: JointDisplacementView
+    mounted: true
+    state: 
+      show_selected_joints: false
+      show_joint_ids: true
+      show_joint_names: false
+      overlap_joint_names: false
+      show_sliders: true
+      show_dials: false
+      show_phases: true
+      limit_ranges: false
+  - 
+    id: 8
+    plugin: Body
+    class: LinkDeviceListView
+    mounted: true
+    state: 
+      element_type: link
+      listingMode: list
+  - 
+    id: 9
+    plugin: Body
+    class: LinkPositionView
+    mounted: true
+    state: 
+      coordinate_mode: world
+      preferred_coordinate_mode: base
+      show_rpy: true
+      unique_rpy: false
+      show_quaternion: false
+      show_rotation_matrix: false
+      target_link_type: ik_link
+  - 
+    id: 10
+    plugin: Body
+    class: LinkPropertyView
+    mounted: true
+  - 
+    id: 11
+    plugin: Python
+    class: PythonConsoleView
+    mounted: true
+toolbars: 
+  "TimeBar": 
+    current_time: 0
+    min_time: 0
+    max_time: 30
+    frame_rate: 1000
+    playback_frame_rate: 60
+    idle_loop_driven_mode: false
+    playback_speed_ratio: 1
+    sync_to_ongoing_updates: true
+    auto_expansion: true
+  "LeggedBodyBar": 
+    stanceWidth: 0.15
+  "KinematicsBar": 
+    forward_kinematics: true
+    inverse_kinematics: true
+    preset_kinematics: true
+    enablePositionDragger: true
+    penetrationBlock: false
+    collisionLinkHighlight: false
+    snapDistance: 0.025
+    penetrationBlockDepth: 0.0005
+    lazyCollisionDetectionMode: true
+Body: 
+  "BodySelectionManager": 
+    current_body_item: 2
+    current_link: "CHASSIS"
+  "EditableSceneBody": 
+    editableSceneBodies: 
+      - 
+        bodyItem: 2
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
+  "KinematicFaultChecker": 
+    checkJointPositions: true
+    angleMargin: 0
+    translationMargin: 0
+    checkJointVelocities: true
+    velocityLimitRatio: 100
+    targetJoints: all
+    checkSelfCollisions: true
+    onlyTimeBarRange: false
+  "SplineFilterDialog": 
+    isInputFrameRateSpecified: false
+    inputFrameRate: 200
+    isOutputFrameRateSpecified: false
+    outputFrameRate: 200
+viewAreas: 
+  - 
+    type: embedded
+    tabs: true
+    contents: 
+      type: splitter
+      orientation: horizontal
+      sizes: [ 1404, 445 ]
+      children: 
+        - 
+          type: splitter
+          orientation: horizontal
+          sizes: [ 363, 1037 ]
+          children: 
+            - 
+              type: splitter
+              orientation: vertical
+              sizes: [ 449, 448 ]
+              children: 
+                - 
+                  type: pane
+                  views: [ 1 ]
+                - 
+                  type: pane
+                  views: [ 0, 10 ]
+                  current: 0
+            - 
+              type: splitter
+              orientation: vertical
+              sizes: [ 673, 224 ]
+              children: 
+                - 
+                  type: pane
+                  views: [ 4 ]
+                - 
+                  type: pane
+                  views: [ 3, 11 ]
+                  current: 3
+        - 
+          type: splitter
+          orientation: vertical
+          sizes: [ 201, 696 ]
+          children: 
+            - 
+              type: pane
+              views: [ 2 ]
+            - 
+              type: splitter
+              orientation: vertical
+              sizes: [ 291, 401 ]
+              children: 
+                - 
+                  type: pane
+                  views: [ 9 ]
+                - 
+                  type: pane
+                  views: [ 8, 7 ]
+                  current: 7
+layoutOfToolBars: 
+  rows: 
+    - 
+      - { name: "FileBar", x: 0, priority: 0 }
+      - { name: "ScriptBar", x: 0, priority: 1 }
+      - { name: "SimulationBar", x: 0, priority: 2 }
+      - { name: "TimeBar", x: 0, priority: 0 }
+    - 
+      - { name: "BodyBar", x: 0, priority: 0 }
+      - { name: "KinematicsBar", x: 0, priority: 1 }
+      - { name: "SceneBar", x: 0, priority: 2 }
+      - { name: "GraphBar", x: 0, priority: 3 }
+      - { name: "CaptureBar", x: 0, priority: 4 }

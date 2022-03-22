@@ -8,6 +8,7 @@
 #include "JoystickLoggerItem.h"
 #include "JoystickStatusView.h"
 #include "KeyConfigView.h"
+#include "SimulationManager.h"
 
 using namespace cnoid;
 
@@ -28,6 +29,7 @@ public:
         JoystickLoggerItem::initializeClass(this);
         JoystickStatusView::initializeClass(this);
         KeyConfigView::initializeClass(this);
+        SimulationManager::initialize(this);
         return true;
     }
 

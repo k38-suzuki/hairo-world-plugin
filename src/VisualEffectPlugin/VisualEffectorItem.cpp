@@ -20,21 +20,23 @@
 #include <cnoid/Menu>
 #include <cnoid/MenuManager>
 #include <cnoid/PutPropertyFunction>
-#include <cnoid/RootItem>
 #include <cnoid/RangeCamera>
 #include <cnoid/Separator>
+#include <cnoid/SimulationBar>
+#include <cnoid/SimulatorItem>
 #include <cnoid/SpinBox>
 #include <cnoid/ViewManager>
+#include <cnoid/WorldItem>
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <math.h>
+#include <mutex>
 #include "ImageGenerator.h"
 #include "VEAreaItem.h"
 #include "gettext.h"
-
 
 using namespace cnoid;
 using namespace std;
@@ -111,6 +113,8 @@ public:
 
     CameraPtr camera;
     EffectConfigDialog* config;
+    std::mutex mtx;
+    SimulatorItem* simulatorItem;
     ImageGenerator generator;
     ScopedConnectionSet connections;
     std::shared_ptr<const Image> image;
@@ -247,7 +251,7 @@ void VisualEffectorItemImpl::onPositionChanged()
 
             DeviceList<Camera> cameras = body->devices<Camera>();
             for(size_t i=0; i < cameras.size(); ++i) {
-                if(cameras[i]->imageType()!=Camera::NO_IMAGE) {
+                if(cameras[i]->imageType() != Camera::NO_IMAGE) {
                     VEImageVisualizerItem* cameraImageVisualizerItem =
                             j<n ? dynamic_cast<VEImageVisualizerItem*>(restoredSubItems[j++].get()) : new VEImageVisualizerItem;
                     if(cameraImageVisualizerItem) {
@@ -362,6 +366,9 @@ VEImageVisualizerItem::VEImageVisualizerItem()
     : VisualEffectorItemBase(this)
 {
     config = new EffectConfigDialog;
+    simulatorItem = nullptr;
+    SimulationBar::instance()->sigSimulationAboutToStart().connect(
+                [&](SimulatorItem* simulatorItem){ this->simulatorItem = simulatorItem; });
 }
 
 
@@ -409,6 +416,7 @@ void VEImageVisualizerItem::enableVisualization(bool on)
 void VEImageVisualizerItem::doUpdateVisualization()
 {
     if(camera) {
+        std::lock_guard<std::mutex> lock(mtx);
         double hue = config->dspins[HUE]->value();
         double saturation = config->dspins[SATURATION]->value();
         double value = config->dspins[VALUE]->value();
@@ -423,26 +431,28 @@ void VEImageVisualizerItem::doUpdateVisualization()
         double pepper = config->dspins[PEPPER]->value();
         int filter = config->filterCombo->currentIndex();
 
-        RootItem* rootItem = RootItem::instance();
-        if(rootItem) {
-            ItemList<VEAreaItem> vitems = rootItem->checkedItems<VEAreaItem>();
-            for(size_t i = 0; i < vitems.size(); ++i) {
-                VEAreaItem* vitem = vitems[i];
-                bool isCollided = vitem->isCollided(camera->link());
-                if(isCollided) {
-                    hue = vitem->hue();
-                    saturation = vitem->saturation();
-                    value = vitem->value();
-                    red = vitem->red();
-                    green = vitem->green();
-                    blue = vitem->blue();
-                    coefB = vitem->coefB();
-                    coefD = vitem->coefD();
-                    stdDev = vitem->stdDev();
-                    salt = vitem->salt();
-                    pepper = vitem->pepper();
-                    flipped = vitem->flip();
-                    filter = vitem->filter();
+        if(simulatorItem) {
+            WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
+            if(worldItem) {
+                ItemList<VEAreaItem> areaItems = worldItem->descendantItems<VEAreaItem>();
+                for(size_t i = 0; i < areaItems.size(); ++i) {
+                    VEAreaItem* areaItem = areaItems[i];
+                    bool isCollided = areaItem->isCollided(camera->link()->T().translation());
+                    if(isCollided) {
+                        hue = areaItem->hsv()[0];
+                        saturation = areaItem->hsv()[1];
+                        value = areaItem->hsv()[2];
+                        red = areaItem->rgb()[0];
+                        green = areaItem->rgb()[1];
+                        blue = areaItem->rgb()[2];
+                        coefB = areaItem->coefB();
+                        coefD = areaItem->coefD();
+                        stdDev = areaItem->stdDev();
+                        salt = areaItem->salt();
+                        pepper = areaItem->pepper();
+                        flipped = areaItem->flip();
+                        filter = areaItem->filter();
+                    }
                 }
             }
         }
@@ -552,7 +562,7 @@ EffectConfigDialog::EffectConfigDialog()
     QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
     buttonBox->addButton(resetButton, QDialogButtonBox::ResetRole);
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
-    connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
 
     QVBoxLayout* vbox = new QVBoxLayout;
     vbox->addLayout(gbox);

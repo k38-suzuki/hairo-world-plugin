@@ -253,6 +253,7 @@ CursorConfigDialog::CursorConfigDialog()
     QVBoxLayout* vbox = new QVBoxLayout;
     vbox->addLayout(new HSeparatorBox(new QLabel(_("Cursor"))));
     vbox->addLayout(gbox);
+    vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);
     setLayout(vbox);
 }

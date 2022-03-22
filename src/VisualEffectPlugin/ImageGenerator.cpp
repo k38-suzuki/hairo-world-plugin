@@ -477,18 +477,16 @@ void ImageGeneratorImpl::differentialFilter(Image& image, const double kernel[2]
 
 Image ImageGenerator::toCnoidImage(const QImage& image)
 {
-    int width = image.width();
-    int height = image.height();
     Image cimage;
-    cimage.setSize(width, height, 3);
+    cimage.setSize(image.width(), image.height(), 3);
     unsigned char* pixels = cimage.pixels();
-    for(int j = 0 ; j < height ; ++j) {
-        for(int i = 0 ; i < width ; ++i) {
-            int index = i * 3 + j * width * 3;
-            QRgb rgba = image.pixel(i, j);
-            pixels[index] = qRed(rgba);
-            pixels[index + 1] = qGreen(rgba);
-            pixels[index + 2] = qBlue(rgba);
+    for(int j = 0 ; j < image.height() ; ++j) {
+        for(int i = 0 ; i < image.width() ; ++i) {
+            int index = i * 3 + j * image.width() * 3;
+            QRgb rgb = image.pixel(i, j);
+            pixels[index] = qRed(rgb);
+            pixels[index + 1] = qGreen(rgb);
+            pixels[index + 2] = qBlue(rgb);
         }
     }
     return cimage;
@@ -497,13 +495,11 @@ Image ImageGenerator::toCnoidImage(const QImage& image)
 
 QImage ImageGenerator::toQImage(const Image& image)
 {
-    int width = image.width();
-    int height = image.height();
-    QImage qimage(width, height, QImage::Format_ARGB32);
+    QImage qimage(image.width(), image.height(), QImage::Format_RGB888);
     const unsigned char* pixels = image.pixels();
-    for(int j = 0 ; j < height ; ++j) {
-        for(int i = 0 ; i < width ; ++i) {
-            int index = i * 3 + j * width * 3;
+    for(int j = 0 ; j < image.height() ; ++j) {
+        for(int i = 0 ; i < image.width() ; ++i) {
+            int index = i * 3 + j * image.width() * 3;
             QColor color(pixels[index], pixels[index + 1], pixels[index + 2]);
             qimage.setPixelColor(i, j, color);
         }

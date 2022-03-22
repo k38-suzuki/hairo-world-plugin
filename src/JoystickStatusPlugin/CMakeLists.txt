@@ -6,17 +6,19 @@ set(sources
     JoystickStatusPlugin.cpp
     JoystickStatusView.cpp
     KeyConfigView.cpp
+    SimulationManager.cpp
     )
 
 set(headers
     AxisWidget.h
     ConfigurableJoystick.h
     DraggableJoystickView.h
+    exportdecl.h
+    gettext.h
     JoystickLoggerItem.h
     JoystickStatusView.h
     KeyConfigView.h
-    exportdecl.h
-    gettext.h
+    SimulationManager.h
     )
 
 choreonoid_make_header_public(ConfigurableJoystick.h)

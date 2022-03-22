@@ -5,8 +5,7 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "MarkerPointItem.h"
-#include "MotionCaptureSimulatorItem.h"
+#include "MotionCaptureItem.h"
 
 using namespace cnoid;
 
@@ -23,8 +22,7 @@ public:
 
     virtual bool initialize() override
     {
-        MarkerPointItem::initializeClass(this);
-        MotionCaptureSimulatorItem::initializeClass(this);
+        MotionCaptureItem::initializeClass(this);
         return true;
     }
 

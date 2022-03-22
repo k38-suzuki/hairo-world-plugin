@@ -117,7 +117,7 @@ SlopeConfigDialog::SlopeConfigDialog()
     QVBoxLayout* vbox = new QVBoxLayout;
     QGridLayout* gbox = new QGridLayout;
 
-    const char* dlabels[] = {
+    static const char* dlabels[] = {
         _("Mass [kg]"),  _("Width [m]"),
         _("Height [m]"), _("Length [m]")
     };

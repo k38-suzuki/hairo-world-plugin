@@ -115,4 +115,4 @@ msgstr "視覚効果"
 
 #: ../VEAreaItem.cpp:145
 msgid "VEAreaItem"
-msgstr "視覚効果エリアアイテム"
+msgstr "視覚効果領域アイテム"

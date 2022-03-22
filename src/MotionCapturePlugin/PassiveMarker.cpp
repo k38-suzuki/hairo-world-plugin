@@ -24,9 +24,9 @@ public:
     ScenePassiveMarker(Device* device);
 
 private:
-    void updateScene();
+    void onStateChanged();
     PassiveMarker* passiveMarker;
-    SgShape* shape;
+    SgPosTransformPtr scene;
     bool isPassiveMarkerAttached;
 };
 
@@ -36,41 +36,45 @@ ScenePassiveMarker::ScenePassiveMarker(Device* device)
 {
     MeshGenerator generator;
     passiveMarker = static_cast<PassiveMarker*>(device);
-    shape = new SgShape;
-    shape->setMesh(generator.generateSphere(passiveMarker->radius()));
-    shape->setName(device->name());
-    SgMaterial* material = new SgMaterial;
-    material->setDiffuseColor(passiveMarker->color());
-    material->setTransparency(passiveMarker->transparency());
-    shape->setMaterial(material);
+    if(!scene) {
+        scene = new SgPosTransform;
+        SgShape* shape = new SgShape;
+        shape->setMesh(generator.generateSphere(passiveMarker->radius()));
+        shape->setName(device->name());
+        SgMaterial* material = shape->getOrCreateMaterial();
+        material->setDiffuseColor(passiveMarker->color());
+        material->setTransparency(passiveMarker->transparency());
+        scene->addChild(shape);
+    }
     isPassiveMarkerAttached = false;
-    setFunctionOnStateChanged([&](){ updateScene(); });
+    setFunctionOnStateChanged([&](){ onStateChanged(); });
 }
 
 
-void ScenePassiveMarker::updateScene()
+void ScenePassiveMarker::onStateChanged()
 {
     bool on = passiveMarker->on();
     bool symbol = passiveMarker->symbol();
     if(on != isPassiveMarkerAttached && symbol) {
         if(on) {
-            addChildOnce(shape);
+            addChildOnce(scene);
         } else {
-            removeChild(shape);
+            removeChild(scene);
         }
         isPassiveMarkerAttached = on;
     }
 
-    MeshGenerator generator;
-    shape->setMesh(generator.generateSphere(passiveMarker->radius()));
-    SgMaterial* material = new SgMaterial;
-    material->setDiffuseColor(passiveMarker->color());
-    material->setTransparency(passiveMarker->transparency());
-    shape->setMaterial(material);
-    shape->notifyUpdate();
+    SgShape* shape = dynamic_cast<SgShape*>(scene->child(0));
+    if(shape) {
+        SgMaterial* material = shape->getOrCreateMaterial();
+        material->setDiffuseColor(passiveMarker->color());
+        material->setTransparency(passiveMarker->transparency());
+        shape->notifyUpdate();
+    }
 }
 
 }
+
 
 SceneDevice* createScenePassiveMarker(Device* device)
 {
@@ -140,12 +144,6 @@ void PassiveMarker::forEachActualType(std::function<bool(const std::type_info& t
 }
 
 
-void PassiveMarker::clearState()
-{
-
-}
-
-
 bool PassiveMarker::on() const
 {
     return on_;
@@ -199,7 +197,6 @@ bool PassiveMarker::readSpecifications(const Mapping* info)
     read(info, "color", color_);
     info->read("transparency", transparency_);
     info->read("symbol", symbol_);
-
     return true;
 }
 
@@ -211,7 +208,6 @@ bool PassiveMarker::writeSpecifications(Mapping* info) const
     write(info, "color", color_);
     info->write("transparency", transparency_);
     info->write("symbol", symbol_);
-
     return true;
 }
 
@@ -237,12 +233,13 @@ struct PassiveMarkerRegistration
 {
     PassiveMarkerRegistration() {
         StdBodyLoader::registerNodeType("PassiveMarker", readPassiveMarker);
-        StdBodyWriter::registerDeviceWriter<PassiveMarker>("PassiveMarker",
-                                                           [](StdBodyWriter* /* writer */, Mapping* info, const PassiveMarker* marker) {
+        StdBodyWriter::registerDeviceWriter<PassiveMarker>(
+                    "PassiveMarker",
+                    [](StdBodyWriter* /* writer */, Mapping* info, const PassiveMarker* marker) {
             return marker->writeSpecifications(info);
         });
         SceneDevice::registerSceneDeviceFactory<PassiveMarker>(createScenePassiveMarker);
     }
-} registrationPassiveMarker;
+} registration;
 
 }
