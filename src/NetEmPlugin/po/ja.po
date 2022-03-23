@@ -119,8 +119,8 @@ msgstr "ネットワークエミュレータ"
 
 #: ../NetworkEmulator.cpp:355
 msgid "&Start"
-msgstr "開始"
+msgstr "開始(&S)"
 
 #: ../NetworkEmulator.cpp:355
 msgid "&Stop"
-msgstr "停止"
+msgstr "停止(&S)"

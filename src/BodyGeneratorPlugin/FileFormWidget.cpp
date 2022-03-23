@@ -74,7 +74,7 @@ FileFormWidgetImpl::FileFormWidgetImpl(FileFormWidget* self)
     fhbox->addWidget(new QLabel(_("File")));
     fhbox->addWidget(fileLine);
 
-    static const char* labels[] = { _("&Reload"), _("&Save"), _("&Save As...") };
+    static const char* labels[] = { _("&Reload"), _("&Save"), _("Save &As...") };
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
     for(int i = 0; i < NUM_BUTTONS; ++i) {

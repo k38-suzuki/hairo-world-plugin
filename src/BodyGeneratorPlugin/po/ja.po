@@ -218,15 +218,15 @@ msgstr "ファイル"
 
 #: ../FileFormWidget.cpp:71
 msgid "&Save"
-msgstr "上書き保存"
+msgstr "上書き保存(&S)"
 
 #: ../FileFormWidget.cpp:71
-msgid "&Save As..."
-msgstr "保存"
+msgid "Save &As..."
+msgstr "保存(&A)"
 
 #: ../FileFormWidget.cpp:71
 msgid "&Reload"
-msgstr "再読み込み"
+msgstr "再読み込み(&R)"
 
 #: ../FileFormWidget.cpp:104
 msgid "Save a Body file"
