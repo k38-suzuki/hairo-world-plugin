@@ -24,7 +24,6 @@ public:
 
 private:
     void onStateChanged();
-    void onExtracted();
     CollisionSensor* sensorDevice;
     SgPosTransformPtr scene;
     bool isSensorAttached;
@@ -148,7 +147,7 @@ void CollisionSensor::clearState()
 
 int CollisionSensor::stateSize() const
 {
-    return 3 + ForceSensor::stateSize();
+    return 4 + ForceSensor::stateSize();
 }
 
 
