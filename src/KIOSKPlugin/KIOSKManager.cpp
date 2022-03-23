@@ -17,13 +17,13 @@
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
+#include <cnoid/stdx/filesystem>
 #include <cnoid/TimeBar>
 #include <cnoid/UTF8>
 #include <cnoid/ViewArea>
 #include <cnoid/WorldItem>
 #include <src/BodyPlugin/WorldLogFileItem.h>
 #include <QDateTime>
-#include <QDir>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QStatusBar>
@@ -34,6 +34,7 @@
 
 using namespace cnoid;
 using namespace std;
+namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
@@ -231,16 +232,16 @@ void KIOSKManagerImpl::onEnableLoggingToggled(const bool& on)
 void KIOSKManagerImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
     this->simulatorItem = simulatorItem;
-    string directory = toUTF8((shareDirPath() / "kiosk").string());
-    QDir dir(directory.c_str());
-    if(!dir.exists("logs")) {
-        dir.mkdir("logs");
-    }
 
+    ProjectManager* pm = ProjectManager::instance();
     QDateTime recordingStartTime = QDateTime::currentDateTime();
-    string suffix = recordingStartTime.toString("yyyy-MM-dd-hh-mm-ss").toStdString();
-    string filename = directory + "/logs/" + suffix;
-    string projectFile = filename + ".cnoid";
+    string suffix = recordingStartTime.toString("-yyyy-MM-dd-hh-mm-ss").toStdString();
+    string logDirPath = toUTF8((shareDirPath() / "kiosk" / "log" / (pm->currentProjectName() + suffix).c_str()).string());
+    filesystem::path dir(fromUTF8(logDirPath));
+    if(!filesystem::exists(dir)) {
+        filesystem::create_directories(dir);
+    }
+    string filename0 = toUTF8((dir / pm->currentProjectName().c_str()).string()) + suffix + ".cnoid";
 
     if(enable_logging->isChecked()) {
         WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
@@ -254,17 +255,16 @@ void KIOSKManagerImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
                 worldItem->addChildItem(logItem);
             }
             if(recordingStartTime.isValid()) {
-                logItem->setLogFile(filename);
+                string filename1 = toUTF8((dir / logItem->name().c_str()).string()) + suffix + ".log";
+                logItem->setLogFile(filename1);
                 logItem->setTimeStampSuffixEnabled(false);
                 logItem->setSelected(true);
             }
-
-            ProjectManager* pm = ProjectManager::instance();
-            pm->saveProject(projectFile);
+            pm->saveProject(filename0);
             KIOSKView* kioskView = KIOSKView::instance();
             if(kioskView) {
                 string memo = kioskView->bookmarkWidget()->memo();
-                kioskView->logWidget()->addItem(projectFile, memo);
+                kioskView->logWidget()->addItem(filename0, memo);
             }
         }
     }

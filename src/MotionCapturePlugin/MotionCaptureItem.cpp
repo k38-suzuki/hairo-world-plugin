@@ -10,15 +10,16 @@
 #include <cnoid/MultiSE3SeqItem>
 #include <cnoid/PointSetItem>
 #include <cnoid/SimulatorItem>
+#include <cnoid/stdx/filesystem>
 #include <cnoid/UTF8>
 #include <QDateTime>
-#include <QDir>
 #include <vector>
 #include "PassiveMarker.h"
 #include "gettext.h"
 
 using namespace cnoid;
 using namespace std;
+namespace filesystem = cnoid::stdx::filesystem;
 
 namespace cnoid {
 
@@ -152,12 +153,6 @@ void MotionCaptureItem::finalizeSimulation()
 
 void MotionCaptureItemImpl::finalizeSimulation()
 {
-    string directory = toUTF8((shareDirPath()).string());
-    QDir dir(directory.c_str());
-    if(!dir.exists("capture")) {
-        dir.mkdir("capture");
-    }
-
     QDateTime recordingStartTime = QDateTime::currentDateTime();
     string suffix = recordingStartTime.toString("-yyyy-MM-dd-hh-mm-ss").toStdString();
 
@@ -185,15 +180,24 @@ void MotionCaptureItemImpl::finalizeSimulation()
             c[2] = marker->color()[2];
         }
         pointSetItem->notifyUpdate();
-        string name = pointSetItem->name() + suffix + ".pcd";
-        string filename = toUTF8((shareDirPath() / "capture" / name.c_str()).string());
+
+        string captureDirPath = toUTF8((shareDirPath() / "capture" / (pointSetItem->name() + suffix).c_str()).string());
+        filesystem::path dir(fromUTF8(captureDirPath));
+        if(!filesystem::exists(dir)) {
+            filesystem::create_directories(dir);
+        }
+        string filename = toUTF8((dir / pointSetItem->name().c_str()).string()) + suffix + ".pcd";
         pointSetItem->save(filename);
     }
 
     if(multiPointSetItem) {
         multiPointSetItem->setChecked(true);
-        string name = multiPointSetItem->name() + suffix + ".yaml";
-        string filename = toUTF8((shareDirPath() / "capture" / name.c_str()).string());
+        string captureDirPath = toUTF8((shareDirPath() / "capture" / (multiPointSetItem->name() + suffix).c_str()).string());
+        filesystem::path dir(fromUTF8(captureDirPath));
+        if(!filesystem::exists(dir)) {
+            filesystem::create_directories(dir);
+        }
+        string filename = toUTF8((dir / multiPointSetItem->name().c_str()).string()) + suffix + ".yaml";
         multiPointSetItem->save(filename);
     }
 }
