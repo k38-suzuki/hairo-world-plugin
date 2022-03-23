@@ -29,8 +29,6 @@ using namespace std;
 
 namespace {
 
-const bool TRACE_FUNCTIONS = false;
-
 enum {
     ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT,
     L_AXIS_UP, L_AXIS_DOWN, L_AXIS_LEFT, L_AXIS_RIGHT,
@@ -40,13 +38,6 @@ enum {
     BUTTON_L, BUTTON_R, BUTTON_SELECT, BUTTON_START,
     BUTTON_L_STICK, BUTTON_R_STICK, BUTTON_LOGO,
     NUM_JOYSTICK_ELEMENTS
-};
-
-const char* labels[] = {
-    "L_STICK_H_AXIS", "L_STICK_V_AXIS",
-    "R_STICK_H_AXIS", "R_STICK_V_AXIS",
-    "DIR_PAD_H_AXIS", "DIR_PAD_V_AXIS",
-    "L_TRIGGER_AXIS", "R_TRIGGER_AXIS"
 };
 
 struct ButtonInfo {
@@ -101,7 +92,9 @@ namespace cnoid {
 class JoystickStatusViewImpl : public ExtJoystick
 {
 public:
+    JoystickStatusViewImpl(JoystickStatusView* self);
     JoystickStatusView* self;
+
     QGridLayout grid;
     ToolButton buttons[NUM_JOYSTICK_ELEMENTS];
     typedef std::map<int, int> KeyToButtonMap;
@@ -112,11 +105,11 @@ public:
     std::mutex mutex;
     vector<double> axisPositions;
     vector<bool> buttonStates;
-    vector<QProgressBar*> bars;
+    vector<QProgressBar*> negativeBars;
+    vector<QProgressBar*> positiveBars;
     JoystickCapture joystick;
     Widget* rightWidget;
 
-    JoystickStatusViewImpl(JoystickStatusView* self);
     bool onKeyStateChanged(int key, bool on);
     void onButtonPressed(int index);
     void onButtonReleased(int index);
@@ -181,11 +174,20 @@ JoystickStatusViewImpl::JoystickStatusViewImpl(JoystickStatusView* self)
 
     QGridLayout* gbox = new QGridLayout;
     for(size_t i = 0; i < axisPositions.size(); ++i) {
-        QProgressBar* bar = new QProgressBar;
-        bar->setValue(0);
-        gbox->addWidget(new QLabel(labels[i]), i, 0);
-        gbox->addWidget(bar, i, 1);
-        bars.push_back(bar);
+        QProgressBar* negativeBar = new QProgressBar;
+        negativeBar->setValue(0);
+        negativeBar->setInvertedAppearance(true);
+        negativeBar->setStyleSheet("QProgressBar { text-align: center; }"
+                                   "QProgressBar::chunk { background-color: cyan; }");
+        gbox->addWidget(negativeBar, i, 0);
+        negativeBars.push_back(negativeBar);
+
+        QProgressBar* positiveBar = new QProgressBar;
+        positiveBar->setValue(0);
+        positiveBar->setStyleSheet("QProgressBar { text-align: center; }"
+                                   "QProgressBar::chunk { background-color: magenta; }");
+        gbox->addWidget(positiveBar, i, 1);
+        positiveBars.push_back(positiveBar);
     }
 
     joystick.setDevice("/dev/input/js0");
@@ -326,11 +328,12 @@ void JoystickStatusViewImpl::onButton(const int& id, const bool& isPressed)
 
 void JoystickStatusViewImpl::setPosition(const int& id, const double& position)
 {
-    bars[id]->setValue(fabs(100.0 * position));
     if(position < 0.0) {
-        bars[id]->setStyleSheet("QProgressBar { text-align: center; } QProgressBar::chunk { background-color: magenta; }") ;
+        negativeBars[id]->setValue(fabs(100.0 * position));
+        positiveBars[id]->setValue(0.0);
     } else {
-        bars[id]->setStyleSheet("QProgressBar { text-align: center; } QProgressBar::chunk { background-color: cyan; }") ;
+        negativeBars[id]->setValue(0.0);
+        positiveBars[id]->setValue(fabs(100.0 * position));
     }
 }
 
@@ -353,7 +356,7 @@ bool JoystickStatusViewImpl::readCurrentState()
 
     {
         std::lock_guard<std::mutex> lock(mutex);
-        for(int i=0; i < NUM_JOYSTICK_ELEMENTS; ++i) {
+        for(int i = 0; i < NUM_JOYSTICK_ELEMENTS; ++i) {
             ButtonInfo& info = buttonInfo[i];
             if(info.isAxis) {
                 axisPositions[info.id] += keyValues[i];
@@ -386,12 +389,12 @@ bool JoystickStatusViewImpl::getButtonState(int button) const
 
 bool JoystickStatusViewImpl::isActive() const
 {
-    for(size_t i=0; i < axisPositions.size(); ++i) {
+    for(size_t i = 0; i < axisPositions.size(); ++i) {
         if(axisPositions[i] != 0.0) {
             return true;
         }
     }
-    for(size_t i=0; i < buttonStates.size(); ++i) {
+    for(size_t i = 0; i < buttonStates.size(); ++i) {
         if(buttonStates[i]) {
             return true;
         }
