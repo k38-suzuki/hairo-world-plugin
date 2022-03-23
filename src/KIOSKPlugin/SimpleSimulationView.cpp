@@ -5,6 +5,7 @@
 
 #include "SimpleSimulationView.h"
 #include <cnoid/Button>
+#include <cnoid/ButtonGroup>
 #include <cnoid/MainWindow>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
@@ -13,6 +14,7 @@
 #include <cnoid/ViewManager>
 #include <cnoid/Widget>
 #include <QGridLayout>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QScrollArea>
 #include <QStyle>
@@ -29,13 +31,15 @@ struct ButtonState {
     bool restart;
     bool pause;
     bool stop;
+    bool backward;
+    bool forward;
 };
 
 ButtonState buttonStates[] = {
-    { false, false,  true,  true },
-    { false, false,  true,  true },
-    { false, false,  true,  true },
-    {  true,  true, false, false }
+    { false, false,  true,  true, false, false },
+    { false, false,  true,  true, false, false },
+    { false, false,  true,  true, false, false },
+    {  true,  true, false, false,  true,  true }
 };
 
 struct ButtonInfo {
@@ -48,14 +52,12 @@ struct ButtonInfo {
 };
 
 ButtonInfo buttonInfo[] = {
-    { 0, 0, 1, 1,  true,   ":/Body/icon/start-simulation.svg" },
-    { 0, 1, 1, 1,  true, ":/Body/icon/restart-simulation.svg" },
-    { 0, 2, 1, 1, false,   ":/Body/icon/pause-simulation.svg" },
-    { 0, 3, 1, 1, false,    ":/Body/icon/stop-simulation.svg" },
-    { 1, 2, 1, 1,  true,                                   "" },
-    { 1, 3, 1, 1,  true,                                   "" },
-    { 2, 0, 1, 1,  true,               ":/Base/icon/play.svg" },
-    { 2, 1, 1, 1,  true,             ":/Base/icon/resume.svg" }
+    { 0, 2, 1, 1,  true,   ":/Body/icon/start-simulation.svg" },
+    { 0, 3, 1, 1,  true, ":/Body/icon/restart-simulation.svg" },
+    { 0, 4, 1, 1, false,   ":/Body/icon/pause-simulation.svg" },
+    { 0, 0, 1, 1, false,    ":/Body/icon/stop-simulation.svg" },
+    { 0, 1, 1, 1,  true,                                   "" },
+    { 0, 5, 1, 1,  true,                                   "" }
 };
 
 }
@@ -71,23 +73,30 @@ public:
 
     enum ButtonID {
         START, RESTART, PAUSE, STOP,
-        BACKWARD, FORWARD, PLAY, RESUME,
-        NUM_BUTTONS
+        BACKWARD, FORWARD, NUM_BUTTONS
     };
 
     QScrollArea scrollArea;
 
+    ButtonGroup playModeGroup;
+    RadioButton simulationRadio;
+    RadioButton animationRadio;
     PushButton* buttons[NUM_BUTTONS];
     DoubleSpinBox* seekDSpin;
     SimulatorItem* simulatorItem;
     SimulationBar* sb;
     TimeBar* tb;
 
+    QIcon startIcon;
+    QIcon restartIcon;
+    QIcon playIcon;
     QIcon resumeIcon;
     QIcon stopIcon;
 
     void onSimulationAboutToStart(SimulatorItem* simulatorItem);
     void onButtonClicked(const int& id);
+    void onSimulationButtonToggled(const bool& on);
+    void onAnimationButtonToggled(const bool& on);
     void onPlaybackStarted(const double& time);
     void onPlaybackStopped(const double& time, const bool& isStoppedManually);
     void updateButtonStates(const int& state);
@@ -106,6 +115,9 @@ SimpleSimulationViewImpl::SimpleSimulationViewImpl(SimpleSimulationView* self)
     : self(self),
       sb(SimulationBar::instance()),
       tb(TimeBar::instance()),
+      startIcon(QIcon(":/Body/icon/start-simulation.svg")),
+      restartIcon(QIcon(":/Body/icon/restart-simulation.svg")),
+      playIcon(QIcon(":/Base/icon/play.svg")),
       resumeIcon(QIcon(":/Base/icon/resume.svg")),
       stopIcon(QIcon(":/Base/icon/stop.svg"))
 {
@@ -128,9 +140,21 @@ SimpleSimulationViewImpl::SimpleSimulationViewImpl(SimpleSimulationView* self)
     baseLayout->addWidget(&scrollArea);
     self->setLayout(baseLayout);
 
+    QHBoxLayout* hbox0 = new QHBoxLayout;
+    hbox0->addWidget(new QLabel(_("Play mode")));
+    simulationRadio.setText(_("Simulation"));
+    simulationRadio.setChecked(true);
+    hbox0->addWidget(&simulationRadio);
+    playModeGroup.addButton(&simulationRadio, 0);
+
+    animationRadio.setText(_("Animation"));
+    animationRadio.setChecked(false);
+    hbox0->addWidget(&animationRadio);
+    playModeGroup.addButton(&animationRadio, 1);
+    hbox0->addStretch();
+
     static const char* toolTips[] = { _("Start simulation from the beginning"), _("Start simulation from the current state"),
-                                      _("Pause simulation"), _("Stop simulation"), _("Seek backward"), _("Seek forward"),
-                                      _("Start playback"), _("Resume playback") };
+                                      _("Pause simulation"), _("Stop simulation"), _("Seek backward"), _("Seek forward") };
     QGridLayout* gbox = new QGridLayout;
     MainWindow* mw = MainWindow::instance();
     for(int i = 0; i < NUM_BUTTONS; ++i) {
@@ -154,19 +178,27 @@ SimpleSimulationViewImpl::SimpleSimulationViewImpl(SimpleSimulationView* self)
     }
     buttons[PAUSE]->setCheckable(true);
 
+    QHBoxLayout* hbox1 = new QHBoxLayout;
     seekDSpin = new DoubleSpinBox;
     seekDSpin->setDecimals(3);
     seekDSpin->setRange(0.0, 9999.999);
     seekDSpin->setValue(1.0);
-    gbox->addWidget(new QLabel(_("Seek time")), 1, 0, 1, 1);
-    gbox->addWidget(seekDSpin, 1, 1, 1, 1);
+    hbox1->addStretch();
+    hbox1->addWidget(new QLabel(_("Seek time")));
+    hbox1->addWidget(seekDSpin);
 
     SimpleTimeWidget* timeWidget = new SimpleTimeWidget;
+
+    topVBox->addLayout(hbox0);
     topVBox->addWidget(timeWidget);
     topVBox->addLayout(gbox);
+    topVBox->addLayout(hbox1);
     topVBox->addStretch();
 
     simulatorItem = nullptr;
+
+    simulationRadio.sigToggled().connect([&](bool on){ onSimulationButtonToggled(on); });
+    animationRadio.sigToggled().connect([&](bool on){ onAnimationButtonToggled(on); });
 
     sb->sigSimulationAboutToStart().connect(
                 [&](SimulatorItem* simulatorItem){ onSimulationAboutToStart(simulatorItem); });
@@ -209,9 +241,23 @@ void SimpleSimulationViewImpl::onButtonClicked(const int& id)
 
     if(id < BACKWARD) {
         if(id == START) {
-            sb->startSimulation(true);
+            if(simulationRadio.isChecked()) {
+                sb->startSimulation(true);
+            } else {
+                tb->stopPlayback(true);
+                tb->startPlayback(tb->minTime());
+            }
         } else if(id == RESTART) {
-            sb->startSimulation(false);
+            if(simulationRadio.isChecked()) {
+                sb->startSimulation(false);
+            } else {
+                if(tb->isDoingPlayback()) {
+                    tb->stopPlayback(true);
+                } else {
+                    tb->stopPlayback(true);
+                    tb->startPlayback();
+                }
+            }
         } else if(id == PAUSE) {
             if(simulatorItem) {
                 if(buttons[PAUSE]->isChecked()) {
@@ -227,16 +273,6 @@ void SimpleSimulationViewImpl::onButtonClicked(const int& id)
             }
         }
         updateButtonStates(id);
-    } else if(id == PLAY) {
-        tb->stopPlayback(true);
-        tb->startPlayback(tb->minTime());
-    } else if(id == RESUME) {
-        if(tb->isDoingPlayback()) {
-            tb->stopPlayback(true);
-        } else {
-            tb->stopPlayback(true);
-            tb->startPlayback();
-        }
     } else {
         if(id == BACKWARD) {
             timestep = seekDSpin->value() * -1.0;
@@ -254,27 +290,67 @@ void SimpleSimulationViewImpl::onButtonClicked(const int& id)
 }
 
 
+void SimpleSimulationViewImpl::onSimulationButtonToggled(const bool& on)
+{
+    const static QStringList tips = { _("Start simulation from the beginning"),
+                                      _("Start simulation from the current state") };
+    buttons[START]->setIcon(startIcon);
+    buttons[START]->setToolTip(tips[0]);
+    buttons[RESTART]->setIcon(restartIcon);
+    buttons[RESTART]->setToolTip(tips[1]);
+}
+
+
+void SimpleSimulationViewImpl::onAnimationButtonToggled(const bool& on)
+{
+    const static QStringList tips = { _("Start playback"),
+                                      _("Resume playback") };
+    buttons[START]->setIcon(playIcon);
+    buttons[START]->setToolTip(tips[0]);
+    buttons[RESTART]->setIcon(resumeIcon);
+    buttons[RESTART]->setToolTip(tips[1]);
+}
+
+
 void SimpleSimulationViewImpl::onPlaybackStarted(const double& time)
 {
-    const static QString tip(_("Stop animation"));
-    buttons[RESUME]->setIcon(stopIcon);
-    buttons[RESUME]->setToolTip(tip);
+    if(animationRadio.isChecked()) {
+        const static QString tip(_("Stop animation"));
+        buttons[RESTART]->setIcon(stopIcon);
+        buttons[RESTART]->setToolTip(tip);
+    }
+    if(!buttons[PAUSE]->isChecked()) {
+        simulationRadio.setEnabled(false);
+        animationRadio.setEnabled(false);
+    }
 }
 
 
 void SimpleSimulationViewImpl::onPlaybackStopped(const double& time, const bool& isStoppedManually)
 {
-    const static QString tip(_("Resume animation"));
-    buttons[RESUME]->setIcon(resumeIcon);
-    buttons[RESUME]->setToolTip(tip);
+    if(animationRadio.isChecked()) {
+        const static QString tip(_("Resume animation"));
+        buttons[RESTART]->setIcon(resumeIcon);
+        buttons[RESTART]->setToolTip(tip);
+    }
+    if(!buttons[PAUSE]->isChecked()) {
+        if(!simulatorItem->isPausing()) {
+            simulationRadio.setEnabled(true);
+            animationRadio.setEnabled(true);
+        }
+    }
 }
 
 
 void SimpleSimulationViewImpl::updateButtonStates(const int& state)
 {
-    ButtonState buttonState = buttonStates[state];
-    buttons[START]->setEnabled(buttonState.start);
-    buttons[RESTART]->setEnabled(buttonState.restart);
-    buttons[PAUSE]->setEnabled(buttonState.pause);
-    buttons[STOP]->setEnabled(buttonState.stop);
+    if(simulationRadio.isChecked()) {
+        ButtonState buttonState = buttonStates[state];
+        buttons[START]->setEnabled(buttonState.start);
+        buttons[RESTART]->setEnabled(buttonState.restart);
+        buttons[PAUSE]->setEnabled(buttonState.pause);
+        buttons[STOP]->setEnabled(buttonState.stop);
+        buttons[BACKWARD]->setEnabled(buttonState.backward);
+        buttons[FORWARD]->setEnabled(buttonState.forward);
+    }
 }

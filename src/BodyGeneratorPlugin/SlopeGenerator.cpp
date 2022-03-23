@@ -27,6 +27,8 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
+SlopeGenerator* sgeneratorInstance = nullptr;
+
 struct DoubleSpinInfo
 {
     int row;
@@ -37,7 +39,6 @@ struct DoubleSpinInfo
     int decimals;
     double value;
 };
-
 
 DoubleSpinInfo doubleSpinInfo[] = {
     { 0, 1, 0.001, 1000.0, 0.01, 3, 1.0 },
@@ -51,10 +52,11 @@ DoubleSpinInfo doubleSpinInfo[] = {
 
 namespace cnoid {
 
-class SlopeConfigDialog : public Dialog
+class SlopeGeneratorImpl : public Dialog
 {
 public:
-    SlopeConfigDialog();
+    SlopeGeneratorImpl(SlopeGenerator* self);
+    SlopeGenerator* self;
 
     enum DoubleSpinId {
         MASS, WIDTH, HEIGHT,
@@ -70,48 +72,17 @@ public:
     VectorXd calcInertia();
 };
 
-
-class SlopeGeneratorImpl
-{
-public:
-    SlopeGeneratorImpl(SlopeGenerator* self, ExtensionManager* ext);
-    SlopeGenerator* self;
-
-    SlopeConfigDialog* dialog;
-};
-
 }
 
 
-SlopeGenerator::SlopeGenerator(ExtensionManager* ext)
+SlopeGenerator::SlopeGenerator()
 {
-    impl = new SlopeGeneratorImpl(this, ext);
+    impl = new SlopeGeneratorImpl(this);
 }
 
 
-SlopeGeneratorImpl::SlopeGeneratorImpl(SlopeGenerator* self, ExtensionManager* ext)
+SlopeGeneratorImpl::SlopeGeneratorImpl(SlopeGenerator* self)
     : self(self)
-{
-    dialog = new SlopeConfigDialog;
-
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
-    mm.addItem(_("Slope"))->sigTriggered().connect([&](){ dialog->show(); });
-}
-
-
-SlopeGenerator::~SlopeGenerator()
-{
-    delete impl;
-}
-
-
-void SlopeGenerator::initialize(ExtensionManager* ext)
-{
-    ext->manage(new SlopeGenerator(ext));
-}
-
-
-SlopeConfigDialog::SlopeConfigDialog()
 {
     setWindowTitle(_("Slope Builder"));
     QVBoxLayout* vbox = new QVBoxLayout;
@@ -149,7 +120,25 @@ SlopeConfigDialog::SlopeConfigDialog()
 }
 
 
-bool SlopeConfigDialog::writeYaml(const string& filename)
+SlopeGenerator::~SlopeGenerator()
+{
+    delete impl;
+}
+
+
+void SlopeGenerator::initializeClass(ExtensionManager* ext)
+{
+    if(!sgeneratorInstance) {
+        sgeneratorInstance = ext->manage(new SlopeGenerator);
+    }
+
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
+    mm.addItem(_("Slope"))->sigTriggered().connect(
+                [&](){ sgeneratorInstance->impl->show(); });
+}
+
+
+bool SlopeGeneratorImpl::writeYaml(const string& filename)
 {
     filesystem::path path(filename);
     string name = path.stem().string();
@@ -245,7 +234,7 @@ bool SlopeConfigDialog::writeYaml(const string& filename)
 }
 
 
-void SlopeConfigDialog::onColorButtonClicked()
+void SlopeGeneratorImpl::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -265,7 +254,7 @@ void SlopeConfigDialog::onColorButtonClicked()
 }
 
 
-VectorXd SlopeConfigDialog::calcInertia()
+VectorXd SlopeGeneratorImpl::calcInertia()
 {
     VectorXd inertia;
     inertia.resize(9);

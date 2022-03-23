@@ -129,7 +129,7 @@ KIOSKManagerImpl::~KIOSKManagerImpl()
 }
 
 
-void KIOSKManager::initialize(ExtensionManager* ext)
+void KIOSKManager::initializeClass(ExtensionManager* ext)
 {
     ext->manage(new KIOSKManager(ext));
     MainWindow::instance()->setFullScreen(false);

@@ -18,7 +18,7 @@ public:
     HistoryManager(ExtensionManager* ext);
     virtual ~HistoryManager();
 
-    static void initialize(ExtensionManager* ext);
+    static void initializeClass(ExtensionManager* ext);
 
 private:
     HistoryManagerImpl* impl;

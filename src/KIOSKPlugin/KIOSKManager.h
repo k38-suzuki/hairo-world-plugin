@@ -19,7 +19,7 @@ public:
     KIOSKManager(ExtensionManager* ext);
     virtual ~KIOSKManager();
 
-    static void initialize(ExtensionManager* ext);
+    static void initializeClass(ExtensionManager* ext);
 
     static void setLoggingEnabled(const bool& on);
 

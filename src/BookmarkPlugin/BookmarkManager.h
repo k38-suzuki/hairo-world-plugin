@@ -18,7 +18,7 @@ public:
     BookmarkManager(ExtensionManager* ext);
     virtual ~BookmarkManager();
 
-    static void initialize(ExtensionManager* ext);
+    static void initializeClass(ExtensionManager* ext);
 
 private:
     BookmarkManagerImpl* impl;

@@ -8,7 +8,7 @@
 
 #include <cnoid/Joystick>
 #include <cnoid/Referenced>
-#include "KeyConfigView.h"
+#include "KeyConfig.h"
 #include "exportdecl.h"
 
 namespace cnoid {
@@ -20,7 +20,7 @@ class CNOID_EXPORT ConfigurableJoystick : public Referenced
 public:
     ConfigurableJoystick() {
         joystick = &defaultJoystick;
-        configView = KeyConfigView::instance();
+        configView = new KeyConfig;
     }
 
     int numAxes() const {
@@ -45,10 +45,14 @@ public:
         return joystick->getButtonState(index);
     }
 
+    void show() {
+        configView->showConfig();
+    }
+
 private:
     JoystickInterface* joystick;
     Joystick defaultJoystick;
-    KeyConfigView* configView;
+    KeyConfig* configView;
 };
 
 }

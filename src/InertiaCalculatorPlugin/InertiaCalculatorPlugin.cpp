@@ -22,7 +22,7 @@ public:
 
     virtual bool initialize() override
     {
-        InertiaCalculator::initialize(this);
+        InertiaCalculator::initializeClass(this);
         return true;
     }
 

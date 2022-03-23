@@ -27,6 +27,8 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
+PipeGenerator* pgeneratorInstance = nullptr;
+
 struct DoubleSpinInfo
 {
     int row;
@@ -38,7 +40,6 @@ struct DoubleSpinInfo
     double value;
 };
 
-
 DoubleSpinInfo doubleSpinInfo[] = {
     { 0, 1, 0.01, 1000.0, 0.01, 3, 1.00 },
     { 0, 3, 0.01, 1000.0, 0.01, 3, 1.00 },
@@ -46,7 +47,6 @@ DoubleSpinInfo doubleSpinInfo[] = {
     { 1, 3, 0.01, 1000.0, 0.01, 3, 0.05 }
 
 };
-
 
 struct SpinInfo
 {
@@ -56,7 +56,6 @@ struct SpinInfo
     int max;
     int value;
 };
-
 
 SpinInfo spinInfo[] = {
     { 2, 1, 0, 359,  0 },
@@ -68,10 +67,11 @@ SpinInfo spinInfo[] = {
 
 namespace cnoid {
 
-class PipeConfigDialog : public Dialog
+class PipeGeneratorImpl : public Dialog
 {
 public:
-    PipeConfigDialog();
+    PipeGeneratorImpl(PipeGenerator* self);
+    PipeGenerator* self;
 
     enum DoubleSpinId { MASS, LENGTH, IN_DIA, OUT_DIA, NUM_DSPINS };
     enum SpinId { ANGLE, STEP, NUM_SPINS };
@@ -88,48 +88,17 @@ public:
     VectorXd calcInertia();
 };
 
-
-class PipeGeneratorImpl
-{
-public:
-    PipeGeneratorImpl(PipeGenerator* self, ExtensionManager* ext);
-    PipeGenerator* self;
-
-    PipeConfigDialog* dialog;
-};
-
 }
 
 
-PipeGenerator::PipeGenerator(ExtensionManager* ext)
+PipeGenerator::PipeGenerator()
 {
-    impl = new PipeGeneratorImpl(this, ext);
+    impl = new PipeGeneratorImpl(this);
 }
 
 
-PipeGeneratorImpl::PipeGeneratorImpl(PipeGenerator* self, ExtensionManager* ext)
+PipeGeneratorImpl::PipeGeneratorImpl(PipeGenerator* self)
     : self(self)
-{
-    dialog = new PipeConfigDialog;
-
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
-    mm.addItem(_("Pipe"))->sigTriggered().connect([&](){ dialog->show(); });
-}
-
-
-PipeGenerator::~PipeGenerator()
-{
-    delete impl;
-}
-
-
-void PipeGenerator::initialize(ExtensionManager* ext)
-{
-    ext->manage(new PipeGenerator(ext));
-}
-
-
-PipeConfigDialog::PipeConfigDialog()
 {
     setWindowTitle(_("Pipe Builder"));
     QVBoxLayout* vbox = new QVBoxLayout;
@@ -181,7 +150,25 @@ PipeConfigDialog::PipeConfigDialog()
 }
 
 
-bool PipeConfigDialog::writeYaml(const string& filename)
+PipeGenerator::~PipeGenerator()
+{
+    delete impl;
+}
+
+
+void PipeGenerator::initializeClass(ExtensionManager* ext)
+{
+    if(!pgeneratorInstance) {
+        pgeneratorInstance = ext->manage(new PipeGenerator);
+    }
+
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
+    mm.addItem(_("Pipe"))->sigTriggered().connect(
+                [&](){ pgeneratorInstance->impl->show(); });
+}
+
+
+bool PipeGeneratorImpl::writeYaml(const string& filename)
 {
     filesystem::path path(filename);
     string name = path.stem().string();
@@ -289,7 +276,7 @@ bool PipeConfigDialog::writeYaml(const string& filename)
 }
 
 
-void PipeConfigDialog::onColorButtonClicked()
+void PipeGeneratorImpl::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -309,7 +296,7 @@ void PipeConfigDialog::onColorButtonClicked()
 }
 
 
-void PipeConfigDialog::onInnerDiameterChanged(const double& diameter)
+void PipeGeneratorImpl::onInnerDiameterChanged(const double& diameter)
 {
     double outerDiameter = dspins[OUT_DIA]->value();
     if(diameter >= outerDiameter) {
@@ -319,7 +306,7 @@ void PipeConfigDialog::onInnerDiameterChanged(const double& diameter)
 }
 
 
-void PipeConfigDialog::onOuterDiameterChanged(const double& diameter)
+void PipeGeneratorImpl::onOuterDiameterChanged(const double& diameter)
 {
     double innerDiameter = dspins[IN_DIA]->value();
     if(diameter <= innerDiameter) {
@@ -329,7 +316,7 @@ void PipeConfigDialog::onOuterDiameterChanged(const double& diameter)
 }
 
 
-VectorXd PipeConfigDialog::calcInertia()
+VectorXd PipeGeneratorImpl::calcInertia()
 {
     VectorXd innerInertia, outerInertia;
     innerInertia.resize(9);

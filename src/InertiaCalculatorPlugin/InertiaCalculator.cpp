@@ -122,7 +122,7 @@ InertiaCalculator::~InertiaCalculator()
 }
 
 
-void InertiaCalculator::initialize(ExtensionManager* ext)
+void InertiaCalculator::initializeClass(ExtensionManager* ext)
 {
     ext->manage(new InertiaCalculator(ext));
 }

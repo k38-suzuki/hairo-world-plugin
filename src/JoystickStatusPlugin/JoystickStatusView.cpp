@@ -156,10 +156,10 @@ JoystickStatusViewImpl::JoystickStatusViewImpl(JoystickStatusView* self)
       keyValues(NUM_JOYSTICK_ELEMENTS, 0.0)
 {
     self->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    self->setDefaultLayoutArea(View::BOTTOM);
+    self->setDefaultLayoutArea(View::BottomCenterArea);
     self->setFocusPolicy(Qt::WheelFocus);
     
-    for(int i=0; i < NUM_JOYSTICK_ELEMENTS; ++i) {
+    for(int i = 0; i < NUM_JOYSTICK_ELEMENTS; ++i) {
         ButtonInfo& info = buttonInfo[i];
         ToolButton& button = buttons[i];
         button.setText(info.label);

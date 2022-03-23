@@ -26,6 +26,8 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
+GratingGenerator* ggeneratorInstance = nullptr;
+
 struct DoubleSpinInfo
 {
     int row;
@@ -37,7 +39,6 @@ struct DoubleSpinInfo
     double value;
 };
 
-
 DoubleSpinInfo doubleSpinInfo[] = {
     { 0, 1, 0.01, 1000.0, 0.01, 3, 1.000 },
     { 0, 3, 0.01, 1000.0, 0.01, 3, 0.038 },
@@ -47,7 +48,6 @@ DoubleSpinInfo doubleSpinInfo[] = {
     { 3, 3, 0.01, 1000.0, 0.01, 3, 0.100 }
 };
 
-
 struct SpinInfo
 {
     int row;
@@ -56,7 +56,6 @@ struct SpinInfo
     int max;
     int value;
 };
-
 
 SpinInfo spinInfo[] = {
     { 1, 1, 0, 1000, 50 },
@@ -68,10 +67,11 @@ SpinInfo spinInfo[] = {
 
 namespace cnoid {
 
-class GratingConfigDialog : public Dialog
+class GratingGeneratorImpl : public Dialog
 {
 public:
-    GratingConfigDialog();
+    GratingGeneratorImpl(GratingGenerator* self);
+    GratingGenerator* self;
 
     enum DoubleSpinId {
         MASS, HEIGHT, FRAME_WDT,
@@ -93,48 +93,17 @@ public:
     VectorXd calcInertia();
 };
 
-
-class GratingGeneratorImpl
-{
-public:
-    GratingGeneratorImpl(GratingGenerator* self, ExtensionManager* ext);
-    GratingGenerator* self;
-
-    GratingConfigDialog* dialog;
-};
-
 }
 
 
-GratingGenerator::GratingGenerator(ExtensionManager* ext)
+GratingGenerator::GratingGenerator()
 {
-    impl = new GratingGeneratorImpl(this, ext);
+    impl = new GratingGeneratorImpl(this);
 }
 
 
-GratingGeneratorImpl::GratingGeneratorImpl(GratingGenerator* self, ExtensionManager* ext)
+GratingGeneratorImpl::GratingGeneratorImpl(GratingGenerator* self)
     : self(self)
-{
-    dialog = new GratingConfigDialog;
-
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
-    mm.addItem(_("Grating"))->sigTriggered().connect([&](){ dialog->show(); });
-}
-
-
-GratingGenerator::~GratingGenerator()
-{
-    delete impl;
-}
-
-
-void GratingGenerator::initialize(ExtensionManager* ext)
-{
-    ext->manage(new GratingGenerator(ext));
-}
-
-
-GratingConfigDialog::GratingConfigDialog()
 {
     setWindowTitle(_("Grating Builder"));
     QVBoxLayout* vbox = new QVBoxLayout;
@@ -207,7 +176,25 @@ GratingConfigDialog::GratingConfigDialog()
 }
 
 
-bool GratingConfigDialog::writeYaml(const string& filename)
+GratingGenerator::~GratingGenerator()
+{
+    delete impl;
+}
+
+
+void GratingGenerator::initializeClass(ExtensionManager* ext)
+{
+    if(!ggeneratorInstance) {
+        ggeneratorInstance = ext->manage(new GratingGenerator);
+    }
+
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
+    mm.addItem(_("Grating"))->sigTriggered().connect(
+                [&](){ ggeneratorInstance->impl->show(); });
+}
+
+
+bool GratingGeneratorImpl::writeYaml(const string& filename)
 {
     filesystem::path path(filename);
     string name = path.stem().string();
@@ -392,7 +379,7 @@ bool GratingConfigDialog::writeYaml(const string& filename)
 }
 
 
-void GratingConfigDialog::onColorButtonClicked()
+void GratingGeneratorImpl::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -412,7 +399,7 @@ void GratingConfigDialog::onColorButtonClicked()
 }
 
 
-void GratingConfigDialog::onValueChanged()
+void GratingGeneratorImpl::onValueChanged()
 {
     double frameWidth = dspins[FRAME_WDT]->value();
     double frameHeight = dspins[FRAME_HGT]->value();
@@ -432,7 +419,7 @@ void GratingConfigDialog::onValueChanged()
 }
 
 
-VectorXd GratingConfigDialog::calcInertia()
+VectorXd GratingGeneratorImpl::calcInertia()
 {
     VectorXd inertia;
     inertia.resize(9);

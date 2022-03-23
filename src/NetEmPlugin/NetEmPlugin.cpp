@@ -24,7 +24,7 @@ public:
 
     virtual bool initialize() override
     {
-        NetworkEmulator::initialize(this);
+        NetworkEmulator::initializeClass(this);
         TCAreaItem::initializeClass(this);
         NetworkEmulatorItem::initializeClass(this);
         return true;

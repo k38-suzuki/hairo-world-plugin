@@ -4,10 +4,9 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "DraggableJoystickView.h"
+#include "OnScreenJoystickView.h"
 #include "JoystickLoggerItem.h"
 #include "JoystickStatusView.h"
-#include "KeyConfigView.h"
 #include "SimulationManager.h"
 
 using namespace cnoid;
@@ -25,11 +24,10 @@ public:
 
     virtual bool initialize() override
     {
-        DraggableJoystickView::initializeClass(this);
+        OnScreenJoystickView::initializeClass(this);
         JoystickLoggerItem::initializeClass(this);
         JoystickStatusView::initializeClass(this);
-        KeyConfigView::initializeClass(this);
-        SimulationManager::initialize(this);
+        SimulationManager::initializeClass(this);
         return true;
     }
 

@@ -91,7 +91,7 @@ HistoryManagerImpl::~HistoryManagerImpl()
 }
 
 
-void HistoryManager::initialize(ExtensionManager* ext)
+void HistoryManager::initializeClass(ExtensionManager* ext)
 {
     ext->manage(new HistoryManager(ext));
 }

@@ -44,7 +44,7 @@ public:
     void onStartButtonToggled(const bool& on);
 };
 
-NetworkEmulatorDialog* dialog = nullptr;
+NetworkEmulatorDialog* emulatorInstance = nullptr;
 
 }
 
@@ -130,14 +130,14 @@ NetworkEmulator::~NetworkEmulator()
 }
 
 
-void NetworkEmulator::initialize(ExtensionManager* ext)
+void NetworkEmulator::initializeClass(ExtensionManager* ext)
 {
-    if(!dialog) {
-        dialog = ext->manage(new NetworkEmulatorDialog);
+    if(!emulatorInstance) {
+        emulatorInstance = ext->manage(new NetworkEmulatorDialog);
     }
     ext->menuManager().setPath("/" N_("Tools"));
     ext->menuManager().addItem(_("NetworkEmulator"))->sigTriggered().connect(
-                [&](){ dialog->show(); });
+                [&](){ emulatorInstance->show(); });
 }
 
 

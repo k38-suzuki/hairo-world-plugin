@@ -37,6 +37,8 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
+CrawlerGenerator* cgeneratorInstance = nullptr;
+
 void putKeyVector3(YAMLWriter& writer, const string key, const Vector3 value)
 {
     writer.putKey(key);
@@ -197,10 +199,11 @@ Info agxseparatorInfo[] = {
 
 namespace cnoid {
 
-class CrawlerConfigDialog : public Dialog
+class CrawlerGeneratorImpl : public Dialog
 {
 public:
-    CrawlerConfigDialog();
+    CrawlerGeneratorImpl(CrawlerGenerator* self);
+    CrawlerGenerator* self;
 
     enum DoubleSpinId {
         CHS_MAS, CHS_XSZ, CHS_YSZ, CHS_ZSZ,
@@ -277,48 +280,17 @@ public:
     bool writeAgxWheel(YAMLWriter& writer);
 };
 
-
-class CrawlerGeneratorImpl
-{
-public:
-    CrawlerGeneratorImpl(CrawlerGenerator* self, ExtensionManager* ext);
-    CrawlerGenerator* self;
-
-    CrawlerConfigDialog* dialog;
-};
-
 }
 
 
-CrawlerGenerator::CrawlerGenerator(ExtensionManager* ext)
+CrawlerGenerator::CrawlerGenerator()
 {
-    impl = new CrawlerGeneratorImpl(this, ext);
+    impl = new CrawlerGeneratorImpl(this);
 }
 
 
-CrawlerGeneratorImpl::CrawlerGeneratorImpl(CrawlerGenerator* self, ExtensionManager* ext)
+CrawlerGeneratorImpl::CrawlerGeneratorImpl(CrawlerGenerator* self)
     : self(self)
-{
-    dialog = new CrawlerConfigDialog;
-
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
-    mm.addItem(_("CrawlerRobot"))->sigTriggered().connect([&](){ dialog->show(); });
-}
-
-
-CrawlerGenerator::~CrawlerGenerator()
-{
-    delete impl;
-}
-
-
-void CrawlerGenerator::initialize(ExtensionManager* ext)
-{
-    ext->manage(new CrawlerGenerator(ext));
-}
-
-
-CrawlerConfigDialog::CrawlerConfigDialog()
 {
     setWindowTitle(_("CrawlerRobot Builder"));
     QGridLayout* gbox = new QGridLayout;
@@ -441,7 +413,25 @@ CrawlerConfigDialog::CrawlerConfigDialog()
 }
 
 
-bool CrawlerConfigDialog::save(const string& filename)
+CrawlerGenerator::~CrawlerGenerator()
+{
+    delete impl;
+}
+
+
+void CrawlerGenerator::initializeClass(ExtensionManager* ext)
+{
+    if(!cgeneratorInstance) {
+        cgeneratorInstance = ext->manage(new CrawlerGenerator);
+    }
+
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
+    mm.addItem(_("CrawlerRobot"))->sigTriggered().connect(
+                [&](){ cgeneratorInstance->impl->show(); });
+}
+
+
+bool CrawlerGeneratorImpl::save(const string& filename)
 {
     if(!filename.empty()) {
         filesystem::path path(filename);
@@ -456,7 +446,7 @@ bool CrawlerConfigDialog::save(const string& filename)
 }
 
 
-void CrawlerConfigDialog::initialize()
+void CrawlerGeneratorImpl::initialize()
 {
     for(int i = 0; i < NUM_DSPINS; ++i) {
         DoubleSpinInfo info = doubleSpinInfo[i];
@@ -497,13 +487,13 @@ void CrawlerConfigDialog::initialize()
 }
 
 
-void CrawlerConfigDialog::onResetButtonClicked()
+void CrawlerGeneratorImpl::onResetButtonClicked()
 {
     initialize();
 }
 
 
-void CrawlerConfigDialog::onImportYamlButtonClicked()
+void CrawlerGeneratorImpl::onImportYamlButtonClicked()
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Open a configuration file"));
@@ -535,7 +525,7 @@ void CrawlerConfigDialog::onImportYamlButtonClicked()
 }
 
 
-bool CrawlerConfigDialog::loadConfig(const string& filename,std::ostream& os )
+bool CrawlerGeneratorImpl::loadConfig(const string& filename,std::ostream& os )
 {
     try {
         YAMLReader reader;
@@ -589,7 +579,7 @@ bool CrawlerConfigDialog::loadConfig(const string& filename,std::ostream& os )
 }
 
 
-void CrawlerConfigDialog::onExportYamlButtonClicked()
+void CrawlerGeneratorImpl::onExportYamlButtonClicked()
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Save a configuration file"));
@@ -627,7 +617,7 @@ void CrawlerConfigDialog::onExportYamlButtonClicked()
 }
 
 
-void CrawlerConfigDialog::onEnableAgxCheckToggled(const bool& on)
+void CrawlerGeneratorImpl::onEnableAgxCheckToggled(const bool& on)
 {
     agxdspins[TRK_BNT]->setEnabled(on);
     agxdspins[TRK_BNW]->setEnabled(on);
@@ -667,7 +657,7 @@ void CrawlerConfigDialog::onEnableAgxCheckToggled(const bool& on)
 }
 
 
-void CrawlerConfigDialog::onColorChanged(PushButton* pushbutton)
+void CrawlerGeneratorImpl::onColorChanged(PushButton* pushbutton)
 {
     QColor selectedColor;
     QColor currentColor = pushbutton->palette().color(QPalette::Button);
@@ -687,7 +677,7 @@ void CrawlerConfigDialog::onColorChanged(PushButton* pushbutton)
 }
 
 
-void CrawlerConfigDialog::setColor(PushButton* pushbutton, const Vector3& color)
+void CrawlerGeneratorImpl::setColor(PushButton* pushbutton, const Vector3& color)
 {
     QColor selectedColor;
     selectedColor.setRed(color[0] * 255.0);
@@ -699,14 +689,14 @@ void CrawlerConfigDialog::setColor(PushButton* pushbutton, const Vector3& color)
 }
 
 
-Vector3 CrawlerConfigDialog::extractColor(PushButton* colorButton)
+Vector3 CrawlerGeneratorImpl::extractColor(PushButton* colorButton)
 {
     QColor selectedColor = colorButton->palette().color(QPalette::Button);
     return Vector3(selectedColor.red() / 255.0, selectedColor.green() / 255.0, selectedColor.blue() / 255.0);
 }
 
 
-bool CrawlerConfigDialog::writeYaml(const string& filename)
+bool CrawlerGeneratorImpl::writeYaml(const string& filename)
 {
     if(filename.empty()) {
         return false;
@@ -753,7 +743,7 @@ bool CrawlerConfigDialog::writeYaml(const string& filename)
 }
 
 
-bool CrawlerConfigDialog::write(const string& filename)
+bool CrawlerGeneratorImpl::write(const string& filename)
 {
     if(filename.empty()) {
         return false;
@@ -910,7 +900,7 @@ bool CrawlerConfigDialog::write(const string& filename)
 }
 
 
-bool CrawlerConfigDialog::writeTrack(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeTrack(YAMLWriter& writer)
 {
     writer.putKeyValue("jointType", "pseudo_continuous_track");
     writer.putKeyValue("jointAxis", "Y");
@@ -970,7 +960,7 @@ bool CrawlerConfigDialog::writeTrack(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeSpacer(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeSpacer(YAMLWriter& writer)
 {
     writer.putKeyValue("jointType", "revolute");
     writer.putKeyValue("jointAxis", "-Y");
@@ -1010,7 +1000,7 @@ bool CrawlerConfigDialog::writeSpacer(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeSubTrackF(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeSubTrackF(YAMLWriter& writer)
 {
     writer.putKeyValue("jointType", "pseudo_continuous_track");
     writer.putKeyValue("jointAxis", "Y");
@@ -1071,7 +1061,7 @@ bool CrawlerConfigDialog::writeSubTrackF(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeSubTrackR(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeSubTrackR(YAMLWriter& writer)
 {
     writer.putKeyValue("jointType", "pseudo_continuous_track");
     writer.putKeyValue("jointAxis", "Y");
@@ -1132,7 +1122,7 @@ bool CrawlerConfigDialog::writeSubTrackR(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeAgx(const string& filename)
+bool CrawlerGeneratorImpl::writeAgx(const string& filename)
 {
     if(filename.empty()) {
         return false;
@@ -1589,7 +1579,7 @@ bool CrawlerConfigDialog::writeAgx(const string& filename)
 }
 
 
-bool CrawlerConfigDialog::writeAgxTrack(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxTrack(YAMLWriter& writer)
 {
     writer.putKeyValue("jointType", "fixed");
     putKeyVector3(writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
@@ -1608,7 +1598,7 @@ bool CrawlerConfigDialog::writeAgxTrack(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeAgxTrackBelt(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxTrackBelt(YAMLWriter& writer)
 {
     putKeyVector3(writer, "upAxis", Vector3(0.0, 0.0, 1.0));
     writer.putKeyValue("numberOfNodes", agxspins[TRK_BNN]->value());
@@ -1628,7 +1618,7 @@ bool CrawlerConfigDialog::writeAgxTrackBelt(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeAgxSprocket(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxSprocket(YAMLWriter& writer)
 {
     writeAgxWheel(writer);
     writer.putKeyValue("mass", dspins[TRK_MAS]->value() * 2.0 / 9.0);
@@ -1664,19 +1654,19 @@ bool CrawlerConfigDialog::writeAgxSprocket(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeAgxRoller(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxRoller(YAMLWriter& writer)
 {
     return writeAgxSprocket(writer);
 }
 
 
-bool CrawlerConfigDialog::writeAgxIdler(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxIdler(YAMLWriter& writer)
 {
     return writeAgxSprocket(writer);
 }
 
 
-bool CrawlerConfigDialog::writeAgxSpacer(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxSpacer(YAMLWriter& writer)
 {
     writer.putKeyValue("jointType", "revolute");
     writer.putKeyValue("jointAxis", "-Y");
@@ -1716,7 +1706,7 @@ bool CrawlerConfigDialog::writeAgxSpacer(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeAgxSubTrackF(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxSubTrackF(YAMLWriter& writer)
 {
     writer.putKeyValue("jointType", "fixed");
     putKeyVector3(writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
@@ -1735,7 +1725,7 @@ bool CrawlerConfigDialog::writeAgxSubTrackF(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeAgxSubTrackR(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxSubTrackR(YAMLWriter& writer)
 {
     writer.putKeyValue("jointType", "fixed");
     putKeyVector3(writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
@@ -1754,7 +1744,7 @@ bool CrawlerConfigDialog::writeAgxSubTrackR(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeAgxSubTrackBelt(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxSubTrackBelt(YAMLWriter& writer)
 {
     putKeyVector3(writer, "upAxis", Vector3(0.0, 0.0, 1.0));
     writer.putKeyValue("numberOfNodes", agxspins[FLP_BNN]->value());
@@ -1774,7 +1764,7 @@ bool CrawlerConfigDialog::writeAgxSubTrackBelt(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeAgxSprocketF(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxSprocketF(YAMLWriter& writer)
 {
     double r2spf = dspins[FFL_RRD]->value() * dspins[FFL_RRD]->value();
     double r2rof = ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0) * ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
@@ -1816,7 +1806,7 @@ bool CrawlerConfigDialog::writeAgxSprocketF(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeAgxRollerF(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxRollerF(YAMLWriter& writer)
 {
     double r2spf = dspins[FFL_RRD]->value() * dspins[FFL_RRD]->value();
     double r2rof = ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0) * ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
@@ -1858,7 +1848,7 @@ bool CrawlerConfigDialog::writeAgxRollerF(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeAgxIdlerF(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxIdlerF(YAMLWriter& writer)
 {
     double r2spf = dspins[FFL_RRD]->value() * dspins[FFL_RRD]->value();
     double r2rof = ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0) * ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
@@ -1900,7 +1890,7 @@ bool CrawlerConfigDialog::writeAgxIdlerF(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeAgxSprocketR(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxSprocketR(YAMLWriter& writer)
 {
     double r2spr = dspins[RFL_RRD]->value() * dspins[RFL_RRD]->value();
     double r2ror = ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0) * ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
@@ -1942,7 +1932,7 @@ bool CrawlerConfigDialog::writeAgxSprocketR(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeAgxRollerR(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxRollerR(YAMLWriter& writer)
 {
     double r2spr = dspins[RFL_RRD]->value() * dspins[RFL_RRD]->value();
     double r2ror = ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0) * ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
@@ -1984,7 +1974,7 @@ bool CrawlerConfigDialog::writeAgxRollerR(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeAgxIdlerR(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxIdlerR(YAMLWriter& writer)
 {
     double r2spr = dspins[RFL_RRD]->value() * dspins[RFL_RRD]->value();
     double r2ror = ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0) * ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
@@ -2026,7 +2016,7 @@ bool CrawlerConfigDialog::writeAgxIdlerR(YAMLWriter& writer)
 }
 
 
-bool CrawlerConfigDialog::writeAgxWheel(YAMLWriter& writer)
+bool CrawlerGeneratorImpl::writeAgxWheel(YAMLWriter& writer)
 {
     writer.putKeyValue("jointType", "revolute");
     writer.putKeyValue("jointAxis", "Y");

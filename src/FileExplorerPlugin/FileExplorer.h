@@ -18,7 +18,7 @@ public:
     FileExplorer();
     virtual ~FileExplorer();
 
-    static void initialize(ExtensionManager* ext);
+    static void initializeClass(ExtensionManager* ext);
 
 private:
     FileExplorerImpl* impl;

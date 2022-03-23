@@ -17,13 +17,13 @@ using namespace std;
 
 namespace cnoid {
 
+FileExplorer* explorerInstance = nullptr;
+
 class FileExplorerImpl
 {
 public:
     FileExplorerImpl(FileExplorer* self);
     FileExplorer* self;
-
-    enum ProgramID { NAUTILUS, GEDIT, NUM_PROGRAMS };
 
     vector<Process*> processes;
 
@@ -44,29 +44,7 @@ FileExplorer::FileExplorer()
 FileExplorerImpl::FileExplorerImpl(FileExplorer* self)
     : self(self)
 {
-    ItemTreeView::instance()->customizeContextMenu<BodyItem>(
-        [&](BodyItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
-            menuManager.setPath("/").setPath(_("Open"));
-            menuManager.addItem(_("File"))->sigTriggered().connect(
-                [&, item](){ execute(item, GEDIT); });
-            menuManager.addItem(_("Directory"))->sigTriggered().connect(
-                [&, item](){ execute(item, NAUTILUS); });
-            menuManager.setPath("/");
-            menuManager.addSeparator();
-            menuFunction.dispatchAs<Item>(item);
-        });
-
-    ItemTreeView::instance()->customizeContextMenu<SceneItem>(
-        [&](SceneItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
-            menuManager.setPath("/").setPath(_("Open"));
-            menuManager.addItem(_("File"))->sigTriggered().connect(
-                [&, item](){ execute(item, GEDIT); });
-            menuManager.addItem(_("Directory"))->sigTriggered().connect(
-                [&, item](){ execute(item, NAUTILUS); });
-            menuManager.setPath("/");
-            menuManager.addSeparator();
-            menuFunction.dispatchAs<Item>(item);
-        });
+    processes.clear();
 }
 
 
@@ -77,15 +55,41 @@ FileExplorer::~FileExplorer()
 }
 
 
-void FileExplorer::initialize(ExtensionManager* ext)
+void FileExplorer::initializeClass(ExtensionManager* ext)
 {
-    ext->manage(new FileExplorer);
+    if(!explorerInstance) {
+        explorerInstance = ext->manage(new FileExplorer);
+    }
+
+    ItemTreeView::instance()->customizeContextMenu<BodyItem>(
+        [&](BodyItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
+            menuManager.setPath("/").setPath(_("Open"));
+            menuManager.addItem(_("File"))->sigTriggered().connect(
+                [&, item](){ explorerInstance->impl->execute(item, 0); });
+            menuManager.addItem(_("Directory"))->sigTriggered().connect(
+                [&, item](){ explorerInstance->impl->execute(item, 1); });
+            menuManager.setPath("/");
+            menuManager.addSeparator();
+            menuFunction.dispatchAs<Item>(item);
+        });
+
+    ItemTreeView::instance()->customizeContextMenu<SceneItem>(
+        [&](SceneItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
+            menuManager.setPath("/").setPath(_("Open"));
+            menuManager.addItem(_("File"))->sigTriggered().connect(
+                [&, item](){ explorerInstance->impl->execute(item, 0); });
+            menuManager.addItem(_("Directory"))->sigTriggered().connect(
+                [&, item](){ explorerInstance->impl->execute(item, 1); });
+            menuManager.setPath("/");
+            menuManager.addSeparator();
+            menuFunction.dispatchAs<Item>(item);
+        });
 }
 
 
 void FileExplorerImpl::execute(const Item* item, const int& id)
 {
-    static const string programs[] = { "nautilus", "gedit" };
+    static const string programs[] = { "gedit", "nautilus" };
     const int argc = 2;
     const char* argv[] = { programs[id].c_str(), item->filePath().c_str() };
     execute(argc, argv);

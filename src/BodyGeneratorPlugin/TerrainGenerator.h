@@ -15,10 +15,10 @@ class TerrainGeneratorImpl;
 class TerrainGenerator
 {
 public:
-    TerrainGenerator(ExtensionManager* ext);
+    TerrainGenerator();
     virtual ~TerrainGenerator();
 
-    static void initialize(ExtensionManager* ext);
+    static void initializeClass(ExtensionManager* ext);
 
 private:
     TerrainGeneratorImpl* impl;

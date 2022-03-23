@@ -156,7 +156,7 @@ MotionPlanner::~MotionPlanner()
 }
 
 
-void MotionPlanner::initialize(ExtensionManager* ext)
+void MotionPlanner::initializeClass(ExtensionManager* ext)
 {
     string version = OMPL_VERSION;
     MessageView::instance()->putln(fmt::format("OMPL version: {0}", version));

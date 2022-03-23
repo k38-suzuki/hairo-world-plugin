@@ -88,7 +88,7 @@ BookmarkManagerImpl::~BookmarkManagerImpl()
 }
 
 
-void BookmarkManager::initialize(ExtensionManager* ext)
+void BookmarkManager::initializeClass(ExtensionManager* ext)
 {
     ext->manage(new BookmarkManager(ext));
 }

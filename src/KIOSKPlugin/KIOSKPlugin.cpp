@@ -24,7 +24,7 @@ public:
 
     virtual bool initialize() override
     {
-        KIOSKManager::initialize(this);
+        KIOSKManager::initializeClass(this);
         KIOSKView::initializeClass(this);
         SimpleSimulationView::initializeClass(this);
         return true;

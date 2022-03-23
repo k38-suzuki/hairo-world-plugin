@@ -20,7 +20,7 @@ public:
     NetworkEmulator();
     virtual ~NetworkEmulator();
 
-    static void initialize(ExtensionManager* ext);
+    static void initializeClass(ExtensionManager* ext);
 
     std::vector<std::string>& interfaces() const;
 

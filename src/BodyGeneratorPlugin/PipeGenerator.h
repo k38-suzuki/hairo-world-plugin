@@ -15,10 +15,10 @@ class PipeGeneratorImpl;
 class PipeGenerator
 {
 public:
-    PipeGenerator(ExtensionManager* ext);
+    PipeGenerator();
     virtual ~PipeGenerator();
 
-    static void initialize(ExtensionManager* ext);
+    static void initializeClass(ExtensionManager* ext);
 
 private:
     PipeGeneratorImpl* impl;

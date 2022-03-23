@@ -15,10 +15,10 @@ class SimulationManagerImpl;
 class SimulationManager
 {
 public:
-    SimulationManager(ExtensionManager* ext);
+    SimulationManager();
     virtual ~SimulationManager();
 
-    static void initialize(ExtensionManager* ext);
+    static void initializeClass(ExtensionManager* ext);
 
 private:
     SimulationManagerImpl* impl;

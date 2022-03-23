@@ -33,17 +33,21 @@ msgstr "ジョイスティック状態"
 msgid "Hide indicators"
 msgstr "インジケータを隠す"
 
-#: ../KeyConfigView.cpp:150
+#: ../KeyConfig.cpp:118
+msgid "&Ok"
+msgstr "&Ｏｋ"
+
+#: ../KeyConfig.cpp:150
 msgid "KeyConfig"
 msgstr "キーコンフィグ"
 
-#: ../DraggableJoystickView.cpp:115
-msgid "DraggableJoystickView"
-msgstr "仮想ジョイスティックビュー（デバッグ用）"
+#: ../OnScreenJoystickView.cpp:115
+msgid "OnScreenJoystickView"
+msgstr "スクリーンジョイスティックビュー"
 
-#: ../DraggableJoystickView.cpp:115
+#: ../OnScreenJoystickView.cpp:115
 msgid "Draggable Joystick"
-msgstr "仮想ジョイスティック（デバッグ用）"
+msgstr "スクリーンジョイスティック"
 
 #: ../SimulationManager.cpp:54
 msgid "Joystick"

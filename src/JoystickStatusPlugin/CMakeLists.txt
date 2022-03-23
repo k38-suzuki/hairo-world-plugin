@@ -1,23 +1,23 @@
 
 set(sources
     AxisWidget.cpp
-    DraggableJoystickView.cpp
+    OnScreenJoystickView.cpp
     JoystickLoggerItem.cpp
     JoystickStatusPlugin.cpp
     JoystickStatusView.cpp
-    KeyConfigView.cpp
+    KeyConfig.cpp
     SimulationManager.cpp
     )
 
 set(headers
     AxisWidget.h
     ConfigurableJoystick.h
-    DraggableJoystickView.h
+    OnScreenJoystickView.h
     exportdecl.h
     gettext.h
     JoystickLoggerItem.h
     JoystickStatusView.h
-    KeyConfigView.h
+    KeyConfig.h
     SimulationManager.h
     )
 

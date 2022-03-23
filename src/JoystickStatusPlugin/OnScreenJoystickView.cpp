@@ -3,7 +3,7 @@
    \author Kenta Suzuki
 */
 
-#include "DraggableJoystickView.h"
+#include "OnScreenJoystickView.h"
 #include <cnoid/Button>
 #include <cnoid/ExtJoystick>
 #include <cnoid/Joystick>
@@ -42,11 +42,11 @@ AxisInfo axisInfo[] = {
 
 namespace cnoid {
 
-class DraggableJoystickViewImpl : public ExtJoystick
+class OnScreenJoystickViewImpl : public ExtJoystick
 {
 public:
-    DraggableJoystickViewImpl(DraggableJoystickView* self);
-    DraggableJoystickView* self;
+    OnScreenJoystickViewImpl(OnScreenJoystickView* self);
+    OnScreenJoystickView* self;
 
     enum AxisID {
         L_STICK,
@@ -86,13 +86,13 @@ public:
 }
 
 
-DraggableJoystickView::DraggableJoystickView()
+OnScreenJoystickView::OnScreenJoystickView()
 {
-    impl = new DraggableJoystickViewImpl(this);
+    impl = new OnScreenJoystickViewImpl(this);
 }
 
 
-DraggableJoystickViewImpl::DraggableJoystickViewImpl(DraggableJoystickView* self)
+OnScreenJoystickViewImpl::OnScreenJoystickViewImpl(OnScreenJoystickView* self)
     : self(self)
 {
     self->setDefaultLayoutArea(View::BottomCenterArea);
@@ -128,24 +128,24 @@ DraggableJoystickViewImpl::DraggableJoystickViewImpl(DraggableJoystickView* self
     joystick.sigAxis().connect([&](int id, double position){ onAxis(id, position); });
     joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
 
-    ExtJoystick::registerJoystick("DraggableJoystickView", this);
+    ExtJoystick::registerJoystick("OnScreenJoystickView", this);
 }
 
 
-DraggableJoystickView::~DraggableJoystickView()
+OnScreenJoystickView::~OnScreenJoystickView()
 {
     delete impl;
 }
 
 
-void DraggableJoystickView::initializeClass(ExtensionManager* ext)
+void OnScreenJoystickView::initializeClass(ExtensionManager* ext)
 {
-    ext->viewManager().registerClass<DraggableJoystickView>(
-                N_("DraggableJoystickView"), N_("Draggable Joystick"), ViewManager::SINGLE_OPTIONAL);
+    ext->viewManager().registerClass<OnScreenJoystickView>(
+                N_("OnScreenJoystickView"), N_("Draggable Joystick"), ViewManager::SINGLE_OPTIONAL);
 }
 
 
-void DraggableJoystickViewImpl::onAxis(const int& id, const double& position)
+void OnScreenJoystickViewImpl::onAxis(const int& id, const double& position)
 {
     AxisInfo info = axisInfo[id];
     axes[info.index]->setValue(info.id, position);
@@ -153,7 +153,7 @@ void DraggableJoystickViewImpl::onAxis(const int& id, const double& position)
 }
 
 
-void DraggableJoystickViewImpl::onButton(const int& id, const bool& isPressed)
+void OnScreenJoystickViewImpl::onButton(const int& id, const bool& isPressed)
 {
     if(isPressed) {
         onButtonPressed(id);
@@ -163,7 +163,7 @@ void DraggableJoystickViewImpl::onButton(const int& id, const bool& isPressed)
 }
 
 
-void DraggableJoystickViewImpl::onAxis(const int& index, const double& h_position, const double& v_position)
+void OnScreenJoystickViewImpl::onAxis(const int& index, const double& h_position, const double& v_position)
 {
     std::lock_guard<std::mutex> lock(mutex);
     if(index == L_STICK) {
@@ -187,7 +187,7 @@ void DraggableJoystickViewImpl::onAxis(const int& index, const double& h_positio
 }
 
 
-void DraggableJoystickViewImpl::onButtonPressed(const int& index)
+void OnScreenJoystickViewImpl::onButtonPressed(const int& index)
 {
     std::lock_guard<std::mutex> lock(mutex);
     buttonStates[index] = true;
@@ -198,7 +198,7 @@ void DraggableJoystickViewImpl::onButtonPressed(const int& index)
 }
 
 
-void DraggableJoystickViewImpl::onButtonReleased(const int& index)
+void OnScreenJoystickViewImpl::onButtonReleased(const int& index)
 {
     std::lock_guard<std::mutex> lock(mutex);
     buttonStates[index] = false;
@@ -208,25 +208,25 @@ void DraggableJoystickViewImpl::onButtonReleased(const int& index)
 }
 
 
-int DraggableJoystickViewImpl::numAxes() const
+int OnScreenJoystickViewImpl::numAxes() const
 {
     return axisPositions.size();
 }
 
 
-int DraggableJoystickViewImpl::numButtons() const
+int OnScreenJoystickViewImpl::numButtons() const
 {
     return buttonStates.size();
 }
 
 
-bool DraggableJoystickViewImpl::readCurrentState()
+bool OnScreenJoystickViewImpl::readCurrentState()
 {
     return true;
 }
 
 
-double DraggableJoystickViewImpl::getPosition(int axis) const
+double OnScreenJoystickViewImpl::getPosition(int axis) const
 {
     if(axis >= 0 && axis < (int)axisPositions.size()) {
         return axisPositions[axis];
@@ -235,7 +235,7 @@ double DraggableJoystickViewImpl::getPosition(int axis) const
 }
 
 
-bool DraggableJoystickViewImpl::getButtonState(int button) const
+bool OnScreenJoystickViewImpl::getButtonState(int button) const
 {
     if(button >= 0 && button < (int)buttonStates.size()) {
         return buttonStates[button];
@@ -244,7 +244,7 @@ bool DraggableJoystickViewImpl::getButtonState(int button) const
 }
 
 
-bool DraggableJoystickViewImpl::isActive() const
+bool OnScreenJoystickViewImpl::isActive() const
 {
     for(size_t i = 0; i < axisPositions.size(); ++i) {
         if(axisPositions[i] != 0.0) {
@@ -260,25 +260,25 @@ bool DraggableJoystickViewImpl::isActive() const
 }
 
 
-SignalProxy<void(int id, double position)> DraggableJoystickViewImpl::sigAxis()
+SignalProxy<void(int id, double position)> OnScreenJoystickViewImpl::sigAxis()
 {
     return sigAxis_;
 }
 
 
-SignalProxy<void(int id, bool isPressed)> DraggableJoystickViewImpl::sigButton()
+SignalProxy<void(int id, bool isPressed)> OnScreenJoystickViewImpl::sigButton()
 {
     return sigButton_;
 }
 
 
-bool DraggableJoystickView::storeState(Archive& archive)
+bool OnScreenJoystickView::storeState(Archive& archive)
 {
     return true;
 }
 
 
-bool DraggableJoystickView::restoreState(const Archive& archive)
+bool OnScreenJoystickView::restoreState(const Archive& archive)
 {
     return true;
 }

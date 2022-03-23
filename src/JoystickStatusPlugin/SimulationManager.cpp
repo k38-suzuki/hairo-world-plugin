@@ -16,19 +16,26 @@
 using namespace cnoid;
 using namespace std;
 
+namespace {
+
+SimulationManager* smanagerInstance = nullptr;
+Action* useStartButton = nullptr;
+
+}
+
+
 namespace cnoid {
 
 class SimulationManagerImpl
 {
 public:
-  SimulationManagerImpl(SimulationManager* self, ExtensionManager* ext);
+  SimulationManagerImpl(SimulationManager* self);
   virtual ~SimulationManagerImpl();
   SimulationManager* self;
 
   bool startState;
   bool pauseState;
   JoystickCapture joystick;
-  Action* useStartButton;
   SimulatorItem* simulatoritem;
   SimulationBar* sb;
 
@@ -41,19 +48,16 @@ public:
 }
 
 
-SimulationManager::SimulationManager(ExtensionManager* ext)
+SimulationManager::SimulationManager()
 {
-    impl = new SimulationManagerImpl(this, ext);
+    impl = new SimulationManagerImpl(this);
 }
 
 
-SimulationManagerImpl::SimulationManagerImpl(SimulationManager* self, ExtensionManager* ext)
+SimulationManagerImpl::SimulationManagerImpl(SimulationManager* self)
     : self(self),
       sb(SimulationBar::instance())
 {
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Options")).setPath(N_("Joystick"));
-    useStartButton = mm.addCheckItem(_("Start simulation (StartButton)"));
-
     startState = false;
     pauseState = false;
     joystick.setDevice("/dev/input/js0");
@@ -81,9 +85,14 @@ SimulationManagerImpl::~SimulationManagerImpl()
 }
 
 
-void SimulationManager::initialize(ExtensionManager* ext)
+void SimulationManager::initializeClass(ExtensionManager* ext)
 {
-    ext->manage(new SimulationManager(ext));
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Options")).setPath(N_("Joystick"));
+    useStartButton = mm.addCheckItem(_("Start simulation (StartButton)"));
+
+    if(!smanagerInstance) {
+        smanagerInstance = ext->manage(new SimulationManager);
+    }
 }
 
 

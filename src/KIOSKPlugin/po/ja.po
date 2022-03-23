@@ -97,6 +97,18 @@ msgstr ""
 msgid "Would you like to return to the home screen?"
 msgstr "ホーム画面に戻りますか？"
 
+#: ../SimpleSimulationView.cpp:142
+msgid "Play mode"
+msgstr "再生モード"
+
+#: ../SimpleSimulationView.cpp:143
+msgid "Simulation"
+msgstr "シミュレーション"
+
+#: ../SimpleSimulationView.cpp:148
+msgid "Animation"
+msgstr "アニメーション"
+
 #: ../SimpleSimulationView.cpp:120
 msgid "Start simulation from the beginning"
 msgstr "初期位置からのシミュレーションを開始"

@@ -26,11 +26,11 @@ public:
 
     virtual bool initialize()
     {
-        PipeGenerator::initialize(this);
-        GratingGenerator::initialize(this);
-        SlopeGenerator::initialize(this);
-        TerrainGenerator::initialize(this);
-        CrawlerGenerator::initialize(this);
+        PipeGenerator::initializeClass(this);
+        GratingGenerator::initializeClass(this);
+        SlopeGenerator::initializeClass(this);
+        TerrainGenerator::initializeClass(this);
+        CrawlerGenerator::initializeClass(this);
         return true;
     }
 

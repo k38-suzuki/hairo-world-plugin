@@ -29,9 +29,11 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
+TerrainGenerator* tgeneratorInstance = nullptr;
 DoubleSpinBox* scaleSpin = nullptr;
 
 }
+
 
 namespace cnoid {
 
@@ -39,7 +41,6 @@ class TerrainData
 {
 public:
     TerrainData();
-    virtual ~TerrainData();
 
     bool read(const std::string& filename);
 
@@ -62,10 +63,11 @@ private:
 };
 
 
-class TerrainConfigDialog : public Dialog
+class TerrainGeneratorImpl : public Dialog
 {
 public:
-    TerrainConfigDialog();
+    TerrainGeneratorImpl(TerrainGenerator* self);
+    TerrainGenerator* self;
 
     LineEdit* inputFileLine;
     PushButton* loadButton;
@@ -73,53 +75,20 @@ public:
     FileFormWidget* formWidget;
 
     bool save(const string& filename);
-    void onLoadButtonClicked();
-};
+    void onLoadButtonClicked();};
+}
 
 
-class TerrainGeneratorImpl
+TerrainGenerator::TerrainGenerator()
 {
-public:
-    TerrainGeneratorImpl(TerrainGenerator* self, ExtensionManager* ext);
-    TerrainGenerator* self;
-
-    TerrainConfigDialog* dialog;
-};
+    impl = new TerrainGeneratorImpl(this);
 
 }
 
 
-TerrainGenerator::TerrainGenerator(ExtensionManager* ext)
-{
-    impl = new TerrainGeneratorImpl(this, ext);
-
-}
-
-
-TerrainGeneratorImpl::TerrainGeneratorImpl(TerrainGenerator* self, ExtensionManager* ext)
-    : self(self)
-{
-    dialog = new TerrainConfigDialog;
-
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
-    mm.addItem(_("BoxTerrain"))->sigTriggered().connect([&](){ dialog->show(); });
-}
-
-
-TerrainGenerator::~TerrainGenerator()
-{
-    delete impl;
-}
-
-
-void TerrainGenerator::initialize(ExtensionManager* ext)
-{
-    ext->manage(new TerrainGenerator(ext));
-}
-
-
-TerrainConfigDialog::TerrainConfigDialog()
-    : mv(MessageView::instance())
+TerrainGeneratorImpl::TerrainGeneratorImpl(TerrainGenerator* self)
+    : self(self),
+      mv(MessageView::instance())
 {
     setWindowTitle(_("BoxTerrain Builder"));
 
@@ -155,7 +124,25 @@ TerrainConfigDialog::TerrainConfigDialog()
 }
 
 
-bool TerrainConfigDialog::save(const string& filename)
+TerrainGenerator::~TerrainGenerator()
+{
+    delete impl;
+}
+
+
+void TerrainGenerator::initializeClass(ExtensionManager* ext)
+{
+    if(!tgeneratorInstance) {
+        tgeneratorInstance = ext->manage(new TerrainGenerator);
+    }
+
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
+    mm.addItem(_("BoxTerrain"))->sigTriggered().connect(
+                [&](){ tgeneratorInstance->impl->show(); });
+}
+
+
+bool TerrainGeneratorImpl::save(const string& filename)
 {
     string inputFile = inputFileLine->text().toStdString();
     if(filename.empty() || inputFile.empty()) {
@@ -256,7 +243,7 @@ bool TerrainConfigDialog::save(const string& filename)
 }
 
 
-void TerrainConfigDialog::onLoadButtonClicked()
+void TerrainGeneratorImpl::onLoadButtonClicked()
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Open a CSV file"));
@@ -284,12 +271,6 @@ TerrainData::TerrainData()
     xsize_ = 0;
     ysize_ = 0;
     id_ = 0;
-}
-
-
-TerrainData::~TerrainData()
-{
-
 }
 
 

@@ -22,7 +22,7 @@ public:
 
     virtual bool initialize() override
     {
-        MotionPlanner::initialize(this);
+        MotionPlanner::initializeClass(this);
         return true;
     }
 

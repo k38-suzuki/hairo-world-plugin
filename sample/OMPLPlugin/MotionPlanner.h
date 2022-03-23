@@ -18,7 +18,7 @@ public:
     MotionPlanner(ExtensionManager* ext);
     virtual ~MotionPlanner();
 
-    static void initialize(ExtensionManager* ext);
+    static void initializeClass(ExtensionManager* ext);
 
 private:
     MotionPlannerImpl* impl;

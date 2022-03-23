@@ -3,18 +3,19 @@
    \author Kenta Suzuki
 */
 
-#include "KeyConfigView.h"
+#include "KeyConfig.h"
 #include <cnoid/Archive>
+#include <cnoid/Button>
 #include <cnoid/ComboBox>
+#include <cnoid/Dialog>
 #include <cnoid/Joystick>
 #include <cnoid/Separator>
-#include <cnoid/ViewManager>
-#include <cnoid/Widget>
+#include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QScrollArea>
 #include <QVBoxLayout>
+#include "gettext.h"
 
 using namespace cnoid;
 using namespace std;
@@ -55,46 +56,29 @@ ItemInfo buttonInfo[] = {
 
 namespace cnoid {
 
-class KeyConfigViewImpl
+class KeyConfigImpl : public Dialog
 {
 public:
-    KeyConfigViewImpl(KeyConfigView* self);
-    KeyConfigView* self;
+    KeyConfigImpl(KeyConfig* self);
+    KeyConfig* self;
 
-    QScrollArea scrollArea;
     ComboBox* axisCombos[Joystick::NUM_STD_AXES];
     ComboBox* buttonCombos[Joystick::NUM_STD_BUTTONS];
-
-    bool storeState(Archive& archive);
-    bool restoreState(const Archive& archive);
 };
 
 }
 
 
-KeyConfigView::KeyConfigView()
+KeyConfig::KeyConfig()
 {
-    impl = new KeyConfigViewImpl(this);
+    impl = new KeyConfigImpl(this);
 }
 
 
-KeyConfigViewImpl::KeyConfigViewImpl(KeyConfigView* self)
+KeyConfigImpl::KeyConfigImpl(KeyConfig* self)
     : self(self)
 {
-    self->setDefaultLayoutArea(View::BottomCenterArea);
-
-    Widget* topWidget = new Widget;
-    topWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
-
-    scrollArea.setStyleSheet("QScrollArea {background: transparent;}");
-    scrollArea.setFrameShape(QFrame::NoFrame);
-    scrollArea.setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    scrollArea.setWidget(topWidget);
-    topWidget->setAutoFillBackground(false);
-    QVBoxLayout* baseLayout = new QVBoxLayout;
-    scrollArea.setWidgetResizable(true);
-    baseLayout->addWidget(&scrollArea);
-    self->setLayout(baseLayout);
+    setWindowTitle(_("KeyConfig"));
 
     QGridLayout* agbox = new QGridLayout;
     agbox->addWidget(new QLabel("Axis"), 0, 0);
@@ -130,35 +114,30 @@ KeyConfigViewImpl::KeyConfigViewImpl(KeyConfigView* self)
     bvbox->addLayout(bgbox);
     bvbox->addStretch();
 
+//    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
+//    PushButton* okButton = new PushButton(_("&Ok"));
+//    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
+//    connect(buttonBox, &QDialogButtonBox::accepted, [this](){ this->accept(); });
+
     QHBoxLayout* hbox = new QHBoxLayout;
     hbox->addLayout(avbox);
     hbox->addWidget(new VSeparator);
     hbox->addLayout(bvbox);
-    topWidget->setLayout(hbox);
+    QVBoxLayout* vbox = new QVBoxLayout;
+    vbox->addLayout(hbox);
+//    vbox->addWidget(new HSeparator);
+//    vbox->addWidget(buttonBox);
+    setLayout(vbox);
 }
 
 
-KeyConfigView::~KeyConfigView()
+KeyConfig::~KeyConfig()
 {
     delete impl;
 }
 
 
-void KeyConfigView::initializeClass(ExtensionManager* ext)
-{
-    ext->viewManager().registerClass<KeyConfigView>(
-                ("KeyConfigView"), ("KeyConfig"), ViewManager::SINGLE_OPTIONAL);
-}
-
-
-KeyConfigView* KeyConfigView::instance()
-{
-    static KeyConfigView* instance_ = ViewManager::findView<KeyConfigView>();
-    return instance_;
-}
-
-
-int KeyConfigView::axisID(const int& axis)
+int KeyConfig::axisID(const int& axis)
 {
     int index = 0;
     for(int i = 0; i < Joystick::NUM_STD_AXES; ++i) {
@@ -171,7 +150,7 @@ int KeyConfigView::axisID(const int& axis)
 }
 
 
-int KeyConfigView::buttonID(const int& button)
+int KeyConfig::buttonID(const int& button)
 {
     int index = 0;
     for(int i = 0; i < Joystick::NUM_STD_BUTTONS; ++i) {
@@ -184,41 +163,7 @@ int KeyConfigView::buttonID(const int& button)
 }
 
 
-bool KeyConfigView::storeState(Archive &archive)
+void KeyConfig::showConfig()
 {
-    return impl->storeState(archive);
-}
-
-
-bool KeyConfigViewImpl::storeState(Archive& archive)
-{
-    for(int i = 0; i < Joystick::NUM_STD_AXES; ++i) {
-        string key = "axis_id_" + to_string(i);
-        archive.write(key, axisCombos[i]->currentIndex());
-    }
-    for(int i = 0; i < Joystick::NUM_STD_BUTTONS; ++i) {
-        string key = "button_id_" + to_string(i);
-        archive.write(key, buttonCombos[i]->currentIndex());
-    }
-    return true;
-}
-
-
-bool KeyConfigView::restoreState(const Archive& archive)
-{
-    return impl->restoreState(archive);
-}
-
-
-bool KeyConfigViewImpl::restoreState(const Archive& archive)
-{
-    for(int i = 0; i < Joystick::NUM_STD_AXES; ++i) {
-        string key = "axis_id_" + to_string(i);
-        axisCombos[i]->setCurrentIndex(archive.get(key, 0));
-    }
-    for(int i = 0; i < Joystick::NUM_STD_BUTTONS; ++i) {
-        string key = "button_id_" + to_string(i);
-        buttonCombos[i]->setCurrentIndex(archive.get(key, 0));
-    }
-    return true;
+    impl->show();
 }

@@ -22,7 +22,7 @@ public:
 
     virtual bool initialize() override
     {
-        FileExplorer::initialize(this);
+        FileExplorer::initializeClass(this);
         return true;
     }
 
