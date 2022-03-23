@@ -114,10 +114,10 @@ KeyConfigImpl::KeyConfigImpl(KeyConfig* self)
     bvbox->addLayout(bgbox);
     bvbox->addStretch();
 
-//    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
-//    PushButton* okButton = new PushButton(_("&Ok"));
-//    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
-//    connect(buttonBox, &QDialogButtonBox::accepted, [this](){ this->accept(); });
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
+    PushButton* okButton = new PushButton(_("&Ok"));
+    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
+    connect(buttonBox, &QDialogButtonBox::accepted, [this](){ this->accept(); });
 
     QHBoxLayout* hbox = new QHBoxLayout;
     hbox->addLayout(avbox);
@@ -125,8 +125,8 @@ KeyConfigImpl::KeyConfigImpl(KeyConfig* self)
     hbox->addLayout(bvbox);
     QVBoxLayout* vbox = new QVBoxLayout;
     vbox->addLayout(hbox);
-//    vbox->addWidget(new HSeparator);
-//    vbox->addWidget(buttonBox);
+    vbox->addWidget(new HSeparator);
+    vbox->addWidget(buttonBox);
     setLayout(vbox);
 }
 

@@ -103,4 +103,4 @@ msgstr "時間長"
 
 #: ../MotionPlannerDialog.cpp:335
 msgid "&Ok"
-msgstr "Ｏｋ"
+msgstr "了解(&O)"

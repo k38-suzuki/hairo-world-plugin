@@ -35,7 +35,7 @@ msgstr "インジケータを隠す"
 
 #: ../KeyConfig.cpp:118
 msgid "&Ok"
-msgstr "&Ｏｋ"
+msgstr "了解(&O)"
 
 #: ../KeyConfig.cpp:150
 msgid "KeyConfig"

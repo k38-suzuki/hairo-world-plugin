@@ -64,7 +64,7 @@ msgstr "色"
 
 #: ../SceneImageWidget.cpp:220
 msgid "&Ok"
-msgstr "Ｏｋ"
+msgstr "了解(&O)"
 
 #: ../SceneImageWidget.cpp:227
 msgid "Cursor"

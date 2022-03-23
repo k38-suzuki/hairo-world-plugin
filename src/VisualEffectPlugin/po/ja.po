@@ -99,11 +99,11 @@ msgstr "フィルタ"
 
 #: ../VisualEffectDialog.cpp:129
 msgid "&Reset"
-msgstr "リセット"
+msgstr "リセット(&R)"
 
 #: ../VisualEffectDialog.cpp:130
 msgid "&Ok"
-msgstr "Ｏｋ"
+msgstr "了解(&O)"
 
 #: ../VisualEffectDialog.cpp:138
 msgid "Effect Config"
