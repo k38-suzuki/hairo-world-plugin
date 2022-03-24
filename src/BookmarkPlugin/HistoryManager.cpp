@@ -6,10 +6,12 @@
 #include "HistoryManager.h"
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
+#include <cnoid/ExecutablePath>
 #include <cnoid/Menu>
 #include <cnoid/MenuManager>
 #include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
+#include <cnoid/UTF8>
 #include "gettext.h"
 
 using namespace cnoid;
@@ -138,7 +140,10 @@ void HistoryManagerImpl::onCustomContextMenuRequested(const QPoint& pos)
 void HistoryManagerImpl::onProjectLoaded()
 {
     string filename = pm->currentProjectFile();
-    if(!filename.empty()) {
+    string filename0 = toUTF8((shareDirPath() / "kiosk" / "layout_kiosk.cnoid").string());
+    string filename1 = toUTF8((shareDirPath() / "kiosk" / "layout_base.cnoid").string());
+
+    if(!filename.empty() && filename != filename0 && filename != filename1) {
         Action* action = new Action;
         action->setText(filename.c_str());
         currentMenu->addAction(action);
