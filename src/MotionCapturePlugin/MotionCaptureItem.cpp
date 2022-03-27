@@ -87,8 +87,9 @@ MotionCaptureItem::~MotionCaptureItem()
 
 void MotionCaptureItem::initializeClass(ExtensionManager* ext)
 {
-    ext->itemManager().registerClass<MotionCaptureItem>(N_("MotionCaptureItem"));
-    ext->itemManager().addCreationPanel<MotionCaptureItem>();
+    ext->itemManager()
+            .registerClass<MotionCaptureItem>(N_("MotionCaptureItem"))
+            .addCreationPanel<MotionCaptureItem>();
 }
 
 
@@ -156,40 +157,6 @@ void MotionCaptureItemImpl::finalizeSimulation()
     QDateTime recordingStartTime = QDateTime::currentDateTime();
     string suffix = recordingStartTime.toString("-yyyy-MM-dd-hh-mm-ss").toStdString();
 
-    for(size_t i = 0; i < markers.size(); ++i) {
-        PassiveMarker* marker = markers[i];
-        vector<Vector3> src;
-        PointSetItem* pointSetItem = pointSetItems[i];
-        for(int i = 0; i < pointSetItem->numAttentionPoints(); ++i) {
-            Vector3 point = pointSetItem->attentionPoint(i);
-            src.push_back(point);
-        }
-
-        pointSetItem->clearAttentionPoints();
-        SgVertexArray& points = *pointSetItem->pointSet()->getOrCreateVertices();
-        SgColorArray& colors = *pointSetItem->pointSet()->getOrCreateColors();
-        const int numPoints = src.size();
-        points.resize(numPoints);
-        colors.resize(numPoints);
-        for(int i = 0; i < numPoints; ++i) {
-            Vector3f point = Vector3f(src[i][0], src[i][1], src[i][2]);
-            points[i] = point;
-            Vector3f& c = colors[i];
-            c[0] = marker->color()[0];
-            c[1] = marker->color()[1];
-            c[2] = marker->color()[2];
-        }
-        pointSetItem->notifyUpdate();
-
-        string captureDirPath = toUTF8((shareDirPath() / "capture" / (pointSetItem->name() + suffix).c_str()).string());
-        filesystem::path dir(fromUTF8(captureDirPath));
-        if(!filesystem::exists(dir)) {
-            filesystem::create_directories(dir);
-        }
-        string filename = toUTF8((dir / pointSetItem->name().c_str()).string()) + suffix + ".pcd";
-        pointSetItem->save(filename);
-    }
-
     if(multiPointSetItem) {
         multiPointSetItem->setChecked(true);
         string captureDirPath = toUTF8((shareDirPath() / "capture" / (multiPointSetItem->name() + suffix).c_str()).string());
@@ -197,8 +164,37 @@ void MotionCaptureItemImpl::finalizeSimulation()
         if(!filesystem::exists(dir)) {
             filesystem::create_directories(dir);
         }
-        string filename = toUTF8((dir / multiPointSetItem->name().c_str()).string()) + suffix + ".yaml";
-        multiPointSetItem->save(filename);
+
+        for(size_t i = 0; i < markers.size(); ++i) {
+            PassiveMarker* marker = markers[i];
+            vector<Vector3> src;
+            PointSetItem* pointSetItem = pointSetItems[i];
+            for(int i = 0; i < pointSetItem->numAttentionPoints(); ++i) {
+                Vector3 point = pointSetItem->attentionPoint(i);
+                src.push_back(point);
+            }
+
+            pointSetItem->clearAttentionPoints();
+            SgVertexArray& points = *pointSetItem->pointSet()->getOrCreateVertices();
+            SgColorArray& colors = *pointSetItem->pointSet()->getOrCreateColors();
+            const int numPoints = src.size();
+            points.resize(numPoints);
+            colors.resize(numPoints);
+            for(int i = 0; i < numPoints; ++i) {
+                Vector3f point = Vector3f(src[i][0], src[i][1], src[i][2]);
+                points[i] = point;
+                Vector3f& c = colors[i];
+                c[0] = marker->color()[0];
+                c[1] = marker->color()[1];
+                c[2] = marker->color()[2];
+            }
+            pointSetItem->notifyUpdate();
+            string filename = toUTF8((dir / pointSetItem->name().c_str()).string()) + suffix + ".pcd";
+            pointSetItem->save(filename);
+        }
+
+        string filename0 = toUTF8((dir / multiPointSetItem->name().c_str()).string()) + suffix + ".yaml";
+        multiPointSetItem->save(filename0);
     }
 }
 

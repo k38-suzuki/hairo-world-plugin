@@ -6,6 +6,7 @@
 #ifndef CNOID_NETEMPLUGIN_TCAREAITEM_H
 #define CNOID_NETEMPLUGIN_TCAREAITEM_H
 
+#include <cnoid/FloatingNumberString>
 #include <src/CFDPlugin/AreaItem.h>
 
 namespace cnoid {
@@ -21,22 +22,14 @@ public:
 
     static void initializeClass(ExtensionManager* ext);
 
-    void setInboundDelay(const double& inboundDelay);
-    double inboundDelay() const;
-    void setInboundRate(const double& inboundRate);
-    double inboundRate() const;
-    void setInboundLoss(const double& inboundLoss);
-    double inboundLoss() const;
-    void setOutboundDelay(const double& outboundDelay);
-    double outboundDelay() const;
-    void setOutboundRate(const double& outboundRate);
-    double outboundRate() const;
-    void setOutboundLoss(const double& outboundLoss);
-    double outboundLoss() const;
-    void setSource(const std::string& source);
-    std::string source() const;
-    void setDestination(const std::string& destination);
-    std::string destination() const;
+    double inboundDelay() const { return inboundDelay_.value(); }
+    double inboundRate() const { return inboundRate_.value(); }
+    double inboundLoss() const { return inboundLoss_.value(); }
+    double outboundDelay() const { return outboundDelay_.value(); }
+    double outboundRate() const { return outboundRate_.value(); }
+    double outboundLoss() const { return outboundLoss_.value(); }
+    std::string source() const { return source_; }
+    std::string destination() const { return destination_; }
 
 protected:
     virtual Item* doDuplicate() const override;
@@ -45,8 +38,14 @@ protected:
     virtual bool restore(const Archive& archive) override;
 
 private:
-    TCAreaItemImpl* impl;
-    friend class TCAreaItemImpl;
+    FloatingNumberString inboundDelay_;
+    FloatingNumberString inboundRate_;
+    FloatingNumberString inboundLoss_;
+    FloatingNumberString outboundDelay_;
+    FloatingNumberString outboundRate_;
+    FloatingNumberString outboundLoss_;
+    std::string source_;
+    std::string destination_;
 };
 
 typedef ref_ptr<TCAreaItem> TCAreaItemPtr;

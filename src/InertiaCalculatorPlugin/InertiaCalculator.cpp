@@ -24,6 +24,8 @@ using namespace cnoid;
 
 namespace {
 
+InertiaCalculator* calculatorInstance = nullptr;
+
 struct DoubleSpinInfo {
     int row;
     int column;
@@ -55,10 +57,11 @@ LabelInfo labelInfo[] = {
 
 namespace cnoid {
 
-class ConfigDialog : public Dialog
+class InertiaCalculatorImpl : public Dialog
 {
 public:
-    ConfigDialog();
+    InertiaCalculatorImpl(InertiaCalculator* self);
+    InertiaCalculator* self;
 
     enum DoubleSpinID {
         BOX_MAS, BOX_X, BOX_Y, BOX_Z,
@@ -84,52 +87,18 @@ public:
     void printIntertia(const Vector3& inertia);
 };
 
-
-class InertiaCalculatorImpl
-{
-public:
-    InertiaCalculatorImpl(InertiaCalculator* self, ExtensionManager* ext);
-    InertiaCalculator* self;
-
-    ConfigDialog* dialog;
-};
-
 }
 
 
-InertiaCalculator::InertiaCalculator(ExtensionManager* ext)
+InertiaCalculator::InertiaCalculator()
 {
-    impl = new InertiaCalculatorImpl(this, ext);
+    impl = new InertiaCalculatorImpl(this);
 }
 
 
-InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self, ExtensionManager* ext)
-    : self(self)
-{
-    dialog = new ConfigDialog;
-
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
-    mm.addItem(_("InertiaCalculator"))->sigTriggered().connect([&](){
-        dialog->mv->clear();
-        dialog->show();
-    });
-}
-
-
-InertiaCalculator::~InertiaCalculator()
-{
-    delete impl;
-}
-
-
-void InertiaCalculator::initializeClass(ExtensionManager* ext)
-{
-    ext->manage(new InertiaCalculator(ext));
-}
-
-
-ConfigDialog::ConfigDialog()
-    : mv(new MessageView)
+InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self)
+    : self(self),
+      mv(new MessageView)
 {
     setWindowTitle(_("InertiaCalculator"));
 
@@ -215,7 +184,27 @@ ConfigDialog::ConfigDialog()
 }
 
 
-void ConfigDialog::calcBoxInertia()
+InertiaCalculator::~InertiaCalculator()
+{
+    delete impl;
+}
+
+
+void InertiaCalculator::initializeClass(ExtensionManager* ext)
+{
+    if(!calculatorInstance) {
+        calculatorInstance = ext->manage(new InertiaCalculator);
+    }
+
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
+    mm.addItem(_("InertiaCalculator"))->sigTriggered().connect([&](){
+        calculatorInstance->impl->mv->clear();
+        calculatorInstance->impl->show();
+    });
+}
+
+
+void InertiaCalculatorImpl::calcBoxInertia()
 {
     double mass = dspins[0]->value();
     double x = dspins[1]->value();
@@ -231,7 +220,7 @@ void ConfigDialog::calcBoxInertia()
 }
 
 
-void ConfigDialog::calcSphereInertia()
+void InertiaCalculatorImpl::calcSphereInertia()
 {
     double mass = dspins[4]->value();
     double radius = dspins[5]->value();
@@ -244,7 +233,7 @@ void ConfigDialog::calcSphereInertia()
 }
 
 
-void ConfigDialog::calcCylinderInertia()
+void InertiaCalculatorImpl::calcCylinderInertia()
 {
     double mass = dspins[6]->value();
     double radius = dspins[7]->value();
@@ -277,7 +266,7 @@ void ConfigDialog::calcCylinderInertia()
 }
 
 
-void ConfigDialog::calcConeInertia()
+void InertiaCalculatorImpl::calcConeInertia()
 {
     double mass = dspins[9]->value();
     double radius = dspins[10]->value();
@@ -310,7 +299,7 @@ void ConfigDialog::calcConeInertia()
 }
 
 
-void ConfigDialog::printIntertia(const Vector3& inertia)
+void InertiaCalculatorImpl::printIntertia(const Vector3& inertia)
 {
     mv->putln(fmt::format(_("inertia: [ {0}, 0, 0, 0, {1}, 0, 0, 0, {2} ]\n"),
                           inertia[0], inertia[1], inertia[2]));

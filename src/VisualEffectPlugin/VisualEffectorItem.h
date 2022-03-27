@@ -16,11 +16,11 @@ class VisualEffectorItemImpl;
 class CNOID_EXPORT VisualEffectorItem : public Item
 {
 public:
-    static void initializeClass(ExtensionManager* ext);
-
     VisualEffectorItem();
     VisualEffectorItem(const VisualEffectorItem& org);
     virtual ~VisualEffectorItem();
+
+    static void initializeClass(ExtensionManager* ext);
 
 protected:
     virtual Item* doDuplicate() const override;

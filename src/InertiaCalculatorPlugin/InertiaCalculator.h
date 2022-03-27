@@ -15,7 +15,7 @@ class InertiaCalculatorImpl;
 class InertiaCalculator
 {
 public:
-    InertiaCalculator(ExtensionManager* ext);
+    InertiaCalculator();
     virtual ~InertiaCalculator();
 
     static void initializeClass(ExtensionManager* ext);

@@ -7,6 +7,7 @@
 #define CNOID_CFDPLUGIN_FLUIDAREAITEM_H
 
 #include "AreaItem.h"
+#include <cnoid/FloatingNumberString>
 
 namespace cnoid {
 
@@ -21,12 +22,9 @@ public:
 
     static void initializeClass(ExtensionManager* ext);
 
-    void setDensity(const double& density);
-    double density() const;
-    void setViscosity(const double& viscosity);
-    double viscosity() const;
-    void setFlow(const Vector3& flow);
-    Vector3 flow() const;
+    double density() const { return density_.value(); }
+    double viscosity() const { return viscosity_.value(); }
+    Vector3 flow() const { return flow_; }
 
 protected:
     virtual Item* doDuplicate() const override;
@@ -35,8 +33,9 @@ protected:
     virtual bool restore(const Archive& archive) override;
 
 private:
-    FluidAreaItemImpl* impl;
-    friend class FluidAreaItemImpl;
+    FloatingNumberString density_;
+    FloatingNumberString viscosity_;
+    Vector3 flow_;
 };
 
 typedef ref_ptr<FluidAreaItem> FluidAreaItemPtr;

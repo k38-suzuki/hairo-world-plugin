@@ -136,6 +136,7 @@ void onViewCreated(View* view)
     }
 }
 
+
 void onShowConfigTriggered()
 {
     ImageableItem* imageableItem = ImageViewBar::instance()->getSelectedImageableItem();
@@ -155,41 +156,17 @@ namespace cnoid {
 class VisualEffectorItemImpl
 {
 public:
+    VisualEffectorItemImpl(VisualEffectorItem* self);
+    VisualEffectorItemImpl(VisualEffectorItem* self, const VisualEffectorItemImpl& org);
+
     VisualEffectorItem* self;
     BodyItem* bodyItem;
     vector<Item*> subItems;
     vector<ItemPtr> restoredSubItems;
 
-    VisualEffectorItemImpl(VisualEffectorItem* self);
     void onPositionChanged();
 };
 
-}
-
-
-void VisualEffectorItem::initializeClass(ExtensionManager* ext)
-{
-    ItemManager& im = ext->itemManager();
-    im.registerClass<VisualEffectorItem>(N_("VisualEffectorItem"));
-    im.addCreationPanel<VisualEffectorItem>();
-
-    im.registerClass<VEImageVisualizerItem>(N_("VEImageVisualizerItem"));
-
-    ItemTreeView::instance()->customizeContextMenu<VEImageVisualizerItem>(
-        [](VEImageVisualizerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
-            menuManager.setPath("/");
-            menuManager.addItem(_("Visual Effect"))->sigTriggered().connect(
-                        [item](){ item->config->show(); });
-            menuManager.setPath("/");
-            menuManager.addSeparator();
-            menuFunction.dispatchAs<Item>(item);
-        });
-
-    Action* showConfig = new Action;
-    showConfig->setText(_("Visual Effect"));
-    contextMenu.addAction(showConfig);
-    showConfig->sigTriggered().connect([&](){ onShowConfigTriggered(); });
-    ext->viewManager().sigViewCreated().connect([&](View* view){ onViewCreated(view); });
 }
 
 
@@ -207,15 +184,48 @@ VisualEffectorItemImpl::VisualEffectorItemImpl(VisualEffectorItem* self)
 
 
 VisualEffectorItem::VisualEffectorItem(const VisualEffectorItem& org)
-    : Item(org)
+    : Item(org),
+      impl(new VisualEffectorItemImpl(this, *org.impl))
 {
-    impl = new VisualEffectorItemImpl(this);
+
+}
+
+
+VisualEffectorItemImpl::VisualEffectorItemImpl(VisualEffectorItem* self, const VisualEffectorItemImpl& org)
+{
+
 }
 
 
 VisualEffectorItem::~VisualEffectorItem()
 {
     delete impl;
+}
+
+
+void VisualEffectorItem::initializeClass(ExtensionManager* ext)
+{
+    ext->itemManager()
+            .registerClass<VisualEffectorItem>(N_("VisualEffectorItem"))
+            .addCreationPanel<VisualEffectorItem>()
+
+            .registerClass<VEImageVisualizerItem>(N_("VEImageVisualizerItem"));
+
+    ItemTreeView::instance()->customizeContextMenu<VEImageVisualizerItem>(
+        [](VEImageVisualizerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
+            menuManager.setPath("/");
+            menuManager.addItem(_("Visual Effect"))->sigTriggered().connect(
+                        [item](){ item->config->show(); });
+            menuManager.setPath("/");
+            menuManager.addSeparator();
+            menuFunction.dispatchAs<Item>(item);
+        });
+
+    Action* showConfig = new Action;
+    showConfig->setText(_("Visual Effect"));
+    contextMenu.addAction(showConfig);
+    showConfig->sigTriggered().connect([&](){ onShowConfigTriggered(); });
+    ext->viewManager().sigViewCreated().connect([&](View* view){ onViewCreated(view); });
 }
 
 
@@ -250,10 +260,10 @@ void VisualEffectorItemImpl::onPositionChanged()
             Body* body = bodyItem->body();
 
             DeviceList<Camera> cameras = body->devices<Camera>();
-            for(size_t i=0; i < cameras.size(); ++i) {
+            for(size_t i = 0; i < cameras.size(); ++i) {
                 if(cameras[i]->imageType() != Camera::NO_IMAGE) {
                     VEImageVisualizerItem* cameraImageVisualizerItem =
-                            j<n ? dynamic_cast<VEImageVisualizerItem*>(restoredSubItems[j++].get()) : new VEImageVisualizerItem;
+                            j < n ? dynamic_cast<VEImageVisualizerItem*>(restoredSubItems[j++].get()) : new VEImageVisualizerItem;
                     if(cameraImageVisualizerItem) {
                         cameraImageVisualizerItem->setBodyItem(bodyItem, cameras[i]);
                         self->addSubItem(cameraImageVisualizerItem);
@@ -270,7 +280,7 @@ void VisualEffectorItemImpl::onPositionChanged()
 
 void VisualEffectorItem::onDisconnectedFromRoot()
 {
-    for(size_t i=0; i < impl->subItems.size(); i++) {
+    for(size_t i = 0; i < impl->subItems.size(); i++) {
         impl->subItems[i]->removeFromParentItem();
     }
     impl->subItems.clear();
@@ -281,7 +291,7 @@ bool VisualEffectorItem::store(Archive& archive)
 {
     ListingPtr subItems = new Listing;
 
-    for(size_t i=0; i < impl->subItems.size(); i++) {
+    for(size_t i = 0; i < impl->subItems.size(); ++i) {
         Item* item = impl->subItems[i];
         string pluginName, className;
         ItemManager::getClassIdentifier(item, pluginName, className);
@@ -315,7 +325,7 @@ bool VisualEffectorItem::restore(const Archive& archive)
         subItems = archive.findListing("subItems"); // Old
     }
     if(subItems->isValid()) {
-        for(int i=0; i < subItems->size(); i++) {
+        for(int i = 0; i < subItems->size(); ++i) {
             Archive* subArchive = dynamic_cast<Archive*>(subItems->at(i)->toMapping());
             string className, itemName;
             subArchive->read("class", className);

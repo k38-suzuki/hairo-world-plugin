@@ -7,6 +7,7 @@
 #define CNOID_VISUALEFFECTPLUGIN_VEAREAITEM_H
 
 #include <cnoid/EigenTypes>
+#include <cnoid/Selection>
 #include <src/CFDPlugin/AreaItem.h>
 
 namespace cnoid {
@@ -22,15 +23,15 @@ public:
 
     static void initializeClass(ExtensionManager* ext);
 
-    Vector3 hsv() const;
-    Vector3 rgb() const;
-    double coefB() const;
-    double coefD() const;
-    double stdDev() const;
-    double salt() const;
-    double pepper() const;
-    bool flip() const;
-    int filter() const;
+    Vector3 hsv() const { return hsv_; }
+    Vector3 rgb() const { return rgb_; }
+    double coefB() const { return coef_b_; }
+    double coefD() const { return coef_d_; }
+    double stdDev() const { return std_dev_; }
+    double salt() const { return salt_; }
+    double pepper() const { return pepper_; }
+    bool flip() const { return flip_; }
+    int filter() const { return filter_.which(); }
 
 protected:
     virtual Item* doDuplicate() const override;
@@ -39,8 +40,16 @@ protected:
     virtual bool restore(const Archive& archive) override;
 
 private:
-    VEAreaItemImpl* impl;
-    friend class VEAreaItemImpl;
+
+    Vector3 hsv_;
+    Vector3 rgb_;
+    double coef_b_;
+    double coef_d_;
+    double std_dev_;
+    double salt_;
+    double pepper_;
+    bool flip_;
+    Selection filter_;
 };
 
 }

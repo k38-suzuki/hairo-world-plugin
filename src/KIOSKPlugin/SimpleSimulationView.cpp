@@ -334,10 +334,8 @@ void SimpleSimulationViewImpl::onPlaybackStopped(const double& time, const bool&
         buttons[RESTART]->setToolTip(tip);
     }
     if(!buttons[PAUSE]->isChecked()) {
-        if(!simulatorItem->isPausing()) {
-            simulationRadio.setEnabled(true);
-            animationRadio.setEnabled(true);
-        }
+        simulationRadio.setEnabled(true);
+        animationRadio.setEnabled(true);
     }
 }
 

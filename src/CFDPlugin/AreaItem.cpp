@@ -28,8 +28,7 @@ public:
     AreaItemImpl(AreaItem* self, const AreaItemImpl& org);
     AreaItem* self;
 
-    Vector3 translation;
-    Vector3 rotation;
+    Isometry3 position;
     Selection type;
     Vector3 size;
     FloatingNumberString radius;
@@ -38,22 +37,24 @@ public:
     FloatingNumberString shininess;
     FloatingNumberString transparency;
     SgPosTransformPtr scene;
+    SgMaterialPtr material;
     PositionDraggerPtr positionDragger;
 
     enum AreaTypeID { BOX, CYLINDER, SPHERE, NUM_AREA };
 
-    void updateScene();
+    void createScene();
+    void updateScenePosition();
+    void updateSceneMaterial();
     void onPositionDragged();
-    bool onTranslationPropertyChanged(const string& value);
-    bool onRotationPropertyChanged(const string& value);
+    bool onTranslationPropertyChanged(const string& text);
+    bool onRotationPropertyChanged(const string& text);
     bool onAreaTypePropertyChanged(const int& index);
     bool onAreaAxesPropertyChanged(const int& index);
     bool onAreaSizePropertyChanged(const string& value);
-    bool onAreaRadiusPropertyChanged(const string& value);
-    bool onAreaHeightPropertyChanged(const string& value);
-    bool onDiffuseColorPropertyChanged(const string& value);
-    bool onShininessPropertyChanged(const string& value);
-    bool onTransparencyPropertyChanged(const string& value);
+    bool onAreaRadiusPropertyChanged(const string& text);
+    bool onAreaHeightPropertyChanged(const string& text);
+    bool onDiffuseColorPropertyChanged(const string& text);
+    bool onTransparencyPropertyChanged(const string& text);
     bool isCollided(const Vector3& position);
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
@@ -72,8 +73,7 @@ AreaItem::AreaItem()
 AreaItemImpl::AreaItemImpl(AreaItem* self)
     : self(self)
 {
-    translation << 0.0, 0.0, 0.0;
-    rotation << 0.0, 0.0, 0.0;
+    position.setIdentity();
     type.setSymbol(BOX, N_("Box"));
     type.setSymbol(CYLINDER, N_("Cylinder"));
     type.setSymbol(SPHERE, N_("Sphere"));
@@ -97,8 +97,7 @@ AreaItem::AreaItem(const AreaItem& org)
 AreaItemImpl::AreaItemImpl(AreaItem* self, const AreaItemImpl& org)
     : self(self)
 {
-    translation = org.translation;
-    rotation = org.rotation;
+    position = org.position;
     type = org.type;
     size = org.size;
     radius = org.radius;
@@ -124,26 +123,8 @@ void AreaItem::initializeClass(ExtensionManager* ext)
 SgNode* AreaItem::getScene()
 {
     if(!impl->scene) {
-        impl->scene = new SgPosTransform;
-
-        SgGroup* group = new SgGroup;
-        SgShape* shape = new SgShape;
-        SgMaterial* material = new SgMaterial;
-        shape->setMaterial(material);
-        impl->positionDragger = new PositionDragger(
-                    PositionDragger::TranslationAxes, PositionDragger::WideHandle);
-        impl->positionDragger->setDragEnabled(true);
-        impl->positionDragger->setOverlayMode(true);
-        impl->positionDragger->setPixelSize(48, 2);
-        impl->positionDragger->setDisplayMode(PositionDragger::DisplayInEditMode);
-
-        group->addChild(shape);
-        group->addChild(impl->positionDragger);
-        impl->scene->addChild(group, true);
-
-        impl->positionDragger->sigPositionDragged().connect([&](){ impl->onPositionDragged(); });
+        impl->createScene();
     }
-    impl->updateScene();
     return impl->scene;
 }
 
@@ -154,20 +135,26 @@ void AreaItem::setDiffuseColor(const Vector3& diffuseColor)
 }
 
 
-bool AreaItemImpl::onTranslationPropertyChanged(const string& value)
+bool AreaItemImpl::onTranslationPropertyChanged(const string& text)
 {
-    if(toVector3(value, translation)) {
-        updateScene();
+    Vector3 p;
+    if(toVector3(text, p)) {
+        position.translation() = p;
+        updateScenePosition();
+        self->notifyUpdate();
         return true;
     }
     return false;
 }
 
 
-bool AreaItemImpl::onRotationPropertyChanged(const string& value)
+bool AreaItemImpl::onRotationPropertyChanged(const string& text)
 {
-    if(toVector3(value, rotation)) {
-        updateScene();
+    Vector3 r;
+    if(toVector3(text, r)) {
+        position.linear() = rotFromRpy(radian(r));
+        updateScenePosition();
+        self->notifyUpdate();
         return true;
     }
     return false;
@@ -177,73 +164,69 @@ bool AreaItemImpl::onRotationPropertyChanged(const string& value)
 bool AreaItemImpl::onAreaTypePropertyChanged(const int& index)
 {
     type.selectIndex(index);
-    updateScene();
+    if(scene) {
+        createScene();
+        scene->notifyUpdate();
+    }
     return true;
 }
 
 
-bool AreaItemImpl::onAreaSizePropertyChanged(const string& value)
+bool AreaItemImpl::onAreaSizePropertyChanged(const string& text)
 {
-    if(toVector3(value, size)) {
-        updateScene();
+    if(toVector3(text, size)) {
+        createScene();
+        self->notifyUpdate();
         return true;
     }
     return false;
 }
 
 
-bool AreaItemImpl::onAreaRadiusPropertyChanged(const string& value)
+bool AreaItemImpl::onAreaRadiusPropertyChanged(const string& text)
 {
-    double radius = stod(value);
+    double radius = stod(text);
     if(radius >= 0) {
         this->radius = radius;
-        updateScene();
+        createScene();
+        self->notifyUpdate();
         return true;
     }
     return false;
 }
 
 
-bool AreaItemImpl::onAreaHeightPropertyChanged(const string& value)
+bool AreaItemImpl::onAreaHeightPropertyChanged(const string& text)
 {
-    double height = stod(value);
+    double height = stod(text);
     if(height >= 0) {
         this->height = height;
-        updateScene();
+        createScene();
+        self->notifyUpdate();
         return true;
     }
     return false;
 }
 
 
-bool AreaItemImpl::onDiffuseColorPropertyChanged(const string& value)
+bool AreaItemImpl::onDiffuseColorPropertyChanged(const string& text)
 {
-    if(toVector3(value, diffuseColor)) {
-        updateScene();
+    if(toVector3(text, diffuseColor)) {
+        updateSceneMaterial();
+        self->notifyUpdate();
         return true;
     }
     return false;
 }
 
 
-bool AreaItemImpl::onShininessPropertyChanged(const string& value)
+bool AreaItemImpl::onTransparencyPropertyChanged(const string& text)
 {
-    float shininess = stof(value);
-    if(shininess >= 0) {
-        this->shininess = shininess;
-        updateScene();
-        return true;
-    }
-    return false;
-}
-
-
-bool AreaItemImpl::onTransparencyPropertyChanged(const string& value)
-{
-    double transparency = stod(value);
+    double transparency = stod(text);
     if(transparency >= 0) {
         this->transparency = transparency;
-        updateScene();
+        updateSceneMaterial();
+        self->notifyUpdate();
         return true;
     }
     return false;
@@ -252,42 +235,70 @@ bool AreaItemImpl::onTransparencyPropertyChanged(const string& value)
 
 void AreaItemImpl::onPositionDragged()
 {
-    translation = positionDragger->globalDraggingPosition().translation();
-    updateScene();
+    auto p = positionDragger->globalDraggingPosition();
+    position.translation() = p.translation();
+    position.linear() = p.linear();
+    updateScenePosition();
+    self->notifyUpdate();
 }
 
 
-void AreaItemImpl::updateScene()
+void AreaItemImpl::createScene()
 {
+    if(!scene) {
+        scene = new SgPosTransform;
+        updateScenePosition();
+        material = new SgMaterial;
+        updateSceneMaterial();
+        positionDragger = new PositionDragger(
+                    PositionDragger::AllAxes, PositionDragger::WideHandle);
+        positionDragger->setDragEnabled(true);
+        positionDragger->setOverlayMode(true);
+        positionDragger->setPixelSize(48, 2);
+        positionDragger->setDisplayMode(PositionDragger::DisplayInEditMode);
+        positionDragger->sigPositionDragged().connect([&](){ onPositionDragged(); });
+    } else {
+        scene->clearChildren();
+    }
+
     MeshGenerator generator;
 
-    scene->setTranslation(translation);
-    scene->setRotation(rotFromRpy(radian(rotation)));
+    SgGroup* group = new SgGroup;
+    SgShape* shape = new SgShape;
+    group->addChild(shape);
+    group->addChild(positionDragger);
+    scene->addChild(group);
 
-    SgGroup* group = dynamic_cast<SgGroup*>(scene->child(0));
-    if(group) {
-        SgShape* shape = dynamic_cast<SgShape*>(group->child(0));
-        if(shape) {
-            SgMesh* mesh;
-            if(type.is(BOX)) {
-                mesh = generator.generateBox(size);
-            } else if(type.is(CYLINDER)) {
-                mesh = generator.generateCylinder(radius.value(), height.value());
-            } else if(type.is(SPHERE)) {
-                mesh = generator.generateSphere(radius.value());
-            }
-            SgMaterial* material = shape->material();
-            if(material) {
-                float s = 127.0f * std::max(0.0f, std::min((float)shininess.value(), 1.0f)) + 1.0f;
-                material->setDiffuseColor(diffuseColor);
-                material->setSpecularExponent(s);
-                material->setTransparency(transparency.value());
-            }
-            shape->setMesh(mesh);
-            shape->setMaterial(material);
-            shape->notifyUpdate();
-            positionDragger->adjustSize(shape->boundingBox());
-        }
+    if(type.is(BOX)) {
+        shape->setMesh(generator.generateBox(size));
+    } else if(type.is(CYLINDER)) {
+        shape->setMesh(generator.generateCylinder(radius.value(), height.value()));
+    } else if(type.is(SPHERE)) {
+        shape->setMesh(generator.generateSphere(radius.value()));
+    }
+    shape->setMaterial(material);
+    positionDragger->adjustSize(shape->boundingBox());
+}
+
+
+void AreaItemImpl::updateScenePosition()
+{
+    if(scene) {
+        scene->setTranslation(position.translation());
+        scene->setRotation(position.linear());
+        scene->notifyUpdate();
+    }
+}
+
+
+void AreaItemImpl::updateSceneMaterial()
+{
+    if(material) {
+        float s = 127.0f * std::max(0.0f, std::min((float)shininess.value(), 1.0f)) + 1.0f;
+        material->setDiffuseColor(diffuseColor);
+        material->setSpecularExponent(s);
+        material->setTransparency(transparency.value());
+        material->notifyUpdate();
     }
 }
 
@@ -302,15 +313,15 @@ bool AreaItemImpl::isCollided(const Vector3& position)
 {
     bool isCollided = false;
 
-    Vector3 rpy = radian(rotation);
-    Matrix3 rot = rotFromRpy(rpy);
+    auto p = this->position.translation();
+    Matrix3 rot = this->position.linear();
 
     int index = type.selectedIndex();
     if(index == BOX) {
-        Vector3 min = translation - size / 2.0;
-        Vector3 max = translation + size / 2.0;
-        Vector3 rp = position - translation;
-        Vector3 np = rot.inverse() * rp + translation;
+        Vector3 min = p - size / 2.0;
+        Vector3 max = p + size / 2.0;
+        Vector3 rp = position - p;
+        Vector3 np = rot.inverse() * rp + p;
 
         if((min[0] <= np[0]) && (np[0] <= max[0])
                 && (min[1] <= np[1]) && (np[1] <= max[1])
@@ -319,8 +330,8 @@ bool AreaItemImpl::isCollided(const Vector3& position)
             isCollided = true;
         }
     } else if(index == CYLINDER) {
-        Vector3 a = rot * (Vector3(0.0, 1.0, 0.0) * height.value() / 2.0) + translation;
-        Vector3 b = rot * (Vector3(0.0, 1.0, 0.0) * height.value() / 2.0 * -1.0) + translation;
+        Vector3 a = rot * (Vector3(0.0, 1.0, 0.0) * height.value() / 2.0) + p;
+        Vector3 b = rot * (Vector3(0.0, 1.0, 0.0) * height.value() / 2.0 * -1.0) + p;
         Vector3 c = a - b;
         Vector3 d = position - b;
         double cd = c.dot(d);
@@ -332,7 +343,7 @@ bool AreaItemImpl::isCollided(const Vector3& position)
             }
         }
     } else if(index == SPHERE) {
-        Vector3 r = translation - position;
+        Vector3 r = p - position;
         if(r.norm() <= radius.value()) {
             isCollided = true;
         }
@@ -355,27 +366,30 @@ void AreaItem::doPutProperties(PutPropertyFunction& putProperty)
 
 void AreaItemImpl::doPutProperties(PutPropertyFunction& putProperty)
 {
+    Vector3 p = position.translation();
+    Vector3 r = degree(rpyFromRot(position.linear()));
+
     putProperty(_("Shape"), type,
                 [&](int index){ return onAreaTypePropertyChanged(index); });
     if(type.is(BOX)) {
         putProperty(_("Size"), str(size),
-                [&](const string& value){ return onAreaSizePropertyChanged(value); });
+                [&](const string& text){ return onAreaSizePropertyChanged(text); });
     } else if(type.is(CYLINDER) || type.is(SPHERE)) {
         putProperty(_("Radius"), to_string(radius.value()),
-                [&](const string& value){ return onAreaRadiusPropertyChanged(value); });
+                [&](const string& text){ return onAreaRadiusPropertyChanged(text); });
         if(type.is(CYLINDER)) {
             putProperty(_("Height"), to_string(height.value()),
-                    [&](const string& value){ return onAreaHeightPropertyChanged(value); });
+                    [&](const string& text){ return onAreaHeightPropertyChanged(text); });
         }
     }
-    putProperty(_("Translation"), str(translation),
-            [&](const string& value){ return onTranslationPropertyChanged(value); });
-    putProperty(_("RPY"), str(rotation),
-            [&](const string& value){ return onRotationPropertyChanged(value); });
+    putProperty(_("Translation"), str(p),
+            [&](const string& text){ return onTranslationPropertyChanged(text); });
+    putProperty(_("RPY"), str(r),
+            [&](const string& text){ return onRotationPropertyChanged(text); });
     putProperty(_("DiffuseColor"), str(diffuseColor),
-            [&](const string& value){ return onDiffuseColorPropertyChanged(value); });
+            [&](const string& text){ return onDiffuseColorPropertyChanged(text); });
     putProperty(_("Transparency"), to_string(transparency.value()),
-            [&](const string& value){ return onTransparencyPropertyChanged(value); });
+            [&](const string& text){ return onTransparencyPropertyChanged(text); });
 }
 
 
@@ -387,8 +401,8 @@ bool AreaItem::store(Archive& archive)
 
 bool AreaItemImpl::store(Archive& archive)
 {
-    write(archive, "translation", translation);
-    write(archive, "rotation", rotation);
+    write(archive, "translation", position.translation());
+    write(archive, "rotation", degree(rpyFromRot(position.linear())));
     archive.write("type", type.selectedIndex());
     write(archive, "size", size);
     archive.write("radius", radius);
@@ -408,8 +422,12 @@ bool AreaItem::restore(const Archive &archive)
 
 bool AreaItemImpl::restore(const Archive& archive)
 {
-    read(archive, "translation", translation);
-    read(archive, "rotation", rotation);
+    Vector3 p;
+    Vector3 r;
+    read(archive, "translation", p);
+    position.translation() = p;
+    read(archive, "rotation", r);
+    position.linear() = rotFromRpy(radian(r));
     type.selectIndex(archive.get("type", 0));
     read(archive, "size", size);
     radius = archive.get("radius", radius.string());

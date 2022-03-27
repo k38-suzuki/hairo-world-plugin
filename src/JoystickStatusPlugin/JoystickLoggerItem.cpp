@@ -80,8 +80,9 @@ JoystickLoggerItem::~JoystickLoggerItem()
 
 void JoystickLoggerItem::initializeClass(ExtensionManager* ext)
 {
-    ext->itemManager().registerClass<JoystickLoggerItem>(N_("JoystickLoggerItem"));
-    ext->itemManager().addCreationPanel<JoystickLoggerItem>();
+    ext->itemManager()
+            .registerClass<JoystickLoggerItem>(N_("JoystickLoggerItem"))
+            .addCreationPanel<JoystickLoggerItem>();
 }
 
 
