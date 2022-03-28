@@ -5,7 +5,7 @@ Document of HAIROWorldPlugin (in Japanese)
 https://k38-suzuki.github.io/hairo-world-plugin-doc
 
 Detailed user manual (in Japanese)
-https://jopss.jaea.go.jp/search/servlet/search?5070343
+https://jopss.jaea.go.jp/search/servlet/search?5073133
 
 How to refer to HAIROWorldPlugin?
 Please explicitly write the version of Choreonoid you used, and refer the following document in context of using HAIROWorldPlugin.
