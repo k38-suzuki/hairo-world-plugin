@@ -8,7 +8,7 @@
 
 #include <cnoid/EigenTypes>
 #include <cnoid/Selection>
-#include <src/CFDPlugin/AreaItem.h>
+#include <cnoid/AreaItem>
 
 namespace cnoid {
 

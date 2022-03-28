@@ -15,6 +15,7 @@ using namespace std;
 
 TCAreaItem::TCAreaItem()
 {
+    setDiffuseColor(Vector3(1.0, 1.0, 0.0));
     inboundDelay_ = 0.0;
     inboundRate_ = 0.0;
     inboundLoss_ = 0.0;

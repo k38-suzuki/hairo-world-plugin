@@ -7,7 +7,7 @@
 #define CNOID_NETEMPLUGIN_TCAREAITEM_H
 
 #include <cnoid/FloatingNumberString>
-#include <src/CFDPlugin/AreaItem.h>
+#include <cnoid/AreaItem>
 
 namespace cnoid {
 

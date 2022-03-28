@@ -18,6 +18,7 @@ set(headers
     gettext.h
     )
 
+choreonoid_make_header_public(AreaItem.h)
 choreonoid_make_header_public(Rotor.h)
 choreonoid_make_header_public(Thruster.h)
 
