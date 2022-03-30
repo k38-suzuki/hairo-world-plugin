@@ -52,7 +52,6 @@ bool updateNames(const string& nameListString, string& out_newNameListString, ve
 
 }
 
-
 namespace cnoid {
 
 class CollisionVisualizerItemImpl

@@ -64,7 +64,6 @@ SpinInfo spinInfo[] = {
 
 }
 
-
 namespace cnoid {
 
 class GratingGeneratorImpl : public Dialog

@@ -114,8 +114,8 @@ KeyConfigImpl::KeyConfigImpl(KeyConfig* self)
     bvbox->addLayout(bgbox);
     bvbox->addStretch();
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
-    PushButton* okButton = new PushButton(_("&Ok"));
+    auto buttonBox = new QDialogButtonBox(this);
+    auto okButton = new PushButton(_("&Ok"));
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
     connect(buttonBox, &QDialogButtonBox::accepted, [this](){ this->accept(); });
 

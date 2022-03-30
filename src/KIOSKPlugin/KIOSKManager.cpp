@@ -44,7 +44,6 @@ Signal<void(bool)> sigLoggingEnabled_;
 
 }
 
-
 namespace cnoid {
 
 class KIOSKManagerImpl

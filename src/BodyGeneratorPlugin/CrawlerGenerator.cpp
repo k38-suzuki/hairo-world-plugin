@@ -196,7 +196,6 @@ Info agxseparatorInfo[] = {
 
 }
 
-
 namespace cnoid {
 
 class CrawlerGeneratorImpl : public Dialog

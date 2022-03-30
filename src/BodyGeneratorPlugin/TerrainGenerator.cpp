@@ -34,7 +34,6 @@ DoubleSpinBox* scaleSpin = nullptr;
 
 }
 
-
 namespace cnoid {
 
 class TerrainData

@@ -39,7 +39,6 @@ AxisInfo axisInfo[] = {
 
 }
 
-
 namespace cnoid {
 
 class OnScreenJoystickViewImpl : public ExtJoystick

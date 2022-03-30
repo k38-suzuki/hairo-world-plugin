@@ -26,7 +26,6 @@ void onMouseMoved(double& value)
 
 }
 
-
 namespace cnoid {
 
 class AxisWidgetImpl

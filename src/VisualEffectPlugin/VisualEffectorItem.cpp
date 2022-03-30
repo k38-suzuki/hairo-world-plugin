@@ -85,7 +85,6 @@ public:
     bool restoreState(const Archive& archive);
 };
 
-
 class VisualEffectorItemBase
 {
 public:
@@ -99,7 +98,6 @@ public:
     virtual void enableVisualization(bool on) = 0;
     virtual void doUpdateVisualization() = 0;
 };
-
 
 class VEImageVisualizerItem : public Item, public ImageableItem, public VisualEffectorItemBase
 {
@@ -125,7 +123,6 @@ protected:
     virtual bool restore(const Archive& archive) override;
 };
 
-
 void onViewCreated(View* view)
 {
     ImageView* imageView = dynamic_cast<ImageView*>(view);
@@ -135,7 +132,6 @@ void onViewCreated(View* view)
                 [=](const QPoint& pos){ contextMenu.exec( imageView->mapToGlobal(pos)); });
     }
 }
-
 
 void onShowConfigTriggered()
 {
@@ -149,7 +145,6 @@ void onShowConfigTriggered()
 }
 
 }
-
 
 namespace cnoid {
 
@@ -572,7 +567,7 @@ EffectConfigDialog::EffectConfigDialog()
     QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
     buttonBox->addButton(resetButton, QDialogButtonBox::ResetRole);
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, &QDialogButtonBox::accepted, [this](){ this->accept(); });
 
     QVBoxLayout* vbox = new QVBoxLayout;
     vbox->addLayout(gbox);

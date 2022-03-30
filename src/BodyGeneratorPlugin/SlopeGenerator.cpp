@@ -49,7 +49,6 @@ DoubleSpinInfo doubleSpinInfo[] = {
 
 }
 
-
 namespace cnoid {
 
 class SlopeGeneratorImpl : public Dialog

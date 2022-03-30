@@ -62,7 +62,6 @@ ButtonInfo buttonInfo[] = {
 
 }
 
-
 namespace cnoid {
 
 class SimpleSimulationViewImpl

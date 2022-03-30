@@ -41,7 +41,6 @@ ButtonInfo buttonInfo[] = {
 
 }
 
-
 namespace cnoid {
 
 class LogWidgetImpl

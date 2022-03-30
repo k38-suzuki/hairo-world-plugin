@@ -23,7 +23,6 @@ Action* useStartButton = nullptr;
 
 }
 
-
 namespace cnoid {
 
 class SimulationManagerImpl

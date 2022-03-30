@@ -44,7 +44,6 @@ ButtonInfo buttonInfo[] = {
 
 }
 
-
 namespace cnoid {
 
 class BookmarkWidgetImpl

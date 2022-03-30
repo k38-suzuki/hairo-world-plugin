@@ -56,7 +56,6 @@ bool checkIP(const string& address)
 
 }
 
-
 namespace cnoid {
 
 class NetworkEmulatorItemImpl

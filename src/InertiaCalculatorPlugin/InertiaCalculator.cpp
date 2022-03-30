@@ -54,7 +54,6 @@ LabelInfo labelInfo[] = {
 
 }
 
-
 namespace cnoid {
 
 class InertiaCalculatorImpl : public Dialog

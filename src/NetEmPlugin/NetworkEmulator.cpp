@@ -48,7 +48,6 @@ NetworkEmulatorDialog* emulatorInstance = nullptr;
 
 }
 
-
 namespace cnoid {
 
 class NetworkEmulatorImpl
@@ -135,8 +134,8 @@ void NetworkEmulator::initializeClass(ExtensionManager* ext)
     if(!emulatorInstance) {
         emulatorInstance = ext->manage(new NetworkEmulatorDialog);
     }
-    ext->menuManager().setPath("/" N_("Tools"));
-    ext->menuManager().addItem(_("NetworkEmulator"))->sigTriggered().connect(
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
+    mm.addItem(_("NetworkEmulator"))->sigTriggered().connect(
                 [&](){ emulatorInstance->show(); });
 }
 

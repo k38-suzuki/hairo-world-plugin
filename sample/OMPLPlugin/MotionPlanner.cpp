@@ -56,24 +56,11 @@ MotionPlanner* plannerInstance = nullptr;
 
 namespace cnoid {
 
-class MotionPlannerImpl : public Dialog
+class PlannerConfigDialog : public Dialog
 {
 public:
-    MotionPlannerImpl(MotionPlanner* self);
-    MotionPlanner* self;
+    PlannerConfigDialog();
 
-    SgSwitchableGroupPtr startScene;
-    SgSwitchableGroupPtr goalScene;
-    SgSwitchableGroupPtr statesScene;
-    SgSwitchableGroupPtr solutionScene;
-    SgShape* currentShape;
-    Affine3 currentTransform;
-    ItemList<BodyItem> bodyItems;
-    BodyItem* bodyItem;
-    Body* body;
-    Link* baseLink;
-    Link* endLink;
-    WorldItem* worldItem;
     ComboBox* bodyCombo;
     ComboBox* baseCombo;
     ComboBox* endCombo;
@@ -101,6 +88,27 @@ public:
     ToggleButton* previewButton;
     PushButton* startButton;
     PushButton* goalButton;
+    PushButton* generateButton;
+};
+
+class MotionPlannerImpl
+{
+public:
+    MotionPlannerImpl(MotionPlanner* self);
+    MotionPlanner* self;
+
+    SgPosTransformPtr scene;
+    PlannerConfigDialog* config;
+    SgSwitchableGroupPtr startScene;
+    SgSwitchableGroupPtr goalScene;
+    SgSwitchableGroupPtr statesScene;
+    SgSwitchableGroupPtr solutionScene;
+    ItemList<BodyItem> bodyItems;
+    BodyItem* bodyItem;
+    Body* body;
+    Link* baseLink;
+    Link* endLink;
+    WorldItem* worldItem;
     MessageView* mv;
     vector<Vector3> solutions;
     Interpolator<VectorXd> interpolator;
@@ -112,6 +120,7 @@ public:
     PositionDraggerPtr startDragger;
     PositionDraggerPtr goalDragger;
 
+    void createScene();
     void onTargetLinkChanged();
     void onStartButtonClicked();
     void onGoalButtonClicked();
@@ -139,11 +148,9 @@ MotionPlanner::MotionPlanner()
 
 MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self)
     : self(self),
-      mv(MessageView::instance())
+      mv(MessageView::instance()),
+      config(new PlannerConfigDialog)
 {
-    setWindowTitle(_("Motion Planner"));
-
-    currentShape = nullptr;
     bodyItems.clear();
     bodyItem = nullptr;
     body = nullptr;
@@ -161,7 +168,92 @@ MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self)
     startDragger = nullptr;
     goalDragger = nullptr;
 
+    createScene();
+
+    config->generateButton->sigClicked().connect([&](){ onGenerateButtonClicked(); });
+    RootItem::instance()->sigCheckToggled().connect([&](Item* item, bool on){
+        onCheckToggled();
+    });
+    config->previewButton->sigToggled().connect([&](bool on){ onPreviewButtonToggled(on); });
+    config->bodyCombo->sigCurrentIndexChanged().connect([&](int index){ onCurrentIndexChanged(index); });
+    config->cubicCheck->sigToggled().connect([&](bool on){
+        config->cubicSpin->setEnabled(on);
+        config->xminSpin->setEnabled(!on);
+        config->xmaxSpin->setEnabled(!on);
+        config->yminSpin->setEnabled(!on);
+        config->ymaxSpin->setEnabled(!on);
+        config->zminSpin->setEnabled(!on);
+        config->zmaxSpin->setEnabled(!on);
+    });
+    config->cubicSpin->sigValueChanged().connect([&](double value){
+        config->xminSpin->setValue(-1.0 * value);
+        config->xmaxSpin->setValue(value);
+        config->yminSpin->setValue(-1.0 * value);
+        config->ymaxSpin->setValue(value);
+        config->zminSpin->setValue(-1.0 * value);
+        config->zmaxSpin->setValue(value);
+    });
+    config->statesCheck->sigToggled().connect([&](bool on){
+        statesScene->setTurnedOn(on);
+        statesScene->notifyUpdate();
+    });
+    config->solutionCheck->sigToggled().connect([&](bool on){
+        solutionScene->setTurnedOn(on);
+        solutionScene->notifyUpdate();
+    });
+    config->startCheck->sigToggled().connect([&](bool on){
+        startScene->setTurnedOn(on);
+        startScene->notifyUpdate();
+    });
+    config->goalCheck->sigToggled().connect([&](bool on){
+        goalScene->setTurnedOn(on);
+        goalScene->notifyUpdate();
+    });
+    config->startxSpin->sigValueChanged().connect([&](double value){ onStartValueChanged(); });
+    config->startySpin->sigValueChanged().connect([&](double value){ onStartValueChanged(); });
+    config->startzSpin->sigValueChanged().connect([&](double value){ onStartValueChanged(); });
+    config->goalxSpin->sigValueChanged().connect([&](double value){ onGoalValueChanged(); });
+    config->goalySpin->sigValueChanged().connect([&](double value){ onGoalValueChanged(); });
+    config->goalzSpin->sigValueChanged().connect([&](double value){ onGoalValueChanged(); });
+
+    timer->sigTimeout().connect([&](){ onPreviewTimeout(); });
+
+    config->startButton->sigClicked().connect([&](){ onStartButtonClicked(); });
+    config->goalButton->sigClicked().connect([&](){ onGoalButtonClicked(); });
+}
+
+
+MotionPlanner::~MotionPlanner()
+{
+    delete impl;
+}
+
+
+void MotionPlanner::initializeClass(ExtensionManager* ext)
+{
+    string version = OMPL_VERSION;
+    MessageView::instance()->putln(fmt::format("OMPL version: {0}", version));
+
+    if(!plannerInstance) {
+        plannerInstance = ext->manage(new MotionPlanner);
+    }
+
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
+    mm.addItem(_("Motion Planner"))->sigTriggered().connect(
+                [&](){ plannerInstance->impl->config->show(); });
+}
+
+
+void MotionPlannerImpl::createScene()
+{
+    if(!scene) {
+        scene = new SgPosTransform;
+    } else {
+        scene->clearChildren();
+    }
+
     MeshGenerator generator;
+
     startScene = new SgSwitchableGroup;
     startScene->setTurnedOn(false);
     startDragger = new PositionDragger(
@@ -171,13 +263,10 @@ MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self)
     startDragger->setPixelSize(48, 2);
     startDragger->setDisplayMode(PositionDragger::DisplayInEditMode);
     SgPosTransform* startPos = new SgPosTransform;
-    SgGroup* startGroup = new SgGroup;
     SgShape* startShape = new SgShape;
-    SgMesh* startMesh = generator.generateSphere(0.05);
-    SgMaterial* startMaterial = new SgMaterial;
-    startMaterial->setDiffuseColor(Vector3(0.0, 0.0, 1.0));
-    startShape->setMesh(startMesh);
-    startShape->setMaterial(startMaterial);
+    startShape->setMesh(generator.generateSphere(0.03));
+    startShape->getOrCreateMaterial()->setDiffuseColor(Vector3(0.0, 1.0, 0.0));
+    SgGroup* startGroup = new SgGroup;
     startGroup->addChild(startShape);
     startGroup->addChild(startDragger);
     startPos->addChild(startGroup);
@@ -194,13 +283,10 @@ MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self)
     goalDragger->setPixelSize(48, 2);
     goalDragger->setDisplayMode(PositionDragger::DisplayInEditMode);
     SgPosTransform* goalPos = new SgPosTransform();
-    SgGroup* goalGroup = new SgGroup;
     SgShape* goalShape = new SgShape;
-    SgMesh* goalMesh = generator.generateSphere(0.05);
-    SgMaterial* goalMaterial = new SgMaterial;
-    goalMaterial->setDiffuseColor(Vector3(1.0, 0.0, 0.0));
-    goalShape->setMesh(goalMesh);
-    goalShape->setMaterial(goalMaterial);
+    goalShape->setMesh(generator.generateSphere(0.03));
+    goalShape->getOrCreateMaterial()->setDiffuseColor(Vector3(1.0, 0.0, 0.0));
+    SgGroup* goalGroup = new SgGroup;
     goalGroup->addChild(goalShape);
     goalGroup->addChild(goalDragger);
     goalPos->addChild(goalGroup);
@@ -213,11 +299,358 @@ MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self)
     solutionScene = new SgSwitchableGroup;
     solutionScene->setTurnedOn(false);
 
+    scene->addChild(startScene);
+    scene->addChild(goalScene);
+    scene->addChild(statesScene);
+    scene->addChild(solutionScene);
+
     SceneWidget* sceneWidget = SceneView::instance()->sceneWidget();
-    sceneWidget->sceneRoot()->addChild(startScene);
-    sceneWidget->sceneRoot()->addChild(goalScene);
-    sceneWidget->sceneRoot()->addChild(statesScene);
-    sceneWidget->sceneRoot()->addChild(solutionScene);
+    sceneWidget->sceneRoot()->addChild(scene);
+
+    ViewManager::sigViewCreated().connect([&](View* view){
+        SceneView* sceneView = dynamic_cast<SceneView*>(view);
+        if(sceneView) {
+            sceneView->sceneWidget()->sceneRoot()->addChildOnce(scene);
+        }
+    });
+    ViewManager::sigViewRemoved().connect([&](View* view){
+        SceneView* sceneView = dynamic_cast<SceneView*>(view);
+        if(sceneView) {
+            sceneView->sceneWidget()->sceneRoot()->removeChild(scene);
+        }
+    });
+}
+
+
+void MotionPlannerImpl::onTargetLinkChanged()
+{
+    bodyItem = bodyItems[config->bodyCombo->currentIndex()];
+    body = bodyItem->body();
+    endLink = body->link(config->endCombo->currentIndex());
+}
+
+
+void MotionPlannerImpl::onStartButtonClicked()
+{
+    onTargetLinkChanged();
+    if(endLink) {
+        Vector3 translation = endLink->T().translation();
+        config->startxSpin->setValue(translation[0]);
+        config->startySpin->setValue(translation[1]);
+        config->startzSpin->setValue(translation[2]);
+    }
+}
+
+
+void MotionPlannerImpl::onGoalButtonClicked()
+{
+    onTargetLinkChanged();
+    if(endLink) {
+        Vector3 translation = endLink->T().translation();
+        config->goalxSpin->setValue(translation[0]);
+        config->goalySpin->setValue(translation[1]);
+        config->goalzSpin->setValue(translation[2]);
+    }
+}
+
+
+void MotionPlannerImpl::onGenerateButtonClicked()
+{
+    statesScene->clearChildren();
+    solutionScene->clearChildren();
+    if(bodyItems.size()) {
+        bodyItem = bodyItems[config->bodyCombo->currentIndex()];
+        body = bodyItem->body();
+        bodyItem->restoreInitialState(true);
+        baseLink = body->link(config->baseCombo->currentIndex());
+        endLink = body->link(config->endCombo->currentIndex());
+        worldItem = bodyItem->findOwnerItem<WorldItem>();
+    }
+    planWithSimpleSetup();
+}
+
+
+void MotionPlannerImpl::onPreviewButtonToggled(bool on)
+{
+    if(on && isSolved) {
+        time = 0.0;
+        interpolator.clear();
+        int numPoints = solutions.size();
+        timeLength = config->timeLengthSpin->value();
+        double dt = timeLength / (double)numPoints;
+
+        for(size_t i = 0; i < solutions.size(); i++) {
+            interpolator.appendSample(dt * (double)i, solutions[i]);
+        }
+        interpolator.update();
+    }
+}
+
+
+void MotionPlannerImpl::onPreviewTimeout()
+{
+    if(body && baseLink && endLink) {
+        if(config->previewButton->isChecked()) {
+            auto path = JointPath::getCustomPath(body, baseLink, endLink);
+            VectorXd p(6);
+            p = interpolator.interpolate(time);
+            Vector3 pref = Vector3(p.head<3>());
+            Matrix3 rref = endLink->R();
+            Isometry3 T;
+            T.linear() = rref;
+            T.translation() = pref;
+            if(path->calcInverseKinematics(T)) {
+                bodyItem->notifyKinematicStateChange(true);
+            }
+            time += timeStep;
+        }
+    }
+}
+
+
+void MotionPlannerImpl::onCheckToggled()
+{
+    bodyItems = RootItem::instance()->checkedItems<BodyItem>();
+    config->bodyCombo->clear();
+
+    for(size_t i = 0; i < bodyItems.size(); i++) {
+        config->bodyCombo->addItem(QString::fromStdString(bodyItems[i]->name()));
+    }
+}
+
+
+void MotionPlannerImpl::onCurrentIndexChanged(int index)
+{
+    config->baseCombo->clear();
+    config->endCombo->clear();
+    if(index >= 0) {
+        Body* body = bodyItems[index]->body();
+        for(size_t i = 0; i < body->numLinks(); i++) {
+            Link* link = body->link(i);
+            config->baseCombo->addItem(QString::fromStdString(link->name()));
+            config->endCombo->addItem(QString::fromStdString(link->name()));
+        }
+    }
+}
+
+
+void MotionPlannerImpl::onStartValueChanged()
+{
+    SgPosTransform* pos = dynamic_cast<SgPosTransform*>(startScene->child(0));
+    Vector3 translation = Vector3(config->startxSpin->value(), config->startySpin->value(), config->startzSpin->value());
+    pos->setTranslation(translation);
+    startScene->notifyUpdate();
+}
+
+
+void MotionPlannerImpl::onGoalValueChanged()
+{
+    SgPosTransform* pos = dynamic_cast<SgPosTransform*>(goalScene->child(0));
+    Vector3 translation = Vector3(config->goalxSpin->value(), config->goalySpin->value(), config->goalzSpin->value());
+    pos->setTranslation(translation);
+    goalScene->notifyUpdate();
+}
+
+
+void MotionPlannerImpl::onStartPositionDragged()
+{
+    Vector3 p = startDragger->globalDraggingPosition().translation();
+    config->startxSpin->setValue(p[0]);
+    config->startySpin->setValue(p[1]);
+    config->startzSpin->setValue(p[2]);
+}
+
+
+void MotionPlannerImpl::onGoalPositionDragged()
+{
+    Vector3 p = goalDragger->globalDraggingPosition().translation();
+    config->goalxSpin->setValue(p[0]);
+    config->goalySpin->setValue(p[1]);
+    config->goalzSpin->setValue(p[2]);
+}
+
+
+void MotionPlannerImpl::planWithSimpleSetup()
+{
+    auto space(std::make_shared<ob::SE3StateSpace>());
+
+    ob::RealVectorBounds bounds(3);
+    bounds.setLow(0, config->xminSpin->value());
+    bounds.setHigh(0, config->xmaxSpin->value());
+    bounds.setLow(1, config->yminSpin->value());
+    bounds.setHigh(1, config->ymaxSpin->value());
+    bounds.setLow(2, config->zminSpin->value());
+    bounds.setHigh(2, config->zmaxSpin->value());
+    space->setBounds(bounds);
+
+    og::SimpleSetup ss(space);
+
+    ss.setStateValidityChecker([&](const ob::State* state) { return isStateValid(state); });
+
+    ob::ScopedState<ob::SE3StateSpace> start(space);
+    start->setX(config->startxSpin->value());
+    start->setY(config->startySpin->value());
+    start->setZ(config->startzSpin->value());
+    start->rotation().setIdentity();
+
+    ob::ScopedState<ob::SE3StateSpace> goal(space);
+    goal->setX(config->goalxSpin->value());
+    goal->setY(config->goalySpin->value());
+    goal->setZ(config->goalzSpin->value());
+    goal->rotation().setIdentity();
+
+    ss.setStartAndGoalStates(start, goal);
+
+    int index = config->plannerCombo->currentIndex();
+    switch (index) {
+    case 0:
+    {
+        ob::PlannerPtr planner(new og::RRT(ss.getSpaceInformation()));
+        ss.setPlanner(planner);
+    }
+        break;
+    case 1:
+    {
+        ob::PlannerPtr planner(new og::RRTConnect(ss.getSpaceInformation()));
+        ss.setPlanner(planner);
+    }
+        break;
+    case 2:
+    {
+        ob::PlannerPtr planner(new og::RRTstar(ss.getSpaceInformation()));
+        ss.setPlanner(planner);
+    }
+        break;
+    case 3:
+    {
+        ob::PlannerPtr planner(new og::pRRT(ss.getSpaceInformation()));
+        ss.setPlanner(planner);
+    }
+        break;
+    default:
+        break;
+    }
+
+    ss.setup();
+//    ss.print(mv->cout());
+
+    ob::PlannerStatus solved = ss.solve(config->timeSpin->value());
+
+    if(solved) {
+        mv->putln("Found solution:");
+        isSolved = true;
+
+        og::PathGeometric pathes = ss.getSolutionPath();
+        const int numPoints = pathes.getStateCount();
+        solutions.clear();
+        for(size_t i = 0; i < pathes.getStateCount(); i++) {
+            ob::State* state = pathes.getState(i);
+            float x = state->as<ob::SE3StateSpace::StateType>()->getX();
+            float y = state->as<ob::SE3StateSpace::StateType>()->getY();
+            float z = state->as<ob::SE3StateSpace::StateType>()->getZ();
+            solutions.push_back(Vector3(x, y, z));
+
+            MeshGenerator generator;
+            SgShape* shape = new SgShape;
+            shape->setMesh(generator.generateSphere(0.02));
+            SgMaterial* material = new SgMaterial;
+            int hue = 240.0 * (1.0 - (double)i / (double)(numPoints - 1));
+            QColor qColor = QColor::fromHsv(hue, 255, 255);
+            Vector3f color((double)qColor.red() / 255.0, (double)qColor.green() / 255.0, (double)qColor.blue() / 255.0);
+            material->setDiffuseColor(Vector3(color[0], color[1], color[2]));
+            material->setTransparency(0.5);
+            shape->setMaterial(material);
+            SgPosTransform* transform = new SgPosTransform;
+            transform->addChild(shape);
+            transform->setTranslation(Vector3(x, y, z));
+            solutionScene->addChild(transform);
+
+            if(bodyItem) {
+                bodyItem->restoreInitialState(true);
+                if(baseLink != endLink) {
+                    auto path = JointPath::getCustomPath(body, baseLink, endLink);
+                    Vector3 pref = Vector3(x, y, z);
+                    Matrix3 rref = endLink->R();
+                    Isometry3 T;
+                    T.linear() = rref;
+                    T.translation() = pref;
+                    if(path->calcInverseKinematics(T)) {
+                        bodyItem->notifyKinematicStateChange(true);
+                    }
+                }
+            }
+        }
+
+        ss.simplifySolution();
+//        ss.getSolutionPath().print(mv->cout());
+    } else {
+        mv->putln("No solution found");
+        isSolved = false;
+    }
+}
+
+
+bool MotionPlannerImpl::isStateValid(const ob::State* state)
+{
+    const auto *se3state = state->as<ob::SE3StateSpace::StateType>();
+    const auto *pos = se3state->as<ob::RealVectorStateSpace::StateType>(0);
+    const auto *rot = se3state->as<ob::SO3StateSpace::StateType>(1);
+
+    bool solved = false;
+    bool collided = false;
+
+    float x = state->as<ob::SE3StateSpace::StateType>()->getX();
+    float y = state->as<ob::SE3StateSpace::StateType>()->getY();
+    float z = state->as<ob::SE3StateSpace::StateType>()->getZ();
+
+    MeshGenerator generator;
+    SgShape* shape = new SgShape;
+    shape->setMesh(generator.generateSphere(0.02));
+    SgMaterial* material = new SgMaterial;
+    material->setDiffuseColor(Vector3(0.0, 1.0, 0.0));
+    material->setTransparency(0.5);
+    shape->setMaterial(material);
+    SgPosTransform* transform = new SgPosTransform;
+    transform->addChild(shape);
+    transform->setTranslation(Vector3(x, y, z));
+    statesScene->addChild(transform);
+
+    if(bodyItem) {
+        bodyItem->restoreInitialState(true);
+        if(baseLink != endLink) {
+            auto path = JointPath::getCustomPath(body, baseLink, endLink);
+            Vector3 pref = endLink->p();
+            Matrix3 rref = endLink->R();
+            pref = Vector3(x, y, z);
+            Isometry3 T;
+            T.linear() = rref;
+            T.translation() = pref;
+            if(path->calcInverseKinematics(T)) {
+                bodyItem->notifyKinematicStateChange(true);
+                solved = true;
+                if(worldItem) {
+                    worldItem->updateCollisions();
+                    vector<CollisionLinkPairPtr> collisions = bodyItem->collisions();
+                    for(size_t i = 0; i < collisions.size(); i++) {
+                        CollisionLinkPairPtr collision = collisions[i];
+                        if((collision->body[0] == body) || (collision->body[1] == body)) {
+                            if(!collision->isSelfCollision()) {
+                                collided = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return ((const void*)rot != (const void*)pos) && solved && !collided;
+}
+
+
+PlannerConfigDialog::PlannerConfigDialog()
+{
+    setWindowTitle(_("Motion Planner"));
 
     QVBoxLayout* vbox = new QVBoxLayout;
 
@@ -363,7 +796,7 @@ MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self)
     HSeparatorBox* psbox = new HSeparatorBox(new QLabel(_("Preview")));
     vbox->addLayout(psbox);
 
-    PushButton* generateButton = new PushButton(_("Generate"));
+    generateButton = new PushButton(_("Generate"));
     previewButton = new ToggleButton(_("Preview"));
     timeLengthSpin = new DoubleSpinBox;
     timeLengthSpin->setRange(1.0, 1000.0);
@@ -380,428 +813,11 @@ MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self)
 
     vbox->addWidget(new HSeparator);
 
-    QPushButton* okButton = new QPushButton(_("&Ok"));
-    okButton->setDefault(true);
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
+    auto buttonBox = new QDialogButtonBox(this);
+    auto okButton = new PushButton(_("&Ok"));
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
-    connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, &QDialogButtonBox::accepted, [this](){ this->accept(); });
     vbox->addWidget(buttonBox);
 
-    generateButton->sigClicked().connect([&](){ onGenerateButtonClicked(); });
-    RootItem::instance()->sigCheckToggled().connect([&](Item* item, bool on){
-        onCheckToggled();
-    });
-    previewButton->sigToggled().connect([&](bool on){ onPreviewButtonToggled(on); });
-    bodyCombo->sigCurrentIndexChanged().connect([&](int index){ onCurrentIndexChanged(index); });
-    cubicCheck->sigToggled().connect([&](bool on){
-        cubicSpin->setEnabled(on);
-        xminSpin->setEnabled(!on);
-        xmaxSpin->setEnabled(!on);
-        yminSpin->setEnabled(!on);
-        ymaxSpin->setEnabled(!on);
-        zminSpin->setEnabled(!on);
-        zmaxSpin->setEnabled(!on);
-    });
-    cubicSpin->sigValueChanged().connect([&](double value){
-        xminSpin->setValue(-1.0 * value);
-        xmaxSpin->setValue(value);
-        yminSpin->setValue(-1.0 * value);
-        ymaxSpin->setValue(value);
-        zminSpin->setValue(-1.0 * value);
-        zmaxSpin->setValue(value);
-    });
-    statesCheck->sigToggled().connect([&](bool on){
-        statesScene->setTurnedOn(on);
-        statesScene->notifyUpdate();
-    });
-    solutionCheck->sigToggled().connect([&](bool on){
-        solutionScene->setTurnedOn(on);
-        solutionScene->notifyUpdate();
-    });
-    startCheck->sigToggled().connect([&](bool on){
-        startScene->setTurnedOn(on);
-        startScene->notifyUpdate();
-    });
-    goalCheck->sigToggled().connect([&](bool on){
-        goalScene->setTurnedOn(on);
-        goalScene->notifyUpdate();
-    });
-    startxSpin->sigValueChanged().connect([&](double value){ onStartValueChanged(); });
-    startySpin->sigValueChanged().connect([&](double value){ onStartValueChanged(); });
-    startzSpin->sigValueChanged().connect([&](double value){ onStartValueChanged(); });
-    goalxSpin->sigValueChanged().connect([&](double value){ onGoalValueChanged(); });
-    goalySpin->sigValueChanged().connect([&](double value){ onGoalValueChanged(); });
-    goalzSpin->sigValueChanged().connect([&](double value){ onGoalValueChanged(); });
-
-    timer->sigTimeout().connect([&](){ onPreviewTimeout(); });
-
-    ViewManager::sigViewCreated().connect([&](View* view){
-        SceneView* sceneView = dynamic_cast<SceneView*>(view);
-        if(sceneView) {
-            sceneView->sceneWidget()->sceneRoot()->addChildOnce(startScene);
-            sceneView->sceneWidget()->sceneRoot()->addChildOnce(goalScene);
-            sceneView->sceneWidget()->sceneRoot()->addChildOnce(statesScene);
-            sceneView->sceneWidget()->sceneRoot()->addChildOnce(solutionScene);
-        }
-    });
-    ViewManager::sigViewRemoved().connect([&](View* view){
-        SceneView* sceneView = dynamic_cast<SceneView*>(view);
-        if(sceneView) {
-            sceneView->sceneWidget()->sceneRoot()->removeChild(startScene);
-            sceneView->sceneWidget()->sceneRoot()->removeChild(goalScene);
-            sceneView->sceneWidget()->sceneRoot()->removeChild(statesScene);
-            sceneView->sceneWidget()->sceneRoot()->removeChild(solutionScene);
-        }
-    });
-    startButton->sigClicked().connect([&](){ onStartButtonClicked(); });
-    goalButton->sigClicked().connect([&](){ onGoalButtonClicked(); });
-
     setLayout(vbox);
-}
-
-
-MotionPlanner::~MotionPlanner()
-{
-    delete impl;
-}
-
-
-void MotionPlanner::initializeClass(ExtensionManager* ext)
-{
-    string version = OMPL_VERSION;
-    MessageView::instance()->putln(fmt::format("OMPL version: {0}", version));
-
-    if(!plannerInstance) {
-        plannerInstance = ext->manage(new MotionPlanner);
-    }
-
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
-    mm.addItem(_("Motion Planner"))->sigTriggered().connect(
-                [&](){ plannerInstance->impl->show(); });
-}
-
-
-void MotionPlannerImpl::onTargetLinkChanged()
-{
-    bodyItem = bodyItems[bodyCombo->currentIndex()];
-    body = bodyItem->body();
-    endLink = body->link(endCombo->currentIndex());
-}
-
-
-void MotionPlannerImpl::onStartButtonClicked()
-{
-    onTargetLinkChanged();
-    if(endLink) {
-        Vector3 translation = endLink->T().translation();
-        startxSpin->setValue(translation[0]);
-        startySpin->setValue(translation[1]);
-        startzSpin->setValue(translation[2]);
-    }
-}
-
-
-void MotionPlannerImpl::onGoalButtonClicked()
-{
-    onTargetLinkChanged();
-    if(endLink) {
-        Vector3 translation = endLink->T().translation();
-        goalxSpin->setValue(translation[0]);
-        goalySpin->setValue(translation[1]);
-        goalzSpin->setValue(translation[2]);
-    }
-}
-
-
-void MotionPlannerImpl::onGenerateButtonClicked()
-{
-    statesScene->clearChildren();
-    solutionScene->clearChildren();
-    if(bodyItems.size()) {
-        bodyItem = bodyItems[bodyCombo->currentIndex()];
-        body = bodyItem->body();
-        bodyItem->restoreInitialState(true);
-        baseLink = body->link(baseCombo->currentIndex());
-        endLink = body->link(endCombo->currentIndex());
-        worldItem = bodyItem->findOwnerItem<WorldItem>();
-    }
-    planWithSimpleSetup();
-}
-
-
-void MotionPlannerImpl::onPreviewButtonToggled(bool on)
-{
-    if(on && isSolved) {
-        time = 0.0;
-        interpolator.clear();
-        int numPoints = solutions.size();
-        timeLength = timeLengthSpin->value();
-        double dt = timeLength / (double)numPoints;
-
-        for(size_t i = 0; i < solutions.size(); i++) {
-            interpolator.appendSample(dt * (double)i, solutions[i]);
-        }
-        interpolator.update();
-    }
-}
-
-
-void MotionPlannerImpl::onPreviewTimeout()
-{
-    if(body && baseLink && endLink) {
-        if(previewButton->isChecked()) {
-            auto path = JointPath::getCustomPath(body, baseLink, endLink);
-            VectorXd p(6);
-            p = interpolator.interpolate(time);
-            Vector3 pref = Vector3(p.head<3>());
-            Matrix3 rref = endLink->R();
-            Isometry3 T;
-            T.linear() = rref;
-            T.translation() = pref;
-            if(path->calcInverseKinematics(T)) {
-                bodyItem->notifyKinematicStateChange(true);
-            }
-            time += timeStep;
-        }
-    }
-}
-
-
-void MotionPlannerImpl::onCheckToggled()
-{
-    bodyItems = RootItem::instance()->checkedItems<BodyItem>();
-    bodyCombo->clear();
-
-    for(size_t i = 0; i < bodyItems.size(); i++) {
-        bodyCombo->addItem(QString::fromStdString(bodyItems[i]->name()));
-    }
-}
-
-
-void MotionPlannerImpl::onCurrentIndexChanged(int index)
-{
-    baseCombo->clear();
-    endCombo->clear();
-    if(index >= 0) {
-        Body* body = bodyItems[index]->body();
-        for(size_t i = 0; i < body->numLinks(); i++) {
-            Link* link = body->link(i);
-            baseCombo->addItem(QString::fromStdString(link->name()));
-            endCombo->addItem(QString::fromStdString(link->name()));
-        }
-    }
-}
-
-
-void MotionPlannerImpl::onStartValueChanged()
-{
-    SgPosTransform* pos = dynamic_cast<SgPosTransform*>(startScene->child(0));
-    Vector3 translation = Vector3(startxSpin->value(), startySpin->value(), startzSpin->value());
-    pos->setTranslation(translation);
-    startScene->notifyUpdate();
-}
-
-
-void MotionPlannerImpl::onGoalValueChanged()
-{
-    SgPosTransform* pos = dynamic_cast<SgPosTransform*>(goalScene->child(0));
-    Vector3 translation = Vector3(goalxSpin->value(), goalySpin->value(), goalzSpin->value());
-    pos->setTranslation(translation);
-    goalScene->notifyUpdate();
-}
-
-
-void MotionPlannerImpl::onStartPositionDragged()
-{
-    Vector3 p = startDragger->globalDraggingPosition().translation();
-    startxSpin->setValue(p[0]);
-    startySpin->setValue(p[1]);
-    startzSpin->setValue(p[2]);
-}
-
-
-void MotionPlannerImpl::onGoalPositionDragged()
-{
-    Vector3 p = goalDragger->globalDraggingPosition().translation();
-    goalxSpin->setValue(p[0]);
-    goalySpin->setValue(p[1]);
-    goalzSpin->setValue(p[2]);
-}
-
-
-void MotionPlannerImpl::planWithSimpleSetup()
-{
-    auto space(std::make_shared<ob::SE3StateSpace>());
-
-    ob::RealVectorBounds bounds(3);
-    bounds.setLow(0, xminSpin->value());
-    bounds.setHigh(0, xmaxSpin->value());
-    bounds.setLow(1, yminSpin->value());
-    bounds.setHigh(1, ymaxSpin->value());
-    bounds.setLow(2, zminSpin->value());
-    bounds.setHigh(2, zmaxSpin->value());
-    space->setBounds(bounds);
-
-    og::SimpleSetup ss(space);
-
-    ss.setStateValidityChecker([&](const ob::State* state) { return isStateValid(state); });
-
-    ob::ScopedState<ob::SE3StateSpace> start(space);
-    start->setX(startxSpin->value());
-    start->setY(startySpin->value());
-    start->setZ(startzSpin->value());
-    start->rotation().setIdentity();
-
-    ob::ScopedState<ob::SE3StateSpace> goal(space);
-    goal->setX(goalxSpin->value());
-    goal->setY(goalySpin->value());
-    goal->setZ(goalzSpin->value());
-    goal->rotation().setIdentity();
-
-    ss.setStartAndGoalStates(start, goal);
-
-    int index = plannerCombo->currentIndex();
-    switch (index) {
-    case 0:
-    {
-        ob::PlannerPtr planner(new og::RRT(ss.getSpaceInformation()));
-        ss.setPlanner(planner);
-    }
-        break;
-    case 1:
-    {
-        ob::PlannerPtr planner(new og::RRTConnect(ss.getSpaceInformation()));
-        ss.setPlanner(planner);
-    }
-        break;
-    case 2:
-    {
-        ob::PlannerPtr planner(new og::RRTstar(ss.getSpaceInformation()));
-        ss.setPlanner(planner);
-    }
-        break;
-    case 3:
-    {
-        ob::PlannerPtr planner(new og::pRRT(ss.getSpaceInformation()));
-        ss.setPlanner(planner);
-    }
-        break;
-    default:
-        break;
-    }
-
-    ss.setup();
-//    ss.print(mv->cout());
-
-    ob::PlannerStatus solved = ss.solve(timeSpin->value());
-
-    if(solved) {
-        mv->putln("Found solution:");
-        isSolved = true;
-
-        og::PathGeometric pathes = ss.getSolutionPath();
-        const int numPoints = pathes.getStateCount();
-        solutions.clear();
-        for(size_t i = 0; i < pathes.getStateCount(); i++) {
-            ob::State* state = pathes.getState(i);
-            float x = state->as<ob::SE3StateSpace::StateType>()->getX();
-            float y = state->as<ob::SE3StateSpace::StateType>()->getY();
-            float z = state->as<ob::SE3StateSpace::StateType>()->getZ();
-            solutions.push_back(Vector3(x, y, z));
-
-            MeshGenerator generator;
-            SgShape* shape = new SgShape;
-            shape->setMesh(generator.generateSphere(0.02));
-            SgMaterial* material = new SgMaterial;
-            int hue = 240.0 * (1.0 - (double)i / (double)(numPoints - 1));
-            QColor qColor = QColor::fromHsv(hue, 255, 255);
-            Vector3f color((double)qColor.red() / 255.0, (double)qColor.green() / 255.0, (double)qColor.blue() / 255.0);
-            material->setDiffuseColor(Vector3(color[0], color[1], color[2]));
-            material->setTransparency(0.5);
-            shape->setMaterial(material);
-            SgPosTransform* transform = new SgPosTransform;
-            transform->addChild(shape);
-            transform->setTranslation(Vector3(x, y, z));
-            solutionScene->addChild(transform);
-
-            if(bodyItem) {
-                bodyItem->restoreInitialState(true);
-                if(baseLink != endLink) {
-                    auto path = JointPath::getCustomPath(body, baseLink, endLink);
-                    Vector3 pref = Vector3(x, y, z);
-                    Matrix3 rref = endLink->R();
-                    Isometry3 T;
-                    T.linear() = rref;
-                    T.translation() = pref;
-                    if(path->calcInverseKinematics(T)) {
-                        bodyItem->notifyKinematicStateChange(true);
-                    }
-                }
-            }
-        }
-
-        ss.simplifySolution();
-//        ss.getSolutionPath().print(mv->cout());
-    } else {
-        mv->putln("No solution found");
-        isSolved = false;
-    }
-}
-
-
-bool MotionPlannerImpl::isStateValid(const ob::State* state)
-{
-    const auto *se3state = state->as<ob::SE3StateSpace::StateType>();
-    const auto *pos = se3state->as<ob::RealVectorStateSpace::StateType>(0);
-    const auto *rot = se3state->as<ob::SO3StateSpace::StateType>(1);
-
-    bool solved = false;
-    bool collided = false;
-
-    float x = state->as<ob::SE3StateSpace::StateType>()->getX();
-    float y = state->as<ob::SE3StateSpace::StateType>()->getY();
-    float z = state->as<ob::SE3StateSpace::StateType>()->getZ();
-
-    MeshGenerator generator;
-    SgShape* shape = new SgShape;
-    shape->setMesh(generator.generateSphere(0.02));
-    SgMaterial* material = new SgMaterial;
-    material->setDiffuseColor(Vector3(0.0, 1.0, 0.0));
-    material->setTransparency(0.5);
-    shape->setMaterial(material);
-    SgPosTransform* transform = new SgPosTransform;
-    transform->addChild(shape);
-    transform->setTranslation(Vector3(x, y, z));
-    statesScene->addChild(transform);
-
-    if(bodyItem) {
-        bodyItem->restoreInitialState(true);
-        if(baseLink != endLink) {
-            auto path = JointPath::getCustomPath(body, baseLink, endLink);
-            Vector3 pref = endLink->p();
-            Matrix3 rref = endLink->R();
-            pref = Vector3(x, y, z);
-            Isometry3 T;
-            T.linear() = rref;
-            T.translation() = pref;
-            if(path->calcInverseKinematics(T)) {
-                bodyItem->notifyKinematicStateChange(true);
-                solved = true;
-                if(worldItem) {
-                    worldItem->updateCollisions();
-                    vector<CollisionLinkPairPtr> collisions = bodyItem->collisions();
-                    for(size_t i = 0; i < collisions.size(); i++) {
-                        CollisionLinkPairPtr collision = collisions[i];
-                        if((collision->body[0] == body) || (collision->body[1] == body)) {
-                            if(!collision->isSelfCollision()) {
-                                collided = true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    return ((const void*)rot != (const void*)pos) && solved && !collided;
 }

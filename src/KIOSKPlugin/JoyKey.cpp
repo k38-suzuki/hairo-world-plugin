@@ -54,7 +54,6 @@ const int defaultKey[] = {
 
 }
 
-
 namespace cnoid {
 
 class JoyKeyImpl

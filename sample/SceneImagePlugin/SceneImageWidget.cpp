@@ -34,7 +34,6 @@ public:
     ComboBox* colorCombo;
 };
 
-
 class SceneImageWidgetImpl
 {
 public:
@@ -244,11 +243,10 @@ CursorConfigDialog::CursorConfigDialog()
     gbox->addWidget(radiusSpin, 0, 1);
     gbox->addWidget(colorCombo, 1, 1);
 
-    auto okButton = new QPushButton(_("&Ok"));
-    okButton->setDefault(true);
     auto buttonBox = new QDialogButtonBox(this);
+    auto okButton = new PushButton(_("&Ok"));
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, &QDialogButtonBox::accepted, [this](){ this->accept(); });
 
     QVBoxLayout* vbox = new QVBoxLayout;
     vbox->addLayout(new HSeparatorBox(new QLabel(_("Cursor"))));
