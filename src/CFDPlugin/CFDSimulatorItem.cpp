@@ -41,7 +41,6 @@ public:
 
 typedef ref_ptr<CFDLink> CFDLinkPtr;
 
-
 class CFDBody : public SimulationBody
 {
 public:
@@ -58,7 +57,6 @@ public:
 typedef ref_ptr<CFDBody> CFDBodyPtr;
 
 }
-
 
 namespace cnoid {
 

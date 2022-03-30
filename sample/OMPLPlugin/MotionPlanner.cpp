@@ -39,8 +39,8 @@
 #include <ompl/geometric/planners/rrt/pRRT.h>
 #include <ompl/geometric/SimpleSetup.h>
 #include <ompl/config.h>
-#include "gettext.h"
 #include "sample/SimpleController/Interpolator.h"
+#include "gettext.h"
 
 using namespace std;
 using namespace cnoid;
@@ -48,12 +48,19 @@ using namespace cnoid;
 namespace ob = ompl::base;
 namespace og = ompl::geometric;
 
+namespace {
+
+MotionPlanner* plannerInstance = nullptr;
+
+}
+
 namespace cnoid {
 
-class ConfigDialog : public Dialog
+class MotionPlannerImpl : public Dialog
 {
 public:
-    ConfigDialog();
+    MotionPlannerImpl(MotionPlanner* self);
+    MotionPlanner* self;
 
     SgSwitchableGroupPtr startScene;
     SgSwitchableGroupPtr goalScene;
@@ -94,7 +101,7 @@ public:
     ToggleButton* previewButton;
     PushButton* startButton;
     PushButton* goalButton;
-    MessageView* messageView;
+    MessageView* mv;
     vector<Vector3> solutions;
     Interpolator<VectorXd> interpolator;
     double time;
@@ -121,51 +128,18 @@ public:
     bool isStateValid(const ob::State* state);
 };
 
-
-class MotionPlannerImpl
-{
-public:
-    MotionPlannerImpl(MotionPlanner* self, ExtensionManager* ext);
-    MotionPlanner* self;
-
-    ConfigDialog* dialog;
-};
-
 }
 
 
-MotionPlanner::MotionPlanner(ExtensionManager* ext)
+MotionPlanner::MotionPlanner()
 {
-    impl = new MotionPlannerImpl(this, ext);
+    impl = new MotionPlannerImpl(this);
 }
 
 
-MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self, ExtensionManager* ext)
-    : self(self)
-{
-    dialog = new ConfigDialog;
-
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
-    mm.addItem(_("Motion Planner"))->sigTriggered().connect([&](){ dialog->show(); });
-}
-
-
-MotionPlanner::~MotionPlanner()
-{
-    delete impl;
-}
-
-
-void MotionPlanner::initializeClass(ExtensionManager* ext)
-{
-    string version = OMPL_VERSION;
-    MessageView::instance()->putln(fmt::format("OMPL version: {0}", version));
-
-    ext->manage(new MotionPlanner(ext));
-}
-
-
-ConfigDialog::ConfigDialog()
+MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self)
+    : self(self),
+      mv(MessageView::instance())
 {
     setWindowTitle(_("Motion Planner"));
 
@@ -176,7 +150,6 @@ ConfigDialog::ConfigDialog()
     baseLink = nullptr;
     endLink = nullptr;
     worldItem = nullptr;
-    messageView = MessageView::instance();
     solutions.clear();
     interpolator.clear();
     time = 0.0;
@@ -487,7 +460,28 @@ ConfigDialog::ConfigDialog()
 }
 
 
-void ConfigDialog::onTargetLinkChanged()
+MotionPlanner::~MotionPlanner()
+{
+    delete impl;
+}
+
+
+void MotionPlanner::initializeClass(ExtensionManager* ext)
+{
+    string version = OMPL_VERSION;
+    MessageView::instance()->putln(fmt::format("OMPL version: {0}", version));
+
+    if(!plannerInstance) {
+        plannerInstance = ext->manage(new MotionPlanner);
+    }
+
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
+    mm.addItem(_("Motion Planner"))->sigTriggered().connect(
+                [&](){ plannerInstance->impl->show(); });
+}
+
+
+void MotionPlannerImpl::onTargetLinkChanged()
 {
     bodyItem = bodyItems[bodyCombo->currentIndex()];
     body = bodyItem->body();
@@ -495,7 +489,7 @@ void ConfigDialog::onTargetLinkChanged()
 }
 
 
-void ConfigDialog::onStartButtonClicked()
+void MotionPlannerImpl::onStartButtonClicked()
 {
     onTargetLinkChanged();
     if(endLink) {
@@ -507,7 +501,7 @@ void ConfigDialog::onStartButtonClicked()
 }
 
 
-void ConfigDialog::onGoalButtonClicked()
+void MotionPlannerImpl::onGoalButtonClicked()
 {
     onTargetLinkChanged();
     if(endLink) {
@@ -519,7 +513,7 @@ void ConfigDialog::onGoalButtonClicked()
 }
 
 
-void ConfigDialog::onGenerateButtonClicked()
+void MotionPlannerImpl::onGenerateButtonClicked()
 {
     statesScene->clearChildren();
     solutionScene->clearChildren();
@@ -535,7 +529,7 @@ void ConfigDialog::onGenerateButtonClicked()
 }
 
 
-void ConfigDialog::onPreviewButtonToggled(bool on)
+void MotionPlannerImpl::onPreviewButtonToggled(bool on)
 {
     if(on && isSolved) {
         time = 0.0;
@@ -552,7 +546,7 @@ void ConfigDialog::onPreviewButtonToggled(bool on)
 }
 
 
-void ConfigDialog::onPreviewTimeout()
+void MotionPlannerImpl::onPreviewTimeout()
 {
     if(body && baseLink && endLink) {
         if(previewButton->isChecked()) {
@@ -573,7 +567,7 @@ void ConfigDialog::onPreviewTimeout()
 }
 
 
-void ConfigDialog::onCheckToggled()
+void MotionPlannerImpl::onCheckToggled()
 {
     bodyItems = RootItem::instance()->checkedItems<BodyItem>();
     bodyCombo->clear();
@@ -584,7 +578,7 @@ void ConfigDialog::onCheckToggled()
 }
 
 
-void ConfigDialog::onCurrentIndexChanged(int index)
+void MotionPlannerImpl::onCurrentIndexChanged(int index)
 {
     baseCombo->clear();
     endCombo->clear();
@@ -599,7 +593,7 @@ void ConfigDialog::onCurrentIndexChanged(int index)
 }
 
 
-void ConfigDialog::onStartValueChanged()
+void MotionPlannerImpl::onStartValueChanged()
 {
     SgPosTransform* pos = dynamic_cast<SgPosTransform*>(startScene->child(0));
     Vector3 translation = Vector3(startxSpin->value(), startySpin->value(), startzSpin->value());
@@ -608,7 +602,7 @@ void ConfigDialog::onStartValueChanged()
 }
 
 
-void ConfigDialog::onGoalValueChanged()
+void MotionPlannerImpl::onGoalValueChanged()
 {
     SgPosTransform* pos = dynamic_cast<SgPosTransform*>(goalScene->child(0));
     Vector3 translation = Vector3(goalxSpin->value(), goalySpin->value(), goalzSpin->value());
@@ -617,7 +611,7 @@ void ConfigDialog::onGoalValueChanged()
 }
 
 
-void ConfigDialog::onStartPositionDragged()
+void MotionPlannerImpl::onStartPositionDragged()
 {
     Vector3 p = startDragger->globalDraggingPosition().translation();
     startxSpin->setValue(p[0]);
@@ -626,7 +620,7 @@ void ConfigDialog::onStartPositionDragged()
 }
 
 
-void ConfigDialog::onGoalPositionDragged()
+void MotionPlannerImpl::onGoalPositionDragged()
 {
     Vector3 p = goalDragger->globalDraggingPosition().translation();
     goalxSpin->setValue(p[0]);
@@ -635,7 +629,7 @@ void ConfigDialog::onGoalPositionDragged()
 }
 
 
-void ConfigDialog::planWithSimpleSetup()
+void MotionPlannerImpl::planWithSimpleSetup()
 {
     auto space(std::make_shared<ob::SE3StateSpace>());
 
@@ -697,12 +691,12 @@ void ConfigDialog::planWithSimpleSetup()
     }
 
     ss.setup();
-//    ss.print(messageView->cout());
+//    ss.print(mv->cout());
 
     ob::PlannerStatus solved = ss.solve(timeSpin->value());
 
     if(solved) {
-        messageView->putln("Found solution:");
+        mv->putln("Found solution:");
         isSolved = true;
 
         og::PathGeometric pathes = ss.getSolutionPath();
@@ -747,15 +741,15 @@ void ConfigDialog::planWithSimpleSetup()
         }
 
         ss.simplifySolution();
-//        ss.getSolutionPath().print(messageView->cout());
+//        ss.getSolutionPath().print(mv->cout());
     } else {
-        messageView->putln("No solution found");
+        mv->putln("No solution found");
         isSolved = false;
     }
 }
 
 
-bool ConfigDialog::isStateValid(const ob::State* state)
+bool MotionPlannerImpl::isStateValid(const ob::State* state)
 {
     const auto *se3state = state->as<ob::SE3StateSpace::StateType>();
     const auto *pos = se3state->as<ob::RealVectorStateSpace::StateType>(0);
