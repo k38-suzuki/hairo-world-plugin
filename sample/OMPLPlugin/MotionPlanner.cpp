@@ -6,26 +6,20 @@
 #include "MotionPlanner.h"
 #include <cnoid/BodyItem>
 #include <cnoid/Button>
-#include <cnoid/CheckBox>
 #include <cnoid/ComboBox>
 #include <cnoid/Dialog>
 #include <cnoid/EigenTypes>
 #include <cnoid/JointPath>
 #include <cnoid/MenuManager>
-#include <cnoid/MeshGenerator>
 #include <cnoid/MessageView>
-#include <cnoid/PositionDragger>
+#include <cnoid/PointSetItem>
 #include <cnoid/RootItem>
 #include <cnoid/SceneDrawables>
-#include <cnoid/SceneView>
-#include <cnoid/SceneWidget>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/Timer>
-#include <cnoid/ViewManager>
 #include <cnoid/WorldItem>
 #include <fmt/format.h>
-#include <QColor>
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QHBoxLayout>
@@ -42,8 +36,8 @@
 #include "sample/SimpleController/Interpolator.h"
 #include "gettext.h"
 
-using namespace std;
 using namespace cnoid;
+using namespace std;
 
 namespace ob = ompl::base;
 namespace og = ompl::geometric;
@@ -65,9 +59,6 @@ public:
     ComboBox* baseCombo;
     ComboBox* endCombo;
     ComboBox* plannerCombo;
-    CheckBox* statesCheck;
-    CheckBox* solutionCheck;
-    CheckBox* cubicCheck;
     DoubleSpinBox* cubicSpin;
     DoubleSpinBox* xminSpin;
     DoubleSpinBox* xmaxSpin;
@@ -83,8 +74,6 @@ public:
     DoubleSpinBox* goalzSpin;
     DoubleSpinBox* timeLengthSpin;
     DoubleSpinBox* timeSpin;
-    CheckBox* startCheck;
-    CheckBox* goalCheck;
     ToggleButton* previewButton;
     PushButton* startButton;
     PushButton* goalButton;
@@ -97,30 +86,21 @@ public:
     MotionPlannerImpl(MotionPlanner* self);
     MotionPlanner* self;
 
-    SgPosTransformPtr scene;
     PlannerConfigDialog* config;
-    SgSwitchableGroupPtr startScene;
-    SgSwitchableGroupPtr goalScene;
-    SgSwitchableGroupPtr statesScene;
-    SgSwitchableGroupPtr solutionScene;
     ItemList<BodyItem> bodyItems;
     BodyItem* bodyItem;
     Body* body;
     Link* baseLink;
     Link* endLink;
-    WorldItem* worldItem;
     MessageView* mv;
     vector<Vector3> solutions;
     Interpolator<VectorXd> interpolator;
     double time;
     double timeStep;
-    double timeLength;
     Timer* timer;
     bool isSolved;
-    PositionDraggerPtr startDragger;
-    PositionDraggerPtr goalDragger;
+    PointSetItem* statePointSetItem;
 
-    void createScene();
     void onTargetLinkChanged();
     void onStartButtonClicked();
     void onGoalButtonClicked();
@@ -129,10 +109,6 @@ public:
     void onPreviewTimeout();
     void onCheckToggled();
     void onCurrentIndexChanged(int index);
-    void onStartValueChanged();
-    void onGoalValueChanged();
-    void onStartPositionDragged();
-    void onGoalPositionDragged();
     void planWithSimpleSetup();
     bool isStateValid(const ob::State* state);
 };
@@ -156,19 +132,14 @@ MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self)
     body = nullptr;
     baseLink = nullptr;
     endLink = nullptr;
-    worldItem = nullptr;
     solutions.clear();
     interpolator.clear();
     time = 0.0;
     timeStep = 0.001;
-    timeLength = 1.0;
     timer = new Timer;
     timer->start(1);
     isSolved = false;
-    startDragger = nullptr;
-    goalDragger = nullptr;
-
-    createScene();
+    statePointSetItem = nullptr;
 
     config->generateButton->sigClicked().connect([&](){ onGenerateButtonClicked(); });
     RootItem::instance()->sigCheckToggled().connect([&](Item* item, bool on){
@@ -176,15 +147,6 @@ MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self)
     });
     config->previewButton->sigToggled().connect([&](bool on){ onPreviewButtonToggled(on); });
     config->bodyCombo->sigCurrentIndexChanged().connect([&](int index){ onCurrentIndexChanged(index); });
-    config->cubicCheck->sigToggled().connect([&](bool on){
-        config->cubicSpin->setEnabled(on);
-        config->xminSpin->setEnabled(!on);
-        config->xmaxSpin->setEnabled(!on);
-        config->yminSpin->setEnabled(!on);
-        config->ymaxSpin->setEnabled(!on);
-        config->zminSpin->setEnabled(!on);
-        config->zmaxSpin->setEnabled(!on);
-    });
     config->cubicSpin->sigValueChanged().connect([&](double value){
         config->xminSpin->setValue(-1.0 * value);
         config->xmaxSpin->setValue(value);
@@ -193,31 +155,8 @@ MotionPlannerImpl::MotionPlannerImpl(MotionPlanner* self)
         config->zminSpin->setValue(-1.0 * value);
         config->zmaxSpin->setValue(value);
     });
-    config->statesCheck->sigToggled().connect([&](bool on){
-        statesScene->setTurnedOn(on);
-        statesScene->notifyUpdate();
-    });
-    config->solutionCheck->sigToggled().connect([&](bool on){
-        solutionScene->setTurnedOn(on);
-        solutionScene->notifyUpdate();
-    });
-    config->startCheck->sigToggled().connect([&](bool on){
-        startScene->setTurnedOn(on);
-        startScene->notifyUpdate();
-    });
-    config->goalCheck->sigToggled().connect([&](bool on){
-        goalScene->setTurnedOn(on);
-        goalScene->notifyUpdate();
-    });
-    config->startxSpin->sigValueChanged().connect([&](double value){ onStartValueChanged(); });
-    config->startySpin->sigValueChanged().connect([&](double value){ onStartValueChanged(); });
-    config->startzSpin->sigValueChanged().connect([&](double value){ onStartValueChanged(); });
-    config->goalxSpin->sigValueChanged().connect([&](double value){ onGoalValueChanged(); });
-    config->goalySpin->sigValueChanged().connect([&](double value){ onGoalValueChanged(); });
-    config->goalzSpin->sigValueChanged().connect([&](double value){ onGoalValueChanged(); });
 
     timer->sigTimeout().connect([&](){ onPreviewTimeout(); });
-
     config->startButton->sigClicked().connect([&](){ onStartButtonClicked(); });
     config->goalButton->sigClicked().connect([&](){ onGoalButtonClicked(); });
 }
@@ -241,84 +180,6 @@ void MotionPlanner::initializeClass(ExtensionManager* ext)
     MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
     mm.addItem(_("Motion Planner"))->sigTriggered().connect(
                 [&](){ plannerInstance->impl->config->show(); });
-}
-
-
-void MotionPlannerImpl::createScene()
-{
-    if(!scene) {
-        scene = new SgPosTransform;
-    } else {
-        scene->clearChildren();
-    }
-
-    MeshGenerator generator;
-
-    startScene = new SgSwitchableGroup;
-    startScene->setTurnedOn(false);
-    startDragger = new PositionDragger(
-                PositionDragger::TranslationAxes, PositionDragger::WideHandle);
-    startDragger->setDragEnabled(true);
-    startDragger->setOverlayMode(true);
-    startDragger->setPixelSize(48, 2);
-    startDragger->setDisplayMode(PositionDragger::DisplayInEditMode);
-    SgPosTransform* startPos = new SgPosTransform;
-    SgShape* startShape = new SgShape;
-    startShape->setMesh(generator.generateSphere(0.03));
-    startShape->getOrCreateMaterial()->setDiffuseColor(Vector3(0.0, 1.0, 0.0));
-    SgGroup* startGroup = new SgGroup;
-    startGroup->addChild(startShape);
-    startGroup->addChild(startDragger);
-    startPos->addChild(startGroup);
-    startScene->addChild(startPos);
-    startDragger->adjustSize(startShape->boundingBox());
-    startDragger->sigPositionDragged().connect([&](){ onStartPositionDragged(); });
-
-    goalScene = new SgSwitchableGroup;
-    goalScene->setTurnedOn(false);
-    goalDragger = new PositionDragger(
-                PositionDragger::TranslationAxes, PositionDragger::WideHandle);
-    goalDragger->setDragEnabled(true);
-    goalDragger->setOverlayMode(true);
-    goalDragger->setPixelSize(48, 2);
-    goalDragger->setDisplayMode(PositionDragger::DisplayInEditMode);
-    SgPosTransform* goalPos = new SgPosTransform();
-    SgShape* goalShape = new SgShape;
-    goalShape->setMesh(generator.generateSphere(0.03));
-    goalShape->getOrCreateMaterial()->setDiffuseColor(Vector3(1.0, 0.0, 0.0));
-    SgGroup* goalGroup = new SgGroup;
-    goalGroup->addChild(goalShape);
-    goalGroup->addChild(goalDragger);
-    goalPos->addChild(goalGroup);
-    goalScene->addChild(goalPos);
-    goalDragger->adjustSize(goalShape->boundingBox());
-    goalDragger->sigPositionDragged().connect([&](){ onGoalPositionDragged(); });
-
-    statesScene = new SgSwitchableGroup;
-    statesScene->setTurnedOn(false);
-    solutionScene = new SgSwitchableGroup;
-    solutionScene->setTurnedOn(false);
-
-    scene->addChild(startScene);
-    scene->addChild(goalScene);
-    scene->addChild(statesScene);
-    scene->addChild(solutionScene);
-
-    SceneWidget* sceneWidget = SceneView::instance()->sceneWidget();
-    sceneWidget->sceneRoot()->addChild(scene);
-
-    ViewManager::sigViewCreated().connect([&](View* view){
-        SceneView* sceneView = dynamic_cast<SceneView*>(view);
-        if(sceneView) {
-            sceneView->sceneWidget()->sceneRoot()->addChildOnce(scene);
-        }
-    });
-    ViewManager::sigViewRemoved().connect([&](View* view){
-        SceneView* sceneView = dynamic_cast<SceneView*>(view);
-        if(sceneView) {
-            sceneView->sceneWidget()->sceneRoot()->removeChild(scene);
-        }
-    });
 }
 
 
@@ -356,15 +217,12 @@ void MotionPlannerImpl::onGoalButtonClicked()
 
 void MotionPlannerImpl::onGenerateButtonClicked()
 {
-    statesScene->clearChildren();
-    solutionScene->clearChildren();
     if(bodyItems.size()) {
         bodyItem = bodyItems[config->bodyCombo->currentIndex()];
         body = bodyItem->body();
         bodyItem->restoreInitialState(true);
         baseLink = body->link(config->baseCombo->currentIndex());
         endLink = body->link(config->endCombo->currentIndex());
-        worldItem = bodyItem->findOwnerItem<WorldItem>();
     }
     planWithSimpleSetup();
 }
@@ -376,7 +234,7 @@ void MotionPlannerImpl::onPreviewButtonToggled(bool on)
         time = 0.0;
         interpolator.clear();
         int numPoints = solutions.size();
-        timeLength = config->timeLengthSpin->value();
+        double timeLength = config->timeLengthSpin->value();
         double dt = timeLength / (double)numPoints;
 
         for(size_t i = 0; i < solutions.size(); i++) {
@@ -414,7 +272,7 @@ void MotionPlannerImpl::onCheckToggled()
     config->bodyCombo->clear();
 
     for(size_t i = 0; i < bodyItems.size(); i++) {
-        config->bodyCombo->addItem(QString::fromStdString(bodyItems[i]->name()));
+        config->bodyCombo->addItem(bodyItems[i]->name().c_str());
     }
 }
 
@@ -427,46 +285,10 @@ void MotionPlannerImpl::onCurrentIndexChanged(int index)
         Body* body = bodyItems[index]->body();
         for(size_t i = 0; i < body->numLinks(); i++) {
             Link* link = body->link(i);
-            config->baseCombo->addItem(QString::fromStdString(link->name()));
-            config->endCombo->addItem(QString::fromStdString(link->name()));
+            config->baseCombo->addItem(link->name().c_str());
+            config->endCombo->addItem(link->name().c_str());
         }
     }
-}
-
-
-void MotionPlannerImpl::onStartValueChanged()
-{
-    SgPosTransform* pos = dynamic_cast<SgPosTransform*>(startScene->child(0));
-    Vector3 translation = Vector3(config->startxSpin->value(), config->startySpin->value(), config->startzSpin->value());
-    pos->setTranslation(translation);
-    startScene->notifyUpdate();
-}
-
-
-void MotionPlannerImpl::onGoalValueChanged()
-{
-    SgPosTransform* pos = dynamic_cast<SgPosTransform*>(goalScene->child(0));
-    Vector3 translation = Vector3(config->goalxSpin->value(), config->goalySpin->value(), config->goalzSpin->value());
-    pos->setTranslation(translation);
-    goalScene->notifyUpdate();
-}
-
-
-void MotionPlannerImpl::onStartPositionDragged()
-{
-    Vector3 p = startDragger->globalDraggingPosition().translation();
-    config->startxSpin->setValue(p[0]);
-    config->startySpin->setValue(p[1]);
-    config->startzSpin->setValue(p[2]);
-}
-
-
-void MotionPlannerImpl::onGoalPositionDragged()
-{
-    Vector3 p = goalDragger->globalDraggingPosition().translation();
-    config->goalxSpin->setValue(p[0]);
-    config->goalySpin->setValue(p[1]);
-    config->goalzSpin->setValue(p[2]);
 }
 
 
@@ -484,6 +306,17 @@ void MotionPlannerImpl::planWithSimpleSetup()
     space->setBounds(bounds);
 
     og::SimpleSetup ss(space);
+
+    ItemList<PointSetItem> pointSetItems = bodyItem->descendantItems<PointSetItem>();
+    for(size_t i = 0; i < pointSetItems.size(); ++i) {
+        pointSetItems[i]->removeFromParentItem();
+    }
+
+    statePointSetItem = new PointSetItem;
+    statePointSetItem->setName("StatePointSet");
+    statePointSetItem->setRenderingMode(PointSetItem::VOXEL);
+    statePointSetItem->setVoxelSize(0.03);
+    bodyItem->addSubItem(statePointSetItem);
 
     ss.setStateValidityChecker([&](const ob::State* state) { return isStateValid(state); });
 
@@ -537,33 +370,27 @@ void MotionPlannerImpl::planWithSimpleSetup()
     ob::PlannerStatus solved = ss.solve(config->timeSpin->value());
 
     if(solved) {
-        mv->putln("Found solution:");
+        mv->putln(_("Found solution:"));
         isSolved = true;
 
         og::PathGeometric pathes = ss.getSolutionPath();
         const int numPoints = pathes.getStateCount();
         solutions.clear();
+
+        statePointSetItem->setChecked(true);
+        PointSetItem* pointSetItem = new PointSetItem;
+        pointSetItem->setName("SolvedPointSet");
+        pointSetItem->setRenderingMode(PointSetItem::VOXEL);
+        pointSetItem->setVoxelSize(0.04);
+        pointSetItem->setChecked(true);
+        bodyItem->addSubItem(pointSetItem);
+
         for(size_t i = 0; i < pathes.getStateCount(); i++) {
             ob::State* state = pathes.getState(i);
             float x = state->as<ob::SE3StateSpace::StateType>()->getX();
             float y = state->as<ob::SE3StateSpace::StateType>()->getY();
             float z = state->as<ob::SE3StateSpace::StateType>()->getZ();
             solutions.push_back(Vector3(x, y, z));
-
-            MeshGenerator generator;
-            SgShape* shape = new SgShape;
-            shape->setMesh(generator.generateSphere(0.02));
-            SgMaterial* material = new SgMaterial;
-            int hue = 240.0 * (1.0 - (double)i / (double)(numPoints - 1));
-            QColor qColor = QColor::fromHsv(hue, 255, 255);
-            Vector3f color((double)qColor.red() / 255.0, (double)qColor.green() / 255.0, (double)qColor.blue() / 255.0);
-            material->setDiffuseColor(Vector3(color[0], color[1], color[2]));
-            material->setTransparency(0.5);
-            shape->setMaterial(material);
-            SgPosTransform* transform = new SgPosTransform;
-            transform->addChild(shape);
-            transform->setTranslation(Vector3(x, y, z));
-            solutionScene->addChild(transform);
 
             if(bodyItem) {
                 bodyItem->restoreInitialState(true);
@@ -581,10 +408,51 @@ void MotionPlannerImpl::planWithSimpleSetup()
             }
         }
 
+        {
+            SgVertexArray& points = *pointSetItem->pointSet()->getOrCreateVertices();
+            SgColorArray& colors = *pointSetItem->pointSet()->getOrCreateColors();
+    //        const int numPoints = src.size();
+            points.resize(numPoints);
+            colors.resize(numPoints);
+            for(int i = 0; i < numPoints; ++i) {
+                Vector3f point = Vector3f(solutions[i][0], solutions[i][1], solutions[i][2]);
+                points[i] = point;
+                Vector3f& c = colors[i];
+                c[0] = 0.0;
+                c[1] = 1.0;
+                c[2] = 0.0;
+            }
+            pointSetItem->notifyUpdate();
+        }
+
+        {
+            vector<Vector3> src;
+            for(int i = 0; i < statePointSetItem->numAttentionPoints(); ++i) {
+                Vector3 point = statePointSetItem->attentionPoint(i);
+                src.push_back(point);
+            }
+
+            statePointSetItem->clearAttentionPoints();
+            SgVertexArray& points = *statePointSetItem->pointSet()->getOrCreateVertices();
+            SgColorArray& colors = *statePointSetItem->pointSet()->getOrCreateColors();
+            const int numStates = src.size();
+            points.resize(numStates);
+            colors.resize(numStates);
+            for(int i = 0; i < numStates; ++i) {
+                Vector3f point = Vector3f(src[i][0], src[i][1], src[i][2]);
+                points[i] = point;
+                Vector3f& c = colors[i];
+                c[0] = 1.0;
+                c[1] = 0.0;
+                c[2] = 0.0;
+            }
+            statePointSetItem->notifyUpdate();
+        }
+
         ss.simplifySolution();
 //        ss.getSolutionPath().print(mv->cout());
     } else {
-        mv->putln("No solution found");
+        mv->putln(_("No solution found"));
         isSolved = false;
     }
 }
@@ -603,17 +471,7 @@ bool MotionPlannerImpl::isStateValid(const ob::State* state)
     float y = state->as<ob::SE3StateSpace::StateType>()->getY();
     float z = state->as<ob::SE3StateSpace::StateType>()->getZ();
 
-    MeshGenerator generator;
-    SgShape* shape = new SgShape;
-    shape->setMesh(generator.generateSphere(0.02));
-    SgMaterial* material = new SgMaterial;
-    material->setDiffuseColor(Vector3(0.0, 1.0, 0.0));
-    material->setTransparency(0.5);
-    shape->setMaterial(material);
-    SgPosTransform* transform = new SgPosTransform;
-    transform->addChild(shape);
-    transform->setTranslation(Vector3(x, y, z));
-    statesScene->addChild(transform);
+    statePointSetItem->addAttentionPoint(Vector3(x, y, z));
 
     if(bodyItem) {
         bodyItem->restoreInitialState(true);
@@ -628,6 +486,7 @@ bool MotionPlannerImpl::isStateValid(const ob::State* state)
             if(path->calcInverseKinematics(T)) {
                 bodyItem->notifyKinematicStateChange(true);
                 solved = true;
+                WorldItem* worldItem = bodyItem->findOwnerItem<WorldItem>();
                 if(worldItem) {
                     worldItem->updateCollisions();
                     vector<CollisionLinkPairPtr> collisions = bodyItem->collisions();
@@ -654,8 +513,7 @@ PlannerConfigDialog::PlannerConfigDialog()
 
     QVBoxLayout* vbox = new QVBoxLayout;
 
-    HSeparatorBox* tbsbox = new HSeparatorBox(new QLabel(_("Target Body")));
-    vbox->addLayout(tbsbox);
+    vbox->addLayout(new HSeparatorBox(new QLabel(_("Target Body"))));
     QGridLayout* tbgbox = new QGridLayout;
     bodyCombo = new ComboBox;
     baseCombo = new ComboBox;
@@ -668,17 +526,13 @@ PlannerConfigDialog::PlannerConfigDialog()
     tbgbox->addWidget(endCombo, 1, 3);
     vbox->addLayout(tbgbox);
 
-    HSeparatorBox* bbsbox = new HSeparatorBox(new QLabel(_("Bounding Box")));
-    vbox->addLayout(bbsbox);
+    vbox->addLayout(new HSeparatorBox(new QLabel(_("Bounding Box"))));
 
     QGridLayout* bbgbox = new QGridLayout;
-    cubicCheck = new CheckBox;
-    cubicCheck->setText(_("Cubic BB"));
     cubicSpin = new DoubleSpinBox;
     cubicSpin->setRange(0.0, 1000.0);
     cubicSpin->setValue(1.0);
     cubicSpin->setAlignment(Qt::AlignCenter);
-    cubicSpin->setEnabled(false);
     xminSpin = new DoubleSpinBox;
     xminSpin->setRange(-1000.0, 0.0);
     xminSpin->setValue(-1.0);
@@ -706,7 +560,7 @@ PlannerConfigDialog::PlannerConfigDialog()
     zmaxSpin->setValue(1.0);
     zmaxSpin->setAlignment(Qt::AlignCenter);
 
-    bbgbox->addWidget(cubicCheck, 0, 0);
+    bbgbox->addWidget(new QLabel(_("Cubic BB")), 0, 0);
     bbgbox->addWidget(cubicSpin, 0, 1);
     bbgbox->addWidget(new QLabel(_("min[x, y, z]")), 1, 0);
     bbgbox->addWidget(xminSpin, 1, 1);
@@ -718,27 +572,21 @@ PlannerConfigDialog::PlannerConfigDialog()
     bbgbox->addWidget(zmaxSpin, 2, 3);
     vbox->addLayout(bbgbox);
 
-    HSeparatorBox* ctsbox = new HSeparatorBox(new QLabel(_("Path Generation")));
-    vbox->addLayout(ctsbox);
+    vbox->addLayout(new HSeparatorBox(new QLabel(_("Path Generation"))));
 
-    QGridLayout* pgbox = new QGridLayout;
+    QHBoxLayout* hbox = new QHBoxLayout;
     plannerCombo = new ComboBox;
     QStringList planners = { "RRT", "RRTConnect", "RRT*", "pRRT" };
     plannerCombo->addItems(planners);
+    hbox->addWidget(new QLabel(_("Geometric planner")), 0, 0);
+    hbox->addWidget(plannerCombo);
+    vbox->addLayout(hbox);
+
     timeSpin = new DoubleSpinBox;
     timeSpin->setRange(0.0, 1000.0);
     timeSpin->setValue(1.0);
     timeSpin->setAlignment(Qt::AlignCenter);
-    statesCheck = new CheckBox;
-    statesCheck->setText(_("Show states"));
-    statesCheck->setChecked(false);
-    solutionCheck = new CheckBox;
-    solutionCheck->setText(_("Show solution"));
-    solutionCheck->setChecked(false);
 
-    startCheck = new CheckBox;
-    startCheck->setChecked(false);
-    startCheck->setText(_("Start[x, y, z]"));
     startxSpin = new DoubleSpinBox;
     startxSpin->setRange(-1000.0, 1000.0);
     startxSpin->setSingleStep(0.01);
@@ -755,9 +603,6 @@ PlannerConfigDialog::PlannerConfigDialog()
     startzSpin->setValue(0.0);
     startzSpin->setAlignment(Qt::AlignCenter);
 
-    goalCheck = new CheckBox;
-    goalCheck->setChecked(false);
-    goalCheck->setText(_("Goal[x, y, z]"));
     goalxSpin = new DoubleSpinBox;
     goalxSpin->setRange(-1000.0, 1000.0);
     goalxSpin->setSingleStep(0.01);
@@ -777,47 +622,38 @@ PlannerConfigDialog::PlannerConfigDialog()
     startButton = new PushButton(_("Set start"));
     goalButton = new PushButton(_("Set goal"));
 
-    pgbox->addWidget(new QLabel(_("Geometric planner")), 0, 0);
-    pgbox->addWidget(plannerCombo, 0, 1);
-    pgbox->addWidget(startButton, 0, 2);
-    pgbox->addWidget(goalButton, 0, 3);
-    pgbox->addWidget(startCheck, 1, 0);
-    pgbox->addWidget(startxSpin, 1, 1);
-    pgbox->addWidget(startySpin, 1, 2);
-    pgbox->addWidget(startzSpin, 1, 3);
-    pgbox->addWidget(goalCheck, 2, 0);
-    pgbox->addWidget(goalxSpin, 2, 1);
-    pgbox->addWidget(goalySpin, 2, 2);
-    pgbox->addWidget(goalzSpin, 2, 3);
-    pgbox->addWidget(new QLabel(_("Calculation time")), 3, 0);
-    pgbox->addWidget(timeSpin, 3, 1);
-    vbox->addLayout(pgbox);
-
-    HSeparatorBox* psbox = new HSeparatorBox(new QLabel(_("Preview")));
-    vbox->addLayout(psbox);
-
     generateButton = new PushButton(_("Generate"));
     previewButton = new ToggleButton(_("Preview"));
     timeLengthSpin = new DoubleSpinBox;
     timeLengthSpin->setRange(1.0, 1000.0);
     timeLengthSpin->setValue(1.0);
     timeLengthSpin->setAlignment(Qt::AlignCenter);
-    QGridLayout* pvbox = new QGridLayout;
-    pvbox->addWidget(solutionCheck, 0, 0);
-    pvbox->addWidget(statesCheck, 0, 1);
-    pvbox->addWidget(generateButton, 0, 2);
-    pvbox->addWidget(new QLabel(_("Time length")), 1, 0);
-    pvbox->addWidget(timeLengthSpin, 1, 1);
-    pvbox->addWidget(previewButton, 1, 2);
-    vbox->addLayout(pvbox);
 
-    vbox->addWidget(new HSeparator);
+    QGridLayout* pgbox = new QGridLayout;
+    pgbox->addWidget(new QLabel(_("Start[x, y, z]")), 0, 0);
+    pgbox->addWidget(startxSpin, 0, 1);
+    pgbox->addWidget(startySpin, 0, 2);
+    pgbox->addWidget(startzSpin, 0, 3);
+    pgbox->addWidget(new QLabel(_("Goal[x, y, z]")), 1, 0);
+    pgbox->addWidget(goalxSpin, 1, 1);
+    pgbox->addWidget(goalySpin, 1, 2);
+    pgbox->addWidget(goalzSpin, 1, 3);
+    pgbox->addWidget(new QLabel(_("Calculation time")), 2, 0);
+    pgbox->addWidget(timeSpin, 2, 1);
+    pgbox->addWidget(startButton, 3, 1);
+    pgbox->addWidget(goalButton, 3, 2);
+    pgbox->addWidget(generateButton, 3, 3);
+    pgbox->addWidget(new QLabel(_("Time length")), 4, 0);
+    pgbox->addWidget(timeLengthSpin, 4, 1);
+    pgbox->addWidget(previewButton, 4, 3);
+    vbox->addLayout(pgbox);
 
     auto buttonBox = new QDialogButtonBox(this);
     auto okButton = new PushButton(_("&Ok"));
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
     connect(buttonBox, &QDialogButtonBox::accepted, [this](){ this->accept(); });
-    vbox->addWidget(buttonBox);
 
+    vbox->addWidget(new HSeparator);
+    vbox->addWidget(buttonBox);
     setLayout(vbox);
 }

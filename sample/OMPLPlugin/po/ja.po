@@ -57,14 +57,6 @@ msgstr "最大[x, y, z]"
 msgid "Path Generation"
 msgstr "経路生成"
 
-#: ../MotionPlannerDialog.cpp:257
-msgid "Show states"
-msgstr "状態を表示"
-
-#: ../MotionPlannerDialog.cpp:260
-msgid "Show solution"
-msgstr "結果を表示"
-
 #: ../MotionPlannerDialog.cpp:265
 msgid "Start[x, y, z]"
 msgstr "始点[x, y, z]"
@@ -75,11 +67,11 @@ msgstr "終点[x, y, z]"
 
 #: ../MotionPlannerDialog.cpp:310
 msgid "Set start"
-msgstr "始点に設定"
+msgstr "始点を設定"
 
 #: ../MotionPlannerDialog.cpp:311
 msgid "Set goal"
-msgstr "終点に設定"
+msgstr "終点を設定"
 
 #: ../MotionPlannerDialog.cpp:301
 msgid "Geometric planner"
