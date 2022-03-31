@@ -5,6 +5,7 @@
 
 #include "MotionPlannerItem.h"
 #include <cnoid/Archive>
+#include <cnoid/BoundingBox>
 #include <cnoid/EigenArchive>
 #include <cnoid/ItemManager>
 #include <cnoid/MessageView>
@@ -38,8 +39,7 @@ public:
     enum PlannerType { RRT, RRTCONNECT, RRTSTAR, PRRT, NUM_PLANNERS };
 
     Selection plannerType;
-    Vector3 bbMin;
-    Vector3 bbMax;
+    BoundingBox bb;
     Vector3 startPosition;
     Vector3 goalPosition;
     double calculationTime;
@@ -74,8 +74,9 @@ MotionPlannerItemImpl::MotionPlannerItemImpl(MotionPlannerItem* self)
     plannerType.setSymbol(RRTCONNECT, N_("RRTConnect"));
     plannerType.setSymbol(RRTSTAR, N_("RRT*"));
     plannerType.setSymbol(PRRT, N_("pRRT"));
-    bbMin << -5.0, -5.0, -5.0;
-    bbMax << 5.0, 5.0, 5.0;
+    Vector3 min(-5.0, -5.0, -5.0);
+    Vector3 max(5.0, 5.0, 5.0);
+    bb.set(min, max);
     startPosition << 0.0, 0.0, 0.0;
     goalPosition << 0.0, 0.0, 0.0;
     calculationTime = 1.0;
@@ -96,8 +97,7 @@ MotionPlannerItemImpl::MotionPlannerItemImpl(MotionPlannerItem* self, const Moti
       mv(MessageView::instance())
 {
     plannerType = org.plannerType;
-    bbMin = org.bbMin;
-    bbMax = org.bbMax;
+    bb = org.bb;
     startPosition = org.startPosition;
     goalPosition = org.goalPosition;
     calculationTime = org.calculationTime;
@@ -145,12 +145,12 @@ void MotionPlannerItemImpl::planWithSimpleSetup()
     auto space(std::make_shared<ob::SE3StateSpace>());
 
     ob::RealVectorBounds bounds(3);
-    bounds.setLow(0, bbMin[0]);
-    bounds.setHigh(0, bbMax[0]);
-    bounds.setLow(1, bbMin[1]);
-    bounds.setHigh(1, bbMax[1]);
-    bounds.setLow(2, bbMin[2]);
-    bounds.setHigh(2, bbMax[2]);
+    bounds.setLow(0, bb.min()[0]);
+    bounds.setHigh(0, bb.max()[0]);
+    bounds.setLow(1, bb.min()[1]);
+    bounds.setHigh(1, bb.max()[1]);
+    bounds.setLow(2, bb.min()[2]);
+    bounds.setHigh(2, bb.max()[2]);
     space->setBounds(bounds);
 
     og::SimpleSetup ss(space);
@@ -241,7 +241,9 @@ bool MotionPlannerItemImpl::isStateValid(const ob::State* state)
 
 bool MotionPlannerItemImpl::onBBMinPropertyChanged(const string& text)
 {
-    if(toVector3(text, bbMin)) {
+    Vector3 min;
+    if(toVector3(text, min)) {
+        bb.set(min, bb.max());
         return true;
     }
     return false;
@@ -250,7 +252,9 @@ bool MotionPlannerItemImpl::onBBMinPropertyChanged(const string& text)
 
 bool MotionPlannerItemImpl::onBBMaxPropertyChanged(const string& text)
 {
-    if(toVector3(text, bbMax)) {
+    Vector3 max;
+    if(toVector3(text, max)) {
+        bb.set(bb.min(), max);
         return true;
     }
     return false;
@@ -309,9 +313,9 @@ void MotionPlannerItemImpl::doPutProperties(PutPropertyFunction& putProperty)
 {
     putProperty(_("Geometric planner"), plannerType,
                 [&](int index){ return plannerType.select(index); });
-    putProperty(_("BB min"), str(bbMin),
+    putProperty(_("BB min"), str(bb.min()),
                 [this](const string& text){ return onBBMinPropertyChanged(text); });
-    putProperty(_("BB max"), str(bbMax),
+    putProperty(_("BB max"), str(bb.max()),
                 [this](const string& text){ return onBBMaxPropertyChanged(text); });
     putProperty(_("Start position"), str(startPosition),
                 [this](const string& text){ return onStartPositionPropertyChanged(text); });
@@ -330,8 +334,8 @@ bool MotionPlannerItem::store(Archive& archive)
 bool MotionPlannerItemImpl::store(Archive& archive)
 {
     archive.write("planner_type", plannerType.which());
-    write(archive, "bb_min", bbMin);
-    write(archive, "bb_max", bbMax);
+    write(archive, "bb_min", bb.min());
+    write(archive, "bb_max", bb.max());
     write(archive, "start_position", startPosition);
     write(archive, "goal_position", goalPosition);
     archive.write("calculation_time", calculationTime);
@@ -348,8 +352,11 @@ bool MotionPlannerItem::restore(const Archive& archive)
 bool MotionPlannerItemImpl::restore(const Archive& archive)
 {
     plannerType.select(archive.get("planner_type", 0));
-    read(archive, "bb_min", bbMin);
-    read(archive, "bb_max", bbMax);
+    Vector3 min(-5.0, -5.0, -5.0);
+    Vector3 max(5.0, 5.0, 5.0);
+    read(archive, "bb_min", min);
+    read(archive, "bb_max", max);
+    bb.set(min, max);
     read(archive, "start_position", startPosition);
     read(archive, "goal_position", goalPosition);
     archive.read("calculation_time", calculationTime);
