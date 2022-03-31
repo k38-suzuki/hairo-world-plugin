@@ -17,82 +17,70 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../MotionPlannerDialog.cpp:128 ../MotionPlannerDialog.cpp:421
-msgid "Motion Planner"
-msgstr "モーションプランナ"
+#: ../MotionPlannerItem.cpp:128 ../MotionPlannerItem.cpp:421
+msgid "IK Motion Planner"
+msgstr "IKモーションプランナ"
 
-#: ../MotionPlannerDialog.cpp:184
-msgid "Target Body"
-msgstr "対象ボディ"
+#: ../MotionPlannerItem.cpp:184
+msgid "IKMotionPlannerItem"
+msgstr "IKモーションプランナアイテム"
 
-#: ../MotionPlannerDialog.cpp:190
-msgid "Body"
-msgstr "ボディ"
-
-#: ../MotionPlannerDialog.cpp:192
-msgid "Base Link"
+#: ../MotionPlannerItem.cpp:192
+msgid "Base link"
 msgstr "ベースリンク"
 
-#: ../MotionPlannerDialog.cpp:194
-msgid "End Link"
+#: ../MotionPlannerItem.cpp:194
+msgid "End link"
 msgstr "エンドリンク"
 
-#: ../MotionPlannerDialog.cpp:198
-msgid "Bounding Box"
+#: ../MotionPlannerItem.cpp:198
+msgid "BoundingBox"
 msgstr "バウンディングボックス"
 
-#: ../MotionPlannerDialog.cpp:233
-msgid "Cubic BB"
-msgstr "立方BB"
+#: ../MotionPlannerItem.cpp:235
+msgid "min"
+msgstr "下限"
 
-#: ../MotionPlannerDialog.cpp:235
-msgid "min[x, y, z]"
-msgstr "最小[x, y, z]"
+#: ../MotionPlannerItem.cpp:239
+msgid "max"
+msgstr "上限"
 
-#: ../MotionPlannerDialog.cpp:239
-msgid "max[x, y, z]"
-msgstr "最大[x, y, z]"
+#: ../MotionPlannerItem.cpp:265
+msgid "Start position"
+msgstr "始点"
 
-#: ../MotionPlannerDialog.cpp:245
-msgid "Path Generation"
-msgstr "経路生成"
+#: ../MotionPlannerItem.cpp:284
+msgid "Goal position"
+msgstr "終点"
 
-#: ../MotionPlannerDialog.cpp:265
-msgid "Start[x, y, z]"
-msgstr "始点[x, y, z]"
+#: ../MotionPlannerItem.cpp:185
+msgid "Configuration of planner"
+msgstr "プランナの設定"
 
-#: ../MotionPlannerDialog.cpp:284
-msgid "Goal[x, y, z]"
-msgstr "終点[x, y, z]"
-
-#: ../MotionPlannerDialog.cpp:310
+#: ../MotionPlannerItem.cpp:310
 msgid "Set start"
 msgstr "始点を設定"
 
-#: ../MotionPlannerDialog.cpp:311
+#: ../MotionPlannerItem.cpp:311
 msgid "Set goal"
 msgstr "終点を設定"
 
-#: ../MotionPlannerDialog.cpp:301
+#: ../MotionPlannerItem.cpp:301
 msgid "Geometric planner"
-msgstr "プランナ"
+msgstr "幾何学プランナ"
 
-#: ../MotionPlannerDialog.cpp:311
+#: ../MotionPlannerItem.cpp:311
 msgid "Calculation time"
 msgstr "計算時間"
 
-#: ../MotionPlannerDialog.cpp:315 ../MotionPlannerDialog.cpp:319
-msgid "Preview"
-msgstr "プレビュー"
+#: ../MotionPlannerItem.cpp:318
+msgid "Generate a path"
+msgstr "経路を生成"
 
-#: ../MotionPlannerDialog.cpp:318
-msgid "Generate"
-msgstr "生成"
-
-#: ../MotionPlannerDialog.cpp:328
+#: ../MotionPlannerItem.cpp:328
 msgid "Time length"
 msgstr "時間長"
 
-#: ../MotionPlannerDialog.cpp:335
+#: ../MotionPlannerItem.cpp:335
 msgid "&Ok"
 msgstr "了解(&O)"

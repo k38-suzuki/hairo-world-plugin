@@ -10,12 +10,12 @@ link_directories(${OMPL_LIBRARY_DIRS})
 add_definitions(${OMPL_DEFINITIONS})
 
 set(sources
-    MotionPlanner.cpp
+    IKMotionPlannerItem.cpp
     OMPLPlugin.cpp
     )
 
 set(headers
-    MotionPlanner.h
+    IKMotionPlannerItem.h
     gettext.h
     )
 
