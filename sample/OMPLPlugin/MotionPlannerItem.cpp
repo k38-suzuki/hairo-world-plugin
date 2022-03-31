@@ -281,13 +281,13 @@ void MotionPlannerItem::prePlannerFunction()
 }
 
 
-bool MotionPlannerItem::midPlannerFunction(const ompl::base::State* state)
+bool MotionPlannerItem::midPlannerFunction(const ob::State* state)
 {
     return true;
 }
 
 
-void MotionPlannerItem::postPlannerFunction(ompl::geometric::PathGeometric& pathes)
+void MotionPlannerItem::postPlannerFunction(og::PathGeometric& pathes)
 {
 
 }
