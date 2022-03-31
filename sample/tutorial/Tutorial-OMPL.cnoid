@@ -12,7 +12,7 @@ items:
       class: WorldItem
       is_checked: true
       data: 
-        collision_detection: false
+        collision_detection: true
         collision_detector: AISTCollisionDetector
         default_material_table_file: "${SHARE}/default/materials.yaml"
       children: 
@@ -30,8 +30,9 @@ items:
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            jointDisplacements: [ 0, -30, 0, 60, 0, -30, 0, -1.43239, 1.43239 ]
-            jointPositions: [ 0, -0.523599, 0, 1.0472, 0, -0.523599, 0, -0.0249999, 0.0249999 ]
+            jointDisplacements: [ -0.448368, -91.2146, -0.824799, 53.6207, 1.21872, 37.6006, -0.387028, -1.43239, 1.43239 ]
+            initialJointDisplacements: [ 0, -30, 0, 60, 0, -30, 0, -1.43239, 1.43239 ]
+            jointPositions: [ -0.0078255, -1.592, -0.0143955, 0.935858, 0.0212707, 0.656254, -0.00675491, -0.0249999, 0.0249999 ]
             initialRootPosition: [ 0, 0, 0 ]
             initialRootAttitude: [ 
               1, 0, 0, 
@@ -54,34 +55,22 @@ items:
           children: 
             - 
               id: 3
-              name: "SimpleController"
-              plugin: Body
-              class: SimpleControllerItem
-              data: 
-                isNoDelayMode: false
-                controllerOptions: ""
-                controller: "PA10PickupController"
-                base_directory: "Controller directory"
-                reloading: true
-                export_symbols: false
-            - 
-              id: 4
               name: "IKPlanner"
               plugin: OMPL
               class: IKPlannerItem
               is_checked: true
               data: 
                 planner_type: 0
-                bb_min: [ -5, -5, -5 ]
-                bb_max: [ 5, 5, 5 ]
+                bb_min: [ -1, -1, 0 ]
+                bb_max: [ 1, 1, 2 ]
                 start_position: [ -0.0025, -0.025, 1.21772 ]
-                goal_position: [ -0.0025, 0.294278, 0.84655 ]
+                goal_position: [ -0.0025, 0.754928, 0.781593 ]
                 calculation_time: 1
                 base_link: BASE
                 end_link: J7
                 time_length: 5
         - 
-          id: 5
+          id: 4
           name: "box2"
           plugin: Body
           class: BodyItem
@@ -90,16 +79,16 @@ items:
             file: "${SHARE}/model/misc/box2.body"
             currentBaseLink: "WAIST"
             format: CHOREONOID-BODY
-            rootPosition: [ 0, 0.7, 0.1499 ]
+            rootPosition: [ 0, 0.5, 1 ]
             rootAttitude: [ 
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
             jointPositions: [  ]
-            initialRootPosition: [ -0, 0.7, 0.1499 ]
+            initialRootPosition: [ 0, 0.5, 1 ]
             initialRootAttitude: [ 
-              1, 0, -0, 
-              -0, 1, 0, 
+              1, 0, 0, 
+              0, 1, 0, 
               0, 0, 1 ]
             staticModel: true
             collisionDetection: true
@@ -108,34 +97,7 @@ items:
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
         - 
-          id: 6
-          name: "box3"
-          plugin: Body
-          class: BodyItem
-          is_checked: true
-          data: 
-            file: "${SHARE}/model/misc/box3.body"
-            currentBaseLink: "WAIST"
-            format: CHOREONOID-BODY
-            rootPosition: [ 0.9, 0, 0.035 ]
-            rootAttitude: [ 
-              2.22044605e-16, -1, 0, 
-              1, 2.22044605e-16, 0, 
-              0, 0, 1 ]
-            jointPositions: [  ]
-            initialRootPosition: [ 0.9, 0, 0.035 ]
-            initialRootAttitude: [ 
-              2.22044605e-16, -1, 0, 
-              1, 2.22044605e-16, 0, 
-              0, 0, 1 ]
-            staticModel: false
-            collisionDetection: true
-            selfCollisionDetection: false
-            location_editable: true
-            scene_sensitive: true
-            zmp: [ 0, 0, 0 ]
-        - 
-          id: 7
+          id: 5
           name: "Floor"
           plugin: Body
           class: BodyItem
@@ -160,38 +122,6 @@ items:
             location_editable: false
             scene_sensitive: false
             zmp: [ 0, 0, 0 ]
-        - 
-          id: 8
-          name: "AISTSimulator"
-          plugin: Body
-          class: AISTSimulatorItem
-          data: 
-            timeStep: 0.001
-            realtimeSync: true
-            recording: "full"
-            timeRangeMode: "Unlimited"
-            timeLength: 60
-            active_control_time_range_mode: true
-            allLinkPositionOutputMode: false
-            deviceStateOutput: true
-            controllerThreads: true
-            recordCollisionData: false
-            controllerOptions: ""
-            scene_view_edit_mode_blocking: false
-            dynamicsMode: "Forward dynamics"
-            integrationMode: "Runge Kutta"
-            gravity: [ 0, 0, -9.80665 ]
-            min_friction_coefficient: 0
-            max_friction_coefficient: 100
-            cullingThresh: 0.005
-            contactCullingDepth: 0.05
-            errorCriterion: 0.001
-            maxNumIterations: 25
-            contactCorrectionDepth: 0.00025
-            contactCorrectionVelocityRatio: 5
-            kinematicWalking: false
-            2Dmode: false
-            oldAccelSensorMode: false
 views: 
   - 
     id: 0
@@ -204,7 +134,7 @@ views:
     class: ItemTreeView
     mounted: true
     state: 
-      expanded: [ 1, 2 ]
+      expanded: [ 1, 2, 3 ]
   - 
     id: 2
     plugin: Base
@@ -227,7 +157,7 @@ views:
     class: SceneView
     mounted: true
     state: 
-      editMode: true
+      editMode: false
       viewpointOperationMode: thirdPerson
       visible_polygon_elements: [ face ]
       highlighting: false
@@ -347,17 +277,12 @@ Body:
         show_cm_projection: false
         show_zmp: false
       - 
+        bodyItem: 4
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
+      - 
         bodyItem: 5
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
-      - 
-        bodyItem: 6
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
-      - 
-        bodyItem: 7
         show_cm: false
         show_cm_projection: false
         show_zmp: false

@@ -180,6 +180,9 @@ void IKPlannerItemImpl::onGenerateTriggered()
 void IKPlannerItemImpl::onPlaybackStarted(const double& time)
 {
     if(self->isSolved()) {
+        if(bodyItem) {
+            bodyItem->restoreInitialState(true);
+        }
         interpolator.clear();
         int numPoints = solutions.size();
         double dt = timeLength / (double)numPoints;

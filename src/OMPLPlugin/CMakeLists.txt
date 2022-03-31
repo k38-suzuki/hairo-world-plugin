@@ -11,8 +11,8 @@ add_definitions(${OMPL_DEFINITIONS})
 
 set(sources
     IKPlannerItem.cpp
-    SimpleSetupItem.cpp
     OMPLPlugin.cpp
+    SimpleSetupItem.cpp
     SimpleSetup.cpp
     )
 
