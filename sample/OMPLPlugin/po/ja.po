@@ -17,25 +17,33 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../MotionPlannerItem.cpp:128 ../MotionPlannerItem.cpp:421
-msgid "IK Motion Planner"
-msgstr "IKモーションプランナ"
-
 #: ../MotionPlannerItem.cpp:184
-msgid "IKMotionPlannerItem"
-msgstr "IKモーションプランナアイテム"
+msgid "MotionPlannerItem"
+msgstr "モーションプランナアイテム"
 
-#: ../MotionPlannerItem.cpp:192
+#: ../MotionPlannerItem.cpp:209
+msgid "Found solution:"
+msgstr "経路が見つかりました．"
+
+#: ../MotionPlannerItem.cpp:218
+msgid "No solution found"
+msgstr "経路が見つかりませんでした．"
+
+#: ../IKPlannerItem.cpp:128
+msgid "IK Planner"
+msgstr "IKプランナ"
+
+#: ../IKPlannerItem.cpp:184
+msgid "IKPlannerItem"
+msgstr "IKプランナアイテム"
+
+#: ../IKPlannerItem.cpp:192
 msgid "Base link"
 msgstr "ベースリンク"
 
-#: ../MotionPlannerItem.cpp:194
+#: ../IKPlannerItem.cpp:194
 msgid "End link"
 msgstr "エンドリンク"
-
-#: ../MotionPlannerItem.cpp:198
-msgid "BoundingBox"
-msgstr "バウンディングボックス"
 
 #: ../MotionPlannerItem.cpp:235
 msgid "BB min"
@@ -53,15 +61,11 @@ msgstr "始点"
 msgid "Goal position"
 msgstr "終点"
 
-#: ../MotionPlannerItem.cpp:185
-msgid "Configuration of planner"
-msgstr "プランナの設定"
-
-#: ../MotionPlannerItem.cpp:310
+#: ../IKPlannerItem.cpp:310
 msgid "Set start"
 msgstr "始点を設定"
 
-#: ../MotionPlannerItem.cpp:311
+#: ../IKPlannerItem.cpp:311
 msgid "Set goal"
 msgstr "終点を設定"
 
@@ -73,14 +77,10 @@ msgstr "幾何学プランナ"
 msgid "Calculation time"
 msgstr "計算時間"
 
-#: ../MotionPlannerItem.cpp:318
+#: ../IKPlannerItem.cpp:318
 msgid "Generate a path"
 msgstr "経路を生成"
 
-#: ../MotionPlannerItem.cpp:328
+#: ../IKPlannerItem.cpp:328
 msgid "Time length"
 msgstr "時間長"
-
-#: ../MotionPlannerItem.cpp:335
-msgid "&Ok"
-msgstr "了解(&O)"

@@ -3,7 +3,7 @@
    \author Kenta Suzuki
 */
 
-#include "IKMotionPlannerItem.h"
+#include "IKPlannerItem.h"
 #include <cnoid/Archive>
 #include <cnoid/BodyItem>
 #include <cnoid/EigenArchive>
@@ -12,22 +12,13 @@
 #include <cnoid/ItemTreeView>
 #include <cnoid/JointPath>
 #include <cnoid/MenuManager>
-#include <cnoid/MessageView>
 #include <cnoid/PointSetItem>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SceneDrawables>
-#include <cnoid/Selection>
 #include <cnoid/TimeBar>
 #include <cnoid/WorldItem>
 #include <fmt/format.h>
-#include <ompl/base/SpaceInformation.h>
 #include <ompl/base/spaces/SE3StateSpace.h>
-#include <ompl/geometric/planners/rrt/RRT.h>
-#include <ompl/geometric/planners/rrt/RRTConnect.h>
-#include <ompl/geometric/planners/rrt/RRTstar.h>
-#include <ompl/geometric/planners/rrt/pRRT.h>
-#include <ompl/geometric/SimpleSetup.h>
-#include <ompl/config.h>
 #include "sample/SimpleController/Interpolator.h"
 #include "gettext.h"
 
@@ -39,32 +30,24 @@ namespace og = ompl::geometric;
 
 namespace cnoid {
 
-class IKMotionPlannerItemImpl
+class IKPlannerItemImpl
 {
 public:
-    IKMotionPlannerItemImpl(IKMotionPlannerItem* self);
-    IKMotionPlannerItemImpl(IKMotionPlannerItem* self, const IKMotionPlannerItemImpl& org);
-    IKMotionPlannerItem* self;
+    IKPlannerItemImpl(IKPlannerItem* self);
+    IKPlannerItemImpl(IKPlannerItem* self, const IKPlannerItemImpl& org);
+    IKPlannerItem* self;
 
     BodyItem* bodyItem;
     Link* baseLink;
     Link* endLink;
-    MessageView* mv;
     vector<Vector3> solutions;
     Interpolator<VectorXd> interpolator;
-    bool isSolved;
     PointSetItem* statePointSetItem;
     PointSetItem* solvedPointSetItem;
     TimeBar* tb;
     string baseLinkName;
     string endLinkName;
-    double calculationTime;
     double timeLength;
-    Selection plannerType;
-    Vector3 bbMin;
-    Vector3 bbMax;
-    Vector3 startPosition;
-    Vector3 goalPosition;
 
     void updateTargetLinks();
     void onStartTriggered();
@@ -72,12 +55,6 @@ public:
     void onGenerateTriggered();
     void onPlaybackStarted(const double& time);
     void onTimeChanged(const double& time);
-    void planWithSimpleSetup();
-    bool isStateValid(const ob::State* state);
-    bool onBBMinPropertyChanged(const string& text);
-    bool onBBMaxPropertyChanged(const string& text);
-    bool onStartPositionPropertyChanged(const string& text);
-    bool onGoalPositionPropertyChanged(const string& text);
     void prePlannerFunction();
     bool midPlannerFunction(const ob::State* state);
     void postPlannerFunction(og::PathGeometric& pathes);
@@ -90,15 +67,14 @@ public:
 }
 
 
-IKMotionPlannerItem::IKMotionPlannerItem()
+IKPlannerItem::IKPlannerItem()
 {
-    impl = new IKMotionPlannerItemImpl(this);
+    impl = new IKPlannerItemImpl(this);
 }
 
 
-IKMotionPlannerItemImpl::IKMotionPlannerItemImpl(IKMotionPlannerItem* self)
+IKPlannerItemImpl::IKPlannerItemImpl(IKPlannerItem* self)
     : self(self),
-      mv(MessageView::instance()),
       tb(TimeBar::instance())
 {
     bodyItem = nullptr;
@@ -106,71 +82,50 @@ IKMotionPlannerItemImpl::IKMotionPlannerItemImpl(IKMotionPlannerItem* self)
     endLink = nullptr;
     solutions.clear();
     interpolator.clear();
-    isSolved = false;
     statePointSetItem = nullptr;
     solvedPointSetItem = nullptr;
     baseLinkName.clear();
     endLinkName.clear();
-    calculationTime = 1.0;
     timeLength = 1.0;
-    bbMin << -5.0, -5.0, -5.0;
-    bbMax << 5.0, 5.0, 5.0;
-    startPosition << 0.0, 0.0, 0.0;
-    goalPosition << 0.0, 0.0, 0.0;
-
-    plannerType.setSymbol(IKMotionPlannerItem::RRT, N_("RRT"));
-    plannerType.setSymbol(IKMotionPlannerItem::RRTCONNECT, N_("RRTConnect"));
-    plannerType.setSymbol(IKMotionPlannerItem::RRTSTAR, N_("RRT*"));
-    plannerType.setSymbol(IKMotionPlannerItem::PRRT, N_("pRRT"));
 
     tb->sigPlaybackStarted().connect([&](double time){ onPlaybackStarted(time); });
     tb->sigTimeChanged().connect([&](double time){ onTimeChanged(time); return true; });
 }
 
 
-IKMotionPlannerItem::IKMotionPlannerItem(const IKMotionPlannerItem& org)
-    : Item(org),
-      impl(new IKMotionPlannerItemImpl(this, *org.impl))
+IKPlannerItem::IKPlannerItem(const IKPlannerItem& org)
+    : MotionPlannerItem(org),
+      impl(new IKPlannerItemImpl(this, *org.impl))
 {
 
 }
 
 
-IKMotionPlannerItemImpl::IKMotionPlannerItemImpl(IKMotionPlannerItem* self, const IKMotionPlannerItemImpl& org)
+IKPlannerItemImpl::IKPlannerItemImpl(IKPlannerItem* self, const IKPlannerItemImpl& org)
     : self(self),
-      mv(MessageView::instance()),
       tb(TimeBar::instance())
 {
     baseLinkName = org.baseLinkName;
     endLinkName = org.endLinkName;
-    calculationTime = org.calculationTime;
     timeLength = org.timeLength;
-    plannerType = org.plannerType;
-    bbMin = org.bbMin;
-    bbMax = org.bbMax;
-    startPosition = org.startPosition;
-    goalPosition = org.goalPosition;
 }
 
 
-IKMotionPlannerItem::~IKMotionPlannerItem()
+IKPlannerItem::~IKPlannerItem()
 {
     delete impl;
 }
 
 
-void IKMotionPlannerItem::initializeClass(ExtensionManager* ext)
+void IKPlannerItem::initializeClass(ExtensionManager* ext)
 {
-    string version = OMPL_VERSION;
-    MessageView::instance()->putln(fmt::format("OMPL version: {0}", version));
-
     ext->itemManager()
-            .registerClass<IKMotionPlannerItem>(N_("IKMotionPlannerItem"))
-            .addCreationPanel<IKMotionPlannerItem>();
+            .registerClass<IKPlannerItem>(N_("IKPlannerItem"))
+            .addCreationPanel<IKPlannerItem>();
 
-    ItemTreeView::instance()->customizeContextMenu<IKMotionPlannerItem>(
-        [](IKMotionPlannerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
-            menuManager.setPath("/").setPath(_("IK Motion Planner"));
+    ItemTreeView::instance()->customizeContextMenu<IKPlannerItem>(
+        [](IKPlannerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
+            menuManager.setPath("/").setPath(_("IK Planner"));
             menuManager.addItem(_("Set start"))->sigTriggered().connect(
                         [item](){ item->impl->onStartTriggered(); });
             menuManager.addItem(_("Set goal"))->sigTriggered().connect(
@@ -184,7 +139,7 @@ void IKMotionPlannerItem::initializeClass(ExtensionManager* ext)
 }
 
 
-void IKMotionPlannerItemImpl::updateTargetLinks()
+void IKPlannerItemImpl::updateTargetLinks()
 {
     if(bodyItem) {
         Body* body = bodyItem->body();
@@ -194,37 +149,37 @@ void IKMotionPlannerItemImpl::updateTargetLinks()
 }
 
 
-void IKMotionPlannerItemImpl::onStartTriggered()
+void IKPlannerItemImpl::onStartTriggered()
 {
     updateTargetLinks();
     if(endLink) {
-        startPosition = endLink->T().translation();
+        self->setStartPosition(endLink->T().translation());
     }
 }
 
 
-void IKMotionPlannerItemImpl::onGoalTriggered()
+void IKPlannerItemImpl::onGoalTriggered()
 {
     updateTargetLinks();
     if(endLink) {
-        goalPosition = endLink->T().translation();
+        self->setGoalPosition(endLink->T().translation());
     }
 }
 
 
-void IKMotionPlannerItemImpl::onGenerateTriggered()
+void IKPlannerItemImpl::onGenerateTriggered()
 {
     updateTargetLinks();
     if(bodyItem) {
         bodyItem->restoreInitialState(true);
-        planWithSimpleSetup();
+        self->planWithSimpleSetup();
     }
 }
 
 
-void IKMotionPlannerItemImpl::onPlaybackStarted(const double& time)
+void IKPlannerItemImpl::onPlaybackStarted(const double& time)
 {
-    if(isSolved) {
+    if(self->isSolved()) {
         interpolator.clear();
         int numPoints = solutions.size();
         double dt = timeLength / (double)numPoints;
@@ -237,7 +192,7 @@ void IKMotionPlannerItemImpl::onPlaybackStarted(const double& time)
 }
 
 
-void IKMotionPlannerItemImpl::onTimeChanged(const double& time)
+void IKPlannerItemImpl::onTimeChanged(const double& time)
 {
     if(bodyItem && tb->isDoingPlayback()) {
         Body* body = bodyItem->body();
@@ -256,138 +211,13 @@ void IKMotionPlannerItemImpl::onTimeChanged(const double& time)
 }
 
 
-void IKMotionPlannerItemImpl::planWithSimpleSetup()
+void IKPlannerItem::prePlannerFunction()
 {
-    prePlannerFunction();
-
-    auto space(std::make_shared<ob::SE3StateSpace>());
-
-    ob::RealVectorBounds bounds(3);
-    bounds.setLow(0, bbMin[0]);
-    bounds.setHigh(0, bbMax[0]);
-    bounds.setLow(1, bbMin[1]);
-    bounds.setHigh(1, bbMax[1]);
-    bounds.setLow(2, bbMin[2]);
-    bounds.setHigh(2, bbMax[2]);
-    space->setBounds(bounds);
-
-    og::SimpleSetup ss(space);
-
-    ss.setStateValidityChecker([&](const ob::State* state) { return isStateValid(state); });
-
-    ob::ScopedState<ob::SE3StateSpace> start(space);
-    start->setX(startPosition[0]);
-    start->setY(startPosition[1]);
-    start->setZ(startPosition[2]);
-    start->rotation().setIdentity();
-
-    ob::ScopedState<ob::SE3StateSpace> goal(space);
-    goal->setX(goalPosition[0]);
-    goal->setY(goalPosition[1]);
-    goal->setZ(goalPosition[2]);
-    goal->rotation().setIdentity();
-
-    ss.setStartAndGoalStates(start, goal);
-
-    switch (plannerType.which()) {
-    case IKMotionPlannerItem::RRT:
-    {
-        ob::PlannerPtr planner(new og::RRT(ss.getSpaceInformation()));
-        ss.setPlanner(planner);
-    }
-        break;
-    case IKMotionPlannerItem::RRTCONNECT:
-    {
-        ob::PlannerPtr planner(new og::RRTConnect(ss.getSpaceInformation()));
-        ss.setPlanner(planner);
-    }
-        break;
-    case IKMotionPlannerItem::RRTSTAR:
-    {
-        ob::PlannerPtr planner(new og::RRTstar(ss.getSpaceInformation()));
-        ss.setPlanner(planner);
-    }
-        break;
-    case IKMotionPlannerItem::PRRT:
-    {
-        ob::PlannerPtr planner(new og::pRRT(ss.getSpaceInformation()));
-        ss.setPlanner(planner);
-    }
-        break;
-    default:
-        break;
-    }
-
-    ss.setup();
-//    ss.print(mv->cout());
-
-    ob::PlannerStatus solved = ss.solve(calculationTime);
-
-    if(solved) {
-        mv->putln(_("Found solution:"));
-        isSolved = true;
-
-        og::PathGeometric pathes = ss.getSolutionPath();
-        postPlannerFunction(pathes);
-
-        ss.simplifySolution();
-//        ss.getSolutionPath().print(mv->cout());
-    } else {
-        mv->putln(_("No solution found"));
-        isSolved = false;
-    }
+    impl->prePlannerFunction();
 }
 
 
-bool IKMotionPlannerItemImpl::isStateValid(const ob::State* state)
-{
-    const auto *se3state = state->as<ob::SE3StateSpace::StateType>();
-    const auto *pos = se3state->as<ob::RealVectorStateSpace::StateType>(0);
-    const auto *rot = se3state->as<ob::SO3StateSpace::StateType>(1);
-
-    bool result = midPlannerFunction(state);
-
-    return ((const void*)rot != (const void*)pos) && result;
-}
-
-
-bool IKMotionPlannerItemImpl::onBBMinPropertyChanged(const string& text)
-{
-    if(toVector3(text, bbMin)) {
-        return true;
-    }
-    return false;
-}
-
-
-bool IKMotionPlannerItemImpl::onBBMaxPropertyChanged(const string& text)
-{
-    if(toVector3(text, bbMax)) {
-        return true;
-    }
-    return false;
-}
-
-
-bool IKMotionPlannerItemImpl::onStartPositionPropertyChanged(const string& text)
-{
-    if(toVector3(text, startPosition)) {
-        return true;
-    }
-    return false;
-}
-
-
-bool IKMotionPlannerItemImpl::onGoalPositionPropertyChanged(const string& text)
-{
-    if(toVector3(text, goalPosition)) {
-        return true;
-    }
-    return false;
-}
-
-
-void IKMotionPlannerItemImpl::prePlannerFunction()
+void IKPlannerItemImpl::prePlannerFunction()
 {
     self->clearChildren();
     statePointSetItem = new PointSetItem;
@@ -399,7 +229,13 @@ void IKMotionPlannerItemImpl::prePlannerFunction()
 }
 
 
-bool IKMotionPlannerItemImpl::midPlannerFunction(const ob::State* state)
+bool IKPlannerItem::midPlannerFunction(const ob::State* state)
+{
+    return impl->midPlannerFunction(state);
+}
+
+
+bool IKPlannerItemImpl::midPlannerFunction(const ob::State* state)
 {
     float x = state->as<ob::SE3StateSpace::StateType>()->getX();
     float y = state->as<ob::SE3StateSpace::StateType>()->getY();
@@ -438,12 +274,17 @@ bool IKMotionPlannerItemImpl::midPlannerFunction(const ob::State* state)
             }
         }
     }
-
     return solved && !collided;
 }
 
 
-void IKMotionPlannerItemImpl::postPlannerFunction(og::PathGeometric& pathes)
+void IKPlannerItem::postPlannerFunction(og::PathGeometric& pathes)
+{
+    impl->postPlannerFunction(pathes);
+}
+
+
+void IKPlannerItemImpl::postPlannerFunction(og::PathGeometric& pathes)
 {
     const int numPoints = pathes.getStateCount();
     solutions.clear();
@@ -522,13 +363,13 @@ void IKMotionPlannerItemImpl::postPlannerFunction(og::PathGeometric& pathes)
 }
 
 
-Item* IKMotionPlannerItem::doDuplicate() const
+Item* IKPlannerItem::doDuplicate() const
 {
-    return new IKMotionPlannerItem(*this);
+    return new IKPlannerItem(*this);
 }
 
 
-void IKMotionPlannerItem::onTreePathChanged()
+void IKPlannerItem::onTreePathChanged()
 {
     if(parentItem()) {
         impl->onTreePathChanged();
@@ -536,7 +377,7 @@ void IKMotionPlannerItem::onTreePathChanged()
 }
 
 
-void IKMotionPlannerItemImpl::onTreePathChanged()
+void IKPlannerItemImpl::onTreePathChanged()
 {
     BodyItem* newBodyItem = self->findOwnerItem<BodyItem>();
     if(newBodyItem != bodyItem) {
@@ -546,68 +387,48 @@ void IKMotionPlannerItemImpl::onTreePathChanged()
 }
 
 
-void IKMotionPlannerItem::doPutProperties(PutPropertyFunction& putProperty)
+void IKPlannerItem::doPutProperties(PutPropertyFunction& putProperty)
 {
+    MotionPlannerItem::doPutProperties(putProperty);
     impl->doPutProperties(putProperty);
 }
 
 
-void IKMotionPlannerItemImpl::doPutProperties(PutPropertyFunction& putProperty)
+void IKPlannerItemImpl::doPutProperties(PutPropertyFunction& putProperty)
 {
     putProperty(_("Base link"), baseLinkName, changeProperty(baseLinkName));
     putProperty(_("End link"), endLinkName, changeProperty(endLinkName));
-    putProperty(_("Geometric planner"), plannerType,
-                [&](int index){ return plannerType.select(index); });
-    putProperty(_("BB min"), str(bbMin),
-                [this](const string& text){ return onBBMinPropertyChanged(text); });
-    putProperty(_("BB max"), str(bbMax),
-                [this](const string& text){ return onBBMaxPropertyChanged(text); });
-    putProperty(_("Start position"), str(startPosition),
-                [this](const string& text){ return onStartPositionPropertyChanged(text); });
-    putProperty(_("Goal position"), str(goalPosition),
-                [this](const string& text){ return onGoalPositionPropertyChanged(text); });
-    putProperty(_("Calculation time"), calculationTime, changeProperty(calculationTime));
     putProperty(_("Time length"), timeLength, changeProperty(timeLength));
 }
 
 
-bool IKMotionPlannerItem::store(Archive& archive)
+bool IKPlannerItem::store(Archive& archive)
 {
+    MotionPlannerItem::store(archive);
     return impl->store(archive);
 }
 
 
-bool IKMotionPlannerItemImpl::store(Archive& archive)
+bool IKPlannerItemImpl::store(Archive& archive)
 {
     archive.write("base_link", baseLinkName);
     archive.write("end_link", endLinkName);
-    archive.write("planner_type", plannerType.which());
-    write(archive, "bb_min", bbMin);
-    write(archive, "bb_max", bbMax);
-    write(archive, "start_position", startPosition);
-    write(archive, "goal_position", goalPosition);
-    archive.write("calculation_time", calculationTime);
     archive.write("time_length", timeLength);
     return true;
 }
 
 
-bool IKMotionPlannerItem::restore(const Archive& archive)
+bool IKPlannerItem::restore(const Archive& archive)
 {
+    MotionPlannerItem::restore(archive);
     return impl->restore(archive);
 }
 
 
-bool IKMotionPlannerItemImpl::restore(const Archive& archive)
+bool IKPlannerItemImpl::restore(const Archive& archive)
 {
     archive.read("base_link", baseLinkName);
     archive.read("end_link", endLinkName);
-    plannerType.select(archive.get("planner_type", 0));
-    read(archive, "bb_min", bbMin);
-    read(archive, "bb_max", bbMax);
-    read(archive, "start_position", startPosition);
-    read(archive, "goal_position", goalPosition);
-    archive.read("calculation_time", calculationTime);
     archive.read("time_length", timeLength);
     return true;
 }

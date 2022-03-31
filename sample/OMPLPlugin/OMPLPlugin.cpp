@@ -5,7 +5,8 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "IKMotionPlannerItem.h"
+#include "IKPlannerItem.h"
+#include "MotionPlannerItem.h"
 
 using namespace cnoid;
 
@@ -22,7 +23,8 @@ public:
 
     virtual bool initialize() override
     {
-        IKMotionPlannerItem::initializeClass(this);
+        MotionPlannerItem::initializeClass(this);
+        IKPlannerItem::initializeClass(this);
         return true;
     }
 

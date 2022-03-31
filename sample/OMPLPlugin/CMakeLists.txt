@@ -10,14 +10,18 @@ link_directories(${OMPL_LIBRARY_DIRS})
 add_definitions(${OMPL_DEFINITIONS})
 
 set(sources
-    IKMotionPlannerItem.cpp
+    IKPlannerItem.cpp
+    MotionPlannerItem.cpp
     OMPLPlugin.cpp
     )
 
 set(headers
-    IKMotionPlannerItem.h
+    IKPlannerItem.h
+    MotionPlannerItem.h
     gettext.h
     )
+
+choreonoid_make_header_public(MotionPlannerItem.h)
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
