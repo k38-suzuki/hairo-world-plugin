@@ -6,8 +6,6 @@
 #include "IKMotionPlannerItem.h"
 #include <cnoid/Archive>
 #include <cnoid/BodyItem>
-#include <cnoid/Button>
-#include <cnoid/Dialog>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
 #include <cnoid/ItemManager>
@@ -19,15 +17,9 @@
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SceneDrawables>
 #include <cnoid/Selection>
-#include <cnoid/Separator>
-#include <cnoid/SpinBox>
 #include <cnoid/TimeBar>
 #include <cnoid/WorldItem>
 #include <fmt/format.h>
-#include <QDialogButtonBox>
-#include <QGridLayout>
-#include <QLabel>
-#include <QVBoxLayout>
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/spaces/SE3StateSpace.h>
 #include <ompl/geometric/planners/rrt/RRT.h>
@@ -47,19 +39,6 @@ namespace og = ompl::geometric;
 
 namespace cnoid {
 
-class PlannerConfigDialog : public Dialog
-{
-public:
-    PlannerConfigDialog();
-
-    DoubleSpinBox* xminSpin;
-    DoubleSpinBox* xmaxSpin;
-    DoubleSpinBox* yminSpin;
-    DoubleSpinBox* ymaxSpin;
-    DoubleSpinBox* zminSpin;
-    DoubleSpinBox* zmaxSpin;
-};
-
 class IKMotionPlannerItemImpl
 {
 public:
@@ -67,7 +46,6 @@ public:
     IKMotionPlannerItemImpl(IKMotionPlannerItem* self, const IKMotionPlannerItemImpl& org);
     IKMotionPlannerItem* self;
 
-    PlannerConfigDialog* config;
     BodyItem* bodyItem;
     Link* baseLink;
     Link* endLink;
@@ -83,19 +61,27 @@ public:
     double calculationTime;
     double timeLength;
     Selection plannerType;
+    Vector3 bbMin;
+    Vector3 bbMax;
     Vector3 startPosition;
     Vector3 goalPosition;
 
+    void updateTargetLinks();
     void onStartTriggered();
     void onGoalTriggered();
     void onGenerateTriggered();
-    void planWithSimpleSetup();
-    bool isStateValid(const ob::State* state);
     void onPlaybackStarted(const double& time);
     void onTimeChanged(const double& time);
-    void onTreePathChanged();
+    void planWithSimpleSetup();
+    bool isStateValid(const ob::State* state);
+    bool onBBMinPropertyChanged(const string& text);
+    bool onBBMaxPropertyChanged(const string& text);
     bool onStartPositionPropertyChanged(const string& text);
     bool onGoalPositionPropertyChanged(const string& text);
+    void prePlannerFunction();
+    bool midPlannerFunction(const ob::State* state);
+    void postPlannerFunction(og::PathGeometric& pathes);
+    void onTreePathChanged();
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
     bool restore(const Archive& archive);
@@ -113,7 +99,6 @@ IKMotionPlannerItem::IKMotionPlannerItem()
 IKMotionPlannerItemImpl::IKMotionPlannerItemImpl(IKMotionPlannerItem* self)
     : self(self),
       mv(MessageView::instance()),
-      config(new PlannerConfigDialog),
       tb(TimeBar::instance())
 {
     bodyItem = nullptr;
@@ -128,6 +113,8 @@ IKMotionPlannerItemImpl::IKMotionPlannerItemImpl(IKMotionPlannerItem* self)
     endLinkName.clear();
     calculationTime = 1.0;
     timeLength = 1.0;
+    bbMin << -5.0, -5.0, -5.0;
+    bbMax << 5.0, 5.0, 5.0;
     startPosition << 0.0, 0.0, 0.0;
     goalPosition << 0.0, 0.0, 0.0;
 
@@ -152,7 +139,6 @@ IKMotionPlannerItem::IKMotionPlannerItem(const IKMotionPlannerItem& org)
 IKMotionPlannerItemImpl::IKMotionPlannerItemImpl(IKMotionPlannerItem* self, const IKMotionPlannerItemImpl& org)
     : self(self),
       mv(MessageView::instance()),
-      config(new PlannerConfigDialog),
       tb(TimeBar::instance())
 {
     baseLinkName = org.baseLinkName;
@@ -160,6 +146,8 @@ IKMotionPlannerItemImpl::IKMotionPlannerItemImpl(IKMotionPlannerItem* self, cons
     calculationTime = org.calculationTime;
     timeLength = org.timeLength;
     plannerType = org.plannerType;
+    bbMin = org.bbMin;
+    bbMax = org.bbMax;
     startPosition = org.startPosition;
     goalPosition = org.goalPosition;
 }
@@ -190,18 +178,25 @@ void IKMotionPlannerItem::initializeClass(ExtensionManager* ext)
             menuManager.addItem(_(_("Generate a path")))->sigTriggered().connect(
                         [item](){ item->impl->onGenerateTriggered(); });
             menuManager.setPath("/");
-            menuManager.addItem(_("Configuration of planner"))->sigTriggered().connect(
-                        [item](){ item->impl->config->show(); });
-            menuManager.setPath("/");
             menuManager.addSeparator();
             menuFunction.dispatchAs<Item>(item);
         });
 }
 
 
+void IKMotionPlannerItemImpl::updateTargetLinks()
+{
+    if(bodyItem) {
+        Body* body = bodyItem->body();
+        baseLink = body->link(baseLinkName);
+        endLink = body->link(endLinkName);
+    }
+}
+
+
 void IKMotionPlannerItemImpl::onStartTriggered()
 {
-    onTreePathChanged();
+    updateTargetLinks();
     if(endLink) {
         startPosition = endLink->T().translation();
     }
@@ -210,7 +205,7 @@ void IKMotionPlannerItemImpl::onStartTriggered()
 
 void IKMotionPlannerItemImpl::onGoalTriggered()
 {
-    onTreePathChanged();
+    updateTargetLinks();
     if(endLink) {
         goalPosition = endLink->T().translation();
     }
@@ -219,7 +214,7 @@ void IKMotionPlannerItemImpl::onGoalTriggered()
 
 void IKMotionPlannerItemImpl::onGenerateTriggered()
 {
-    onTreePathChanged();
+    updateTargetLinks();
     if(bodyItem) {
         bodyItem->restoreInitialState(true);
         planWithSimpleSetup();
@@ -263,26 +258,20 @@ void IKMotionPlannerItemImpl::onTimeChanged(const double& time)
 
 void IKMotionPlannerItemImpl::planWithSimpleSetup()
 {
+    prePlannerFunction();
+
     auto space(std::make_shared<ob::SE3StateSpace>());
 
     ob::RealVectorBounds bounds(3);
-    bounds.setLow(0, config->xminSpin->value());
-    bounds.setHigh(0, config->xmaxSpin->value());
-    bounds.setLow(1, config->yminSpin->value());
-    bounds.setHigh(1, config->ymaxSpin->value());
-    bounds.setLow(2, config->zminSpin->value());
-    bounds.setHigh(2, config->zmaxSpin->value());
+    bounds.setLow(0, bbMin[0]);
+    bounds.setHigh(0, bbMax[0]);
+    bounds.setLow(1, bbMin[1]);
+    bounds.setHigh(1, bbMax[1]);
+    bounds.setLow(2, bbMin[2]);
+    bounds.setHigh(2, bbMax[2]);
     space->setBounds(bounds);
 
     og::SimpleSetup ss(space);
-
-    self->clearChildren();
-    statePointSetItem = new PointSetItem;
-    statePointSetItem->setName("StatePointSet");
-    statePointSetItem->setRenderingMode(PointSetItem::VOXEL);
-    statePointSetItem->setVoxelSize(0.03);
-    statePointSetItem->setChecked(true);
-    self->addSubItem(statePointSetItem);
 
     ss.setStateValidityChecker([&](const ob::State* state) { return isStateValid(state); });
 
@@ -339,80 +328,7 @@ void IKMotionPlannerItemImpl::planWithSimpleSetup()
         isSolved = true;
 
         og::PathGeometric pathes = ss.getSolutionPath();
-        const int numPoints = pathes.getStateCount();
-        solutions.clear();
-
-        solvedPointSetItem = new PointSetItem;
-        solvedPointSetItem->setName("SolvedPointSet");
-        solvedPointSetItem->setRenderingMode(PointSetItem::VOXEL);
-        solvedPointSetItem->setVoxelSize(0.04);
-        solvedPointSetItem->setChecked(true);
-        self->addSubItem(solvedPointSetItem);
-
-        for(size_t i = 0; i < pathes.getStateCount(); ++i) {
-            ob::State* state = pathes.getState(i);
-            float x = state->as<ob::SE3StateSpace::StateType>()->getX();
-            float y = state->as<ob::SE3StateSpace::StateType>()->getY();
-            float z = state->as<ob::SE3StateSpace::StateType>()->getZ();
-            solutions.push_back(Vector3(x, y, z));
-
-            if(bodyItem) {
-                Body* body = bodyItem->body();
-                bodyItem->restoreInitialState(true);
-                if(baseLink && endLink) {
-                    if(baseLink != endLink) {
-                        auto path = JointPath::getCustomPath(body, baseLink, endLink);
-                        Isometry3 T;
-                        T.linear() = endLink->R();
-                        T.translation() = Vector3(x, y, z);
-                        if(path->calcInverseKinematics(T)) {
-                            bodyItem->notifyKinematicStateChange(true);
-                        }
-                    }
-                }
-            }
-        }
-
-        {
-            SgVertexArray& points = *solvedPointSetItem->pointSet()->getOrCreateVertices();
-            SgColorArray& colors = *solvedPointSetItem->pointSet()->getOrCreateColors();
-            const int numSolutions = solutions.size();
-            points.resize(numSolutions);
-            colors.resize(numSolutions);
-            for(int i = 0; i < numSolutions; ++i) {
-                Vector3f point = Vector3f(solutions[i][0], solutions[i][1], solutions[i][2]);
-                points[i] = point;
-                Vector3f& c = colors[i];
-                c[0] = 0.0;
-                c[1] = 1.0;
-                c[2] = 0.0;
-            }
-            solvedPointSetItem->notifyUpdate();
-        }
-
-        {
-            vector<Vector3> src;
-            for(int i = 0; i < statePointSetItem->numAttentionPoints(); ++i) {
-                Vector3 point = statePointSetItem->attentionPoint(i);
-                src.push_back(point);
-            }
-
-            statePointSetItem->clearAttentionPoints();
-            SgVertexArray& points = *statePointSetItem->pointSet()->getOrCreateVertices();
-            SgColorArray& colors = *statePointSetItem->pointSet()->getOrCreateColors();
-            const int numStates = src.size();
-            points.resize(numStates);
-            colors.resize(numStates);
-            for(int i = 0; i < numStates; ++i) {
-                Vector3f point = Vector3f(src[i][0], src[i][1], src[i][2]);
-                points[i] = point;
-                Vector3f& c = colors[i];
-                c[0] = 1.0;
-                c[1] = 0.0;
-                c[2] = 0.0;
-            }
-            statePointSetItem->notifyUpdate();
-        }
+        postPlannerFunction(pathes);
 
         ss.simplifySolution();
 //        ss.getSolutionPath().print(mv->cout());
@@ -429,6 +345,62 @@ bool IKMotionPlannerItemImpl::isStateValid(const ob::State* state)
     const auto *pos = se3state->as<ob::RealVectorStateSpace::StateType>(0);
     const auto *rot = se3state->as<ob::SO3StateSpace::StateType>(1);
 
+    bool result = midPlannerFunction(state);
+
+    return ((const void*)rot != (const void*)pos) && result;
+}
+
+
+bool IKMotionPlannerItemImpl::onBBMinPropertyChanged(const string& text)
+{
+    if(toVector3(text, bbMin)) {
+        return true;
+    }
+    return false;
+}
+
+
+bool IKMotionPlannerItemImpl::onBBMaxPropertyChanged(const string& text)
+{
+    if(toVector3(text, bbMax)) {
+        return true;
+    }
+    return false;
+}
+
+
+bool IKMotionPlannerItemImpl::onStartPositionPropertyChanged(const string& text)
+{
+    if(toVector3(text, startPosition)) {
+        return true;
+    }
+    return false;
+}
+
+
+bool IKMotionPlannerItemImpl::onGoalPositionPropertyChanged(const string& text)
+{
+    if(toVector3(text, goalPosition)) {
+        return true;
+    }
+    return false;
+}
+
+
+void IKMotionPlannerItemImpl::prePlannerFunction()
+{
+    self->clearChildren();
+    statePointSetItem = new PointSetItem;
+    statePointSetItem->setName("StatePointSet");
+    statePointSetItem->setRenderingMode(PointSetItem::VOXEL);
+    statePointSetItem->setVoxelSize(0.03);
+    statePointSetItem->setChecked(true);
+    self->addSubItem(statePointSetItem);
+}
+
+
+bool IKMotionPlannerItemImpl::midPlannerFunction(const ob::State* state)
+{
     float x = state->as<ob::SE3StateSpace::StateType>()->getX();
     float y = state->as<ob::SE3StateSpace::StateType>()->getY();
     float z = state->as<ob::SE3StateSpace::StateType>()->getZ();
@@ -467,7 +439,86 @@ bool IKMotionPlannerItemImpl::isStateValid(const ob::State* state)
         }
     }
 
-    return ((const void*)rot != (const void*)pos) && solved && !collided;
+    return solved && !collided;
+}
+
+
+void IKMotionPlannerItemImpl::postPlannerFunction(og::PathGeometric& pathes)
+{
+    const int numPoints = pathes.getStateCount();
+    solutions.clear();
+
+    solvedPointSetItem = new PointSetItem;
+    solvedPointSetItem->setName("SolvedPointSet");
+    solvedPointSetItem->setRenderingMode(PointSetItem::VOXEL);
+    solvedPointSetItem->setVoxelSize(0.04);
+    solvedPointSetItem->setChecked(true);
+    self->addSubItem(solvedPointSetItem);
+
+    for(size_t i = 0; i < pathes.getStateCount(); ++i) {
+        ob::State* state = pathes.getState(i);
+        float x = state->as<ob::SE3StateSpace::StateType>()->getX();
+        float y = state->as<ob::SE3StateSpace::StateType>()->getY();
+        float z = state->as<ob::SE3StateSpace::StateType>()->getZ();
+        solutions.push_back(Vector3(x, y, z));
+
+        if(bodyItem) {
+            Body* body = bodyItem->body();
+            bodyItem->restoreInitialState(true);
+            if(baseLink && endLink) {
+                if(baseLink != endLink) {
+                    auto path = JointPath::getCustomPath(body, baseLink, endLink);
+                    Isometry3 T;
+                    T.linear() = endLink->R();
+                    T.translation() = Vector3(x, y, z);
+                    if(path->calcInverseKinematics(T)) {
+                        bodyItem->notifyKinematicStateChange(true);
+                    }
+                }
+            }
+        }
+    }
+
+    {
+        SgVertexArray& points = *solvedPointSetItem->pointSet()->getOrCreateVertices();
+        SgColorArray& colors = *solvedPointSetItem->pointSet()->getOrCreateColors();
+        const int numSolutions = solutions.size();
+        points.resize(numSolutions);
+        colors.resize(numSolutions);
+        for(int i = 0; i < numSolutions; ++i) {
+            Vector3f point = Vector3f(solutions[i][0], solutions[i][1], solutions[i][2]);
+            points[i] = point;
+            Vector3f& c = colors[i];
+            c[0] = 0.0;
+            c[1] = 1.0;
+            c[2] = 0.0;
+        }
+        solvedPointSetItem->notifyUpdate();
+    }
+
+    {
+        vector<Vector3> src;
+        for(int i = 0; i < statePointSetItem->numAttentionPoints(); ++i) {
+            Vector3 point = statePointSetItem->attentionPoint(i);
+            src.push_back(point);
+        }
+
+        statePointSetItem->clearAttentionPoints();
+        SgVertexArray& points = *statePointSetItem->pointSet()->getOrCreateVertices();
+        SgColorArray& colors = *statePointSetItem->pointSet()->getOrCreateColors();
+        const int numStates = src.size();
+        points.resize(numStates);
+        colors.resize(numStates);
+        for(int i = 0; i < numStates; ++i) {
+            Vector3f point = Vector3f(src[i][0], src[i][1], src[i][2]);
+            points[i] = point;
+            Vector3f& c = colors[i];
+            c[0] = 1.0;
+            c[1] = 0.0;
+            c[2] = 0.0;
+        }
+        statePointSetItem->notifyUpdate();
+    }
 }
 
 
@@ -490,28 +541,8 @@ void IKMotionPlannerItemImpl::onTreePathChanged()
     BodyItem* newBodyItem = self->findOwnerItem<BodyItem>();
     if(newBodyItem != bodyItem) {
         bodyItem = newBodyItem;
-        Body* body = bodyItem->body();
-        baseLink = body->link(baseLinkName);
-        endLink = body->link(endLinkName);
+        updateTargetLinks();
     }
-}
-
-
-bool IKMotionPlannerItemImpl::onStartPositionPropertyChanged(const string& text)
-{
-    if(toVector3(text, startPosition)) {
-        return true;
-    }
-    return false;
-}
-
-
-bool IKMotionPlannerItemImpl::onGoalPositionPropertyChanged(const string& text)
-{
-    if(toVector3(text, goalPosition)) {
-        return true;
-    }
-    return false;
 }
 
 
@@ -527,6 +558,10 @@ void IKMotionPlannerItemImpl::doPutProperties(PutPropertyFunction& putProperty)
     putProperty(_("End link"), endLinkName, changeProperty(endLinkName));
     putProperty(_("Geometric planner"), plannerType,
                 [&](int index){ return plannerType.select(index); });
+    putProperty(_("BB min"), str(bbMin),
+                [this](const string& text){ return onBBMinPropertyChanged(text); });
+    putProperty(_("BB max"), str(bbMax),
+                [this](const string& text){ return onBBMaxPropertyChanged(text); });
     putProperty(_("Start position"), str(startPosition),
                 [this](const string& text){ return onStartPositionPropertyChanged(text); });
     putProperty(_("Goal position"), str(goalPosition),
@@ -547,6 +582,8 @@ bool IKMotionPlannerItemImpl::store(Archive& archive)
     archive.write("base_link", baseLinkName);
     archive.write("end_link", endLinkName);
     archive.write("planner_type", plannerType.which());
+    write(archive, "bb_min", bbMin);
+    write(archive, "bb_max", bbMax);
     write(archive, "start_position", startPosition);
     write(archive, "goal_position", goalPosition);
     archive.write("calculation_time", calculationTime);
@@ -566,59 +603,11 @@ bool IKMotionPlannerItemImpl::restore(const Archive& archive)
     archive.read("base_link", baseLinkName);
     archive.read("end_link", endLinkName);
     plannerType.select(archive.get("planner_type", 0));
+    read(archive, "bb_min", bbMin);
+    read(archive, "bb_max", bbMax);
     read(archive, "start_position", startPosition);
     read(archive, "goal_position", goalPosition);
     archive.read("calculation_time", calculationTime);
     archive.read("time_length", timeLength);
     return true;
-}
-
-
-PlannerConfigDialog::PlannerConfigDialog()
-{
-    setWindowTitle(_("Configuration of planner"));
-
-    xminSpin = new DoubleSpinBox;
-    xminSpin->setRange(-1000.0, 0.0);
-    xminSpin->setValue(-5.0);
-    xmaxSpin = new DoubleSpinBox;
-    xmaxSpin->setRange(0.0, 1000.0);
-    xmaxSpin->setValue(5.0);
-    yminSpin = new DoubleSpinBox;
-    yminSpin->setRange(-1000.0, 0.0);
-    yminSpin->setValue(-5.0);
-    ymaxSpin = new DoubleSpinBox;
-    ymaxSpin->setRange(0.0, 1000.0);
-    ymaxSpin->setValue(5.0);
-    zminSpin = new DoubleSpinBox;
-    zminSpin->setRange(-1000.0, 0.0);
-    zminSpin->setValue(-5.0);
-    zmaxSpin = new DoubleSpinBox;
-    zmaxSpin->setRange(0.0, 1000.0);
-    zmaxSpin->setValue(5.0);
-
-    QGridLayout* gbox = new QGridLayout;
-    gbox->addWidget(new QLabel(_("min")), 0, 1);
-    gbox->addWidget(new QLabel(_("max")), 0, 2);
-    gbox->addWidget(new QLabel(_("x [m]")), 1, 0);
-    gbox->addWidget(xminSpin, 1, 1);
-    gbox->addWidget(xmaxSpin, 1, 2);
-    gbox->addWidget(new QLabel(_("y [m]")), 2, 0);
-    gbox->addWidget(yminSpin, 2, 1);
-    gbox->addWidget(ymaxSpin, 2, 2);
-    gbox->addWidget(new QLabel(_("z [m]")), 3, 0);
-    gbox->addWidget(zminSpin, 3, 1);
-    gbox->addWidget(zmaxSpin, 3, 2);
-
-    auto buttonBox = new QDialogButtonBox(this);
-    auto okButton = new PushButton(_("&Ok"));
-    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
-    connect(buttonBox, &QDialogButtonBox::accepted, [this](){ this->accept(); });
-
-    QVBoxLayout* vbox = new QVBoxLayout;
-    vbox->addLayout(new HSeparatorBox(new QLabel(_("BoundingBox"))));
-    vbox->addLayout(gbox);
-    vbox->addWidget(new HSeparator);
-    vbox->addWidget(buttonBox);
-    setLayout(vbox);
 }

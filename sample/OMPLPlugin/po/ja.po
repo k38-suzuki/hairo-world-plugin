@@ -38,12 +38,12 @@ msgid "BoundingBox"
 msgstr "バウンディングボックス"
 
 #: ../MotionPlannerItem.cpp:235
-msgid "min"
-msgstr "下限"
+msgid "BB min"
+msgstr "BB下限"
 
 #: ../MotionPlannerItem.cpp:239
-msgid "max"
-msgstr "上限"
+msgid "BB max"
+msgstr "BB上限"
 
 #: ../MotionPlannerItem.cpp:265
 msgid "Start position"
