@@ -11,17 +11,20 @@ add_definitions(${OMPL_DEFINITIONS})
 
 set(sources
     IKPlannerItem.cpp
-    MotionPlannerItem.cpp
+    SimpleSetupItem.cpp
     OMPLPlugin.cpp
+    SimpleSetup.cpp
     )
 
 set(headers
-    IKPlannerItem.h
-    MotionPlannerItem.h
     gettext.h
+    IKPlannerItem.h
+    SimpleSetupItem.h
+    SimpleSetup.h
     )
 
-choreonoid_make_header_public(MotionPlannerItem.h)
+choreonoid_make_header_public(SimpleSetup.h)
+choreonoid_make_header_public(SimpleSetupItem.h)
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project

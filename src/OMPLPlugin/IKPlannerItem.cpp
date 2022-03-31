@@ -94,7 +94,7 @@ IKPlannerItemImpl::IKPlannerItemImpl(IKPlannerItem* self)
 
 
 IKPlannerItem::IKPlannerItem(const IKPlannerItem& org)
-    : MotionPlannerItem(org),
+    : SimpleSetupItem(org),
       impl(new IKPlannerItemImpl(this, *org.impl))
 {
 
@@ -194,17 +194,19 @@ void IKPlannerItemImpl::onPlaybackStarted(const double& time)
 
 void IKPlannerItemImpl::onTimeChanged(const double& time)
 {
-    if(bodyItem && tb->isDoingPlayback()) {
-        Body* body = bodyItem->body();
-        if(body && baseLink && endLink) {
-            auto path = JointPath::getCustomPath(body, baseLink, endLink);
-            VectorXd p(6);
-            p = interpolator.interpolate(time);
-            Isometry3 T;
-            T.linear() = endLink->R();
-            T.translation() = Vector3(p.head<3>());
-            if(path->calcInverseKinematics(T)) {
-                bodyItem->notifyKinematicStateChange(true);
+    if(self->isSolved()) {
+        if(bodyItem && tb->isDoingPlayback()) {
+            Body* body = bodyItem->body();
+            if(baseLink && endLink) {
+                auto path = JointPath::getCustomPath(body, baseLink, endLink);
+                VectorXd p(6);
+                p = interpolator.interpolate(time);
+                Isometry3 T;
+                T.linear() = endLink->R();
+                T.translation() = Vector3(p.head<3>());
+                if(path->calcInverseKinematics(T)) {
+                    bodyItem->notifyKinematicStateChange(true);
+                }
             }
         }
     }
@@ -224,7 +226,7 @@ void IKPlannerItemImpl::prePlannerFunction()
     statePointSetItem->setName("StatePointSet");
     statePointSetItem->setRenderingMode(PointSetItem::VOXEL);
     statePointSetItem->setVoxelSize(0.03);
-    statePointSetItem->setChecked(true);
+//    statePointSetItem->setChecked(true);
     self->addSubItem(statePointSetItem);
 }
 
@@ -241,13 +243,11 @@ bool IKPlannerItemImpl::midPlannerFunction(const ob::State* state)
     float y = state->as<ob::SE3StateSpace::StateType>()->getY();
     float z = state->as<ob::SE3StateSpace::StateType>()->getZ();
 
-    bool solved = false;
-    bool collided = false;
+    bool result = false;
     statePointSetItem->addAttentionPoint(Vector3(x, y, z));
 
     if(bodyItem) {
         Body* body = bodyItem->body();
-        bodyItem->restoreInitialState(true);
         if(baseLink && endLink) {
             if(baseLink != endLink) {
                 auto path = JointPath::getCustomPath(body, baseLink, endLink);
@@ -256,7 +256,7 @@ bool IKPlannerItemImpl::midPlannerFunction(const ob::State* state)
                 T.translation() = Vector3(x, y, z);
                 if(path->calcInverseKinematics(T)) {
                     bodyItem->notifyKinematicStateChange(true);
-                    solved = true;
+                    result = true;
                     WorldItem* worldItem = bodyItem->findOwnerItem<WorldItem>();
                     if(worldItem) {
                         worldItem->updateCollisions();
@@ -265,7 +265,7 @@ bool IKPlannerItemImpl::midPlannerFunction(const ob::State* state)
                             CollisionLinkPairPtr collision = collisions[i];
                             if((collision->body[0] == body) || (collision->body[1] == body)) {
                                 if(!collision->isSelfCollision()) {
-                                    collided = true;
+                                    return false;
                                 }
                             }
                         }
@@ -274,7 +274,7 @@ bool IKPlannerItemImpl::midPlannerFunction(const ob::State* state)
             }
         }
     }
-    return solved && !collided;
+    return result;
 }
 
 
@@ -305,7 +305,6 @@ void IKPlannerItemImpl::postPlannerFunction(og::PathGeometric& pathes)
 
         if(bodyItem) {
             Body* body = bodyItem->body();
-            bodyItem->restoreInitialState(true);
             if(baseLink && endLink) {
                 if(baseLink != endLink) {
                     auto path = JointPath::getCustomPath(body, baseLink, endLink);
@@ -382,14 +381,14 @@ void IKPlannerItemImpl::onTreePathChanged()
     BodyItem* newBodyItem = self->findOwnerItem<BodyItem>();
     if(newBodyItem != bodyItem) {
         bodyItem = newBodyItem;
-        updateTargetLinks();
     }
+    updateTargetLinks();
 }
 
 
 void IKPlannerItem::doPutProperties(PutPropertyFunction& putProperty)
 {
-    MotionPlannerItem::doPutProperties(putProperty);
+    SimpleSetupItem::doPutProperties(putProperty);
     impl->doPutProperties(putProperty);
 }
 
@@ -404,7 +403,7 @@ void IKPlannerItemImpl::doPutProperties(PutPropertyFunction& putProperty)
 
 bool IKPlannerItem::store(Archive& archive)
 {
-    MotionPlannerItem::store(archive);
+    SimpleSetupItem::store(archive);
     return impl->store(archive);
 }
 
@@ -420,7 +419,7 @@ bool IKPlannerItemImpl::store(Archive& archive)
 
 bool IKPlannerItem::restore(const Archive& archive)
 {
-    MotionPlannerItem::restore(archive);
+    SimpleSetupItem::restore(archive);
     return impl->restore(archive);
 }
 

@@ -7,13 +7,13 @@
 #define CNOID_OMPLPLUGIN_IKPLANNERITEM_H
 
 #include <cnoid/ExtensionManager>
-#include <cnoid/MotionPlannerItem>
+#include <cnoid/SimpleSetupItem>
 
 namespace cnoid {
 
 class IKPlannerItemImpl;
 
-class IKPlannerItem : public MotionPlannerItem
+class IKPlannerItem : public SimpleSetupItem
 {
 public:
     IKPlannerItem();

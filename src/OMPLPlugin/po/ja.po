@@ -17,6 +17,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#: ../SimpleSetup.cpp:120
+msgid "Start position has set."
+msgstr "始点が設定されました．"
+
+#: ../SimpleSetup.cpp:133
+msgid "Goal position has set."
+msgstr "終点が設定されました．"
+
 #: ../MotionPlannerItem.cpp:184
 msgid "MotionPlannerItem"
 msgstr "モーションプランナアイテム"
