@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_OMPLPLUGIN_IKPLANNERITEM_H
-#define CNOID_OMPLPLUGIN_IKPLANNERITEM_H
+#ifndef CNOID_IKPLANNERPLUGIN_IKPLANNERITEM_H
+#define CNOID_IKPLANNERPLUGIN_IKPLANNERITEM_H
 
 #include <cnoid/ExtensionManager>
 #include <cnoid/SimpleSetupItem>
@@ -41,4 +41,4 @@ typedef ref_ptr<IKPlannerItem> IKPlannerItemPtr;
 
 }
 
-#endif // CNOID_OMPLPLUGIN_IKPLANNERITEM_H
+#endif // CNOID_IKPLANNERPLUGIN_IKPLANNERITEM_H

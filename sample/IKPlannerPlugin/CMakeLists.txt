@@ -1,47 +1,36 @@
 
-option(BUILD_OMPL_PLUGIN "Building OMPLPlugin" OFF)
-if(NOT BUILD_OMPL_PLUGIN)
+option(BUILD_IKPLANNER_PLUGIN "Building IKPlannerPlugin" OFF)
+if(NOT BUILD_IKPLANNER_PLUGIN OR NOT BUILD_OMPL_PLUGIN)
   return()
 endif()
 
-find_package(ompl REQUIRED)
-include_directories(${OMPL_INCLUDE_DIRS})
-link_directories(${OMPL_LIBRARY_DIRS})
-add_definitions(${OMPL_DEFINITIONS})
-
 set(sources
-    OMPLPlugin.cpp
-    SimpleSetup.cpp
-    SimpleSetupItem.cpp
+    IKPlannerItem.cpp
+    IKPlannerPlugin.cpp
     )
 
 set(headers
-    exportdecl.h
     gettext.h
-    SimpleSetup.h
-    SimpleSetupItem.h
+    IKPlannerItem.h
     )
-
-choreonoid_make_header_public(SimpleSetup.h)
-choreonoid_make_header_public(SimpleSetupItem.h)
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
-  set(target CnoidOMPLPlugin)
+  set(target CnoidIKPlannerPlugin)
   make_gettext_mofiles(${target} mofiles)
   choreonoid_add_plugin(${target} ${sources} ${mofiles} HEADERS ${headers})
-  target_link_libraries(${target} CnoidBodyPlugin ${OMPL_LIBRARIES})
+  target_link_libraries(${target} CnoidBodyPlugin CnoidOMPLPlugin)
 else()
   # Stand alone build
   cmake_minimum_required(VERSION 3.1.0)
-  project(OMPLPlugin)
+  project(IKPlannerPlugin)
   find_package(Choreonoid REQUIRED)
   add_definitions(${CHOREONOID_COMPILE_DEFINITIONS})
   include_directories(${CHOREONOID_INCLUDE_DIRS})
   link_directories(${CHOREONOID_LIBRARY_DIRS})
-  set(target CnoidOMPLPlugin)
+  set(target CnoidIKPlannerPlugin)
   make_gettext_mofiles(${target} mofiles)
   add_library(${target} SHARED ${sources} ${mofiles} HEADERS ${headers})
-  target_link_libraries(${target} ${CHOREONOID_BODY_PLUGIN_LIBRARIES} ${OMPL_LIBRARIES})
+  target_link_libraries(${target} ${CHOREONOID_BODY_PLUGIN_LIBRARIES} CnoidOMPLPlugin)
   install(TARGETS ${target} LIBRARY DESTINATION ${CHOREONOID_PLUGIN_DIR})
 endif()

@@ -1,4 +1,5 @@
 add_subdirectory(HAIROWorld)
+add_subdirectory(IKPlannerPlugin)
 add_subdirectory(MarkerDetectPlugin)
 add_subdirectory(SceneImagePlugin)
 add_subdirectory(tutorial)

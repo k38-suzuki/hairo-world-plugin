@@ -9,12 +9,13 @@
 #include <cnoid/BoundingBox>
 #include <cnoid/EigenTypes>
 #include <ompl/geometric/SimpleSetup.h>
+#include "exportdecl.h"
 
 namespace cnoid {
 
 class SimpleSetupImpl;
 
-class SimpleSetup
+class CNOID_EXPORT SimpleSetup
 {
 public:
     SimpleSetup();

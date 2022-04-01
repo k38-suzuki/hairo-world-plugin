@@ -1,0 +1,50 @@
+# Japanese translations for PACKAGE package.
+# Copyright (C) 2020 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# suzuki <suzuki.kenta38@jaea.go.jp>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-02-05 22:34+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../IKPlannerItem.cpp:128
+msgid "IK Planner"
+msgstr "IKプランナ"
+
+#: ../IKPlannerItem.cpp:184
+msgid "IKPlannerItem"
+msgstr "IKプランナアイテム"
+
+#: ../IKPlannerItem.cpp:192
+msgid "Base link"
+msgstr "ベースリンク"
+
+#: ../IKPlannerItem.cpp:194
+msgid "End link"
+msgstr "エンドリンク"
+
+#: ../IKPlannerItem.cpp:310
+msgid "Set start"
+msgstr "始点を設定"
+
+#: ../IKPlannerItem.cpp:311
+msgid "Set goal"
+msgstr "終点を設定"
+
+#: ../IKPlannerItem.cpp:318
+msgid "Generate a path"
+msgstr "経路を生成"
+
+#: ../IKPlannerItem.cpp:328
+msgid "Time length"
+msgstr "時間長"

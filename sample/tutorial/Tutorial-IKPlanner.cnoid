@@ -56,7 +56,7 @@ items:
             - 
               id: 3
               name: "IKPlanner"
-              plugin: OMPL
+              plugin: IKPlanner
               class: IKPlannerItem
               is_checked: true
               data: 

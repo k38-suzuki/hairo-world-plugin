@@ -9,12 +9,13 @@
 #include <cnoid/Item>
 #include <cnoid/RenderableItem>
 #include <cnoid/SimpleSetup>
+#include "exportdecl.h"
 
 namespace cnoid {
 
 class SimpleSetupItemImpl;
 
-class SimpleSetupItem : public Item, public SimpleSetup, public RenderableItem
+class CNOID_EXPORT SimpleSetupItem : public Item, public SimpleSetup, public RenderableItem
 {
 public:
     SimpleSetupItem();

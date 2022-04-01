@@ -25,70 +25,38 @@ msgstr "始点が設定されました．"
 msgid "Goal position has set."
 msgstr "終点が設定されました．"
 
-#: ../MotionPlannerItem.cpp:184
-msgid "MotionPlannerItem"
-msgstr "モーションプランナアイテム"
+#: ../SimpleSetupItem.cpp:184
+msgid "SimpleSetupItem"
+msgstr "シンプルセットアップアイテム"
 
-#: ../MotionPlannerItem.cpp:209
+#: ../SimpleSetupItem.cpp:209
 msgid "Found solution:"
 msgstr "経路が見つかりました．"
 
-#: ../MotionPlannerItem.cpp:218
+#: ../SimpleSetupItem.cpp:218
 msgid "No solution found"
 msgstr "経路が見つかりませんでした．"
 
-#: ../IKPlannerItem.cpp:128
-msgid "IK Planner"
-msgstr "IKプランナ"
-
-#: ../IKPlannerItem.cpp:184
-msgid "IKPlannerItem"
-msgstr "IKプランナアイテム"
-
-#: ../IKPlannerItem.cpp:192
-msgid "Base link"
-msgstr "ベースリンク"
-
-#: ../IKPlannerItem.cpp:194
-msgid "End link"
-msgstr "エンドリンク"
-
-#: ../MotionPlannerItem.cpp:235
+#: ../SimpleSetupItem.cpp:235
 msgid "BB min"
 msgstr "BB下限"
 
-#: ../MotionPlannerItem.cpp:239
+#: ../SimpleSetupItem.cpp:239
 msgid "BB max"
 msgstr "BB上限"
 
-#: ../MotionPlannerItem.cpp:265
+#: ../SimpleSetupItem.cpp:265
 msgid "Start position"
 msgstr "始点"
 
-#: ../MotionPlannerItem.cpp:284
+#: ../SimpleSetupItem.cpp:284
 msgid "Goal position"
 msgstr "終点"
 
-#: ../IKPlannerItem.cpp:310
-msgid "Set start"
-msgstr "始点を設定"
-
-#: ../IKPlannerItem.cpp:311
-msgid "Set goal"
-msgstr "終点を設定"
-
-#: ../MotionPlannerItem.cpp:301
+#: ../SimpleSetupItem.cpp:301
 msgid "Geometric planner"
 msgstr "幾何学プランナ"
 
-#: ../MotionPlannerItem.cpp:311
+#: ../SimpleSetupItem.cpp:311
 msgid "Calculation time"
 msgstr "計算時間"
-
-#: ../IKPlannerItem.cpp:318
-msgid "Generate a path"
-msgstr "経路を生成"
-
-#: ../IKPlannerItem.cpp:328
-msgid "Time length"
-msgstr "時間長"

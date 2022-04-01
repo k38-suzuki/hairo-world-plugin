@@ -5,33 +5,33 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "SimpleSetupItem.h"
+#include "IKPlannerItem.h"
 
 using namespace cnoid;
 
 namespace {
 
-class OMPLPlugin : public Plugin
+class IKPlannerPlugin : public Plugin
 {
 public:
 
-    OMPLPlugin() : Plugin("OMPL")
+    IKPlannerPlugin() : Plugin("IKPlanner")
     {
         require("Body");
     }
 
     virtual bool initialize() override
     {
-        SimpleSetupItem::initializeClass(this);
+        IKPlannerItem::initializeClass(this);
         return true;
     }
 
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("OMPL Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            fmt::format("IKPlanner Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
-            "Copyrigh (c) 2020 Japan Atomic Energy Agency.\n"
+            "Copyrigh (c) 2022 Japan Atomic Energy Agency.\n"
             "\n" +
             MITLicenseText();
         return text.c_str();
@@ -40,4 +40,4 @@ public:
 
 }
 
-CNOID_IMPLEMENT_PLUGIN_ENTRY(OMPLPlugin)
+CNOID_IMPLEMENT_PLUGIN_ENTRY(IKPlannerPlugin)
