@@ -299,6 +299,7 @@ void IKPlannerItemImpl::postPlannerFunction(og::PathGeometric& pathes)
     solvedPointSetItem->setChecked(true);
     self->addSubItem(solvedPointSetItem);
 
+    solutions.push_back(self->startPosition());
     for(size_t i = 0; i < pathes.getStateCount(); ++i) {
         ob::State* state = pathes.getState(i);
         float x = state->as<ob::SE3StateSpace::StateType>()->getX();
@@ -321,6 +322,7 @@ void IKPlannerItemImpl::postPlannerFunction(og::PathGeometric& pathes)
             }
         }
     }
+    solutions.push_back(self->goalPosition());
 
     {
         SgVertexArray& points = *solvedPointSetItem->pointSet()->getOrCreateVertices();
