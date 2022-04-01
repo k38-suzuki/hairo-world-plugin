@@ -8,7 +8,7 @@
 
 #include <cnoid/Item>
 #include <cnoid/RenderableItem>
-#include <cnoid/SimpleSetup>
+#include "SimpleSetup.h"
 #include "exportdecl.h"
 
 namespace cnoid {
