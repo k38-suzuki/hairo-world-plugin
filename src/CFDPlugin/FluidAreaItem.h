@@ -11,8 +11,6 @@
 
 namespace cnoid {
 
-class FluidAreaItemImpl;
-
 class FluidAreaItem : public AreaItem
 {
 public:

@@ -12,8 +12,6 @@
 
 namespace cnoid {
 
-class VEAreaItemImpl;
-
 class VEAreaItem : public AreaItem
 {
 public:
@@ -40,7 +38,6 @@ protected:
     virtual bool restore(const Archive& archive) override;
 
 private:
-
     Vector3 hsv_;
     Vector3 rgb_;
     double coef_b_;

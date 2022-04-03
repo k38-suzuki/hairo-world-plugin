@@ -66,8 +66,8 @@ items:
                 start_position: [ -0.0025, -0.025, 1.21772 ]
                 goal_position: [ -0.0025, 0.754928, 0.781593 ]
                 calculation_time: 1
-                base_link: BASE
-                end_link: J7
+                base_name: BASE
+                wrist_name: J7
                 time_length: 5
         - 
           id: 4

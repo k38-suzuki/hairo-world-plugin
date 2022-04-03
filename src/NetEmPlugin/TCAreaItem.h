@@ -11,8 +11,6 @@
 
 namespace cnoid {
 
-class TCAreaItemImpl;
-
 class TCAreaItem : public AreaItem
 {
 public:

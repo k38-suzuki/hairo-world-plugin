@@ -36,9 +36,8 @@ public:
     Vector3 diffuseColor;
     FloatingNumberString shininess;
     FloatingNumberString transparency;
-    SgPosTransformPtr scene;
+    PositionDraggerPtr scene;
     SgMaterialPtr material;
-    PositionDraggerPtr positionDragger;
 
     enum AreaTypeID { BOX, CYLINDER, SPHERE, NUM_AREA };
 
@@ -235,7 +234,7 @@ bool AreaItemImpl::onTransparencyPropertyChanged(const string& text)
 
 void AreaItemImpl::onPositionDragged()
 {
-    auto p = positionDragger->globalDraggingPosition();
+    auto p = scene->globalDraggingPosition();
     position.translation() = p.translation();
     position.linear() = p.linear();
     updateScenePosition();
@@ -246,29 +245,23 @@ void AreaItemImpl::onPositionDragged()
 void AreaItemImpl::createScene()
 {
     if(!scene) {
-        scene = new SgPosTransform;
+        scene = new PositionDragger(
+                    PositionDragger::AllAxes, PositionDragger::WideHandle);
+        scene->setDragEnabled(true);
+        scene->setOverlayMode(true);
+        scene->setPixelSize(48, 2);
+        scene->setDisplayMode(PositionDragger::DisplayInEditMode);
+        scene->sigPositionDragged().connect([&](){ onPositionDragged(); });
         updateScenePosition();
         material = new SgMaterial;
         updateSceneMaterial();
-        positionDragger = new PositionDragger(
-                    PositionDragger::AllAxes, PositionDragger::WideHandle);
-        positionDragger->setDragEnabled(true);
-        positionDragger->setOverlayMode(true);
-        positionDragger->setPixelSize(48, 2);
-        positionDragger->setDisplayMode(PositionDragger::DisplayInEditMode);
-        positionDragger->sigPositionDragged().connect([&](){ onPositionDragged(); });
     } else {
         scene->clearChildren();
     }
 
     MeshGenerator generator;
 
-    SgGroup* group = new SgGroup;
     SgShape* shape = new SgShape;
-    group->addChild(shape);
-    group->addChild(positionDragger);
-    scene->addChild(group);
-
     if(type.is(BOX)) {
         shape->setMesh(generator.generateBox(size));
     } else if(type.is(CYLINDER)) {
@@ -277,7 +270,8 @@ void AreaItemImpl::createScene()
         shape->setMesh(generator.generateSphere(radius.value()));
     }
     shape->setMaterial(material);
-    positionDragger->adjustSize(shape->boundingBox());
+    scene->addChild(shape);
+    scene->adjustSize(shape->boundingBox());
 }
 
 
