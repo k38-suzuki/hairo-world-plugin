@@ -17,7 +17,7 @@
 #include "Rotor.h"
 #include "Thruster.h"
 #include "gettext.h"
-
+#include <iostream>
 using namespace cnoid;
 using namespace std;
 
@@ -34,9 +34,9 @@ public:
     Vector3 centerOfBuoyancy;
     double cdw;
     double cda;
-    double td;
-    Vector6 surface;
     double cv;
+    double cw;
+    Vector6 surface;
 };
 
 typedef ref_ptr<CFDLink> CFDLinkPtr;
@@ -90,9 +90,9 @@ CFDLink::CFDLink()
     centerOfBuoyancy << 0.0, 0.0, 0.0;
     cdw = 0.0;
     cda = 0.0;
-    td = 0.0;
-    surface << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
     cv = 0.0;
+    cw = 0.0;
+    surface << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
 }
 
 
@@ -213,9 +213,9 @@ void CFDSimulatorItemImpl::createCFDBody(Body* body)
         }
         node.read("cdw", cfdLink->cdw);
         node.read("cda", cfdLink->cda);
-        node.read("td", cfdLink->td);
-        read(node, "surface", cfdLink->surface);
         node.read("cv", cfdLink->cv);
+        node.read("cw", cfdLink->cw);
+        read(node, "surface", cfdLink->surface);
         cfdBodies.push_back(cfdBody);
     }
 }
@@ -249,7 +249,7 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
             }
 
             link->f_ext() += ff;
-            Vector3 cr = link->T() * Vector3(0.0, 0.0, 0.0);
+            Vector3 cr = link->T() * cfdLink->link->centerOfMass();
             link->tau_ext() += cr.cross(ff);
 
             // buoyancy
@@ -262,8 +262,6 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
             Vector3 cb = link->T() * cfdLink->centerOfBuoyancy;
             link->tau_ext() += cb.cross(fb);
 
-            Vector3 v = link->v();
-            Vector3 w = link->w();
             double cd = 0.0;
             if(density > 10.0) {
                 cd = cfdLink->cdw;
@@ -271,49 +269,43 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
                 cd = cfdLink->cda;
             }
 
+            Vector3 v = link->v();
+            Vector3 w = link->w();
+            Vector3 vn = v.normalized();
+
+            static const Vector3 normals[]= {
+                Vector3(1.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0), Vector3(0.0, 0.0, 1.0),
+                Vector3(-1.0, 0.0, 0.0), Vector3(0.0, -1.0, 0.0), Vector3(0.0, 0.0, -1.0)
+            };
+
+            int index[] = { 0, 1, 2 };
+            for(int k = 0; k < 6; ++k) {
+                Vector3 n = normals[k];
+                double vdotn = vn.dot(n);
+                if(vdotn < 0.0) {
+
+                } else {
+                    index[k % 3] = k;
+                }
+            }
+
             //drag
             Vector3 fd = Vector3::Zero();
-            Vector3 td = Vector3::Zero();
+            for(int k = 0; k < 3; ++k) {
+                fd[k] = 0.5 * density * cfdLink->surface[index[k]] * cd * v[k] * fabs(v[k]) * -1.0;
+            }
             //viscous drag
-            Vector3 fv = Vector3::Zero();
-            Vector3 tv = Vector3::Zero();
-
-            // Force
-            for(int k = 0; k < 3; ++k) {
-                double sign = 1.0;
-                int index = 1;
-                if(v[k] >= 0.0) {
-                    sign = -1.0;
-                    index = 0;
-                }
-                fd[k] = 0.5 * density * v[k] * v[k] * cfdLink->surface[k * 2 + index] * cd * sign;
-                double cv = cfdLink->cv;
-                fv[k] = cv * viscosity * fabs(v[k]) * sign;
-            }
-
-            // Moment
-            for(int k = 0; k < 3; ++k) {
-                double sign = 1.0;
-                int index = 1;
-                int index0 = (k + 1) % 3;
-                int index1 = (k + 2) % 3;
-                if(w[k] >= 0.0) {
-                    sign = -1.0;
-                    index = 0;
-                }
-                td[k] = density * w[k] * w[k] * (cfdLink->surface[index0 * 2 + index] + cfdLink->surface[index1 * 2 + index]) * cfdLink->td * sign;
-                double cv = cfdLink->cv;
-                tv[k] = cv * viscosity * fabs(w[k]) * sign;
-            }
+            Vector3 fv = cfdLink->cv * viscosity * v * -1.0;
+            Vector3 tv = cfdLink->cw * viscosity * w * -1.0;
 
             link->f_ext() += fd;
-            link->tau_ext() += cr.cross(fd) + td;
+            link->tau_ext() += cr.cross(fd);
             link->f_ext() += fv;
             link->tau_ext() += cr.cross(fv) + tv;
         }
     }
 
-    // Thruster
+    // thruster
     for(int i = 0; i < thrusters.size(); ++i) {
         Thruster* thruster = thrusters[i];
         Link* link = thruster->link();
@@ -339,7 +331,7 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
         }
     }
 
-    // Rotor
+    // rotor
     for(int i = 0; i < rotors.size(); ++i) {
         Rotor* rotor = rotors[i];
         Link* link = rotor->link();

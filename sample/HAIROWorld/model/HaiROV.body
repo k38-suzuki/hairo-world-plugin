@@ -33,7 +33,7 @@ THRUSTER_COMMON: &ThrusterCommon
   density: 1000.0
   surface: [ 0.0015, 0.0015, 0.0015, 0.0015, 0.0025, 0.0025 ]
   cdw: 1.2
-  tw: 0.2
+  cw: 0.2
 
 THRUSTER_COMMON_SHAPE: &ThrusterCommonShape
   type: Shape
@@ -74,7 +74,7 @@ links:
     density: 1000.0
     surface: [ 0.03, 0.03, 0.03, 0.03, 0.04, 0.04 ]
     cdw: 1.2
-    tw: 0.2
+    cw: 0.2
     cv: 10.0
     elements:
       -

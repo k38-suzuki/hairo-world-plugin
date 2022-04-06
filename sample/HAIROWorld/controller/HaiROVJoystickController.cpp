@@ -87,8 +87,6 @@ public:
         joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
         targetMode = joystick->addMode();
 
-        io->os() << "Press the A button." << endl;
-
         return true;
     }
 

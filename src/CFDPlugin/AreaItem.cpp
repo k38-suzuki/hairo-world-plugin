@@ -163,10 +163,8 @@ bool AreaItemImpl::onRotationPropertyChanged(const string& text)
 bool AreaItemImpl::onAreaTypePropertyChanged(const int& index)
 {
     type.selectIndex(index);
-    if(scene) {
-        createScene();
-        scene->notifyUpdate();
-    }
+    createScene();
+    scene->notifyUpdate();
     return true;
 }
 
