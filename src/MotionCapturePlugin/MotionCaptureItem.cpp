@@ -9,6 +9,7 @@
 #include <cnoid/MultiPointSetItem>
 #include <cnoid/MultiSE3SeqItem>
 #include <cnoid/PointSetItem>
+#include <cnoid/PutPropertyFunction>
 #include <cnoid/SimulatorItem>
 #include <cnoid/stdx/filesystem>
 #include <cnoid/UTF8>
@@ -35,6 +36,7 @@ public:
     MultiPointSetItemPtr multiPointSetItem;
     SimulatorItem* simulatorItem;
     MultiSE3SeqItemPtr motionSeqItem;
+    bool isMotionDataRecordingEnabled;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void finalizeSimulation();
@@ -61,6 +63,7 @@ MotionCaptureItemImpl::MotionCaptureItemImpl(MotionCaptureItem* self)
     multiPointSetItem = nullptr;
     simulatorItem = nullptr;
     motionSeqItem = nullptr;
+    isMotionDataRecordingEnabled = true;
 }
 
 
@@ -114,33 +117,35 @@ bool MotionCaptureItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
         markers << body->devices();
     }
 
-    if(markers.size()) {
-        multiPointSetItem = new MultiPointSetItem;
-        multiPointSetItem->setName("Motion");
-        multiPointSetItem->setChecked(false);
-        self->addSubItem(multiPointSetItem);
+    if(isMotionDataRecordingEnabled) {
+        if(markers.size()) {
+            multiPointSetItem = new MultiPointSetItem;
+            multiPointSetItem->setName("Motion");
+            multiPointSetItem->setChecked(false);
+            self->addSubItem(multiPointSetItem);
 
-        for(size_t i = 0; i < markers.size(); ++i) {
-            PassiveMarker* marker = markers[i];
-            PointSetItem* pointSetItem = new PointSetItem;
-            pointSetItem->setName(marker->name());
-            pointSetItem->setChecked(false);
-            multiPointSetItem->addSubItem(pointSetItem);
-            pointSetItems.push_back(pointSetItem);
+            for(size_t i = 0; i < markers.size(); ++i) {
+                PassiveMarker* marker = markers[i];
+                PointSetItem* pointSetItem = new PointSetItem;
+                pointSetItem->setName(marker->name());
+                pointSetItem->setChecked(false);
+                multiPointSetItem->addSubItem(pointSetItem);
+                pointSetItems.push_back(pointSetItem);
+            }
+
+            motionSeqItem = new MultiSE3SeqItem;
+            motionSeqItem->setName("MotionSeq");
+            multiPointSetItem->addSubItem(motionSeqItem);
+
+            int numParts = markers.size();
+            shared_ptr<MultiSE3Seq> markerPointSeq = motionSeqItem->seq();
+            markerPointSeq->setSeqContentName("MotionSeq");
+            markerPointSeq->setFrameRate(1.0 / simulatorItem->worldTimeStep());
+            markerPointSeq->setDimension(0, numParts, false);
+            markerPointSeq->setOffsetTime(0.0);
+
+            simulatorItem->addPreDynamicsFunction([&](){ onPreDynamicsFunction(); });
         }
-
-        motionSeqItem = new MultiSE3SeqItem;
-        motionSeqItem->setName("MotionSeq");
-        multiPointSetItem->addSubItem(motionSeqItem);
-
-        int numParts = markers.size();
-        shared_ptr<MultiSE3Seq> markerPointSeq = motionSeqItem->seq();
-        markerPointSeq->setSeqContentName("MotionSeq");
-        markerPointSeq->setFrameRate(1.0 / simulatorItem->worldTimeStep());
-        markerPointSeq->setDimension(0, numParts, false);
-        markerPointSeq->setOffsetTime(0.0);
-
-        simulatorItem->addPreDynamicsFunction([&](){ onPreDynamicsFunction(); });
     }
     return true;
 }
@@ -154,10 +159,10 @@ void MotionCaptureItem::finalizeSimulation()
 
 void MotionCaptureItemImpl::finalizeSimulation()
 {
-    QDateTime recordingStartTime = QDateTime::currentDateTime();
-    string suffix = recordingStartTime.toString("-yyyy-MM-dd-hh-mm-ss").toStdString();
+    if(multiPointSetItem && isMotionDataRecordingEnabled) {
+        QDateTime recordingStartTime = QDateTime::currentDateTime();
+        string suffix = recordingStartTime.toString("-yyyy-MM-dd-hh-mm-ss").toStdString();
 
-    if(multiPointSetItem) {
         multiPointSetItem->setChecked(true);
         filesystem::path homeDir(fromUTF8(getenv("HOME")));
         string captureDirPath = toUTF8((homeDir / "capture" / (multiPointSetItem->name() + suffix).c_str()).string());
@@ -235,7 +240,7 @@ void MotionCaptureItem::doPutProperties(PutPropertyFunction& putProperty)
 
 void MotionCaptureItemImpl::doPutProperties(PutPropertyFunction& putProperty)
 {
-
+    putProperty(_("Record motion data"), isMotionDataRecordingEnabled, changeProperty(isMotionDataRecordingEnabled));
 }
 
 

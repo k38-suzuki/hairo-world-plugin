@@ -20,3 +20,7 @@ msgstr ""
 #: ../MotionCaptureItem.cpp:90
 msgid "MotionCaptureItem"
 msgstr "モーションキャプチャアイテム"
+
+#: ../MotionCaptureItem.cpp:243
+msgid "Record motion data"
+msgstr "モーションデータの記録"

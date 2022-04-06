@@ -231,19 +231,18 @@ void KIOSKManagerImpl::onEnableLoggingToggled(const bool& on)
 void KIOSKManagerImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
     this->simulatorItem = simulatorItem;
-
-    filesystem::path homeDir(fromUTF8(getenv("HOME")));
-    ProjectManager* pm = ProjectManager::instance();
-    QDateTime recordingStartTime = QDateTime::currentDateTime();
-    string suffix = recordingStartTime.toString("-yyyy-MM-dd-hh-mm-ss").toStdString();
-    string logDirPath = toUTF8((homeDir / "worldlog" / (pm->currentProjectName() + suffix).c_str()).string());
-    filesystem::path dir(fromUTF8(logDirPath));
-    if(!filesystem::exists(dir)) {
-        filesystem::create_directories(dir);
-    }
-    string filename0 = toUTF8((dir / pm->currentProjectName().c_str()).string()) + suffix + ".cnoid";
-
     if(enable_logging->isChecked()) {
+        filesystem::path homeDir(fromUTF8(getenv("HOME")));
+        ProjectManager* pm = ProjectManager::instance();
+        QDateTime recordingStartTime = QDateTime::currentDateTime();
+        string suffix = recordingStartTime.toString("-yyyy-MM-dd-hh-mm-ss").toStdString();
+        string logDirPath = toUTF8((homeDir / "worldlog" / (pm->currentProjectName() + suffix).c_str()).string());
+        filesystem::path dir(fromUTF8(logDirPath));
+        if(!filesystem::exists(dir)) {
+            filesystem::create_directories(dir);
+        }
+        string filename0 = toUTF8((dir / pm->currentProjectName().c_str()).string()) + suffix + ".cnoid";
+
         WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
         if(worldItem) {
             ItemList<WorldLogFileItem> logItems = worldItem->descendantItems<WorldLogFileItem>();
