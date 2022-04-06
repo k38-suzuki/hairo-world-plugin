@@ -159,7 +159,8 @@ void MotionCaptureItemImpl::finalizeSimulation()
 
     if(multiPointSetItem) {
         multiPointSetItem->setChecked(true);
-        string captureDirPath = toUTF8((shareDirPath() / "capture" / (multiPointSetItem->name() + suffix).c_str()).string());
+        filesystem::path homeDir(fromUTF8(getenv("HOME")));
+        string captureDirPath = toUTF8((homeDir / "capture" / (multiPointSetItem->name() + suffix).c_str()).string());
         filesystem::path dir(fromUTF8(captureDirPath));
         if(!filesystem::exists(dir)) {
             filesystem::create_directories(dir);
