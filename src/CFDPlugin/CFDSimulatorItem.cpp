@@ -17,7 +17,7 @@
 #include "Rotor.h"
 #include "Thruster.h"
 #include "gettext.h"
-#include <iostream>
+
 using namespace cnoid;
 using namespace std;
 
@@ -278,22 +278,18 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
                 Vector3(-1.0, 0.0, 0.0), Vector3(0.0, -1.0, 0.0), Vector3(0.0, 0.0, -1.0)
             };
 
-            int index[] = { 0, 1, 2 };
-            for(int k = 0; k < 6; ++k) {
-                Vector3 n = normals[k];
-                double vdotn = vn.dot(n);
-                if(vdotn < 0.0) {
-
-                } else {
-                    index[k % 3] = k;
-                }
-            }
-
             //drag
             Vector3 fd = Vector3::Zero();
-            for(int k = 0; k < 3; ++k) {
-                fd[k] = 0.5 * density * cfdLink->surface[index[k]] * cd * v[k] * fabs(v[k]) * -1.0;
+            for(int k = 0; k < 6; ++k) {
+                Vector3 n = normals[k];
+                double s = cfdLink->surface[k];
+                double vdotn = vn.dot(n);
+                if(vdotn < 0.0) {
+                    s = 0.0;
+                }
+                fd[k % 3] += 0.5 * density * s * cd * v[k % 3] * fabs(v[k % 3]) * -1.0;
             }
+
             //viscous drag
             Vector3 fv = cfdLink->cv * viscosity * v * -1.0;
             Vector3 tv = cfdLink->cw * viscosity * w * -1.0;

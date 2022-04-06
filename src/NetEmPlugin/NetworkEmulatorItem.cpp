@@ -10,7 +10,7 @@
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
-#include "NetworkEmulator.h"
+#include "NetEm.h"
 #include "TCAreaItem.h"
 #include "gettext.h"
 
@@ -65,7 +65,7 @@ public:
     NetworkEmulatorItemImpl(NetworkEmulatorItem* self, const NetworkEmulatorItemImpl& org);
     NetworkEmulatorItem* self;
 
-    NetworkEmulatorPtr emulator;
+    NetEmPtr netem;
     vector<Body*> bodies;
     Selection interface;
     Selection ifbDevice;
@@ -92,14 +92,14 @@ NetworkEmulatorItem::NetworkEmulatorItem()
 NetworkEmulatorItemImpl::NetworkEmulatorItemImpl(NetworkEmulatorItem* self)
     : self(self)
 {
-    emulator = new NetworkEmulator;
+    netem = new NetEm;
     bodies.clear();
     prevItemID = INT_MAX;
     simulatorItem = nullptr;
 
     interface.clear();
-    for(size_t i = 0; i < emulator->interfaces().size(); ++i) {
-        interface.setSymbol(i, emulator->interfaces()[i]);
+    for(size_t i = 0; i < netem->interfaces().size(); ++i) {
+        interface.setSymbol(i, netem->interfaces()[i]);
     }
 
     ifbDevice.clear();
@@ -154,7 +154,7 @@ bool NetworkEmulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
         for(size_t i = 0; i < simuBodies.size(); i++) {
             bodies.push_back(simuBodies[i]->body());
         }
-        emulator->start(interface.which(), ifbDevice.which());
+        netem->start(interface.which(), ifbDevice.which());
         simulatorItem->addPreDynamicsFunction([&](){ onPreDynamicsFunction(); });
     }
     return true;
@@ -169,7 +169,7 @@ void NetworkEmulatorItem::finalizeSimulation()
 
 void NetworkEmulatorItemImpl::finalizeSimulation()
 {
-    emulator->stop();
+    netem->stop();
 }
 
 
@@ -206,22 +206,22 @@ void NetworkEmulatorItemImpl::onPreDynamicsFunction()
         const double losses[] = { currentItem->inboundLoss(), currentItem->outboundLoss() };
         for(int i = 0; i < 2; ++i) {
             if(delays[i] >= 0 && delays[i] <= DELAY_MAX) {
-                emulator->setDelay(i, delays[i]);
+                netem->setDelay(i, delays[i]);
             }
             if(rates[i] >= 0 && rates[i] <= RATE_MAX) {
-                emulator->setRate(i, rates[i]);
+                netem->setRate(i, rates[i]);
             }
             if(losses[i] >= 0.0 && losses[i] <= LOSS_MAX) {
-                emulator->setLoss(i, losses[i]);
+                netem->setLoss(i, losses[i]);
             }
         }
         if(checkIP(currentItem->source())) {
-            emulator->setSourceIP(currentItem->source());
+            netem->setSourceIP(currentItem->source());
         }
         if(checkIP(currentItem->destination())) {
-            emulator->setSourceIP(currentItem->destination());
+            netem->setSourceIP(currentItem->destination());
         }
-        emulator->update();
+        netem->update();
     }
     prevItemID = currentItemID;
 }

@@ -1,13 +1,15 @@
 
 set(sources
+    NetEm.cpp
+    NetEmPlugin.cpp
     NetworkEmulator.cpp
     NetworkEmulatorItem.cpp
-    NetEmPlugin.cpp
     TCAreaItem.cpp
     )
 
 set(headers
     gettext.h
+    NetEm.h
     NetworkEmulator.h
     NetworkEmulatorItem.h
     TCAreaItem.h
