@@ -78,7 +78,7 @@ MotionCaptureItem::MotionCaptureItem(const MotionCaptureItem& org)
 MotionCaptureItemImpl::MotionCaptureItemImpl(MotionCaptureItem *self, const MotionCaptureItemImpl& org)
     : self(self)
 {
-
+    isMotionDataRecordingEnabled = org.isMotionDataRecordingEnabled;
 }
 
 
