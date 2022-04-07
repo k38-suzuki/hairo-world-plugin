@@ -279,7 +279,6 @@ void SimpleSimulationViewImpl::onButtonClicked(const int& id)
             timestep = seekDSpin->value();
         }
 
-        buttons[START]->setEnabled(false);
         double time = tb->time() + timestep;
         if(tb->isDoingPlayback()) {
             tb->stopPlayback(true);
