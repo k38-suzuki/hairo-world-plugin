@@ -173,7 +173,7 @@ bool AreaItemImpl::onAreaSizePropertyChanged(const string& text)
 {
     if(toVector3(text, size)) {
         createScene();
-        self->notifyUpdate();
+        scene->notifyUpdate();
         return true;
     }
     return false;
@@ -186,7 +186,7 @@ bool AreaItemImpl::onAreaRadiusPropertyChanged(const string& text)
     if(radius >= 0) {
         this->radius = radius;
         createScene();
-        self->notifyUpdate();
+        scene->notifyUpdate();
         return true;
     }
     return false;
@@ -199,7 +199,7 @@ bool AreaItemImpl::onAreaHeightPropertyChanged(const string& text)
     if(height >= 0) {
         this->height = height;
         createScene();
-        self->notifyUpdate();
+        scene->notifyUpdate();
         return true;
     }
     return false;
