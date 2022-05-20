@@ -151,7 +151,7 @@ void FileFormWidgetImpl::save(const bool &overwrite)
         string extension = path.extension().string();
         if(extension.empty()) {
            filename += ".body";
-           fileLine->setText(QString::fromStdString(filename));
+           fileLine->setText(filename.c_str());
         }
 
         sigClicked_(filename);

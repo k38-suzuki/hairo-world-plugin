@@ -102,7 +102,7 @@ InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self)
     setWindowTitle(_("InertiaCalculator"));
 
     shapeCombo = new ComboBox;
-    QStringList shapeList = { _("Box"), _("Sphere"), _("Cylinder"), _("Cone") };
+    const QStringList shapeList = { _("Box"), _("Sphere"), _("Cylinder"), _("Cone") };
     shapeCombo->addItems(shapeList);
     QHBoxLayout* shbox = new QHBoxLayout;
     shbox->addWidget(new QLabel(_("Shape")));
@@ -143,7 +143,7 @@ InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self)
     gbox[CYLINDER]->addWidget(cylinderAxisCombo, 0, 7);
     coneAxisCombo = new ComboBox;
     gbox[CONE]->addWidget(coneAxisCombo, 0, 7);
-    QStringList axisList = { "x", "y", "z" };
+    const QStringList axisList = { "x", "y", "z" };
     cylinderAxisCombo->addItems(axisList);
     coneAxisCombo->addItems(axisList);
 

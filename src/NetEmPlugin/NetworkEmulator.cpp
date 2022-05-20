@@ -76,7 +76,7 @@ NetworkEmulatorImpl::NetworkEmulatorImpl(NetworkEmulator* self)
         interfaceCombo->addItem(emulator->interfaces()[i].c_str());
     }
     ifbdeviceCombo = new ComboBox;
-    QStringList items = { _("ifb0"), _("ifb1") };
+    const QStringList items = { _("ifb0"), _("ifb1") };
     ifbdeviceCombo->addItems(items);
     ifbdeviceCombo->setCurrentIndex(1);
 

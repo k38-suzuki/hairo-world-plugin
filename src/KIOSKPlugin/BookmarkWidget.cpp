@@ -88,7 +88,7 @@ BookmarkWidgetImpl::BookmarkWidgetImpl(BookmarkWidget* self)
     treeWidget = new TreeWidget;
     treeWidget->setHeaderHidden(false);
 
-    QStringList header_labels = { _("Bookmark"), _("File") };
+    const QStringList header_labels = { _("Bookmark"), _("File") };
     treeWidget->setHeaderLabels(header_labels);
 
     static const char* labels[] = { _("+"), _("-"), _("Lock") };

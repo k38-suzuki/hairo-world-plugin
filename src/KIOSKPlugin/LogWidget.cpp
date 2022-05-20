@@ -81,7 +81,7 @@ LogWidgetImpl::LogWidgetImpl(LogWidget* self)
     treeWidget = new TreeWidget;
     treeWidget->setHeaderHidden(false);
 
-    QStringList header_labels = { _("Log"), _("File") };
+    const QStringList header_labels = { _("Log"), _("File") };
     treeWidget->setHeaderLabels(header_labels);
 
     static const char* labels[] = { _("-"), _("Lock") };

@@ -20,6 +20,7 @@ class NetEmImpl
 {
 public:
     NetEmImpl(NetEm* self);
+    virtual ~NetEmImpl();
     NetEm* self;
 
     vector<string> interfaces;
@@ -89,8 +90,14 @@ NetEmImpl::NetEmImpl(NetEm* self)
 
 NetEm::~NetEm()
 {
-    if(!impl->isFinalized) {
-        impl->finalize();
+    delete impl;
+}
+
+
+NetEmImpl::~NetEmImpl()
+{
+    if(!isFinalized) {
+        finalize();
     }
 }
 
