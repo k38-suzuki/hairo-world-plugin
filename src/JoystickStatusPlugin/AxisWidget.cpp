@@ -34,13 +34,10 @@ public:
     AxisWidgetImpl(AxisWidget* self);
     AxisWidget* self;
 
-    double h_position;
-    double v_position;
     bool isLeftButtonPressed;
-    int pos_x;
-    int pos_y;
-    int org_x;
-    int org_y;
+    QPoint pos;
+    QPoint org;
+    double joy[2];
     int radius;
 
     Signal<void(double h_position, double v_position)> sigAxis;
@@ -63,13 +60,11 @@ AxisWidget::AxisWidget()
 AxisWidgetImpl::AxisWidgetImpl(AxisWidget *self)
     : self(self)
 {
-    h_position = 0.0;
-    v_position = 0.0;
+    joy[0] = joy[1] = 0.0;
     isLeftButtonPressed = false;
 
     self->setFixedSize(100, 100);
-    pos_x = org_x = self->width() / 2;
-    pos_y = org_y = self->height() / 2;
+    pos = org = QPoint(self->width() / 2, self->height() / 2);
     radius = 5;
     self->update();
 
@@ -95,9 +90,9 @@ void AxisWidget::setValue(const int& id, const double& value)
 {
     double r = (value + 1.0) / 2.0;
     if(id == 0) {
-        impl->pos_x = r * width();
+        impl->pos.setX(r * width());
     } else if(id == 1) {
-        impl->pos_y = r * height();
+        impl->pos.setY(r * height());
     }
     update();
 }
@@ -120,7 +115,7 @@ void AxisWidgetImpl::paintEvent(QPaintEvent* event)
     QPainter painter(self);
     painter.setPen(Qt::black);
     painter.setBrush(Qt::red);
-    painter.drawEllipse(pos_x - radius, pos_y - radius, radius * 2, radius * 2);
+    painter.drawEllipse(pos.x() - radius, pos.y() - radius, radius * 2, radius * 2);
 }
 
 
@@ -135,9 +130,7 @@ void AxisWidgetImpl::mousePressEvent(QMouseEvent* event)
     if(event->button() == Qt::LeftButton) {
         isLeftButtonPressed = true;
         sigAxis(0.0, 0.0);
-
-        pos_x = org_x;
-        pos_y = org_y;
+        pos = org;
         self->update();
     }
 }
@@ -154,9 +147,7 @@ void AxisWidgetImpl::mouseReleaseEvent(QMouseEvent* event)
     if(event->button() == Qt::LeftButton) {
         isLeftButtonPressed = false;
         sigAxis(0.0, 0.0);
-
-        pos_x = org_x;
-        pos_y = org_y;
+        pos = org;
         self->update();
     }
 }
@@ -175,16 +166,14 @@ void AxisWidgetImpl::mouseMoveEvent(QMouseEvent* event)
         int h = self->height();
         int x = event->pos().x();
         int y = event->pos().y();
-        h_position = (double)x / (double)w;
-        v_position = (double)y / (double)h;
-        onMouseMoved(h_position);
-        onMouseMoved(v_position);
-        sigAxis(h_position, v_position);
-
-        pos_x = x;
-        pos_y = y;
-        org_x = w / 2;
-        org_y = h / 2;
+        joy[0] = (double)x / (double)w;
+        joy[1] = (double)y / (double)h;
+        for(int i = 0; i < 2; ++i) {
+            onMouseMoved(joy[i]);
+        }
+        sigAxis(joy[0], joy[1]);
+        pos = QPoint(x, y);
+        org = QPoint(w / 2, h / 2);
         self->update();
     }
 }

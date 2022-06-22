@@ -482,7 +482,7 @@ Image ImageGenerator::toCnoidImage(const QImage& image)
     unsigned char* pixels = cimage.pixels();
     for(int j = 0 ; j < image.height() ; ++j) {
         for(int i = 0 ; i < image.width() ; ++i) {
-            int index = i * 3 + j * image.width() * 3;
+            int index = (i + j * image.width()) * 3;
             QRgb rgb = image.pixel(i, j);
             pixels[index] = qRed(rgb);
             pixels[index + 1] = qGreen(rgb);
@@ -499,7 +499,7 @@ QImage ImageGenerator::toQImage(const Image& image)
     const unsigned char* pixels = image.pixels();
     for(int j = 0 ; j < image.height() ; ++j) {
         for(int i = 0 ; i < image.width() ; ++i) {
-            int index = i * 3 + j * image.width() * 3;
+            int index = (i + j * image.width()) * 3;
             QColor color(pixels[index], pixels[index + 1], pixels[index + 2]);
             qimage.setPixelColor(i, j, color);
         }
