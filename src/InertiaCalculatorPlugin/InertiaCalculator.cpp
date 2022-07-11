@@ -33,10 +33,10 @@ struct DoubleSpinInfo {
 };
 
 DoubleSpinInfo dspinInfo[] = {
-    { 0, 1, 0 }, { 0, 3, 0 }, { 0, 5, 0 }, { 0, 7, 0 },
-    { 0, 1, 1 }, { 0, 3, 1 },
-    { 0, 1, 2 }, { 0, 3, 2 }, { 0, 5, 2 },
-    { 0, 1, 3 }, { 0, 3, 3 }, { 0, 5, 3 }
+    { 0, 1, 0 }, { 1, 1, 0 }, { 2, 1, 0 }, { 3, 1, 0 },
+    { 0, 1, 1 }, { 1, 1, 1 },
+    { 0, 1, 2 }, { 1, 1, 2 }, { 2, 1, 2 },
+    { 0, 1, 3 }, { 1, 1, 3 }, { 2, 1, 3 }
 };
 
 struct LabelInfo {
@@ -46,10 +46,10 @@ struct LabelInfo {
 };
 
 LabelInfo labelInfo[] = {
-    { 0, 0, 0 }, { 0, 2, 0 }, { 0, 4, 0 }, { 0, 6, 0 },
-    { 0, 0, 1 }, { 0, 2, 1 },
-    { 0, 0, 2 }, { 0, 2, 2 }, { 0, 4, 2 }, { 0, 6, 2 },
-    { 0, 0, 3 }, { 0, 2, 3 }, { 0, 4, 3 }, { 0, 6, 3 }
+    { 0, 0, 0 }, { 1, 0, 0 }, { 2, 0, 0 }, { 3, 0, 0 },
+    { 0, 0, 1 }, { 1, 0, 1 },
+    { 0, 0, 2 }, { 1, 0, 2 }, { 2, 0, 2 }, { 3, 0, 2 },
+    { 0, 0, 3 }, { 1, 0, 3 }, { 2, 0, 3 }, { 3, 0, 3 }
 };
 
 }
@@ -69,16 +69,16 @@ public:
         CON_MAS, CON_RAD, CON_HGT,
         NUM_DSPINS
     };
+    enum ComboID { SHAPE, CLD_AXIS, CON_AXIS, NUM_COMBOS };
     enum PageID { BOX, SPHERE, CYLINDER, CONE, NUM_PAGES };
     enum AxisID { X, Y, Z, NUM_AXES };
 
-    ComboBox* shapeCombo;
     QStackedLayout* stbox;
     MessageView* mv;
-    ComboBox* cylinderAxisCombo;
-    ComboBox* coneAxisCombo;
     DoubleSpinBox* dspins[NUM_DSPINS];
+    ComboBox* combos[NUM_COMBOS];
 
+    void onCalcButtonClicked();
     void calcBoxInertia();
     void calcSphereInertia();
     void calcCylinderInertia();
@@ -100,31 +100,39 @@ InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self)
       mv(new MessageView)
 {
     setWindowTitle(_("InertiaCalculator"));
+    setFixedWidth(500);
 
-    shapeCombo = new ComboBox;
+    for(int i = 0; i < NUM_COMBOS; ++i) {
+        combos[i] = new ComboBox;
+    }
+
     const QStringList shapeList = { _("Box"), _("Sphere"), _("Cylinder"), _("Cone") };
-    shapeCombo->addItems(shapeList);
-    QHBoxLayout* shbox = new QHBoxLayout;
-    shbox->addWidget(new QLabel(_("Shape")));
-    shbox->addWidget(shapeCombo);
-    shbox->addStretch();
+    combos[SHAPE]->addItems(shapeList);
+    QHBoxLayout* hbox = new QHBoxLayout;
+    hbox->addWidget(new QLabel(_("Shape")));
+    hbox->addWidget(combos[SHAPE]);
+    hbox->addStretch();
 
     stbox = new QStackedLayout;
     QGridLayout* gbox[NUM_PAGES];
     for(int i = 0; i < NUM_PAGES; ++i) {
         Widget* pageWidget = new Widget;
         gbox[i] = new QGridLayout;
-        pageWidget->setLayout(gbox[i]);
+        QVBoxLayout* vbox = new QVBoxLayout;
+        vbox->addLayout(gbox[i]);
+        vbox->addStretch();
+        pageWidget->setLayout(vbox);
         stbox->addWidget(pageWidget);
     }
 
     for(int i = 0; i < NUM_DSPINS; ++i) {
         dspins[i] = new DoubleSpinBox;
+        DoubleSpinBox* dspin = dspins[i];
         DoubleSpinInfo info = dspinInfo[i];
-        dspins[i]->setDecimals(4);
-        dspins[i]->setSingleStep(0.01);
-        dspins[i]->setRange(0.0000, 1000.0);
-        gbox[info.page]->addWidget(dspins[i], info.row, info.column);
+        dspin->setDecimals(7);
+        dspin->setSingleStep(0.01);
+        dspin->setRange(0.000, 9999.999);
+        gbox[info.page]->addWidget(dspin, info.row, info.column);
     }
 
     static const char* labels[] = {
@@ -139,42 +147,22 @@ InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self)
         gbox[info.page]->addWidget(new QLabel(labels[i]), info.row, info.column);
     }
 
-    cylinderAxisCombo = new ComboBox;
-    gbox[CYLINDER]->addWidget(cylinderAxisCombo, 0, 7);
-    coneAxisCombo = new ComboBox;
-    gbox[CONE]->addWidget(coneAxisCombo, 0, 7);
     const QStringList axisList = { "x", "y", "z" };
-    cylinderAxisCombo->addItems(axisList);
-    coneAxisCombo->addItems(axisList);
+    combos[CLD_AXIS]->addItems(axisList);
+    combos[CON_AXIS]->addItems(axisList);
+    gbox[CYLINDER]->addWidget(combos[CLD_AXIS], 3, 1);
+    gbox[CONE]->addWidget(combos[CON_AXIS], 3, 1);
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
     PushButton* calcButton = new PushButton(_("&Calc"));
     buttonBox->addButton(calcButton, QDialogButtonBox::ActionRole);
 
-    calcButton->sigClicked().connect([&](){
-        int index = shapeCombo->currentIndex();
-        switch (index) {
-        case BOX:
-            calcBoxInertia();
-            break;
-        case SPHERE:
-            calcSphereInertia();
-            break;
-        case CYLINDER:
-            calcCylinderInertia();
-            break;
-        case CONE:
-            calcConeInertia();
-            break;
-        default:
-            break;
-        }
-    });
-
-    shapeCombo->sigCurrentIndexChanged().connect([&](int index){ stbox->setCurrentIndex(index); });
+    calcButton->sigClicked().connect([&](){ onCalcButtonClicked(); });
+    combos[SHAPE]->sigCurrentIndexChanged().connect(
+                [&](int index){ stbox->setCurrentIndex(index); });
 
     QVBoxLayout* vbox = new QVBoxLayout;
-    vbox->addLayout(shbox);
+    vbox->addLayout(hbox);
     vbox->addLayout(stbox);
     vbox->addWidget(mv);
     vbox->addWidget(new HSeparator);
@@ -203,97 +191,100 @@ void InertiaCalculator::initializeClass(ExtensionManager* ext)
 }
 
 
+void InertiaCalculatorImpl::onCalcButtonClicked()
+{
+    int index = combos[SHAPE]->currentIndex();
+    if(index == BOX) {
+        calcBoxInertia();
+    } else if(index == SPHERE) {
+        calcSphereInertia();
+    } else if(index == CYLINDER) {
+        calcCylinderInertia();
+    } else if(index == CONE) {
+        calcConeInertia();
+    }
+}
+
+
 void InertiaCalculatorImpl::calcBoxInertia()
 {
-    double mass = dspins[0]->value();
-    double x = dspins[1]->value();
-    double y = dspins[2]->value();
-    double z = dspins[3]->value();
-    double ix = mass / 12.0 * (y * y + z * z);
-    double iy = mass / 12.0 * (z * z + x * x);
-    double iz = mass / 12.0 * (x * x + y * y);
+    double m = dspins[BOX_MAS]->value();
+    double x = dspins[BOX_X]->value();
+    double y = dspins[BOX_Y]->value();
+    double z = dspins[BOX_Z]->value();
+    double ix = m / 12.0 * (y * y + z * z);
+    double iy = m / 12.0 * (z * z + x * x);
+    double iz = m / 12.0 * (x * x + y * y);
 
     mv->putln(fmt::format(_("shape: Box, mass: {0} [kg], x: {1} [m], y: {2} [m], z: {3} [m]"),
-                                   mass, x, y, z));
+                                   m, x, y, z));
     printIntertia(Vector3(ix, iy, iz));
 }
 
 
 void InertiaCalculatorImpl::calcSphereInertia()
 {
-    double mass = dspins[4]->value();
-    double radius = dspins[5]->value();
+    double m = dspins[SPR_MAS]->value();
+    double r = dspins[SPR_RAD]->value();
     double ix, iy, iz;
-    ix = iy = iz = mass * radius * radius / 5.0 * 2.0;
+    ix = iy = iz = m * r * r / 5.0 * 2.0;
 
     mv->putln(fmt::format(_("shape: Sphere, mass: {0} [kg], radius: {1} [m]"),
-                                   mass, radius));
+                                   m, r));
     printIntertia(Vector3(ix, iy, iz));
 }
 
 
 void InertiaCalculatorImpl::calcCylinderInertia()
 {
-    double mass = dspins[6]->value();
-    double radius = dspins[7]->value();
-    double height = dspins[8]->value();
-    int index = cylinderAxisCombo->currentIndex();
-    double mainInertia = mass * radius * radius / 2.0;
-    double subInertia = mass * (3.0 * radius * radius + height * height) / 12.0;
+    double m = dspins[CLD_MAS]->value();
+    double r = dspins[CLD_RAD]->value();
+    double h = dspins[CLD_HGT]->value();
+    int index = combos[CLD_AXIS]->currentIndex();
+    double mainInertia = m * r * r / 2.0;
+    double subInertia = m * (3.0 * r * r + h * h) / 12.0;
     double ix, iy, iz;
 
-    switch (index) {
-    case X:
+    if(index == X) {
         ix = mainInertia;
         iy = iz = subInertia;
-        break;
-    case Y:
+    } else if(index == Y) {
         iy = mainInertia;
         iz = ix = subInertia;
-        break;
-    case Z:
+    } else if(index == Z) {
         iz = mainInertia;
         ix = iy = subInertia;
-        break;
-    default:
-        break;
     }
 
     mv->putln(fmt::format(_("shape: Cylinder, mass: {0} [kg], radius: {1} [m], height: {2} [m], axis: {3} [-]"),
-                                   mass, radius, height, cylinderAxisCombo->currentText().toStdString()));
+                                   m, r, h, combos[CLD_AXIS]->currentText().toStdString()));
     printIntertia(Vector3(ix, iy, iz));
 }
 
 
 void InertiaCalculatorImpl::calcConeInertia()
 {
-    double mass = dspins[9]->value();
-    double radius = dspins[10]->value();
-    double height = dspins[11]->value();
-    int index = coneAxisCombo->currentIndex();
-    double mainInertia = mass * radius * radius * 3.0 / 10.0;
-    double subInertia = mass * 3.0 / 80.0 * (4.0 * radius * radius + height * height);
+    double m = dspins[CON_MAS]->value();
+    double r = dspins[CON_RAD]->value();
+    double h = dspins[CON_HGT]->value();
+    int index = combos[CON_AXIS]->currentIndex();
+    double mainInertia = m * r * r * 3.0 / 10.0;
+    double subInertia = m * 3.0 / 80.0 * (4.0 * r * r + h * h);
     double ix, iy, iz;
 
-    switch (index) {
-    case X:
+    if(index == X) {
         ix = mainInertia;
         iy = iz = subInertia;
-        break;
-    case Y:
+    } else if(index == Y) {
         iy = mainInertia;
         iz = ix = subInertia;
-        break;
-    case Z:
+    } else if(index == Z) {
         iz = mainInertia;
         ix = iy = subInertia;
-        break;
-    default:
-        break;
     }
 
     mv->putln(fmt::format(_("shape: Cone, mass: {0} [kg], radius: {1} [m], height: {2} [m], axis: {3} [-]"),
-                                   mass, radius, height, coneAxisCombo->currentText().toStdString()));
+                                   m, r, h, combos[CON_AXIS]->currentText().toStdString()));
     printIntertia(Vector3(ix, iy, iz));
 }
 
