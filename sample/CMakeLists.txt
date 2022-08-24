@@ -1,3 +1,4 @@
+add_subdirectory(BeepPlugin)
 add_subdirectory(HAIROWorld)
 add_subdirectory(IKPlannerPlugin)
 add_subdirectory(MarkerDetectPlugin)
