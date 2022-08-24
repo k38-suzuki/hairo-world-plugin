@@ -213,9 +213,9 @@ bool BeepWidgetImpl::restoreState(const Archive& archive)
         string key0 = "link0_" + to_string(i);
         string key1 = "link1_" + to_string(i);
         string key2 = "frequency_" + to_string(i);
-        string link0 = archive.get(key0, "Link0");
-        string link1 = archive.get(key1, "Link1");
-        int frequency = archive.get(key2, 0);
+        string link0 = archive.get(key0, "");
+        string link1 = archive.get(key1, "");
+        int frequency = archive.get(key2, 440);
         addItem(link0, link1, frequency);
     }
     return true;
