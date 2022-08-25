@@ -7,6 +7,7 @@
 #include <cnoid/Archive>
 #include <cnoid/CollisionLinkPair>
 #include <cnoid/ItemManager>
+#include <cnoid/LazyCaller>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
@@ -133,7 +134,7 @@ void BeepItemImpl::onPostDynamicsFunction()
                 }
                 if(contacted) {
                     if(currentTime % 200 == 0) {
-                        beepWidget->play(i);
+                        callLater([&, i](){ beepWidget->play(i); });
                     }
                 }
             }
