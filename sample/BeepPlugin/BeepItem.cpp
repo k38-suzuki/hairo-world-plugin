@@ -121,9 +121,7 @@ void BeepItemImpl::onPostDynamicsFunction()
                 Link* links[2] = { collisions[j]->link[0], collisions[j]->link[1] };
                 if((links[0]->name() == link0 && links[1]->name() == link1)
                         || (links[0]->name() == link1 && links[1]->name() == link0)) {
-                    if(currentTime % 200 == 0) {
-                        contacted = true;
-                    }
+                    contacted = true;
                 } else if(link0 == "ALL") {
                     if(links[0]->name() == link1 || links[1]->name() == link1) {
                         contacted = true;
@@ -134,7 +132,9 @@ void BeepItemImpl::onPostDynamicsFunction()
                     }
                 }
                 if(contacted) {
-                    beepWidget->play(i);
+                    if(currentTime % 200 == 0) {
+                        beepWidget->play(i);
+                    }
                 }
             }
         }
