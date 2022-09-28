@@ -98,13 +98,11 @@ void FileExplorerImpl::execute(const Item* item, const int& id)
 
 void FileExplorerImpl::execute(const int argc, const char* argv[])
 {
-    string messages;
-    for(int i = 0; i < argc; ++i) {
-        messages += " " + string(argv[i]);
-    }
+    string actualCommand = argv[0];
+    QStringList arguments = { argv[1] };
 
     Process* process = new Process;
-    process->start(messages.c_str());
+    process->start(actualCommand.c_str(), arguments);
     if(process->waitForStarted()) {}
     processes.push_back(process);
 }
