@@ -161,12 +161,12 @@ void BeepWidgetImpl::play(QTreeWidgetItem* item)
         QStringList arguments;
 
         if(frequency > 0) {
-            arguments << " -f ";
-            arguments << to_string(frequency).c_str();
+            string argument = "-f " + to_string(frequency);
+            arguments << argument.c_str();
         }
         if(length > 0) {
-            arguments << " -l ";
-             arguments << to_string(length).c_str();
+            string argument = "-l " + to_string(length);
+            arguments << argument.c_str();
         }
 
         if(process.state() != QProcess::NotRunning) {
