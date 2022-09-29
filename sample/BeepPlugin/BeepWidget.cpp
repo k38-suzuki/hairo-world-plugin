@@ -156,19 +156,24 @@ void BeepWidgetImpl::play(QTreeWidgetItem* item)
     if(item) {
         int frequency = item->text(FREQUENCY).toInt();
         int length = 200;
-        string command = "beep";
+
+        string actualCommand = "beep";
+        QStringList arguments;
+
         if(frequency > 0) {
-            command += " -f " + to_string(frequency);
+            arguments << " -f ";
+            arguments << to_string(frequency).c_str();
         }
         if(length > 0) {
-            command += " -l " + to_string(length);
+            arguments << " -l ";
+             arguments << to_string(length).c_str();
         }
 
         if(process.state() != QProcess::NotRunning) {
             process.kill();
             process.waitForFinished(100);
         }
-        process.start(command.c_str());
+        process.start(actualCommand.c_str(), arguments);
         if(process.waitForStarted()) {
 
         }
