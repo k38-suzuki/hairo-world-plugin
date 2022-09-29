@@ -1,0 +1,10 @@
+filters:
+  -
+    name: filter0
+    band: [ 0, 10 ]
+  -
+    name: filter1
+    band: [ 10, 20 ]
+  -
+    name: filter2
+    band: [ 20, 30 ]

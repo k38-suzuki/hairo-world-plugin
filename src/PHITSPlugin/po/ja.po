@@ -1,0 +1,184 @@
+# Japanese translations for PACKAGE package.
+# Copyright (C) 2021 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# suzuki <suzuki.kenta38@jaea.go.jp>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-08 20:35-0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: k38-suzuki <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ConfigTable.cpp:57 ConfigTable.cpp:153 ConfigTable.cpp:160
+#: ConfigTable.cpp:246 ConfigTable.cpp:257 ConfigTable.cpp:268
+#: ConfigTable.cpp:279 ConfigTable.cpp:291
+msgid "The list is incomplete"
+msgstr "リストが不完全です"
+
+#: CrossSectionItem.cpp:207
+msgid "CrossSectionItem"
+msgstr "線量分布アイテム"
+
+#: CrossSectionItem.cpp:272
+msgid "Dose Distribution"
+msgstr "線量分布"
+
+#: CrossSectionItem.cpp:502
+msgid "Nuclide definition file (*.yaml)"
+msgstr "核種定義ファイル (*.yaml)"
+
+#: CrossSectionItem.cpp:490 GammaImagerItem.cpp:513
+msgid "Default nuclide table"
+msgstr "デフォルト核種テーブル"
+
+#: CrossSectionItem.cpp:506
+msgid "Element definition file (*.yaml)"
+msgstr "元素定義ファイル (*.yaml)"
+
+#: CrossSectionItem.cpp:494 GammaImagerItem.cpp:513
+msgid "Default element table"
+msgstr "デフォルト元素テーブル"
+
+#: CrossSectionItem.cpp:518
+msgid "maxcas"
+msgstr "ヒストリ"
+
+#: CrossSectionItem.cpp:520
+msgid "maxbch"
+msgstr "バッチ"
+
+#: CrossSectionItem.cpp:613
+msgid "Put messages"
+msgstr "メッセージの出力"
+
+#: CrossSectionItem.cpp:617
+msgid "Dose Distribution Range"
+msgstr "線量分布の範囲"
+
+#: CrossSectionItem.cpp:627
+msgid "Code"
+msgstr "コード"
+
+#: CrossSectionItem.cpp:666 EnergyFilter.cpp:225 GammaImagerItem.cpp:516
+msgid "&Ok"
+msgstr "了解(&O)"
+
+#: CrossSectionItem.cpp:257
+msgid "Start"
+msgstr "開始"
+
+#: CrossSectionItem.cpp:259
+msgid "Stop"
+msgstr "停止"
+
+#: CrossSectionItem.cpp:676
+msgid "Plain"
+msgstr "平面"
+
+#: DoseSimulatorItem.cpp:65
+msgid "DoseSimulatorItem"
+msgstr "線量シミュレータアイテム"
+
+#: DoseSimulatorItem.cpp:150
+msgid "GammaData was not found."
+msgstr "線量分布が見つかりませんでした。"
+
+#: DoseSimulatorItem.cpp:310
+msgid "Enable Visualization"
+msgstr "線量可視化"
+
+#: DoseSimulatorItem.cpp:355
+msgid "Shield definition file (*.yaml)"
+msgstr "遮蔽体定義ファイル (*.yaml)"
+
+#: DoseSimulatorItem.cpp:356
+msgid "Default shield table"
+msgstr "デフォルト遮蔽体テーブル"
+
+#: EnergyFilter.cpp:189
+msgid "Energy Filter Config"
+msgstr "エナジーフィルタの設定"
+
+#: EnergyFilter.cpp:195
+msgid "No filter"
+msgstr "フィルタなし"
+
+#: EnergyFilter.cpp:196
+msgid "Range filter"
+msgstr "レンジフィルタ"
+
+#: EnergyFilter.cpp:197
+msgid "Nuclide filter"
+msgstr "核種フィルタ"
+
+#: EnergyFilter.cpp:202 EnergyFilter.cpp:222
+msgid "Min [Ch]"
+msgstr "最小 [Ch]"
+
+#: EnergyFilter.cpp:210 EnergyFilter.cpp:222
+msgid "Max [Ch]"
+msgstr "最大 [Ch]"
+
+#: EnergyFilter.cpp:222
+msgid "Nuclide"
+msgstr "核種"
+
+#: GammaImagerItem.cpp:151
+msgid "GammaImagerItem"
+msgstr "ガンマイメージャアイテム"
+
+#: GammaImagerItem.cpp:154
+msgid "GammaImageVisualizerItem"
+msgstr "ガンマ画像可視化"
+
+#: GammaImagerItem.cpp:159 GammaImagerItem.cpp:487
+msgid "Configuration of PHITS"
+msgstr "PHITSの設定"
+
+#: GammaImagerItem.cpp:161
+msgid "Energy Filter"
+msgstr "エナジーフィルタ"
+
+#: GammaImagerItem.cpp:233
+msgid "Energy filter definition file (*.yaml)"
+msgstr "エナジーフィルタ定義ファイル (*.yaml)"
+
+#: GammaImagerItem.cpp:234
+msgid "Default energy filter"
+msgstr "デフォルトエナジーフィルタ"
+
+#: PHITSWriter.cpp:121
+msgid "{0} has been detected."
+msgstr "{0}が検出されました．"
+
+#: PHITSRunner.cpp:48
+msgid "PHITS has been executed."
+msgstr "PHITSが実行されました．"
+
+#: PHITSRunner.cpp:59
+msgid "QAD has been executed."
+msgstr "QADが実行されました．"
+
+#: PHITSRunner.cpp:152
+msgid "PHITS has been terminated. {0}"
+msgstr "PHITSが停止しました． {0}"
+
+#: PHITSRunner.cpp:154
+msgid "QAD has been terminated. {0}"
+msgstr "QADが停止しました． {0}"
+
+#: PHITSRunner.cpp:159
+msgid "PHITS has been finished."
+msgstr "PHITSが終了しました．"
+
+#: PHITSRunner.cpp:161
+msgid "QAD has been finished."
+msgstr "QADが終了しました．"

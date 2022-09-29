@@ -1,0 +1,76 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+name: Cs137_Co60_Cs134
+
+links:
+  -
+    name: ROOT
+    translation: [ 0, 0, 0 ]
+    jointType: fixed
+  -
+    name: CS137
+    parent: ROOT
+    translation: [ 0, 0.5, 0.5 ]
+    jointType: fixed
+    mass: 1 
+    inertia: [
+      0.72533, 0,       0,
+      0,       0.08533, 0,
+      0,       0,       0.72533 ]
+    nuclide: [ Cs-137, 1000 ]
+    objectType: SRC_BOX
+    material: Concrete
+    sourceDivision: [ 10, 10, 10 ]
+    buildupFactor: Conc
+    elements:
+      Shape:
+        geometry: { type: Box, size: [ 0.1, 0.2, 0.2 ] }
+        appearance: { material: { diffuseColor: [ 1, 1, 1 ], transparency: 0.2 } }
+  -
+    name: CO60
+    parent: ROOT
+    translation: [ 0, 0.5, 1.5 ]
+    jointType: fixed
+    mass: 1 
+    inertia: [
+      0.72533, 0,       0,
+      0,       0.08533, 0,
+      0,       0,       0.72533 ]
+    nuclide: [ Co-60, 1000 ]
+    objectType: SRC_SPHERE
+    material: Soil
+    sourceDivision: [ 10, 10, 10 ]
+    buildupFactor: Conc
+    elements:
+      Shape:
+        geometry: { type: Sphere, radius: 0.1 }
+        appearance: { material: { diffuseColor: [ 1, 1, 1 ], transparency: 0.2 } }
+  -
+    name: CS134
+    parent: ROOT
+    translation: [ 0, 1.5, 0.5 ]
+    jointType: fixed
+    mass: 1 
+    inertia: [
+      0.72533, 0,       0,
+      0,       0.08533, 0,
+      0,       0,       0.72533 ]
+    nuclide: [ Cs-134, 1000 ]
+#    energy: [
+#       4.7540e-01,   1.4860e-02, 1000,
+#       5.6320e-01,   8.3500e-02, 1000,
+#       5.6930e-01,   1.5380e-01, 1000,
+#       6.0470e-01,   9.7620e-01, 1000,
+#       7.9590e-01,   8.5530e-01, 1000,
+#       8.0200e-01,   8.6900e-02, 1000,
+#       1.0390e+00,   9.8800e-03, 1000,
+#       1.1680e+00,   1.7890e-02, 1000,
+#       1.3650e+00,   3.0140e-02, 1000 ]
+    objectType: SRC_CYLINDER
+    material: Water
+    sourceDivision: [ 10, 10, 10 ]
+    buildupFactor: Conc
+    elements:
+      Shape:
+        geometry: { type: Cylinder, height: 0.3, radius: 0.1 }
+        appearance: { material: { diffuseColor: [ 1, 1, 1 ], transparency: 0.2 } }

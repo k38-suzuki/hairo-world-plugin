@@ -1,0 +1,15 @@
+nuclides:
+  -
+    name: Cs-134
+    energy: [ 4.754E-01, 5.632E-01, 5.693E-01, 6.047E-01, 7.959E-01,
+              8.020E-01, 1.039E+00, 1.168E+00, 1.365E+00 ]
+    photonIncidenceRate: [ 1.486E-02, 8.350E-02, 1.538E-01, 9.762E-01, 8.553E-01,
+                           8.690E-02, 9.880E-03, 1.789E-02, 3.014E-02 ]
+  -
+    name: Cs-137
+    energy: [ 6.617E-01 ]
+    photonIncidenceRate: [ 8.471E-01 ]
+  -
+    name: Co-60
+    energy: [ 1.170E+00, 1.330E+00 ]
+    photonIncidenceRate: [ 1.000E+00, 1.000E+00 ]

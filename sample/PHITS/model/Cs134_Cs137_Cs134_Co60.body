@@ -1,0 +1,66 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+name: Cs137_Cs134_Co60
+
+links:
+  -
+    name: ROOT
+    translation: [ 0, 0, 0 ]
+    jointType: fixed
+  -
+    name: CS134_CS137
+    parent: ROOT
+    translation: [ 0, 0.5 , 0.5 ]
+    jointType: fixed
+    mass: 1 
+    inertia: [
+      0.72533, 0,       0,
+      0,       0.08533, 0,
+      0,       0,       0.72533 ]
+    nuclide: [ Cs-134, 1000, Cs-137, 100 ]
+    objectType: SRC_BOX
+    material: Concrete
+    sourceDivision: [ 10, 10, 10 ]
+    buildupFactor: Conc
+    elements:
+      Shape:
+        geometry: { type: Box, size: [ 0.1, 0.2, 0.2 ] }
+        appearance: { material: { diffuseColor: [ 1, 1, 1 ], transparency: 0.2 } }
+  -
+    name: CS134
+    parent: ROOT
+    translation: [ 0, 1.5, 0.5 ]
+    jointType: fixed
+    mass: 1 
+    inertia: [
+      0.72533, 0,       0,
+      0,       0.08533, 0,
+      0,       0,       0.72533 ]
+    nuclide: [ Cs-134, 1000 ]
+    objectType: SRC_CYLINDER
+    material: Water
+    sourceDivision: [ 10, 10, 10 ]
+    buildupFactor: Conc
+    elements:
+      Shape:
+        geometry: { type: Cylinder, height: 0.3, radius: 0.1 }
+        appearance: { material: { diffuseColor: [ 1, 1, 1 ], transparency: 0.2 } }
+  -
+    name: CO60
+    parent: ROOT
+    translation: [ 0, 0.5, 1.5 ]
+    jointType: fixed
+    mass: 1 
+    inertia: [
+      0.72533, 0,       0,
+      0,       0.08533, 0,
+      0,       0,       0.72533 ]
+    nuclide: [ Co-60, 1000 ]
+    objectType: SRC_SPHERE
+    material: Soil
+    sourceDivision: [ 10, 10, 10 ]
+    buildupFactor: Conc
+    elements:
+      Shape:
+        geometry: { type: Sphere, radius: 0.1 }
+        appearance: { material: { diffuseColor: [ 1, 1, 1 ], transparency: 0.2 } }

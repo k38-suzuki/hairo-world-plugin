@@ -13,3 +13,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 add_subdirectory(src)
 add_subdirectory(sample)
 add_subdirectory(ext)
+
+if(UNIX AND BUILD_PHITS_PLUGIN)
+    option(ENABLE_QAD "Enable QAD option." OFF)
+endif()
+
+add_subdirectory(share)

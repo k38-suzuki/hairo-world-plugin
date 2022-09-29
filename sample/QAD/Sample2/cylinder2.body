@@ -1,0 +1,20 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: cylinder2
+
+links:
+  -
+    name: CYLINDER
+    jointType: fixed
+    mass: 12.8  
+    inertia: [
+      0.72533, 0,       0,
+      0,       0.08533, 0,
+      0,       0,       0.72533 ]
+    objectType: OBS_CYLINDER
+    material: Concrete
+    elements:
+      Shape:
+        geometry: { type: Cylinder, height: 3.0, radius: 0.5 }
+        appearance: { material: { diffuseColor: [ 1.0, 1.0, 0.0 ] } }

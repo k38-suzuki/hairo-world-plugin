@@ -1,0 +1,24 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: Co60
+
+links:
+  -
+    name: CO60
+    jointType: fixed
+    mass: 1 
+    inertia: [
+      0.72533, 0,       0,
+      0,       0.08533, 0,
+      0,       0,       0.72533 ]
+    nuclide: [ Co-60, 3.7e+08 ]
+    objectType: SRC_BOX
+    material: Air
+    sourceDivision: [ 1, 1, 1 ]
+    buildupFactor: Conc
+    elements:
+      Shape:
+        geometry: { type: Box, size: [ 0.1, 1.0, 1.0 ] }
+        appearance: { material: { diffuseColor: [ 1, 0, 0 ], transparency: 0.0 } }
+

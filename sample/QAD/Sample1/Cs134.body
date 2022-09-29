@@ -1,0 +1,24 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: Cs134
+
+links:
+  -
+    name: CS134
+    translation: [ 0.0, 1.5, 0.5 ]
+    jointType: fixed
+    mass: 1 
+    inertia: [
+      0.72533, 0,       0,
+      0,       0.08533, 0,
+      0,       0,       0.72533 ]
+    nuclide: [ Cs-134, 1000 ]
+    objectType: SRC_CYLINDER
+    material: Water
+    sourceDivision: [ 10, 10, 10 ]
+    buildupFactor: Conc
+    elements:
+      Shape:
+        geometry: { type: Cylinder, height: 0.3, radius: 0.1 }
+        appearance: { material: { diffuseColor: [ 1, 1, 1 ], transparency: 0.2 } }

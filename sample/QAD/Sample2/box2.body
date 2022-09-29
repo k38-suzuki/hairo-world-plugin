@@ -1,0 +1,20 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: box2
+
+links:
+  -
+    name: BOX
+    jointType: fixed
+    mass: 12.8  
+    inertia: [
+      0.72533, 0,       0,
+      0,       0.08533, 0,
+      0,       0,       0.72533 ]
+    objectType: OBS_BOX
+    material: Concrete
+    elements:
+      Shape:
+        geometry: { type: Box, size: [ 1.0, 3.0, 3.0 ] }
+        appearance: { material: { diffuseColor: [ 1.0, 1.0, 0.0 ] } }

@@ -1,0 +1,26 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: Cs137
+
+links:
+  -
+    name: CS137
+    translation: [ 0, 0, 0 ]
+    rotation: [ 0, 1, 0, 45 ]
+    jointType: fixed
+    mass: 1 
+    inertia: [
+      0.72533, 0,       0,
+      0,       0.08533, 0,
+      0,       0,       0.72533 ]
+    nuclide: [ Cs-137, 100 ]
+    objectType: SRC_BOX
+    material: Concrete
+    sourceDivision: [ 10, 10, 10 ]
+    buildupFactor: Conc
+    elements:
+      Shape:
+        geometry: { type: Box, size: [ 0.1, 0.2, 0.2 ] }
+        appearance: { material: { diffuseColor: [ 1, 1, 1 ], transparency: 0.2 } }
+

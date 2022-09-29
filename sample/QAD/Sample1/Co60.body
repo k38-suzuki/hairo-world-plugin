@@ -1,0 +1,25 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: Co60
+
+links:
+  -
+    name: CO60
+    translation: [ 0.0, 0.5, 1.5 ]
+    jointType: fixed
+    mass: 1 
+    inertia: [
+      0.72533, 0,       0,
+      0,       0.08533, 0,
+      0,       0,       0.72533 ]
+    nuclide: [ Co-60, 1000 ]
+    objectType: SRC_SPHERE
+    material: Soil
+    sourceDivision: [ 10, 10, 10 ]
+    buildupFactor: Conc
+    elements:
+      Shape:
+        geometry: { type: Sphere, radius: 0.1 }
+        appearance: { material: { diffuseColor: [ 1, 1, 1 ], transparency: 0.2 } }
+
