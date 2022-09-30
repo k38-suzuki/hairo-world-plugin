@@ -46,7 +46,7 @@ public:
         static const double P = 0.01;
         static const double D = 0.005;
 
-        double  pos = -joystick.getPosition(Joystick::DIRECTIONAL_PAD_V_AXIS);
+        double  pos = joystick.getPosition(Joystick::DIRECTIONAL_PAD_V_AXIS) * -1.0;
         if(fabs(pos) < 0.15) {
             pos = 0.0;
         }
@@ -62,8 +62,8 @@ public:
 
         double p = 0.0;
         bool changed = false;
-        bool pushed = joystick.getButtonState(Joystick::L_BUTTON);
-        if(!pushed) {
+        bool buttonState = joystick.getButtonState(Joystick::L_BUTTON);
+        if(!buttonState) {
             p = joystick.getPosition(Joystick::L_TRIGGER_AXIS);
         } else  {
             p = -1.0;

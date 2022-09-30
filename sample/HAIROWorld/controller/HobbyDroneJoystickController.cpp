@@ -102,39 +102,31 @@ public:
         }
         mprev = m;
 
-        static const int mode1ID[] = {
-            Joystick::R_STICK_V_AXIS,
-            Joystick::R_STICK_H_AXIS,
-            Joystick::L_STICK_V_AXIS,
-            Joystick::L_STICK_H_AXIS
+        static const int modeID[][4] = {
+            { Joystick::R_STICK_V_AXIS, Joystick::R_STICK_H_AXIS, Joystick::L_STICK_V_AXIS, Joystick::L_STICK_H_AXIS },
+            { Joystick::L_STICK_V_AXIS, Joystick::R_STICK_H_AXIS, Joystick::R_STICK_V_AXIS, Joystick::L_STICK_H_AXIS }
         };
 
-        static const int mode2ID[] = {
-            Joystick::L_STICK_V_AXIS,
-            Joystick::R_STICK_H_AXIS,
-            Joystick::R_STICK_V_AXIS,
-            Joystick::L_STICK_H_AXIS
+        static const int waillyModeID[][4] = {
+            { 1, 0, 2, 5 },
+            { 2, 0, 1, 5 }
         };
-
-        static const int waillyMode1ID[] = { 1, 0, 2, 5 };
-
-        static const int waillyMode2ID[] = { 2, 0, 1, 5 };
 
         int axisID[4] = { 0 };
         if(mode1) {
             for(int i = 0; i < 4; i++) {
                 if(!wailly) {
-                    axisID[i] = mode1ID[i];
+                    axisID[i] = modeID[0][i];
                 } else {
-                    axisID[i] = waillyMode1ID[i];
+                    axisID[i] = waillyModeID[0][i];
                 }
             }
         } else {
             for(int i = 0; i < 4; i++) {
                 if(!wailly) {
-                    axisID[i] = mode2ID[i];
+                    axisID[i] = modeID[1][i];
                 } else {
-                    axisID[i] = waillyMode2ID[i];
+                    axisID[i] = waillyModeID[1][i];
                 }
             }
         }

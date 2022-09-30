@@ -101,17 +101,10 @@ public:
         }
         pprev = p;
 
-        static const int mode1ID[] = {
-            Joystick::R_STICK_V_AXIS,
-            Joystick::L_STICK_H_AXIS,
-            Joystick::L_STICK_V_AXIS,
-            Joystick::R_STICK_H_AXIS
+        static const int axisID[] = {
+            Joystick::R_STICK_V_AXIS, Joystick::L_STICK_H_AXIS,
+            Joystick::L_STICK_V_AXIS, Joystick::R_STICK_H_AXIS
         };
-
-        int axisID[4] = { 0 };
-        for(int i = 0; i < 4; i++) {
-            axisID[i] = mode1ID[i];
-        }
 
         double ppos[2];
         for(int i=0; i < 2; ++i){

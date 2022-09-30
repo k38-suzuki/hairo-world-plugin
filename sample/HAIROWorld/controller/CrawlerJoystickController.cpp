@@ -97,7 +97,7 @@ public:
     {
         joystick->readCurrentState();
 
-        double pos[2] = { 0.0, 0.0 };
+        double pos[2] = { 0.0 };
         for(int i = 0; i < 2; ++i) {
             pos[i] = joystick->getPosition(
                         i == 0 ? Joystick::L_STICK_H_AXIS : Joystick::L_STICK_V_AXIS);
@@ -129,10 +129,10 @@ public:
         }
 
         for(int i = 0; i < 2; ++i) {
-            double pos = 0.0;;
-            bool on = joystick->getButtonState(
+            double pos = 0.0;
+            bool buttonState = joystick->getButtonState(
                         i == 0 ? Joystick::L_BUTTON : Joystick::R_BUTTON);
-            if(!on) {
+            if(!buttonState) {
                 pos = joystick->getPosition(
                             i == 0 ? Joystick::L_TRIGGER_AXIS : Joystick::R_TRIGGER_AXIS);
                 pos *= i == 0 ? -1.0 : 1.0;

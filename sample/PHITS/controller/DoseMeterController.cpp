@@ -37,15 +37,18 @@ public:
 
         for(size_t i = 0; i < doseMeters.size(); ++i) {
             DoseMeter* doseMeter = doseMeters[i];
-            bool pushed = joystick.getButtonDown(Joystick::B_BUTTON);
-            bool shield = joystick.getButtonDown(Joystick::A_BUTTON);
-            if(shield) {
+            bool buttonStates[2] =  { false };
+            for(int j = 0; j < 2; ++j) {
+                buttonStates[j] = joystick.getButtonDown(
+                            j == 0 ? Joystick::X_BUTTON : Joystick::Y_BUTTON);
+            }
+
+            if(buttonStates[0]) {
                 doseMeter->setShield(!doseMeter->isShield());
                 doseMeter->notifyStateChange();
             }
 
-            if(pushed) {
-
+            if(buttonStates[1]) {
                 (*os) << doseMeter->name();
                 if(!doseMeter->isShield()) {
                     (*os) << ", NS, ";

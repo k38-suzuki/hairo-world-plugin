@@ -25,7 +25,7 @@ public:
         thrusterL = body->findDevice<Thruster>("LeftThruster");
         thrusterR = body->findDevice<Thruster>("RightThruster");
 
-        if(!thrusterL || !thrusterR){
+        if(!thrusterL || !thrusterR) {
             os << "The thrusters are not found." << endl;
             return false;
         }
@@ -38,10 +38,10 @@ public:
         joystick.readCurrentState();
 
         double pos[2];
-        for(int i=0; i < 2; ++i){
+        for(int i=0; i < 2; ++i) {
             pos[i] = joystick.getPosition(
                 i==0 ? Joystick::L_STICK_H_AXIS : Joystick::L_STICK_V_AXIS);
-            if(fabs(pos[i]) < 0.2){
+            if(fabs(pos[i]) < 0.2) {
                 pos[i] = 0.0;
             }
         }
