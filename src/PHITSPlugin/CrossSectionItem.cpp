@@ -492,10 +492,10 @@ void CrossSectionItem::doPutProperties(PutPropertyFunction& putProperty)
 
 void CrossSectionItemImpl::doPutProperties(PutPropertyFunction& putProperty)
 {
-    FilePathProperty nuclideFileProperty(
-                config->defaultNuclideTableFile, { _("Nuclide definition file (*.yaml)") });
     putProperty(_("ColorScale"), colorScale,
                 [&](int index){ return onColorScalePropertyChanged(index); });
+    FilePathProperty nuclideFileProperty(
+                config->defaultNuclideTableFile, { _("Nuclide definition file (*.yaml)") });
     putProperty(_("Default nuclide table"), nuclideFileProperty,
                 [&](const string& filename){ setDefaultNuclideTableFile(filename); return true; });
     FilePathProperty elementFileProperty(

@@ -9,6 +9,7 @@
 #include <cnoid/ItemManager>
 #include <cnoid/MessageView>
 #include <cnoid/PutPropertyFunction>
+#include <cnoid/Selection>
 #include <cnoid/SimulatorItem>
 #include <cnoid/UTF8>
 #include <cnoid/WorldItem>
@@ -44,10 +45,15 @@ public:
     CrossSectionItem* crossSectionItem;
     bool isLoaded;
 
+    Selection colorScale;
+
+    enum ColorScaleID { LOG_SCALE, LINER_SCALE, NUM_SCALES };
+
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void onMidDynamicsFunction();
     void onPostDynamicsFunction();
     void setDefaultShieldFile(const string& filename);
+    bool onColorScalePropertyChanged(const int& index);
     void onGammaDataLoaded();
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
@@ -80,6 +86,8 @@ DoseSimulatorItemImpl::DoseSimulatorItemImpl(DoseSimulatorItem* self)
     defaultShieldTableFile = toUTF8((shareDirPath() / "default" / "shields.yaml").string());
     crossSectionItem = nullptr;
     isLoaded = false;
+    colorScale.setSymbol(LOG_SCALE, N_("Log"));
+    colorScale.setSymbol(LINER_SCALE, N_("Liner"));
 }
 
 
@@ -95,6 +103,7 @@ DoseSimulatorItemImpl::DoseSimulatorItemImpl(DoseSimulatorItem* self, const Dose
       defaultShieldTableFile(org.defaultShieldTableFile)
 {
     isLoaded = org.isLoaded;
+    colorScale = org.colorScale;
 }
 
 
@@ -208,7 +217,12 @@ void DoseSimulatorItemImpl::onPostDynamicsFunction()
 
         for(size_t i = 0; i < doseMeters.size(); ++i) {
             DoseMeter* doseMeter = doseMeters[i];
-            Vector3 color = scale->logColor(doseMeter->integralDose());
+            Vector3 color;
+            if(colorScale.is(LOG_SCALE)) {
+                color = scale->logColor(doseMeter->integralDose());
+            } else if(colorScale.is(LINER_SCALE)) {
+                color = scale->linerColor(doseMeter->integralDose());
+            }
             doseMeter->setColor(color);
             doseMeter->notifyStateChange();
         }
@@ -234,6 +248,13 @@ void DoseSimulatorItemImpl::onGammaDataLoaded()
 }
 
 
+bool DoseSimulatorItemImpl::onColorScalePropertyChanged(const int& index)
+{
+    colorScale.selectIndex(index);
+    return true;
+}
+
+
 Item* DoseSimulatorItem::doDuplicate() const
 {
     return new DoseSimulatorItem(*this);
@@ -249,6 +270,8 @@ void DoseSimulatorItem::doPutProperties(PutPropertyFunction& putProperty)
 
 void DoseSimulatorItemImpl::doPutProperties(PutPropertyFunction& putProperty)
 {
+    putProperty(_("ColorScale"), colorScale,
+                [&](int index){ return onColorScalePropertyChanged(index); });
     FilePathProperty shieldFileProperty(
                 defaultShieldTableFile, { _("Shield definition file (*.yaml)") });
     putProperty(_("Default shield table"), shieldFileProperty,
@@ -265,6 +288,7 @@ bool DoseSimulatorItem::store(Archive& archive)
 
 bool DoseSimulatorItemImpl::store(Archive& archive)
 {
+    archive.write("color_scale", colorScale.selectedIndex());
     archive.writeRelocatablePath("default_shield_table_file", defaultShieldTableFile);
     return true;
 }
@@ -279,6 +303,7 @@ bool DoseSimulatorItem::restore(const Archive& archive)
 
 bool DoseSimulatorItemImpl::restore(const Archive& archive)
 {
+    colorScale.selectIndex(archive.get("color_scale", 0));
     archive.readRelocatablePath("default_shield_table_file", defaultShieldTableFile);
     return true;
 }
