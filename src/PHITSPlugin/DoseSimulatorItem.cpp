@@ -39,7 +39,7 @@ public:
     DeviceList<DoseMeter> doseMeters;
     double worldTimeStep;
     double timeUnit;
-   OrthoNodeDataPtr nodeData;
+    OrthoNodeDataPtr nodeData;
     string defaultShieldTableFile;
     CrossSectionItem* crossSectionItem;
     bool isLoaded;

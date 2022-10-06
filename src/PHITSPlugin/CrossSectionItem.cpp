@@ -21,6 +21,7 @@
 #include <cnoid/MessageView>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SceneDrawables>
+#include <cnoid/Selection>
 #include <cnoid/Separator>
 #include <cnoid/Slider>
 #include <cnoid/SpinBox>
@@ -180,10 +181,14 @@ public:
     DoseConfigDialog* config;
     string gammaDataFile;
     Signal<void()> sigGammaDataLoaded_;
+    Selection colorScale;
+
+    enum ColorScaleID { LOG_SCALE, LINER_SCALE, NUM_SCALES };
 
     void initialize();
     void setDefaultNuclideTableFile(const string& filename);
     void setDefaultElementTableFile(const string& filename);
+    bool onColorScalePropertyChanged(const int& index);
     void createScene();
     void updateScenePosition();
     void onValueChanged();
@@ -210,6 +215,8 @@ CrossSectionItemImpl::CrossSectionItemImpl(CrossSectionItem* self)
     position.setIdentity();
     nodeData = nullptr;
     gammaDataFile.clear();
+    colorScale.setSymbol(LOG_SCALE, N_("Log"));
+    colorScale.setSymbol(LINER_SCALE, N_("Liner"));
     initialize();
 }
 
@@ -230,6 +237,7 @@ CrossSectionItemImpl::CrossSectionItemImpl(CrossSectionItem* self, const CrossSe
     nodeData = org.nodeData;
     gammaData = org.gammaData;
     gammaDataFile = org.gammaDataFile;
+    colorScale = org.colorScale;
     initialize();
 }
 
@@ -343,9 +351,17 @@ void CrossSectionItemImpl::createScene()
                 scale.setRange(min, max);
                 Vector3 color;
                 if(index != -1) {
-                    color = scale.logColor(nodeData->value(positionID[id][0], positionID[id][1], positionID[id][2]));
+                    if(colorScale.is(LOG_SCALE)) {
+                        color = scale.logColor(nodeData->value(positionID[id][0], positionID[id][1], positionID[id][2]));
+                    } else if(colorScale.is(LINER_SCALE)){
+                        color = scale.linerColor(nodeData->value(positionID[id][0], positionID[id][1], positionID[id][2]));
+                    }
                 } else {
-                    color = scale.logColor(0.0);
+                    if(colorScale.is(LOG_SCALE)) {
+                        color = scale.logColor(0.0);
+                    } else if(colorScale.is(LINER_SCALE)){
+                        color = scale.linerColor(0.0);
+                    }
                 }
 
                 SgPosTransform* pos = new SgPosTransform;
@@ -453,6 +469,15 @@ void CrossSectionItemImpl::setDefaultElementTableFile(const string& filename)
 }
 
 
+bool CrossSectionItemImpl::onColorScalePropertyChanged(const int& index)
+{
+    colorScale.selectIndex(index);
+    createScene();
+    scene->notifyUpdate();
+    return true;
+}
+
+
 Item* CrossSectionItem::doDuplicate() const
 {
     return new CrossSectionItem(*this);
@@ -469,6 +494,8 @@ void CrossSectionItemImpl::doPutProperties(PutPropertyFunction& putProperty)
 {
     FilePathProperty nuclideFileProperty(
                 config->defaultNuclideTableFile, { _("Nuclide definition file (*.yaml)") });
+    putProperty(_("ColorScale"), colorScale,
+                [&](int index){ return onColorScalePropertyChanged(index); });
     putProperty(_("Default nuclide table"), nuclideFileProperty,
                 [&](const string& filename){ setDefaultNuclideTableFile(filename); return true; });
     FilePathProperty elementFileProperty(
@@ -488,6 +515,7 @@ bool CrossSectionItemImpl::store(Archive& archive)
 {
     config->storeState(archive);
     archive.writeRelocatablePath("gamma_data_file", gammaDataFile);
+    archive.write("color_scale", colorScale.selectedIndex());
     return true;
 }
 
@@ -505,6 +533,7 @@ bool CrossSectionItemImpl::restore(const Archive& archive)
     if(!gammaDataFile.empty()) {
         load(gammaDataFile);
     }
+    colorScale.selectIndex(archive.get("color_scale", 0));
     return true;
 }
 

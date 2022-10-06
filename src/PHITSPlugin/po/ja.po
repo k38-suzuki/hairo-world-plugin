@@ -83,6 +83,18 @@ msgstr "停止"
 msgid "Plain"
 msgstr "平面"
 
+#: CrossSectionItem.cpp:218
+msgid "Log"
+msgstr "対数"
+
+#: CrossSectionItem.cpp:219
+msgid "Liner"
+msgstr "線形"
+
+#: CrossSectionItem.cpp:497
+msgid "ColorScale"
+msgstr "カラースケール"
+
 #: DoseSimulatorItem.cpp:65
 msgid "DoseSimulatorItem"
 msgstr "線量シミュレータアイテム"
