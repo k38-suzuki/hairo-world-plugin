@@ -924,17 +924,19 @@ bool CrawlerGeneratorImpl::writeTrack(YAMLWriter& writer)
                 writer.putKeyValue("type", "Extrusion");
                 writer.putKey("crossSection");
                 writer.startFlowStyleListing(); {
-                    for(int i = 0; i < 9; ++i) {
-                        writer.putScalar(dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN));
-                        writer.putScalar(dspins[TRK_RAD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
+                    int pitch = 5;
+                    double pitchAngle = 180.0 / (double)pitch;
+                    for(int i = 0; i < pitch; ++i) {
+                        writer.putScalar(dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos(radian(-90.0 + pitchAngle * i)));
+                        writer.putScalar(dspins[TRK_RAD]->value() * sin(radian(-90.0 + pitchAngle * i)));
                     }
-                    for(int i = 0; i < 9; ++i) {
-                        writer.putScalar(-dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos((90.0 + 22.5 * i) * TO_RADIAN));
-                        writer.putScalar(dspins[TRK_RAD]->value() * sin((90.0 + 22.5 * i) * TO_RADIAN));
+                    for(int i = 0; i < pitch; ++i) {
+                        writer.putScalar(-dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos(radian(90.0 + pitchAngle * i)));
+                        writer.putScalar(dspins[TRK_RAD]->value() * sin(radian(90.0 + pitchAngle * i)));
                     }
                     for(int i = 0; i < 1; ++i) {
-                        writer.putScalar(dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN));
-                        writer.putScalar(dspins[TRK_RAD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
+                        writer.putScalar(dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos(radian(-90.0 + pitchAngle * i)));
+                        writer.putScalar(dspins[TRK_RAD]->value() * sin(radian(-90.0 + pitchAngle * i)));
                     }
                 } writer.endListing(); // end crosssection listing;
                 Vector6 spine;
@@ -1025,17 +1027,19 @@ bool CrawlerGeneratorImpl::writeSubTrackF(YAMLWriter& writer)
                 writer.putKeyValue("type", "Extrusion");
                 writer.putKey("crossSection");
                 writer.startFlowStyleListing(); {
-                    for(int i = 0; i < 9; i++) {
-                        writer.putScalar(dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_FRD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN));
-                        writer.putScalar(dspins[FFL_FRD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
+                    int pitch = 5;
+                    double pitchAngle = 180.0 / (double)pitch;
+                    for(int i = 0; i < pitch; i++) {
+                        writer.putScalar(dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_FRD]->value() * cos(radian(-90.0 + pitchAngle * i)));
+                        writer.putScalar(dspins[FFL_FRD]->value() * sin(radian(-90.0 + pitchAngle * i)));
                     }
-                    for(int i = 0; i < 9; i++) {
-                        writer.putScalar(-dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_RRD]->value() * cos((90.0 + 22.5 * i) * TO_RADIAN));
-                        writer.putScalar(dspins[FFL_RRD]->value() * sin((90.0 + 22.5 * i) * TO_RADIAN));
+                    for(int i = 0; i < pitch; i++) {
+                        writer.putScalar(-dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_RRD]->value() * cos(radian(90.0 + pitchAngle * i)));
+                        writer.putScalar(dspins[FFL_RRD]->value() * sin(radian(90.0 + pitchAngle * i)));
                     }
                     for(int i = 0; i < 1; i++) {
-                        writer.putScalar(dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_FRD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN));
-                        writer.putScalar(dspins[FFL_FRD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
+                        writer.putScalar(dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_FRD]->value() * cos(radian(-90.0 + pitchAngle * i)));
+                        writer.putScalar(dspins[FFL_FRD]->value() * sin(radian(-90.0 + pitchAngle * i)));
                     }
                 } writer.endListing(); // end crosssection listing;
                 Vector6 spine;
@@ -1086,17 +1090,19 @@ bool CrawlerGeneratorImpl::writeSubTrackR(YAMLWriter& writer)
                 writer.putKeyValue("type", "Extrusion");
                 writer.putKey("crossSection");
                 writer.startFlowStyleListing(); {
-                    for(int i = 0; i < 9; i++) {
-                        writer.putScalar(dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_FRD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN));
-                        writer.putScalar(dspins[RFL_FRD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
+                    int pitch = 5;
+                    double pitchAngle = 180.0 / (double)pitch;
+                    for(int i = 0; i < pitch; i++) {
+                        writer.putScalar(dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_FRD]->value() * cos(radian(-90.0 + pitchAngle * i)));
+                        writer.putScalar(dspins[RFL_FRD]->value() * sin(radian(-90.0 + pitchAngle * i)));
                     }
-                    for(int i = 0; i < 9; i++) {
-                        writer.putScalar(-dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_RRD]->value() * cos((90.0 + 22.5 * i) * TO_RADIAN));
-                        writer.putScalar(dspins[RFL_RRD]->value() * sin((90.0 + 22.5 * i) * TO_RADIAN));
+                    for(int i = 0; i < pitch; i++) {
+                        writer.putScalar(-dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_RRD]->value() * cos(radian(90.0 + pitchAngle * i)));
+                        writer.putScalar(dspins[RFL_RRD]->value() * sin(radian(90.0 + pitchAngle * i)));
                     }
                     for(int i = 0; i < 1; i++) {
-                        writer.putScalar(dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_FRD]->value() * cos((-90.0 + 22.5 * i) * TO_RADIAN));
-                        writer.putScalar(dspins[RFL_FRD]->value() * sin((-90.0 + 22.5 * i) * TO_RADIAN));
+                        writer.putScalar(dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_FRD]->value() * cos(radian(-90.0 + pitchAngle * i)));
+                        writer.putScalar(dspins[RFL_FRD]->value() * sin(radian(-90.0 + pitchAngle * i)));
                     }
                 } writer.endListing(); // end crosssection listing;
                 Vector6 spine;

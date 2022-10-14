@@ -101,7 +101,7 @@ msgstr "ホイールベース [m]"
 
 #: ../CrawlerBuilderDialog.cpp:340 ../CrawlerBuilderDialog.cpp:341
 msgid "radius(forward-backward) [m]"
-msgstr "半径（前-後） [m"
+msgstr "半径（前-後） [m]"
 
 #: ../CrawlerBuilderDialog.cpp:350
 msgid "Track Belt"
