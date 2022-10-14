@@ -924,13 +924,14 @@ bool CrawlerGeneratorImpl::writeTrack(YAMLWriter& writer)
                 writer.putKeyValue("type", "Extrusion");
                 writer.putKey("crossSection");
                 writer.startFlowStyleListing(); {
-                    int pitch = 5;
+                    int numPoints = 5;
+                    int pitch = numPoints - 1;
                     double pitchAngle = 180.0 / (double)pitch;
-                    for(int i = 0; i < pitch; ++i) {
+                    for(int i = 0; i < numPoints; ++i) {
                         writer.putScalar(dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos(radian(-90.0 + pitchAngle * i)));
                         writer.putScalar(dspins[TRK_RAD]->value() * sin(radian(-90.0 + pitchAngle * i)));
                     }
-                    for(int i = 0; i < pitch; ++i) {
+                    for(int i = 0; i < numPoints; ++i) {
                         writer.putScalar(-dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos(radian(90.0 + pitchAngle * i)));
                         writer.putScalar(dspins[TRK_RAD]->value() * sin(radian(90.0 + pitchAngle * i)));
                     }
@@ -1027,13 +1028,14 @@ bool CrawlerGeneratorImpl::writeSubTrackF(YAMLWriter& writer)
                 writer.putKeyValue("type", "Extrusion");
                 writer.putKey("crossSection");
                 writer.startFlowStyleListing(); {
-                    int pitch = 5;
+                    int numPoints = 5;
+                    int pitch = numPoints - 1;
                     double pitchAngle = 180.0 / (double)pitch;
-                    for(int i = 0; i < pitch; i++) {
+                    for(int i = 0; i < numPoints; i++) {
                         writer.putScalar(dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_FRD]->value() * cos(radian(-90.0 + pitchAngle * i)));
                         writer.putScalar(dspins[FFL_FRD]->value() * sin(radian(-90.0 + pitchAngle * i)));
                     }
-                    for(int i = 0; i < pitch; i++) {
+                    for(int i = 0; i < numPoints; i++) {
                         writer.putScalar(-dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_RRD]->value() * cos(radian(90.0 + pitchAngle * i)));
                         writer.putScalar(dspins[FFL_RRD]->value() * sin(radian(90.0 + pitchAngle * i)));
                     }
@@ -1090,13 +1092,14 @@ bool CrawlerGeneratorImpl::writeSubTrackR(YAMLWriter& writer)
                 writer.putKeyValue("type", "Extrusion");
                 writer.putKey("crossSection");
                 writer.startFlowStyleListing(); {
-                    int pitch = 5;
+                    int numPoints = 5;
+                    int pitch = numPoints - 1;
                     double pitchAngle = 180.0 / (double)pitch;
-                    for(int i = 0; i < pitch; i++) {
+                    for(int i = 0; i < numPoints; i++) {
                         writer.putScalar(dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_FRD]->value() * cos(radian(-90.0 + pitchAngle * i)));
                         writer.putScalar(dspins[RFL_FRD]->value() * sin(radian(-90.0 + pitchAngle * i)));
                     }
-                    for(int i = 0; i < pitch; i++) {
+                    for(int i = 0; i < numPoints; i++) {
                         writer.putScalar(-dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_RRD]->value() * cos(radian(90.0 + pitchAngle * i)));
                         writer.putScalar(dspins[RFL_RRD]->value() * sin(radian(90.0 + pitchAngle * i)));
                     }
