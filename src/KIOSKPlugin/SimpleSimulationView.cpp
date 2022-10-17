@@ -94,8 +94,7 @@ public:
 
     void onSimulationAboutToStart(SimulatorItem* simulatorItem);
     void onButtonClicked(const int& id);
-    void onSimulationButtonToggled(const bool& on);
-    void onAnimationButtonToggled(const bool& on);
+    void onSimulationButtonToggled(const bool& checked);
     void onPlaybackStarted(const double& time);
     void onPlaybackStopped(const double& time, const bool& isStoppedManually);
     void updateButtonStates(const int& state);
@@ -152,8 +151,10 @@ SimpleSimulationViewImpl::SimpleSimulationViewImpl(SimpleSimulationView* self)
     playModeGroup.addButton(&animationRadio, 1);
     hbox0->addStretch();
 
-    static const char* toolTips[] = { _("Start simulation from the beginning"), _("Start simulation from the current state"),
-                                      _("Pause simulation"), _("Stop simulation"), _("Seek backward"), _("Seek forward") };
+    static const char* toolTips[] = {
+        _("Start simulation from the beginning"), _("Start simulation from the current state"),
+        _("Pause simulation"), _("Stop simulation"), _("Seek backward"), _("Seek forward")
+    };
     QGridLayout* gbox = new QGridLayout;
     MainWindow* mw = MainWindow::instance();
     for(int i = 0; i < NUM_BUTTONS; ++i) {
@@ -196,8 +197,8 @@ SimpleSimulationViewImpl::SimpleSimulationViewImpl(SimpleSimulationView* self)
 
     simulatorItem = nullptr;
 
-    simulationRadio.sigToggled().connect([&](bool on){ onSimulationButtonToggled(on); });
-    animationRadio.sigToggled().connect([&](bool on){ onAnimationButtonToggled(on); });
+    simulationRadio.sigToggled().connect(
+                [&](bool checked){ onSimulationButtonToggled(checked); });
 
     sb->sigSimulationAboutToStart().connect(
                 [&](SimulatorItem* simulatorItem){ onSimulationAboutToStart(simulatorItem); });
@@ -269,6 +270,8 @@ void SimpleSimulationViewImpl::onButtonClicked(const int& id)
             if(simulatorItem) {
                 simulatorItem->stopSimulation(true);
                 buttons[PAUSE]->setChecked(false);
+                simulationRadio.setEnabled(true);
+                animationRadio.setEnabled(true);
             }
         }
         updateButtonStates(id);
@@ -288,45 +291,46 @@ void SimpleSimulationViewImpl::onButtonClicked(const int& id)
 }
 
 
-void SimpleSimulationViewImpl::onSimulationButtonToggled(const bool& on)
+void SimpleSimulationViewImpl::onSimulationButtonToggled(const bool& checked)
 {
-    const static QStringList tips = { _("Start simulation from the beginning"),
-                                      _("Start simulation from the current state") };
-    buttons[START]->setIcon(startIcon);
-    buttons[START]->setToolTip(tips[0]);
-    buttons[RESTART]->setIcon(restartIcon);
-    buttons[RESTART]->setToolTip(tips[1]);
-}
+    const static QStringList tips = {
+        _("Start simulation from the beginning"), _("Start simulation from the current state"),
+        _("Start playback"), _("Resume playback")
+    };
 
-
-void SimpleSimulationViewImpl::onAnimationButtonToggled(const bool& on)
-{
-    const static QStringList tips = { _("Start playback"),
-                                      _("Resume playback") };
-    buttons[START]->setIcon(playIcon);
-    buttons[START]->setToolTip(tips[0]);
-    buttons[RESTART]->setIcon(resumeIcon);
-    buttons[RESTART]->setToolTip(tips[1]);
+    if(checked) {
+        buttons[START]->setIcon(startIcon);
+        buttons[START]->setToolTip(tips[0]);
+        buttons[RESTART]->setIcon(restartIcon);
+        buttons[RESTART]->setToolTip(tips[1]);
+    } else {
+        buttons[START]->setIcon(playIcon);
+        buttons[START]->setToolTip(tips[2]);
+        buttons[RESTART]->setIcon(resumeIcon);
+        buttons[RESTART]->setToolTip(tips[3]);
+    }
 }
 
 
 void SimpleSimulationViewImpl::onPlaybackStarted(const double& time)
 {
-    if(animationRadio.isChecked()) {
+    if(simulationRadio.isChecked()) {
+
+    } else {
         const static QString tip(_("Stop animation"));
         buttons[RESTART]->setIcon(stopIcon);
         buttons[RESTART]->setToolTip(tip);
     }
-    if(!buttons[PAUSE]->isChecked()) {
-        simulationRadio.setEnabled(false);
-        animationRadio.setEnabled(false);
-    }
+    simulationRadio.setEnabled(false);
+    animationRadio.setEnabled(false);
 }
 
 
 void SimpleSimulationViewImpl::onPlaybackStopped(const double& time, const bool& isStoppedManually)
 {
-    if(animationRadio.isChecked()) {
+    if(simulationRadio.isChecked()) {
+
+    } else {
         const static QString tip(_("Resume animation"));
         buttons[RESTART]->setIcon(resumeIcon);
         buttons[RESTART]->setToolTip(tip);
