@@ -530,7 +530,7 @@ void GammaImageGeneratorImpl::onGenerateGammaImage(Image& image)
         }
 
         ColorScale* scale = new ColorScale();
-        int exp = (int)floor(log10(fabs(max))) + 1;
+        // int exp = (int)floor(log10(fabs(max))) + 1;
         // min = 1.0 * pow(10, exp - 6);
         // max = 1.0 * pow(10, exp);
         scale->setRange(min, max);

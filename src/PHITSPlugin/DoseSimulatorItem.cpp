@@ -210,9 +210,9 @@ void DoseSimulatorItemImpl::onPostDynamicsFunction()
         double min = *min_element(integralDoses.begin(), integralDoses.end());
         double max = *max_element(integralDoses.begin(), integralDoses.end());
         ColorScale* scale = new ColorScale();
-        int exp = (int)floor(log10(fabs(max)));
-        min = 1.0 * pow(10, exp - 5);
-        max = 1.0 * pow(10, exp + 1);
+        int exp = (int)floor(log10(fabs(max))) + 1;
+        min = 1.0 * pow(10, exp - 6);
+        max = 1.0 * pow(10, exp);
         scale->setRange(min, max);
 
         for(size_t i = 0; i < doseMeters.size(); ++i) {
