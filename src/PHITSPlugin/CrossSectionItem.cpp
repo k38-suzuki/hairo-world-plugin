@@ -338,9 +338,10 @@ void CrossSectionItemImpl::createScene()
                 ColorScale scale;
                 double min = nodeData->min();
                 double max = nodeData->max();
-                int exp = 1 + (int)floor(log10(fabs(max)));
-                min = 1.0 * pow(10, exp - 4);
-//                max = 1.0 * pow(10, exp + 1);
+                int exp = (int)floor(log10(fabs(max))) + 1;
+                min = 1.0 * pow(10, exp - 6);
+                max = 1.0 * pow(10, exp);
+                scale.setRange(min, max);
 
                 const int positionID[][3] = {
                     { (int)i, (int)j, index},
@@ -348,7 +349,6 @@ void CrossSectionItemImpl::createScene()
                     { (int)j, index, (int)i }
                 };
 
-                scale.setRange(min, max);
                 Vector3 color;
                 if(index != -1) {
                     if(colorScale.is(LOG_SCALE)) {

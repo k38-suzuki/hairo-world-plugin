@@ -530,9 +530,9 @@ void GammaImageGeneratorImpl::onGenerateGammaImage(Image& image)
         }
 
         ColorScale* scale = new ColorScale();
-        int exp = 1 + (int)floor(log10(fabs(max)));
-        min = 1.0 * pow(10, exp - 2);
-//        mx = 1.0 * pow(10, exp + 1);
+        int exp = (int)floor(log10(fabs(max))) + 1;
+        // min = 1.0 * pow(10, exp - 6);
+        // max = 1.0 * pow(10, exp);
         scale->setRange(min, max);
         static const uint8_t transparency = 0;
         drawGammaData(painter, QRect(0, 0, image.width(), image.height()), dataInfo, *scale,
