@@ -8,10 +8,11 @@
 
 #include "AreaItem.h"
 #include <cnoid/FloatingNumberString>
+#include "exportdecl.h"
 
 namespace cnoid {
 
-class FluidAreaItem : public AreaItem
+class CNOID_EXPORT FluidAreaItem : public AreaItem
 {
 public:
     FluidAreaItem();
