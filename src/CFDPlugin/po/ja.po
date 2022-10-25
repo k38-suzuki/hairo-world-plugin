@@ -45,10 +45,6 @@ msgstr "密度"
 msgid "Viscosity"
 msgstr "粘度"
 
-#: ../FluidAreaItem.cpp:255
-msgid "Flow"
-msgstr "定常流"
-
 #: ../FluidAreaItem.cpp:256
 msgid "Shape"
 msgstr "形状"
@@ -84,6 +80,10 @@ msgstr "輝度"
 #: ../FluidAreaItem.cpp:284
 msgid "Transparency"
 msgstr "透過度"
+
+#: ../FluidAreaItem.cpp:62
+msgid "SteadyFlow"
+msgstr "定常流"
 
 #: ../CFDSimulatorItem.cpp:89
 msgid "CFDSimulatorItem"

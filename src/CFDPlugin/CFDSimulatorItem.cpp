@@ -71,6 +71,7 @@ public:
     DeviceList<Thruster> thrusters;
     DeviceList<Rotor> rotors;
     SimulatorItem* simulatorItem;
+    ItemList<FluidAreaItem> areaItems;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void createCFDBody(Body* body);
@@ -136,6 +137,7 @@ CFDSimulatorItemImpl::CFDSimulatorItemImpl(CFDSimulatorItem* self)
     thrusters.clear();
     rotors.clear();
     simulatorItem = nullptr;
+    areaItems.clear();
 }
 
 
@@ -182,6 +184,7 @@ bool CFDSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
     thrusters.clear();
     rotors.clear();
     this->simulatorItem = simulatorItem;
+    areaItems.clear();
 
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
     for(size_t i = 0; i < simBodies.size(); ++i) {
@@ -189,6 +192,11 @@ bool CFDSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
         createCFDBody(body);
         thrusters << body->devices();
         rotors << body->devices();
+    }
+
+    WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
+    if(worldItem) {
+        areaItems = worldItem->descendantItems<FluidAreaItem>();
     }
 
     if(cfdBodies.size()) {
@@ -224,11 +232,6 @@ void CFDSimulatorItemImpl::createCFDBody(Body* body)
 void CFDSimulatorItemImpl::onPreDynamicsFunction()
 {
     Vector3 gravity = simulatorItem->getGravity();
-    ItemList<FluidAreaItem> areaItems;
-    WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
-    if(worldItem) {
-        areaItems = worldItem->descendantItems<FluidAreaItem>();
-    }
 
     for(size_t i = 0; i < cfdBodies.size(); ++i) {
         CFDBody* cfdBody = cfdBodies[i];
@@ -244,7 +247,8 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
                 if(areaItems[k]->isCollided(link->T().translation())) {
                     density = areaItems[k]->density();
                     viscosity = areaItems[k]->viscosity();
-                    ff = areaItems[k]->flow();
+                    ff += areaItems[k]->steadyFlow();
+                    ff += areaItems[k]->unsteadyFlow();
                 }
             }
 

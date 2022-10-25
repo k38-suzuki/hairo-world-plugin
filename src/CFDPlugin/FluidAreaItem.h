@@ -22,7 +22,9 @@ public:
 
     double density() const { return density_.value(); }
     double viscosity() const { return viscosity_.value(); }
-    Vector3 flow() const { return flow_; }
+    Vector3 steadyFlow() const { return steadyFlow_; }
+    void setUnsteadyFlow(const Vector3& unsteadyFlow) { unsteadyFlow_ = unsteadyFlow; }
+    Vector3 unsteadyFlow() const { return unsteadyFlow_; }
 
 protected:
     virtual Item* doDuplicate() const override;
@@ -33,7 +35,8 @@ protected:
 private:
     FloatingNumberString density_;
     FloatingNumberString viscosity_;
-    Vector3 flow_;
+    Vector3 steadyFlow_;
+    Vector3 unsteadyFlow_;
 };
 
 typedef ref_ptr<FluidAreaItem> FluidAreaItemPtr;
