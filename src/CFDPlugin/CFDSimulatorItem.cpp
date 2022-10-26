@@ -9,6 +9,7 @@
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenUtil>
 #include <cnoid/ItemManager>
+#include <cnoid/PositionDragger>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
 #include <vector>
@@ -198,6 +199,10 @@ bool CFDSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
     if(worldItem) {
         areaItems = worldItem->descendantItems<FluidAreaItem>();
     }
+    for(int i = 0; i < areaItems.size(); ++i) {
+        FluidAreaItem* areaItem = areaItems[i];
+        areaItem->setUnsteadyFlow(Vector3(0.0, 0.0, 0.0));
+    }
 
     if(cfdBodies.size()) {
         simulatorItem->addPreDynamicsFunction([&](){ onPreDynamicsFunction(); });
@@ -244,11 +249,14 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
             //flow
             Vector3 ff = Vector3::Zero();
             for(size_t k = 0; k <  areaItems.size(); ++k) {
-                if(areaItems[k]->isCollided(link->T().translation())) {
-                    density = areaItems[k]->density();
-                    viscosity = areaItems[k]->viscosity();
-                    ff += areaItems[k]->steadyFlow();
-                    ff += areaItems[k]->unsteadyFlow();
+                FluidAreaItem* areaItem = areaItems[k];
+                PositionDraggerPtr scene = dynamic_cast<PositionDragger*>(areaItem->getScene());
+                Matrix3 rot = scene->rotation();
+                if(areaItem->isCollided(link->T().translation())) {
+                    density = areaItem->density();
+                    viscosity = areaItem->viscosity();
+                    ff += rot * areaItem->steadyFlow();
+                    ff += rot * areaItem->unsteadyFlow();
                 }
             }
 
