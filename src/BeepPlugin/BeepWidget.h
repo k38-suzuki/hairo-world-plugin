@@ -22,6 +22,7 @@ public:
     virtual ~BeepWidget();
 
     TreeWidget* treeWidget();
+    int numItems() const;
     void play(const int& index);
 
     bool storeState(Archive& archive);

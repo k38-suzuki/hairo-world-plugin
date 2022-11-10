@@ -144,9 +144,15 @@ void BeepWidgetImpl::onPlayButtonClicked()
 }
 
 
+int BeepWidget::numItems() const
+{
+    return impl->treeWidget->topLevelItemCount();
+}
+
+
 void BeepWidget::play(const int& index)
 {
-    QTreeWidgetItem* item = treeWidget()->topLevelItem(index);
+    QTreeWidgetItem* item = impl->treeWidget->topLevelItem(index);
     impl->play(item);
 }
 
