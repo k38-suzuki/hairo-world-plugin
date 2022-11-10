@@ -13,7 +13,7 @@ items:
       data: 
         collision_detection: false
         collision_detector: AISTCollisionDetector
-        default_material_table_file: "${SHARE}/default/materials_agxcrawler.yaml"
+        default_material_table_file: "materials.yaml"
       children: 
         - 
           id: 2
