@@ -1,4 +1,5 @@
 if(ENABLE_GUI)
+    add_subdirectory(BeepPlugin)
     add_subdirectory(BodyGeneratorPlugin)
     add_subdirectory(BookmarkPlugin)
     add_subdirectory(CFDPlugin)
