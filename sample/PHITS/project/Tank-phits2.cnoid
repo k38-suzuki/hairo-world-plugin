@@ -23,7 +23,7 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "${SHARE}/PHITS/model/Tank.body"
+            file: "../model/Tank.body"
             currentBaseLink: "CHASSIS"
             format: CHOREONOID-BODY
             rootPosition: [ -1.5, 1, 0.105900008 ]
@@ -177,7 +177,7 @@ items:
           plugin: Body
           class: BodyItem
           data: 
-            file: "${SHARE}/PHITS/model/floor.body"
+            file: "../model/floor.body"
             currentBaseLink: "Floor"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, -0.1 ]
@@ -204,7 +204,7 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "${SHARE}/PHITS/model/box1.body"
+            file: "../model/box1.body"
             format: CHOREONOID-BODY
             rootPosition: [ 1.00092508, 1.9997865, 1.49997981 ]
             rootAttitude: [ 
@@ -230,7 +230,7 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "${SHARE}/PHITS/model/cylinder1.body"
+            file: "../model/cylinder1.body"
             format: CHOREONOID-BODY
             rootPosition: [ 1.99999604, 9.20302809e-07, 0.999900013 ]
             rootAttitude: [ 
@@ -256,7 +256,7 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "${SHARE}/PHITS/model/sphere1.body"
+            file: "../model/sphere1.body"
             format: CHOREONOID-BODY
             rootPosition: [ -1.84369109, 2.65078124, 0.975802711 ]
             rootAttitude: [ 
@@ -282,7 +282,7 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "${SHARE}/PHITS/model/Cs134_Cs137_Cs134_Co60.body"
+            file: "../model/Cs134_Cs137_Cs134_Co60.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0 ]
             rootAttitude: [ 
