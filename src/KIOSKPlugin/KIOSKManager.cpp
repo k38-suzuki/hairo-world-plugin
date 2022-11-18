@@ -22,12 +22,12 @@
 #include <cnoid/UTF8>
 #include <cnoid/ViewArea>
 #include <cnoid/WorldItem>
+#include <src/Base/ToolBarArea.h>
 #include <src/BodyPlugin/WorldLogFileItem.h>
 #include <QDateTime>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QStatusBar>
-#include "src/Base/ToolBarArea.h"
 #include "JoyKey.h"
 #include "KIOSKView.h"
 #include "gettext.h"
@@ -164,17 +164,17 @@ void KIOSKManagerImpl::loadProject(const bool& enabled)
     }
     tb->setTime(0.0);
 
-    ProjectManager* pm = ProjectManager::instance();
-    string filename;
+    string filename = toUTF8((shareDirPath() / "kiosk" / "layout_base.cnoid").string());
+    // string filename = ":/KIOSKPlugin/project/layout_base.cnoid";
     if(enabled) {
+        // filename = ":/KIOSKPlugin/project/layout_kiosk.cnoid";
         filename = toUTF8((shareDirPath() / "kiosk" / "layout_kiosk.cnoid").string());
-    } else {
-        filename = toUTF8((shareDirPath() / "kiosk" / "layout_base.cnoid").string());
     }
+
+    ProjectManager* pm = ProjectManager::instance();
     pm->clearProject();
-    MessageView::instance()->flush();
     pm->loadProject(filename);
-    pm->clearProject();
+    MessageView::instance()->clear();
 }
 
 
@@ -201,7 +201,7 @@ void KIOSKManagerImpl::onEnableKIOSKToggled(const bool& on)
     mw->setFullScreen(on);
     mw->viewArea()->setViewTabsVisible(!on);
     mw->statusBar()->setVisible(!on);
-    onHideMenuBarToggled(on);
+    // onHideMenuBarToggled(on);
     hide_toolBar->setChecked(on);
 
     loadProject(on);

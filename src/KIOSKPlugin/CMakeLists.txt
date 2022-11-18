@@ -33,11 +33,13 @@ set(headers
     SimpleTimeWidget.h
     )
 
+QT5_ADD_RESOURCES(RC_SRCS KIOSKPlugin.qrc)
+
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
   set(target CnoidKIOSKPlugin)
   make_gettext_mofiles(${target} mofiles)
-  choreonoid_add_plugin(${target} ${sources} ${mofiles} HEADERS ${headers})
+  choreonoid_add_plugin(${target} ${sources} ${mofiles} ${RC_SRCS} HEADERS ${headers})
   target_link_libraries(${target} CnoidBase CnoidBodyPlugin)
 else()
   # Stand alone build
@@ -49,7 +51,7 @@ else()
   link_directories(${CHOREONOID_LIBRARY_DIRS})
   set(target CnoidKIOSKPlugin)
   make_gettext_mofiles(${target} mofiles)
-  add_library(${target} SHARED  ${sources} ${mofiles} HEADERS ${headers})
+  add_library(${target} SHARED  ${sources} ${mofiles} ${RC_SRCS} HEADERS ${headers})
   target_link_libraries(${target} ${CHOREONOID_BASE_LIBRARIES} ${CHOREONOID_BODY_PLUGIN_LIBRARIES})
   install(TARGETS ${target} LIBRARY DESTINATION ${CHOREONOID_PLUGIN_DIR})
 endif()
