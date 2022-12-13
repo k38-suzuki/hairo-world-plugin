@@ -252,9 +252,10 @@ public:
     void onColorChanged(PushButton* pushbutton);
     void setColor(PushButton* pushbutton, const Vector3& color);
     Vector3 extractColor(PushButton* colorButton);
-    bool writeYaml(const string& filename);
+    bool save2(const string& filename);
+    MappingPtr writeConfig(const string& filename);
 
-    bool write(const string& filename);
+    bool writeBody(const string& filename);
     bool writeTrack(YAMLWriter& writer);
     bool writeSpacer(YAMLWriter& writer);
     bool writeSubTrackF(YAMLWriter& writer);
@@ -436,7 +437,7 @@ bool CrawlerGeneratorImpl::save(const string& filename)
         filesystem::path path(filename);
         bodyname = path.stem().string();
         if(!checks[AGX_CHK]->isChecked()) {
-            write(filename);
+            writeBody(filename);
         } else {
             writeAgx(filename);
         }
@@ -562,7 +563,7 @@ bool CrawlerGeneratorImpl::loadConfig(const string& filename,std::ostream& os )
                     auto& checkList = *info->findListing("check");
                     if(checkList.isValid()) {
                         for(int j = 0; j < checkList.size(); ++j) {
-                            bool checked = checkList[j].toBool() ? true : false;
+                            bool checked = checkList[j].toInt() == 0 ? false : true;
                             checks[j]->setChecked(checked);
                         }
                     }
@@ -611,7 +612,7 @@ void CrawlerGeneratorImpl::onExportYamlButtonClicked()
         if(ext.empty()) {
             filename += ".yaml";
         }
-        writeYaml(filename);
+        save2(filename);
     }
 }
 
@@ -695,54 +696,72 @@ Vector3 CrawlerGeneratorImpl::extractColor(PushButton* colorButton)
 }
 
 
-bool CrawlerGeneratorImpl::writeYaml(const string& filename)
+bool CrawlerGeneratorImpl::save2(const string& filename)
 {
-    if(filename.empty()) {
-        return false;
+    if(!filename.empty()) {
+        YAMLWriter yamlWriter(filename);
+        yamlWriter.setKeyOrderPreservationMode(true);
+        auto topNode = writeConfig(filename);
+        yamlWriter.putNode(topNode);
+        yamlWriter.closeFile();
     }
-    filesystem::path path(filename);
-    string name = path.stem().string();
 
-    YAMLWriter writer(filename);
-    writer.startMapping(); {
-        writer.putKeyValue("format", "CrawlerRobotBuilderYaml");
-        writer.putKeyValue("formatVersion", "1.0");
-        writer.putKeyValue("name", name);
-        writer.putKey("configs");
-        writer.startListing(); {
-            writer.startMapping();
-            writer.putKey("doubleSpin");
-            writer.startFlowStyleListing(); {
-                for(int i = 0; i < NUM_DSPINS; ++i) {
-                    writer.putScalar(dspins[i]->value());
-                }
-            } writer.endListing();
-
-            writer.putKey("spin");
-            writer.startFlowStyleListing(); {
-                for(int i = 0; i < NUM_SPINS; ++i) {
-                    writer.putScalar(agxspins[i]->value());
-                }
-            } writer.endListing();
-
-            for(int i = 0; i < NUM_BUTTONS; ++i) {
-                string key = "button" + to_string(i);
-                putKeyVector3(writer, key, extractColor(buttons[i]));
-            }
-
-            writer.putKey("check");
-            writer.startFlowStyleListing(); {
-                for(int i = 0; i < NUM_CHECKS; ++i) {
-                    writer.putScalar(checks[i]->isChecked());
-                }
-            } writer.endListing();
-        } writer.endListing();
-    } writer.endMapping();
     return true;
 }
 
 
-bool CrawlerGeneratorImpl::write(const string& filename)
+MappingPtr CrawlerGeneratorImpl::writeConfig(const string& filename)
+{
+    MappingPtr node = new Mapping;
+
+    filesystem::path path(filename);
+    string name = path.stem().string();
+
+    node->write("format", "CrawlerRobotBuilderYaml");
+    node->write("formatVersion", "1.0");
+    node->write("name", name);
+
+    ListingPtr configsNode = new Listing;
+    {
+        MappingPtr node = new Mapping;
+
+        Listing& doubleSpinList = *node->createFlowStyleListing("doubleSpin");
+        int n = NUM_DSPINS;
+        for(int i = 0; i < NUM_DSPINS; ++i) {
+            doubleSpinList.append(dspins[i]->value()), n, n;
+        }
+
+        Listing& spinList = *node->createFlowStyleListing("spin");
+        int n1 = NUM_SPINS;
+        for(int i = 0; i < NUM_SPINS; ++i) {
+            spinList.append(agxspins[i]->value(), n1, n1);
+        }
+
+        int n2 = NUM_BUTTONS;
+        for(int i = 0; i < NUM_BUTTONS; ++i) {
+            string key = "button" + to_string(i);
+            Vector3 c = extractColor(buttons[i]);
+            write(node, key, c);
+        }
+
+        Listing& checkList = *node->createFlowStyleListing("check");
+        int n3 = NUM_CHECKS;
+        for(int i = 0; i < NUM_CHECKS; ++i) {
+            checkList.append(checks[i]->isChecked() ? 1 : 0, n3, n3);
+        }
+
+        configsNode->append(node);
+    }
+
+    if(!configsNode->empty()) {
+        node->insert("configs", configsNode);
+    }
+
+    return node;
+}
+
+
+bool CrawlerGeneratorImpl::writeBody(const string& filename)
 {
     if(filename.empty()) {
         return false;
