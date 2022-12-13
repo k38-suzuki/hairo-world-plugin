@@ -6,6 +6,7 @@
 #include "PipeGenerator.h"
 #include <cnoid/Button>
 #include <cnoid/Dialog>
+#include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/MainWindow>
@@ -79,11 +80,15 @@ public:
     SpinBox* spins[NUM_SPINS];
     PushButton* colorButton;
     FileFormWidget* formWidget;
+    YAMLWriter yamlWriter;
 
-    bool writeYaml(const string& filename);
+    bool save(const string& filename);
     void onColorButtonClicked();
     void onInnerDiameterChanged(const double& diameter);
     void onOuterDiameterChanged(const double& diameter);
+    MappingPtr writeBody(const string& filename);
+    MappingPtr writeLink();
+    void writeLinkShape(Listing* elementsNode);
     VectorXd calcInertia();
 };
 
@@ -100,6 +105,8 @@ PipeGeneratorImpl::PipeGeneratorImpl(PipeGenerator* self)
     : self(self)
 {
     setWindowTitle(_("Pipe Builder"));
+    yamlWriter.setKeyOrderPreservationMode(true);
+
     QVBoxLayout* vbox = new QVBoxLayout;
     QGridLayout* gbox = new QGridLayout;
 
@@ -145,7 +152,7 @@ PipeGeneratorImpl::PipeGeneratorImpl(PipeGenerator* self)
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
     dspins[IN_DIA]->sigValueChanged().connect([&](double value){ onInnerDiameterChanged(value); });
     dspins[OUT_DIA]->sigValueChanged().connect([&](double value){ onOuterDiameterChanged(value); });
-    formWidget->sigClicked().connect([&](string filename){ writeYaml(filename); });
+    formWidget->sigClicked().connect([&](string filename){ save(filename); });
 }
 
 
@@ -167,110 +174,16 @@ void PipeGenerator::initializeClass(ExtensionManager* ext)
 }
 
 
-bool PipeGeneratorImpl::writeYaml(const string& filename)
+bool PipeGeneratorImpl::save(const string& filename)
 {
-    filesystem::path path(filename);
-    string name = path.stem().string();
-
-    double mass = dspins[MASS]->value();
-    double innerDiameter = dspins[IN_DIA]->value();
-    double outerDiameter = dspins[OUT_DIA]->value();
-    double length = dspins[LENGTH]->value();
-    int angle = spins[ANGLE]->value();
-    int step = spins[STEP]->value();
-
     if(!filename.empty()) {
-        YAMLWriter writer(filename);
-        writer.startMapping(); {
-            writer.putKeyValue("format", "ChoreonoidBody");
-            writer.putKeyValue("formatVersion", "1.0");
-            writer.putKeyValue("angleUnit", "degree");
-            writer.putKeyValue("name", name);
-            writer.putKey("links");
-            writer.startListing(); {
-                writer.startMapping(); {
-                    writer.putKeyValue("name", name);
-                    writer.putKeyValue("jointType", "free");
-                    writer.putKey("centerOfMass");
-                    writer.startFlowStyleListing(); {
-                        for(int i = 0; i < 3; ++i) {
-                            writer.putScalar(0.0);
-                        }
-                    } writer.endListing(); // end of centerOfMass list
-                    writer.putKeyValue("mass", mass);
-                    writer.putKey("inertia");
-                    writer.startFlowStyleListing(); {
-                        VectorXd inertia;
-                        inertia.resize(9);
-                        inertia = calcInertia();
-                        for(int i = 0; i < 9; ++i) {
-                            writer.putScalar(inertia[i]);
-                        }
-                    } writer.endListing(); // end of inertia list
-                    writer.putKey("elements");
-                    writer.startMapping(); {
-                        writer.putKey("Shape");
-                        writer.startMapping(); {
-                            writer.putKey("geometry");
-                            writer.startMapping(); {
-                                writer.putKeyValue("type", "Extrusion");
-                                writer.putKey("crossSection");
-                                writer.startFlowStyleListing(); {
-                                    int range = 360 - angle;
-                                    double sx;
-                                    double sy;
-                                    for(int i = 0; i <= range; i += step) {
-                                        double x = outerDiameter * cos(i * TO_RADIAN);
-                                        double y = outerDiameter * sin(i * TO_RADIAN);
-                                        if(i == 0) {
-                                            sx = x;
-                                            sy = y;
-                                        }
-                                        writer.putScalar(x);
-                                        writer.putScalar(y);
-                                    }
-                                    for(int i = 0; i <= range; i += step) {
-                                        double x = innerDiameter * cos((range - i) * TO_RADIAN);
-                                        double y = innerDiameter * sin((range - i) * TO_RADIAN);
-                                        writer.putScalar(x);
-                                        writer.putScalar(y);
-                                    }
-                                    writer.putScalar(sx);
-                                    writer.putScalar(sy);
-                                } writer.endListing(); // end of crossSection list
-                                writer.putKey("spine");
-                                writer.startFlowStyleListing(); {
-                                    Vector6 spine;
-                                    spine << 0.0, -length / 2.0, 0.0, 0.0, length / 2.0, 0.0;
-                                    for(int i = 0; i < 6; ++i) {
-                                        writer.putScalar(spine[i]);
-                                    }
-                                } writer.endListing(); // end of spine list
-                            } writer.endMapping(); // end of geometry map
-                            writer.putKey("appearance");
-                            writer.startFlowStyleMapping(); {
-                                writer.putKey("material");
-                                writer.startMapping(); {
-                                    writer.putKey("diffuseColor");
-                                    QPalette palette = colorButton->palette();
-                                    QColor color = palette.color(QPalette::Button);
-                                    double red = (double)color.red() / 255.0;
-                                    double green = (double)color.green() / 255.0;
-                                    double blue = (double)color.blue() / 255.0;
-                                    Vector3 diffuseColor(red, green, blue);
-                                    writer.startFlowStyleListing(); {
-                                        for(int i = 0; i < 3; ++i) {
-                                            writer.putScalar(diffuseColor[i]);
-                                        }
-                                    } writer.endListing(); // end of diffuseColor list
-                                } writer.endMapping(); // end of material map
-                            } writer.endMapping(); // end of appearance map
-                        } writer.endMapping(); // end of Shape map
-                    } writer.endMapping(); // end of elements map
-                } writer.endMapping(); // end of links map
-            } writer.endListing(); // end of links list
-        } writer.endMapping(); // end of body map
+        auto topNode = writeBody(filename);
+        if(yamlWriter.openFile(filename)) {
+            yamlWriter.putNode(topNode);
+            yamlWriter.closeFile();
+        }
     }
+
     return true;
 }
 
@@ -312,6 +225,113 @@ void PipeGeneratorImpl::onOuterDiameterChanged(const double& diameter)
         double outerDiameter = innerDiameter + 0.01;
         dspins[OUT_DIA]->setValue(outerDiameter);
     }
+}
+
+
+MappingPtr PipeGeneratorImpl::writeBody(const string& filename)
+{
+    MappingPtr node = new Mapping;
+
+    filesystem::path path(filename);
+    string name = path.stem().string();
+
+    node->write("format", "ChoreonoidBody");
+    node->write("formatVersion", "1.0");
+    node->write("angleUnit", "degree");
+    node->write("name", name);
+
+    ListingPtr linksNode = new Listing;
+    linksNode->append(writeLink());
+    if(!linksNode->empty()) {
+        node->insert("links", linksNode);
+    }
+
+    return node;
+}
+
+
+MappingPtr PipeGeneratorImpl::writeLink()
+{
+    MappingPtr node = new Mapping;
+
+    double mass = dspins[MASS]->value();
+
+    node->write("name", "Root");
+    node->write("jointType", "free");
+    write(node, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    node->write("mass", mass);
+    write(node, "inertia", calcInertia());
+
+    ListingPtr elementsNode = new Listing;
+    writeLinkShape(elementsNode);
+    if(!elementsNode->empty()) {
+        node->insert("elements", elementsNode);
+    }
+
+    return node;
+}
+
+
+void PipeGeneratorImpl::writeLinkShape(Listing* elementsNode)
+{
+    MappingPtr node = new Mapping;
+
+    double innerDiameter = dspins[IN_DIA]->value();
+    double outerDiameter = dspins[OUT_DIA]->value();
+    double length = dspins[LENGTH]->value();
+    int angle = spins[ANGLE]->value();
+    int step = spins[STEP]->value();
+
+    node->write("type", "Shape");
+
+    MappingPtr geometryNode = new Mapping;
+    geometryNode->write("type", "Extrusion");
+    Listing& crossSectionList = *geometryNode->createFlowStyleListing("crossSection");
+
+    int range = 360 - angle;
+    int n = ((360 - angle) / step + 1) * 2 + 1;
+    double sx;
+    double sy;
+    for(int i = 0; i <= range; i += step) {
+        double x = outerDiameter * cos(i * TO_RADIAN);
+        double y = outerDiameter * sin(i * TO_RADIAN);
+        if(i == 0) {
+            sx = x;
+            sy = y;
+        }
+        crossSectionList.append(x, 2, n);
+        crossSectionList.append(y, 2, n);
+    }
+    for(int i = 0; i <= range; i += step) {
+        double x = innerDiameter * cos((range - i) * TO_RADIAN);
+        double y = innerDiameter * sin((range - i) * TO_RADIAN);
+        crossSectionList.append(x, 2, n);
+        crossSectionList.append(y, 2, n);
+    }
+    crossSectionList.append(sx, 2, n);
+    crossSectionList.append(sy, 2, n);
+
+    VectorXd spine(6);
+    spine << 0.0, -length / 2.0, 0.0, 0.0, length / 2.0, 0.0;
+    write(geometryNode, "spine", spine);
+
+    node->insert("geometry", geometryNode);
+
+    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+    MappingPtr materialNode = new Mapping;
+    Listing& diffuseColorList = *materialNode->createFlowStyleListing("diffuseColor");
+    QPalette palette = colorButton->palette();
+    QColor color = palette.color(QPalette::Button);
+    Vector3 diffuseColor;
+    diffuseColor[0] = (double)color.red() / 255.0;
+    diffuseColor[1] = (double)color.green() / 255.0;
+    diffuseColor[2] = (double)color.blue() / 255.0;
+    for(int i = 0; i < 3; ++i) {
+        diffuseColorList.append(diffuseColor[i], 3, 3);
+    }
+    appearanceNode->insert("material", materialNode);
+
+    elementsNode->append(node);
 }
 
 
