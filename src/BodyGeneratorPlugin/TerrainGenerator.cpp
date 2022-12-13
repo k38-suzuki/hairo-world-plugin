@@ -6,15 +6,16 @@
 #include "TerrainGenerator.h"
 #include <cnoid/Button>
 #include <cnoid/Dialog>
+#include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
 #include <cnoid/FileDialog>
 #include <cnoid/LineEdit>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
-#include <cnoid/MessageView>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/stdx/filesystem>
+#include <cnoid/YAMLWriter>
 #include <QGridLayout>
 #include <QLabel>
 #include <QVBoxLayout>
@@ -41,7 +42,7 @@ class TerrainData
 public:
     TerrainData();
 
-    bool read(const std::string& filename);
+    bool read(const string& filename);
 
     int xsize() const { return xsize_; }
     int ysize() const { return ysize_; }
@@ -69,12 +70,18 @@ public:
     TerrainGenerator* self;
 
     LineEdit* inputFileLine;
+    TerrainData* data;
     PushButton* loadButton;
-    MessageView* mv;
     FileFormWidget* formWidget;
+    YAMLWriter yamlWriter;
 
     bool save(const string& filename);
-    void onLoadButtonClicked();};
+    void onLoadButtonClicked();
+    MappingPtr writeBody(const string& filename);
+    MappingPtr writeLink();
+    void writeLinkShape(Listing* elementsNode);
+};
+
 }
 
 
@@ -86,10 +93,10 @@ TerrainGenerator::TerrainGenerator()
 
 
 TerrainGeneratorImpl::TerrainGeneratorImpl(TerrainGenerator* self)
-    : self(self),
-      mv(MessageView::instance())
+    : self(self)
 {
     setWindowTitle(_("BoxTerrain Builder"));
+    yamlWriter.setKeyOrderPreservationMode(true);
 
     scaleSpin = new DoubleSpinBox;
     scaleSpin->setDecimals(1);
@@ -99,7 +106,7 @@ TerrainGeneratorImpl::TerrainGeneratorImpl(TerrainGenerator* self)
 
     inputFileLine = new LineEdit;
     inputFileLine->setEnabled(false);
-
+    data = nullptr;
     loadButton = new PushButton(_("&Load"));
 
     QVBoxLayout* vbox = new QVBoxLayout;
@@ -144,99 +151,22 @@ void TerrainGenerator::initializeClass(ExtensionManager* ext)
 bool TerrainGeneratorImpl::save(const string& filename)
 {
     string inputFile = inputFileLine->text().toStdString();
-    if(filename.empty() || inputFile.empty()) {
+    if(inputFile.empty()) {
         return false;
     }
-
-    FILE* fp = fopen(filename.c_str(), "w");
-    if(fp == NULL) {
-        mv->putln(_("cannot open body file."));
-        return false;
-    }
-
-    TerrainData* data = new TerrainData;
+    
+    data = new TerrainData;
     if(!data->read(inputFile)) {
-        mv->putln(_("cannot csv body file."));
         return false;
     }
 
-    filesystem::path path(filename);
-    string name = path.stem().string();
-
-    fprintf(fp, "format: ChoreonoidBody\n");
-    fprintf(fp, "formatVersion: 1.0\n");
-    fprintf(fp, "name: %s\n", name.c_str());
-    fprintf(fp, "links:\n");
-    fprintf(fp, "  -\n");
-    fprintf(fp, "    name: BOXTERRAIN\n");
-
-    double unit = 0.1 * scaleSpin->value() / 2.0;
-    double x = data->xsize() * unit * -1.0;
-    double y = data->ysize() * unit;
-    Vector3 pos(x, y, 0.0);
-
-    fprintf(fp, "    translation: [ %4.2lf, %4.2lf, %4.2lf ]\n", pos[0], pos[1], pos[2]);
-    fprintf(fp, "    jointType: fixed\n");
-    fprintf(fp, "    material: Ground\n");
-    fprintf(fp, "    elements:\n");
-    fprintf(fp, "      Shape:\n");
-    fprintf(fp, "        geometry:\n");
-    fprintf(fp, "          type: IndexedFaceSet\n");
-    fprintf(fp, "          coordinate: [\n");
-
-
-    for(int k = 0; k < data->ysize(); k++) {
-        for(int j = 0; j < data->xsize(); j++) {
-            for(int i = 0; i < 4; i++) {
-                Vector3 point = data->p_a(j, k, i);
-                fprintf(fp, "            %4.2f, %4.2f, %4.2f,\n", point[0], point[1], point[2]);
-            }
+    if(!filename.empty()) {
+        auto topNode = writeBody(filename);
+        if(yamlWriter.openFile(filename)) {
+            yamlWriter.putNode(topNode);
+            yamlWriter.closeFile();
         }
     }
-
-    for(int k = 0; k < data->ysize(); k++) {
-        for(int j = 0; j < data->xsize(); j++) {
-            for(int i = 0; i < 4; i++) {
-                Vector3 point = data->p_b(j, k, i);
-                fprintf(fp, "            %4.2f, %4.2f, %4.2f,\n", point[0], point[1], point[2]);
-            }
-        }
-    }
-
-    fprintf(fp, "          ]\n");
-    fprintf(fp, "          coordIndex: [\n");
-
-    for(int j = 0; j < data->ysize(); j++) {
-        for(int i = 0; i < data->xsize(); i++) {
-            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", data->id(i, j, 0, 0), data->id(i, j, 1, 0), data->id(i, j, 2, 0), data->id(i, j, 3, 0));
-            fprintf(fp,  "            %d, %d, %d, %d, -1,\n", data->id(i, j, 0, 1), data->id(i, j, 3, 1), data->id(i, j, 2, 1), data->id(i, j, 1, 1));
-            if(i != 0) {
-                fprintf(fp,  "            %d, %d, %d, %d, -1,\n", data->id(i - 1, j, 3, 0), data->id(i - 1, j, 2, 0), data->id(i, j, 1, 0), data->id(i, j, 0, 0));
-            } else {
-                fprintf(fp,  "            %d, %d, %d, %d, -1,\n", data->id(i, j, 1, 1), data->id(i, j, 1, 0), data->id(i, j, 0, 0), data->id(i, j, 0, 1));
-            }
-
-            if(j != 0) {
-                fprintf(fp,  "            %d, %d, %d, %d, -1,\n", data->id(i, j - 1, 1, 0), data->id(i, j, 0, 0), data->id(i, j, 3, 0), data->id(i, j - 1, 2, 0));
-            } else {
-                fprintf(fp,  "            %d, %d, %d, %d, -1,\n", data->id(i, j, 0, 1), data->id(i, j, 0, 0), data->id(i, j, 3, 0), data->id(i, j, 3, 1));
-            }
-
-            if(j == data->ysize() - 1) {
-                fprintf(fp,  "            %d, %d, %d, %d, -1,\n", data->id(i, j, 1, 0), data->id(i, j, 1, 1), data->id(i, j, 2, 1), data->id(i, j, 2, 0));
-            }
-
-            if(i == data->xsize() - 1) {
-                fprintf(fp,  "            %d, %d, %d, %d, -1,\n", data->id(i, j, 2, 1), data->id(i, j, 3, 1), data->id(i, j, 3, 0), data->id(i, j, 2, 0));
-            }
-        }
-    }
-
-    fprintf(fp, "          ]\n");
-    fprintf(fp, "        appearance:\n");
-    fprintf(fp, "          material: { diffuseColor: [ 1, 1, 1 ] }\n");
-    fprintf(fp, "#          texture: { url: \"path/to/image.png\" }\n");
-    fclose(fp);
 
     return true;
 }
@@ -262,6 +192,160 @@ void TerrainGeneratorImpl::onLoadButtonClicked()
         string filename = dialog.selectedFiles().front().toStdString();
         inputFileLine->setText(filename);
     }
+}
+
+
+MappingPtr TerrainGeneratorImpl::writeBody(const string& filename)
+{
+    MappingPtr node = new Mapping;
+
+    filesystem::path path(filename);
+    string name = path.stem().string();
+
+    node->write("format", "ChoreonoidBody");
+    node->write("formatVersion", "1.0");
+    node->write("angleUnit", "degree");
+    node->write("name", name);
+
+    ListingPtr linksNode = new Listing;
+    linksNode->append(writeLink());
+    if(!linksNode->empty()) {
+        node->insert("links", linksNode);
+    }
+
+    return node;
+}
+
+
+MappingPtr TerrainGeneratorImpl::writeLink()
+{
+    MappingPtr node = new Mapping;
+
+    node->write("name", "Root");
+    node->write("jointType", "fixed");
+    node->write("material", "Ground");
+
+    ListingPtr elementsNode = new Listing;
+    writeLinkShape(elementsNode);
+    if(!elementsNode->empty()) {
+        node->insert("elements", elementsNode);
+    }
+
+    return node;
+}
+
+
+void TerrainGeneratorImpl::writeLinkShape(Listing* elementsNode)
+{
+    MappingPtr node = new Mapping;
+
+    node->write("type", "Shape");
+
+    double unit = 0.1 * scaleSpin->value();
+    double x = data->xsize() * unit / 2.0;
+    double y = data->ysize() * unit / 2.0;
+    write(node, "translation", Vector3(-x, y, 0.0));
+
+    MappingPtr geometryNode = new Mapping;
+    geometryNode->write("type", "IndexedFaceSet");
+    Listing& coordinateList = *geometryNode->createFlowStyleListing("coordinate");
+
+    int n = data->xsize() * data->ysize() * 4 * 2 * 3;
+
+    for(int k = 0; k < data->ysize(); ++k) {
+        for(int j = 0; j < data->xsize(); ++j) {
+            for(int i = 0; i < 4; ++i) {
+                Vector3 p = data->p_a(j, k, i);
+                coordinateList.append(p[0], 3, n);
+                coordinateList.append(p[1], 3, n);
+                coordinateList.append(p[2], 3, n);
+            }
+        }
+    }
+
+    for(int k = 0; k < data->ysize(); ++k) {
+        for(int j = 0; j < data->xsize(); ++j) {
+            for(int i = 0; i < 4; ++i) {
+                Vector3 p = data->p_b(j, k, i);
+                coordinateList.append(p[0], 3, n);
+                coordinateList.append(p[1], 3, n);
+                coordinateList.append(p[2], 3, n);
+            }
+        }
+    }
+
+    Listing& coordIndexList = *geometryNode->createFlowStyleListing("coordIndex");
+
+    int n1 = (data->xsize() * data->ysize() * 4 + data->xsize() + data->ysize()) * 5;
+
+    for(int j = 0; j < data->ysize(); ++j) {
+        for(int i = 0; i < data->xsize(); ++i) {
+            coordIndexList.append(data->id(i, j, 0, 0), 5, n1);
+            coordIndexList.append(data->id(i, j, 1, 0), 5, n1);
+            coordIndexList.append(data->id(i, j, 2, 0), 5, n1);
+            coordIndexList.append(data->id(i, j, 3, 0), 5, n1);
+            coordIndexList.append(                  -1, 5, n1);
+
+            coordIndexList.append(data->id(i, j, 0, 1), 5, n1);
+            coordIndexList.append(data->id(i, j, 3, 1), 5, n1);
+            coordIndexList.append(data->id(i, j, 2, 1), 5, n1);
+            coordIndexList.append(data->id(i, j, 1, 1), 5, n1);
+            coordIndexList.append(                  -1, 5, n1);
+
+            if(i != 0) {
+                coordIndexList.append(data->id(i - 1, j, 3, 0), 5, n1);
+                coordIndexList.append(data->id(i - 1, j, 2, 0), 5, n1);
+                coordIndexList.append(data->id(i, j, 1, 0),     5, n1);
+                coordIndexList.append(data->id(i, j, 0, 0),     5, n1);
+                coordIndexList.append(                  -1,     5, n1);
+            } else {
+                coordIndexList.append(data->id(i, j, 1, 1), 5, n1);
+                coordIndexList.append(data->id(i, j, 1, 0), 5, n1);
+                coordIndexList.append(data->id(i, j, 0, 0), 5, n1);
+                coordIndexList.append(data->id(i, j, 0, 1), 5, n1);
+                coordIndexList.append(                  -1, 5, n1);
+            }
+
+            if(j != 0) {
+                coordIndexList.append(data->id(i, j - 1, 1, 0), 5, n1);
+                coordIndexList.append(    data->id(i, j, 0, 0), 5, n1);
+                coordIndexList.append(    data->id(i, j, 3, 0), 5, n1);
+                coordIndexList.append(data->id(i, j - 1, 2, 0), 5, n1);
+                coordIndexList.append(                      -1, 5, n1);
+            } else {
+                coordIndexList.append(data->id(i, j, 0, 1), 5, n1);
+                coordIndexList.append(data->id(i, j, 0, 0), 5, n1);
+                coordIndexList.append(data->id(i, j, 3, 0), 5, n1);
+                coordIndexList.append(data->id(i, j, 3, 1), 5, n1);
+                coordIndexList.append(                  -1, 5, n1);
+            }
+
+            if(j == data->ysize() - 1) {
+                coordIndexList.append(data->id(i, j, 1, 0), 5, n1);
+                coordIndexList.append(data->id(i, j, 1, 1), 5, n1);
+                coordIndexList.append(data->id(i, j, 2, 1), 5, n1);
+                coordIndexList.append(data->id(i, j, 2, 0), 5, n1);
+                coordIndexList.append(                  -1, 5, n1);
+            }
+
+            if(i == data->xsize() - 1) {
+                coordIndexList.append(data->id(i, j, 2, 1), 5, n1);
+                coordIndexList.append(data->id(i, j, 3, 1), 5, n1);
+                coordIndexList.append(data->id(i, j, 3, 0), 5, n1);
+                coordIndexList.append(data->id(i, j, 2, 0), 5, n1);
+                coordIndexList.append(                  -1, 5, n1);
+            }
+        }
+    }
+
+    node->insert("geometry", geometryNode);
+
+    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+    MappingPtr materialNode = new Mapping;
+    write(materialNode, "diffuseColor", Vector3(1.0, 1.0, 1.0));
+    appearanceNode->insert("material", materialNode);
+
+    elementsNode->append(node);
 }
 
 
@@ -302,18 +386,18 @@ bool TerrainData::read(const string& filename)
     ysize_ = clm;
 
     //set cell_a
-    for(int k = 0; k < ysize_; k++) {
-        for(int j = 0; j < xsize_; j++) {
-            for(int i = 0; i < 4; i++) {
+    for(int k = 0; k < ysize_; ++k) {
+        for(int j = 0; j < xsize_; ++j) {
+            for(int i = 0; i < 4; ++i) {
                 cell_a[k][j][i] = id_++;
             }
         }
     }
 
     //set cell_b
-    for(int k = 0; k < ysize_; k++) {
-        for(int j = 0; j < xsize_; j++) {
-            for(int i = 0; i < 4; i++) {
+    for(int k = 0; k < ysize_; ++k) {
+        for(int j = 0; j < xsize_; ++j) {
+            for(int i = 0; i < 4; ++i) {
                 cell_b[k][j][i] = id_++;
             }
         }
@@ -322,8 +406,8 @@ bool TerrainData::read(const string& filename)
     //set point_a, point_b
     double scale = 0.1 * scaleSpin->value();
 
-    for(int j = 0; j < ysize_; j++) {
-        for(int i = 0; i < xsize_; i++) {
+    for(int j = 0; j < ysize_; ++j) {
+        for(int i = 0; i < xsize_; ++i) {
             double eq0 = scale * i;
             double eq1 = scale * j * -1;
             double eq2 = scale * height[j][i];
