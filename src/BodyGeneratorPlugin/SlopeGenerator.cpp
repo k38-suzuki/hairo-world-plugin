@@ -6,6 +6,7 @@
 #include "SlopeGenerator.h"
 #include <cnoid/Button>
 #include <cnoid/Dialog>
+#include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/MainWindow>
@@ -65,9 +66,13 @@ public:
     DoubleSpinBox* dspins[NUM_DSPINS];
     PushButton* colorButton;
     FileFormWidget* formWidget;
+    YAMLWriter yamlWriter;
 
-    bool writeYaml(const string& filename);
+    bool save(const string& filename);
     void onColorButtonClicked();
+    MappingPtr writeBody(const string& filename);
+    MappingPtr writeLink();
+    void writeLinkShape(Listing* elementsNode);
     VectorXd calcInertia();
 };
 
@@ -84,6 +89,8 @@ SlopeGeneratorImpl::SlopeGeneratorImpl(SlopeGenerator* self)
     : self(self)
 {
     setWindowTitle(_("Slope Builder"));
+    yamlWriter.setKeyOrderPreservationMode(true);
+
     QVBoxLayout* vbox = new QVBoxLayout;
     QGridLayout* gbox = new QGridLayout;
 
@@ -115,7 +122,7 @@ SlopeGeneratorImpl::SlopeGeneratorImpl(SlopeGenerator* self)
     setLayout(vbox);
 
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
-    formWidget->sigClicked().connect([&](string filename){ writeYaml(filename); });
+    formWidget->sigClicked().connect([&](string filename){ save(filename); });
 }
 
 
@@ -137,98 +144,16 @@ void SlopeGenerator::initializeClass(ExtensionManager* ext)
 }
 
 
-bool SlopeGeneratorImpl::writeYaml(const string& filename)
+bool SlopeGeneratorImpl::save(const string& filename)
 {
-    filesystem::path path(filename);
-    string name = path.stem().string();
-
-    double mass = dspins[MASS]->value();
-    double length = dspins[LENGTH]->value();
-    double width = dspins[WIDTH]->value();
-    double height = dspins[HEIGHT]->value();
-
     if(!filename.empty()) {
-        YAMLWriter writer(filename);
-        writer.startMapping(); {
-            writer.putKeyValue("format", "ChoreonoidBody");
-            writer.putKeyValue("formatVersion", "1.0");
-            writer.putKeyValue("angleUnit", "degree");
-            writer.putKeyValue("name", name);
-            writer.putKey("links");
-            writer.startListing(); {
-                writer.startMapping(); {
-                    writer.putKeyValue("name", name);
-                    writer.putKeyValue("jointType", "free");
-                    writer.putKey("centerOfMass");
-                    writer.startFlowStyleListing(); {
-                        for(int i = 0; i < 3; ++i) {
-                            writer.putScalar(0.0);
-                        }
-                    }  writer.endListing(); // end of centerOfMass list
-                    writer.putKeyValue("mass", mass);
-                    writer.putKey("inertia");
-                    writer.startFlowStyleListing(); {
-                        VectorXd inertia;
-                        inertia.resize(9);
-                        inertia = calcInertia();
-                        for(int i = 0; i < 9; ++i) {
-                            writer.putScalar(inertia[i]);
-                        }
-                    } writer.endListing(); // end of inertia list
-                    writer.putKey("elements");
-                    writer.startMapping(); {
-                        writer.putKey("Shape");
-                        writer.startMapping(); {
-                            writer.putKey("geometry");
-                            writer.startMapping(); {
-                                writer.putKeyValue("type", "Extrusion");
-                                writer.putKey("crossSection");
-                                double hl = length / 2.0;
-                                double hw = width / 2.0;
-                                double hh = height / 2.0;
-                                writer.startFlowStyleListing(); {
-                                    writer.putScalar(-hl);
-                                    writer.putScalar(-hh);
-                                    writer.putScalar(hl);
-                                    writer.putScalar(-hh);
-                                    writer.putScalar(hl);
-                                    writer.putScalar(hh);
-                                    writer.putScalar(-hl);
-                                    writer.putScalar(-hh);
-                                } writer.endListing(); // end of crossSection list
-                                writer.putKey("spine");
-                                writer.startFlowStyleListing(); {
-                                    Vector6 spine;
-                                    spine << 0.0, -hw, 0.0, 0.0, hw, 0.0;
-                                    for(int i = 0; i < 6; ++i) {
-                                        writer.putScalar(spine[i]);
-                                    }
-                                } writer.endListing(); // end of spine list
-                            } writer.endMapping(); // end of geometry map
-                            writer.putKey("appearance");
-                            writer.startFlowStyleMapping(); {
-                                writer.putKey("material");
-                                writer.startMapping(); {
-                                    writer.putKey("diffuseColor");
-                                    QPalette palette = colorButton->palette();
-                                    QColor color = palette.color(QPalette::Button);
-                                    double red = (double)color.red() / 255.0;
-                                    double green = (double)color.green() / 255.0;
-                                    double blue = (double)color.blue() / 255.0;
-                                    Vector3 diffuseColor(red, green, blue);
-                                    writer.startFlowStyleListing(); {
-                                        for(int i = 0; i < 3; ++i) {
-                                            writer.putScalar(diffuseColor[i]);
-                                        }
-                                    } writer.endListing(); // end of diffuseColor list
-                                } writer.endMapping(); // end of material map
-                            } writer.endMapping(); // end of appearance map
-                        } writer.endMapping(); // end of Shape map
-                    } writer.endMapping(); // end of elements map
-                } writer.endMapping(); // end of links map
-            } writer.endListing(); // end of links list
-        } writer.endMapping(); // end of body map
+        auto topNode = writeBody(filename);
+        if(yamlWriter.openFile(filename)) {
+            yamlWriter.putNode(topNode);
+            yamlWriter.closeFile();
+        }
     }
+
     return true;
 }
 
@@ -250,6 +175,101 @@ void SlopeGeneratorImpl::onColorButtonClicked()
     QPalette palette;
     palette.setColor(QPalette::Button, selectedColor);
     colorButton->setPalette(palette);
+}
+
+
+MappingPtr SlopeGeneratorImpl::writeBody(const string& filename)
+{
+    MappingPtr node = new Mapping;
+
+    filesystem::path path(filename);
+    string name = path.stem().string();
+
+    node->write("format", "ChoreonoidBody");
+    node->write("formatVersion", "1.0");
+    node->write("angleUnit", "degree");
+    node->write("name", name);
+
+    ListingPtr linksNode = new Listing;
+    linksNode->append(writeLink());
+    if(!linksNode->empty()) {
+        node->insert("links", linksNode);
+    }
+
+    return node;
+}
+
+
+MappingPtr SlopeGeneratorImpl::writeLink()
+{
+    MappingPtr node = new Mapping;
+
+    double mass = dspins[MASS]->value();
+
+    node->write("name", "Root");
+    node->write("jointType", "fixed");
+    write(node, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    node->write("mass", mass);
+    write(node, "inertia", calcInertia());
+
+    ListingPtr elementsNode = new Listing;
+    writeLinkShape(elementsNode);
+    if(!elementsNode->empty()) {
+        node->insert("elements", elementsNode);
+    }
+
+    return node;
+}
+
+
+void SlopeGeneratorImpl::writeLinkShape(Listing* elementsNode)
+{
+    MappingPtr node = new Mapping;
+
+    double length = dspins[LENGTH]->value();
+    double width = dspins[WIDTH]->value();
+    double height = dspins[HEIGHT]->value();
+
+    node->write("type", "Shape");
+
+    MappingPtr geometryNode = new Mapping;
+    geometryNode->write("type", "Extrusion");
+    Listing& crossSectionList = *geometryNode->createFlowStyleListing("crossSection");
+
+    int n = 8;
+    double hl = length / 2.0;
+    double hw = width / 2.0;
+    double hh = height / 2.0;
+    crossSectionList.append(-hl, 2, n);
+    crossSectionList.append(-hh, 2, n);
+    crossSectionList.append( hl, 2, n);
+    crossSectionList.append(-hh, 2, n);
+    crossSectionList.append( hl, 2, n);
+    crossSectionList.append( hh, 2, n);
+    crossSectionList.append(-hl, 2, n);
+    crossSectionList.append(-hh, 2, n);
+
+    VectorXd spine(6);
+    spine << 0.0, -hw, 0.0, 0.0, hw, 0.0;
+    write(geometryNode, "spine", spine);
+
+    node->insert("geometry", geometryNode);
+
+    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+    MappingPtr materialNode = new Mapping;
+    Listing& diffuseColorList = *materialNode->createFlowStyleListing("diffuseColor");
+    QPalette palette = colorButton->palette();
+    QColor color = palette.color(QPalette::Button);
+    Vector3 diffuseColor;
+    diffuseColor[0] = (double)color.red() / 255.0;
+    diffuseColor[1] = (double)color.green() / 255.0;
+    diffuseColor[2] = (double)color.blue() / 255.0;
+    for(int i = 0; i < 3; ++i) {
+        diffuseColorList.append(diffuseColor[i], 3, 3);
+    }
+    appearanceNode->insert("material", materialNode);
+
+    elementsNode->append(node);
 }
 
 
