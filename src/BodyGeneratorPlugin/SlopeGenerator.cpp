@@ -260,12 +260,12 @@ void SlopeGeneratorImpl::writeLinkShape(Listing* elementsNode)
     Listing& diffuseColorList = *materialNode->createFlowStyleListing("diffuseColor");
     QPalette palette = colorButton->palette();
     QColor color = palette.color(QPalette::Button);
-    Vector3 diffuseColor;
-    diffuseColor[0] = (double)color.red() / 255.0;
-    diffuseColor[1] = (double)color.green() / 255.0;
-    diffuseColor[2] = (double)color.blue() / 255.0;
+    Vector3 c;
+    c[0] = (double)color.red() / 255.0;
+    c[1] = (double)color.green() / 255.0;
+    c[2] = (double)color.blue() / 255.0;
     for(int i = 0; i < 3; ++i) {
-        diffuseColorList.append(diffuseColor[i], 3, 3);
+        diffuseColorList.append(c[i], 3, 3);
     }
     appearanceNode->insert("material", materialNode);
 
