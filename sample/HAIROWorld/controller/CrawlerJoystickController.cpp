@@ -52,38 +52,38 @@ public:
 
         joystick = new Joystick(device.c_str());
 
-        static const char* tracknames[] = {
+        static const char* trackname[] = {
             "TRACK_L", "TRACK_R", "TRACK_LF",
             "TRACK_RF", "TRACK_LR", "TRACK_RR",
         };
 
-        static const char* agxtracknames[] = {
+        static const char* agxtrackname[] = {
             "SPROCKET_L", "SPROCKET_R", "SPROCKET_LF",
             "SPROCKET_RF", "SPROCKET_LR", "SPROCKET_RR",
         };
 
         for(int i = 0; i < NUM_TRACKS; ++i) {
-            Link* track = body->link(tracknames[i]);
+            Link* track = body->link(trackname[i]);
             if(!usePseudoContinousTrackMode) {
-                track = body->link(agxtracknames[i]);
+                track = body->link(agxtrackname[i]);
             }
             tracks[i] = track;
             if(!track) {
-                os << "Track" << tracknames[i] << " is not found." << endl;
+                os << "Track" << i << " is not found." << endl;
             } else {
                 io->enableOutput(track, JointVelocity);
             }
         }
 
-        static const char* jointnames[] = {
+        static const char* jointname[] = {
             "SPACER_LF", "SPACER_RF", "SPACER_LR", "SPACER_RR"
         };
 
         for(int i = 0; i < NUM_JOINTS; ++i) {
-            Link* joint = body->link(jointnames[i]);
+            Link* joint = body->link(jointname[i]);
             joints[i] = joint;
             if(!joint) {
-                os << "Joint" << jointnames[i] << " is not found." << endl;
+                os << "Joint" << i << " is not found." << endl;
             } else {
                 joint->setActuationMode(JointVelocity);
                 io->enableIO(joint);

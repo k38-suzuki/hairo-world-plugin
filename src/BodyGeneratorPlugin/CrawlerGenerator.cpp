@@ -261,7 +261,7 @@ public:
 
     MappingPtr writeBody(const string& filename);
     void writeLink(Listing* linksNode);
-    void writeChassis(Listing* linksNode);
+    MappingPtr writeChassis();
     void writeSpacer(Listing* linksNode);
     void writeAISTTrack(Listing* linksNode);
     void writeAISTTrackF(Listing* linksNode);
@@ -269,7 +269,24 @@ public:
 
     MappingPtr writeConfig(const string& filename);
 
+    MappingPtr writeAGXTrack();
+    MappingPtr writeAGXTrackBelt();
+    MappingPtr writeAGXSprocket();
+    MappingPtr writeAGXRoller();
+    MappingPtr writeAGXIdler();
+    MappingPtr writeAGXSubTrackF();
+    MappingPtr writeAGXSubTrackR();
+    MappingPtr writeAGXSubTrackBelt();
+    MappingPtr writeAGXSprocketF();
+    MappingPtr writeAGXRollerF();
+    MappingPtr writeAGXIdlerF();
+    MappingPtr writeAGXSprocketR();
+    MappingPtr writeAGXRollerR();
+    MappingPtr writeAGXIdlerR();
+    MappingPtr writeAGXWheel();
+
     bool writeAGX(const string& filename);
+
     bool writeAGXTrack(YAMLWriter& writer);
     bool writeAGXTrackBelt(YAMLWriter& writer);
     bool writeAGXSprocket(YAMLWriter& writer);
@@ -753,7 +770,7 @@ void CrawlerGeneratorImpl::writeLink(Listing* linksNode)
 {
     bool isAGXChecked = checks[AGX_CHK]->isChecked();
 
-    writeChassis(linksNode);
+    linksNode->append(writeChassis());
     writeSpacer(linksNode);
 
     if(checks[FFL_CHK]->isChecked()) {
@@ -780,7 +797,7 @@ void CrawlerGeneratorImpl::writeLink(Listing* linksNode)
 }
 
 
-void CrawlerGeneratorImpl::writeChassis(Listing* linksNode)
+MappingPtr CrawlerGeneratorImpl::writeChassis()
 {
     MappingPtr chassisNode = new Mapping;
 
@@ -810,7 +827,7 @@ void CrawlerGeneratorImpl::writeChassis(Listing* linksNode)
         chassisNode->insert("elements", elementsNode);
     }
 
-    linksNode->append(chassisNode);
+    return chassisNode;
 }
 
 
@@ -1153,12 +1170,380 @@ MappingPtr CrawlerGeneratorImpl::writeConfig(const string& filename)
 }
 
 
-bool CrawlerGeneratorImpl::writeAGX(const string& filename)
+MappingPtr CrawlerGeneratorImpl::writeAGXTrack()
 {
-    if(filename.empty()) {
-        return false;
+    MappingPtr node = new Mapping;
+
+    node->write("parent", "CHASSIS");
+    node->write("jointType", "fixed");
+    write(node, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    node->write("mass", dspins[TRK_MAS]->value() / 3.0);
+    write(node, "inertia", calcBoxInertia(dspins[TRK_MAS]->value() / 3.0, dspins[TRK_WBS]->value(), dspins[TRK_WDT]->value(), dspins[TRK_RAD]->value() * 2.0));
+
+    return node;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeAGXTrackBelt()
+{
+    MappingPtr node = new Mapping;
+
+    write(node, "upAxis", Vector3(0.0, 0.0, 1.0));
+    node->write("numberOfNodes", agxspins[TRK_BNN]->value());
+    node->write("nodeThickness", agxdspins[TRK_BNT]->value());
+    node->write("nodeWidth", agxdspins[TRK_BNW]->value());
+    node->write("nodeThickerThickness", agxdspins[TRK_BNTT]->value());
+    node->write("useThickerNodeEvery", agxspins[TRK_BUTNE]->value());
+    node->write("material", "robotTracks");
+    node->write("nodeDistanceTension", agxdspins[TRK_BNDTM]->value() * exp10(-agxspins[TRK_BNDTE]->value()));
+    node->write("stabilizingHingeFrictionParameter", agxdspins[TRK_BSHFPM]->value() * exp10(-agxspins[TRK_BSHFPE]->value()));
+    node->write("minStabilizingHingeNormalForce", agxspins[TRK_BMSHNF]->value());
+    node->write("hingeCompliance", agxdspins[TRK_BHCM]->value() * exp10(-agxspins[TRK_BHCE]->value()));
+    node->write("hingeSpookDamping", agxdspins[TRK_BHSD]->value());
+    node->write("nodesToWheelsMergeThreshold", agxdspins[TRK_BNWMT]->value());
+    node->write("nodesToWheelsSplitThreshold", agxdspins[TRK_BNWST]->value());
+
+    return node;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeAGXSprocket()
+{
+    MappingPtr sprocketNode = new Mapping;
+
+    sprocketNode->write("parent", "CHASSIS");
+    sprocketNode->insert(writeAGXWheel());
+    sprocketNode->write("mass", dspins[TRK_MAS]->value() * 2.0 / 9.0);
+    write(sprocketNode, "inertia", calcCylinderInertia(dspins[TRK_MAS]->value(), dspins[TRK_RAD]->value(), dspins[TRK_WDT]->value()));
+
+    ListingPtr elementsNode = new Listing;
+    MappingPtr node = new Mapping;
+
+    node->write("type", "Shape");
+
+    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
+    geometryNode->write("type", "Cylinder");
+    geometryNode->write("radius", dspins[TRK_RAD]->value());
+    geometryNode->write("height", dspins[TRK_WDT]->value());
+
+    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+    MappingPtr materialNode = new Mapping;
+    write(materialNode, "diffuseColor", extractColor(buttons[TRK_CLR]));
+    appearanceNode->insert("material", materialNode);
+
+    elementsNode->append(node);
+    if(!elementsNode->empty()) {
+        sprocketNode->insert("elements", elementsNode);
     }
 
+    return node;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeAGXRoller()
+{
+    return writeAGXSprocket();
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeAGXIdler()
+{
+    return writeAGXSprocket();
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeAGXSubTrackF()
+{
+    MappingPtr node = new Mapping;
+
+    node->write("jointType", "fixed");
+    write(node, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    node->write("mass", dspins[FFL_MAS]->value() / 3.0);
+    write(node, "inertia", calcBoxInertia(dspins[FFL_MAS]->value() / 3.0, dspins[FFL_WBS]->value(), dspins[FFL_WDT]->value(), std::max(dspins[FFL_FRD]->value(), dspins[FFL_RRD]->value())));
+
+    return node;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeAGXSubTrackR()
+{
+    MappingPtr node = new Mapping;
+
+    node->write("jointType", "fixed");
+    write(node, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    node->write("mass", dspins[RFL_MAS]->value() / 3.0);
+    write(node, "inertia", calcBoxInertia(dspins[RFL_MAS]->value() / 3.0, dspins[RFL_WBS]->value(), dspins[RFL_WDT]->value(), std::max(dspins[RFL_FRD]->value(), dspins[RFL_RRD]->value())));
+
+    return node;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeAGXSubTrackBelt()
+{
+    MappingPtr node = new Mapping;
+
+    write(node, "upAxis", Vector3(0.0, 0.0, 1.0));
+    node->write("numberOfNodes", agxspins[FLP_BNN]->value());
+    node->write("nodeThickness", agxdspins[FLP_BNT]->value());
+    node->write("nodeWidth", agxdspins[FLP_BNW]->value());
+    node->write("nodeThickerThickness", agxdspins[FLP_BNTT]->value());
+    node->write("useThickerNodeEvery", agxspins[FLP_BUTNE]->value());
+    node->write("material", "robotTracks");
+    node->write("nodeDistanceTension", agxdspins[FLP_BNDTM]->value() * exp10(-agxspins[FLP_BNDTE]->value()));
+    node->write("stabilizingHingeFrictionParameter", agxdspins[FLP_BSHFPM]->value() * exp10(-agxspins[FLP_BSHFPE]->value()));
+    node->write("minStabilizingHingeNormalForce", agxspins[FLP_BMSHNF]->value());
+    node->write("hingeCompliance", agxdspins[FLP_BHCM]->value() * exp10(-agxspins[FLP_BHCE]->value()));
+    node->write("hingeSpookDamping", agxdspins[FLP_BHSD]->value());
+    node->write("nodesToWheelsMergeThreshold", agxdspins[FLP_BNWMT]->value());
+    node->write("nodesToWheelsSplitThreshold", agxdspins[FLP_BNWST]->value());
+
+    return node;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeAGXSprocketF()
+{
+    MappingPtr sprocketNode = new Mapping;
+
+    double r2spf = dspins[FFL_RRD]->value() * dspins[FFL_RRD]->value();
+    double r2rof = ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0) * ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
+    double r2idf = dspins[FFL_FRD]->value() * dspins[FFL_FRD]->value();
+    double totalf = r2spf + r2rof + r2idf;
+    double mass = r2spf * r2spf / totalf * dspins[FFL_MAS]->value();
+
+    sprocketNode->insert(writeAGXWheel());
+    sprocketNode->write("mass", mass);
+    write(sprocketNode, "inertia", calcCylinderInertia(mass, dspins[FFL_RRD]->value(), dspins[FFL_WDT]->value()));
+
+    ListingPtr elementsNode = new Listing;
+    MappingPtr node = new Mapping;
+
+    node->write("type", "Shape");
+
+    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
+    geometryNode->write("type", "Cylinder");
+    geometryNode->write("radius", dspins[FFL_RRD]->value());
+    geometryNode->write("height", dspins[FFL_WDT]->value());
+
+    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+    MappingPtr materialNode = new Mapping;
+    write(materialNode, "diffuseColor", extractColor(buttons[FFL_CLR]));
+    appearanceNode->insert("material", materialNode);
+
+    elementsNode->append(node);
+    if(!elementsNode->empty()) {
+        sprocketNode->insert("elements", elementsNode);
+    }
+
+    return sprocketNode;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeAGXRollerF()
+{
+    MappingPtr rollerNode = new Mapping;
+
+    double r2spf = dspins[FFL_RRD]->value() * dspins[FFL_RRD]->value();
+    double r2rof = ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0) * ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
+    double r2idf = dspins[FFL_FRD]->value() * dspins[FFL_FRD]->value();
+    double totalf = r2spf + r2rof + r2idf;
+    double mass = r2rof * r2rof / totalf * dspins[FFL_MAS]->value();
+
+    rollerNode->insert(writeAGXWheel());
+    rollerNode->write("mass", mass);
+    write(rollerNode, "inertia", calcCylinderInertia(mass, (dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0, dspins[FFL_WDT]->value()));
+
+    ListingPtr elementsNode = new Listing;
+    MappingPtr node = new Mapping;
+
+    node->write("type", "Shape");
+
+    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
+    geometryNode->write("type", "Cylinder");
+    geometryNode->write("radius", (dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
+    geometryNode->write("height", dspins[FFL_WDT]->value());
+
+    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+    MappingPtr materialNode = new Mapping;
+    write(materialNode, "diffuseColor", extractColor(buttons[FFL_CLR]));
+    appearanceNode->insert("material", materialNode);
+
+    elementsNode->append(node);
+    if(!elementsNode->empty()) {
+        rollerNode->insert("elements", elementsNode);
+    }
+
+    return rollerNode;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeAGXIdlerF()
+{
+    MappingPtr idlerNode = new Mapping;
+
+    double r2spf = dspins[FFL_RRD]->value() * dspins[FFL_RRD]->value();
+    double r2rof = ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0) * ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
+    double r2idf = dspins[FFL_FRD]->value() * dspins[FFL_FRD]->value();
+    double totalf = r2spf + r2rof + r2idf;
+    double mass = r2idf * r2idf / totalf * dspins[FFL_MAS]->value();
+
+    idlerNode->insert(writeAGXWheel());
+    idlerNode->write("mass", mass);
+    write(idlerNode, "inertia", calcCylinderInertia(mass, dspins[FFL_FRD]->value(), dspins[FFL_WDT]->value()));
+
+    ListingPtr elementsNode = new Listing;
+    MappingPtr node = new Mapping;
+
+    node->write("type", "Shape");
+
+    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
+    geometryNode->write("type", "Cylinder");
+    geometryNode->write("radius", dspins[FFL_FRD]->value());
+    geometryNode->write("height", dspins[FFL_WDT]->value());
+
+    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+    MappingPtr materialNode = new Mapping;
+    write(materialNode, "diffuseColor", extractColor(buttons[FFL_CLR]));
+    appearanceNode->insert("material", materialNode);
+
+    elementsNode->append(node);
+    if(!elementsNode->empty()) {
+        idlerNode->insert("elements", elementsNode);
+    }
+
+    return idlerNode;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeAGXSprocketR()
+{
+    MappingPtr sprocketNode = new Mapping;
+
+    double r2spr = dspins[RFL_RRD]->value() * dspins[RFL_RRD]->value();
+    double r2ror = ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0) * ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
+    double r2idr = dspins[RFL_FRD]->value() * dspins[RFL_FRD]->value();
+    double totalr = r2spr + r2ror + r2idr;
+    double mass = r2spr * r2spr / totalr * dspins[RFL_MAS]->value();
+
+    sprocketNode->insert(writeAGXWheel());
+    sprocketNode->write("mass", mass);
+    write(sprocketNode, "inertia", calcCylinderInertia(mass, dspins[RFL_FRD]->value(), dspins[RFL_WDT]->value()));
+
+    ListingPtr elementsNode = new Listing;
+    MappingPtr node = new Mapping;
+
+    node->write("type", "Shape");
+
+    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
+    geometryNode->write("type", "Cylinder");
+    geometryNode->write("radius", dspins[RFL_FRD]->value());
+    geometryNode->write("height", dspins[RFL_WDT]->value());
+
+    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+    MappingPtr materialNode = new Mapping;
+    write(materialNode, "diffuseColor", extractColor(buttons[RFL_CLR]));
+    appearanceNode->insert("material", materialNode);
+
+    elementsNode->append(node);
+    if(!elementsNode->empty()) {
+        sprocketNode->insert("elements", elementsNode);
+    }
+
+    return sprocketNode;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeAGXRollerR()
+{
+    MappingPtr rollerNode = new Mapping;
+
+    double r2spr = dspins[RFL_RRD]->value() * dspins[RFL_RRD]->value();
+    double r2ror = ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0) * ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
+    double r2idr = dspins[RFL_FRD]->value() * dspins[RFL_FRD]->value();
+    double totalr = r2spr + r2ror + r2idr;
+    double mass = r2ror * r2ror / totalr * dspins[RFL_MAS]->value();
+
+    rollerNode->insert(writeAGXWheel());
+    rollerNode->write("mass", mass);
+    write(rollerNode, "inertia", calcCylinderInertia(mass, (dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0, dspins[RFL_WDT]->value()));
+
+    ListingPtr elementsNode = new Listing;
+    MappingPtr node = new Mapping;
+
+    node->write("type", "Shape");
+
+    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
+    geometryNode->write("type", "Cylinder");
+    geometryNode->write("radius", (dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
+    geometryNode->write("height", dspins[RFL_WDT]->value());
+
+    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+    MappingPtr materialNode = new Mapping;
+    write(materialNode, "diffuseColor", extractColor(buttons[RFL_CLR]));
+    appearanceNode->insert("material", materialNode);
+
+    elementsNode->append(node);
+    if(!elementsNode->empty()) {
+        rollerNode->insert("elements", elementsNode);
+    }
+
+    return rollerNode;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeAGXIdlerR()
+{
+    MappingPtr idlerNode = new Mapping;
+
+    double r2spr = dspins[RFL_RRD]->value() * dspins[RFL_RRD]->value();
+    double r2ror = ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0) * ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
+    double r2idr = dspins[RFL_FRD]->value() * dspins[RFL_FRD]->value();
+    double totalr = r2spr + r2ror + r2idr;
+    double mass = r2idr * r2idr / totalr * dspins[RFL_MAS]->value();
+
+    idlerNode->insert(writeAGXWheel());
+    idlerNode->write("mass", mass);
+    write(idlerNode, "inertia", calcCylinderInertia(mass, dspins[RFL_RRD]->value(), dspins[RFL_WDT]->value()));
+
+    ListingPtr elementsNode = new Listing;
+    MappingPtr node = new Mapping;
+
+    node->write("type", "Shape");
+
+    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
+    geometryNode->write("type", "Cylinder");
+    geometryNode->write("radius", dspins[RFL_RRD]->value());
+    geometryNode->write("height", dspins[RFL_WDT]->value());
+
+    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+    MappingPtr materialNode = new Mapping;
+    write(materialNode, "diffuseColor", extractColor(buttons[RFL_CLR]));
+    appearanceNode->insert("material", materialNode);
+
+    elementsNode->append(node);
+    if(!elementsNode->empty()) {
+        idlerNode->insert("elements", elementsNode);
+    }
+
+    return idlerNode;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeAGXWheel()
+{
+    MappingPtr node = new Mapping;
+
+    node->write("jointType", "revolute");
+    node->write("jointAxis", "Y");
+    write(node, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    node->write("material", "robotWheel");
+
+    return node;
+}
+
+
+bool CrawlerGeneratorImpl::writeAGX(const string& filename)
+{
     YAMLWriter writer(filename);
     int jointId = 0;
     writer.startMapping(); {
