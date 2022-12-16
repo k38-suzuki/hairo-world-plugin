@@ -39,16 +39,6 @@ namespace {
 
 CrawlerGenerator* cgeneratorInstance = nullptr;
 
-void putKeyVector3(YAMLWriter& writer, const string key, const Vector3 value)
-{
-    writer.putKey(key);
-    writer.startFlowStyleListing();
-    for(int i = 0; i < 3; ++i) {
-        writer.putScalar(value[i]);
-    }
-    writer.endListing();
-}
-
 VectorXd calcBoxInertia(double mass, double x, double y, double z)
 {
     VectorXd inertia;
@@ -194,6 +184,14 @@ Info agxseparatorInfo[] = {
     { 0, 0 }, { 7, 0 }
 };
 
+struct AGXVehicleContinuousTrackDeviceInfo {
+    const char* name;
+    const char* sprocketName;
+    const char* rollerName;
+    const char* idlerName;
+    bool isSubTrack;
+};
+
 }
 
 namespace cnoid {
@@ -240,7 +238,6 @@ public:
     SpinBox* agxspins[NUM_SPINS];
     PushButton* toolButtons[NUMTBUTTONS];
     FileFormWidget* formWidget;
-    string bodyname;
     YAMLWriter yamlWriter;
     YAMLWriter yamlWriter2;
 
@@ -260,49 +257,34 @@ public:
     Vector3 extractColor(PushButton* colorButton);
 
     MappingPtr writeBody(const string& filename);
-    void writeLink(Listing* linksNode);
-    MappingPtr writeChassis();
-    void writeSpacer(Listing* linksNode);
-    void writeAISTTrack(Listing* linksNode);
-    void writeAISTTrackF(Listing* linksNode);
-    void writeAISTTrackR(Listing* linksNode);
-
     MappingPtr writeConfig(const string& filename);
 
+    void writeBody(Listing* linksNode);
+    ListingPtr writeBody();
+    MappingPtr writeChassis();
+    MappingPtr writeSpacer();
+    MappingPtr writeTrack();
+    MappingPtr writeFrontTrack();
+    MappingPtr writeRearTrack();
+
+    void writeAGXBody(Listing* linksNode);
     MappingPtr writeAGXTrack();
     MappingPtr writeAGXTrackBelt();
     MappingPtr writeAGXSprocket();
     MappingPtr writeAGXRoller();
     MappingPtr writeAGXIdler();
-    MappingPtr writeAGXSubTrackF();
-    MappingPtr writeAGXSubTrackR();
+    MappingPtr writeAGXFrontTrack();
+    MappingPtr writeAGXRearTrack();
     MappingPtr writeAGXSubTrackBelt();
-    MappingPtr writeAGXSprocketF();
-    MappingPtr writeAGXRollerF();
-    MappingPtr writeAGXIdlerF();
-    MappingPtr writeAGXSprocketR();
-    MappingPtr writeAGXRollerR();
-    MappingPtr writeAGXIdlerR();
+    MappingPtr writeAGXFrontSprocket();
+    MappingPtr writeAGXFrontRoller();
+    MappingPtr writeAGXFrontIdler();
+    MappingPtr writeAGXRearSprocket();
+    MappingPtr writeAGXRearRoller();
+    MappingPtr writeAGXRearIdler();
     MappingPtr writeAGXWheel();
-
-    bool writeAGX(const string& filename);
-
-    bool writeAGXTrack(YAMLWriter& writer);
-    bool writeAGXTrackBelt(YAMLWriter& writer);
-    bool writeAGXSprocket(YAMLWriter& writer);
-    bool writeAGXRoller(YAMLWriter& writer);
-    bool writeAGXIdler(YAMLWriter& writer);
-    bool writeAGXSpacer(YAMLWriter& writer);
-    bool writeAGXSubTrackF(YAMLWriter& writer);
-    bool writeAGXSubTrackR(YAMLWriter& writer);
-    bool writeAGXSubTrackBelt(YAMLWriter& writer);
-    bool writeAGXSprocketF(YAMLWriter& writer);
-    bool writeAGXRollerF(YAMLWriter& writer);
-    bool writeAGXIdlerF(YAMLWriter& writer);
-    bool writeAGXSprocketR(YAMLWriter& writer);
-    bool writeAGXRollerR(YAMLWriter& writer);
-    bool writeAGXIdlerR(YAMLWriter& writer);
-    bool writeAGXWheel(YAMLWriter& writer);
+    MappingPtr writeCylinderShape(const double& radius, const double& height, const Vector3& color);
+    MappingPtr writeAGXVehicleContinuousTrackDevice(const char* name, const char* sprocketName, const char* rollerName, const char* idlerName, const bool isSubTrack);
 };
 
 }
@@ -421,7 +403,6 @@ CrawlerGeneratorImpl::CrawlerGeneratorImpl(CrawlerGenerator* self)
     formWidget = new FileFormWidget;
 
     initialize();
-    bodyname.clear();
 
     QVBoxLayout* vbox = new QVBoxLayout;
     QHBoxLayout* hbox = new QHBoxLayout;
@@ -462,17 +443,10 @@ void CrawlerGenerator::initializeClass(ExtensionManager* ext)
 bool CrawlerGeneratorImpl::save(const string& filename)
 {
     if(!filename.empty()) {
-        filesystem::path path(filename);
-        bodyname = path.stem().string();
-
-        if(checks[AGX_CHK]->isChecked()) {
-            writeAGX(filename);
-        } else {
-            auto topNode = writeBody(filename);
-            if(yamlWriter.openFile(filename)) {
-                yamlWriter.putNode(topNode);
-                yamlWriter.closeFile();
-            }            
+        auto topNode = writeBody(filename);
+        if(yamlWriter.openFile(filename)) {
+            yamlWriter.putNode(topNode);
+            yamlWriter.closeFile();
         }
     }
 
@@ -750,6 +724,7 @@ MappingPtr CrawlerGeneratorImpl::writeBody(const string& filename)
 
     filesystem::path path(filename);
     string name = path.stem().string();
+    bool isAGXChecked = checks[AGX_CHK]->isChecked();
 
     node->write("format", "ChoreonoidBody");
     node->write("formatVersion", "1.0");
@@ -757,366 +732,19 @@ MappingPtr CrawlerGeneratorImpl::writeBody(const string& filename)
     node->write("name", name);
 
     ListingPtr linksNode = new Listing;
-    writeLink(linksNode);
+
+    linksNode->append(writeChassis());
+    if(!isAGXChecked) {
+        writeBody(linksNode);
+    } else {
+        writeAGXBody(linksNode);
+    }
+
     if(!linksNode->empty()) {
         node->insert("links", linksNode);
     }
 
     return node;
-}
-
-
-void CrawlerGeneratorImpl::writeLink(Listing* linksNode)
-{
-    bool isAGXChecked = checks[AGX_CHK]->isChecked();
-
-    linksNode->append(writeChassis());
-    writeSpacer(linksNode);
-
-    if(checks[FFL_CHK]->isChecked()) {
-        if(isAGXChecked) {
-
-        } else {
-            writeAISTTrackF(linksNode);
-        }
-    }
-
-    if(checks[RFL_CHK]->isChecked()) {
-        if(isAGXChecked) {
-
-        } else {
-            writeAISTTrackR(linksNode);
-        }
-    }
-
-    if(isAGXChecked) {
-
-    } else {
-        writeAISTTrack(linksNode);
-    }
-}
-
-
-MappingPtr CrawlerGeneratorImpl::writeChassis()
-{
-    MappingPtr chassisNode = new Mapping;
-
-    chassisNode->write("name", "CHASSIS");
-    write(chassisNode, "translation", Vector3(0.0, 0.0, 0.0));
-    chassisNode->write("jointType", "free");
-    write(chassisNode, "centerOfMass", Vector3(0.0, 0.0, 0.0));
-    chassisNode->write("mass", dspins[CHS_MAS]->value());
-    write(chassisNode, "inertia", calcBoxInertia(dspins[CHS_MAS]->value(), dspins[CHS_XSZ]->value(), dspins[CHS_YSZ]->value(), dspins[CHS_ZSZ]->value()));
-
-    ListingPtr elementsNode = new Listing;
-    MappingPtr node = new Mapping;
-
-    node->write("type", "Shape");
-
-    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
-    geometryNode->write("type", "Box");
-    write(geometryNode, "size", Vector3(dspins[CHS_XSZ]->value(), dspins[CHS_YSZ]->value(), dspins[CHS_ZSZ]->value()));
-
-    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
-    write(materialNode, "diffuseColor", extractColor(buttons[CHS_CLR]));
-    appearanceNode->insert("material", materialNode);
-
-    elementsNode->append(node);
-    if(!elementsNode->empty()) {
-        chassisNode->insert("elements", elementsNode);
-    }
-
-    return chassisNode;
-}
-
-
-void CrawlerGeneratorImpl::writeSpacer(Listing* linksNode)
-{
-    MappingPtr spacerCommonNode = new Mapping;
-
-    spacerCommonNode->write("parent", "CHASSIS");
-    spacerCommonNode->write("jointType", "revolute");
-    spacerCommonNode->write("jointAxis", "-Y");
-    write(spacerCommonNode, "centerOfMass", Vector3(0.0, 0.0, 0.0));
-    spacerCommonNode->write("mass", dspins[SPC_MAS]->value());
-    write(spacerCommonNode, "inertia", calcCylinderInertia(dspins[SPC_MAS]->value(), dspins[SPC_RAD]->value(), dspins[SPC_WDT]->value()));
-
-    ListingPtr elementsNode = new Listing;
-    MappingPtr node = new Mapping;
-
-    node->write("type", "Shape");
-
-    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
-    geometryNode->write("type", "Cylinder");
-    geometryNode->write("radius", dspins[SPC_RAD]->value());
-    geometryNode->write("height", dspins[SPC_WDT]->value());
-
-    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
-    write(materialNode, "diffuseColor", extractColor(buttons[SPC_CLR]));
-    appearanceNode->insert("material", materialNode);
-
-    elementsNode->append(node);
-    if(!elementsNode->empty()) {
-        spacerCommonNode->insert("elements", elementsNode);
-    }
-
-    if(checks[FFL_CHK]->isChecked()) {
-        MappingPtr spacerLFNode = new Mapping;
-
-        spacerLFNode->write("name", "SPACER_LF");
-        write(spacerLFNode, "translation", Vector3(dspins[TRK_WBS]->value() / 2.0, (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0));
-        spacerLFNode->write("jointId", 0);
-        spacerLFNode->insert(spacerCommonNode);
-
-        linksNode->append(spacerLFNode);
-
-        MappingPtr spacerRFNode = new Mapping;
-
-        spacerRFNode->write("name", "SPACER_RF");
-        write(spacerRFNode, "translation", Vector3(dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0));
-        spacerRFNode->write("jointId", 1);
-        spacerRFNode->insert(spacerCommonNode);
-
-        linksNode->append(spacerRFNode);
-    }
-
-    if(checks[RFL_CHK]->isChecked()) {
-        MappingPtr spacerLRNode = new Mapping;
-
-        spacerLRNode->write("name", "SPACER_LR");
-        write(spacerLRNode, "translation", Vector3(-dspins[TRK_WBS]->value() / 2.0, (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0));
-        spacerLRNode->write("jointId", 2);
-        spacerLRNode->insert(spacerCommonNode);
-
-        linksNode->append(spacerLRNode);
-
-        MappingPtr spacerRRNode = new Mapping;
-
-        spacerRRNode->write("name", "SPACER_RR");
-        write(spacerRRNode, "translation", Vector3(-dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0));
-        spacerRRNode->write("jointId", 3);
-        spacerRRNode->insert(spacerCommonNode);
-
-        linksNode->append(spacerRRNode);
-    }
-}
-
-
-void CrawlerGeneratorImpl::writeAISTTrack(Listing* linksNode)
-{
-    MappingPtr trackCommonNode = new Mapping;
-    trackCommonNode->write("parent", "CHASSIS");
-    trackCommonNode->write("jointType", "pseudo_continuous_track");
-    trackCommonNode->write("jointAxis", "Y");
-    write(trackCommonNode, "centerOfMass", Vector3(0.0, 0.0, 0.0));
-    trackCommonNode->write("mass", dspins[TRK_MAS]->value());
-    write(trackCommonNode, "inertia", calcBoxInertia(dspins[TRK_MAS]->value(), dspins[TRK_WBS]->value(), dspins[TRK_WDT]->value(), dspins[TRK_RAD]->value() * 2.0));
-
-    ListingPtr elementsNode = new Listing;
-    MappingPtr node = new Mapping;
-
-    node->write("type", "Shape");
-
-    MappingPtr geometryNode = new Mapping;
-    geometryNode->write("type", "Extrusion");
-    Listing& crossSectionList = *geometryNode->createFlowStyleListing("crossSection");
-
-    int numPoints = 5;
-    int pitch = numPoints - 1;
-    double pitchAngle = 180.0 / (double)pitch;
-    int n = numPoints * 4 + 2;
-    for(int i = 0; i < numPoints; ++i) {
-        crossSectionList.append(dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos(radian(-90.0 + pitchAngle * i)), 2, n);
-        crossSectionList.append(dspins[TRK_RAD]->value() * sin(radian(-90.0 + pitchAngle * i)), 2, n);
-    }
-    for(int i = 0; i < numPoints; ++i) {
-        crossSectionList.append(-dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos(radian(90.0 + pitchAngle * i)), 2, n);
-        crossSectionList.append(dspins[TRK_RAD]->value() * sin(radian(90.0 + pitchAngle * i)), 2, n);
-    }
-    for(int i = 0; i < 1; ++i) {
-        crossSectionList.append(dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos(radian(-90.0 + pitchAngle * i)), 2, n);
-        crossSectionList.append(dspins[TRK_RAD]->value() * sin(radian(-90.0 + pitchAngle * i)), 2, n);
-    }
-
-    VectorXd spine(6);
-    spine << 0.0, -dspins[TRK_WDT]->value() / 2.0, 0.0, 0.0, dspins[TRK_WDT]->value() / 2.0, 0.0;
-    write(geometryNode, "spine", spine);
-
-    node->insert("geometry", geometryNode);
-
-    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
-    write(materialNode, "diffuseColor", extractColor(buttons[TRK_CLR]));
-    appearanceNode->insert("material", materialNode);
-
-    elementsNode->append(node);
-    if(!elementsNode->empty()) {
-        trackCommonNode->insert("elements", elementsNode);
-    }
-
-    MappingPtr trackLNode = new Mapping;
-
-    trackLNode->write("name", "TRACK_L");
-    write(trackLNode, "translation", Vector3(0.0, (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0));
-    trackLNode->insert(trackCommonNode);
-
-    linksNode->append(trackLNode);
-
-    MappingPtr trackRNode = new Mapping;
-
-    trackRNode->write("name", "TRACK_R");
-    write(trackRNode, "translation", Vector3(0.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0));
-    trackRNode->insert(trackCommonNode);
-
-    linksNode->append(trackRNode);
-}
-
-
-void CrawlerGeneratorImpl::writeAISTTrackF(Listing* linksNode)
-{
-    MappingPtr trackCommonNode = new Mapping;
-
-    trackCommonNode->write("jointType", "pseudo_continuous_track");
-    trackCommonNode->write("jointAxis", "Y");
-    write(trackCommonNode, "centerOfMass", Vector3(0.0, 0.0, 0.0));
-    trackCommonNode->write("mass", dspins[FFL_MAS]->value());
-    double radius = std::max(dspins[FFL_FRD]->value(), dspins[FFL_RRD]->value());
-    write(trackCommonNode, "inertia", calcBoxInertia(dspins[FFL_MAS]->value(), dspins[FFL_WBS]->value(), dspins[FFL_WDT]->value(), radius * 2.0));
-
-    ListingPtr elementsNode = new Listing;
-    MappingPtr node = new Mapping;
-
-    node->write("type", "Shape");
-
-    MappingPtr geometryNode = new Mapping;
-    geometryNode->write("type", "Extrusion");
-    Listing& crossSectionList = *geometryNode->createFlowStyleListing("crossSection");
-
-    int numPoints = 5;
-    int pitch = numPoints - 1;
-    double pitchAngle = 180.0 / (double)pitch;
-    int n = numPoints * 4 + 2;
-    for(int i = 0; i < numPoints; i++) {
-        crossSectionList.append(dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_FRD]->value() * cos(radian(-90.0 + pitchAngle * i)), 2, n);
-        crossSectionList.append(dspins[FFL_FRD]->value() * sin(radian(-90.0 + pitchAngle * i)), 2, n);
-    }
-    for(int i = 0; i < numPoints; i++) {
-        crossSectionList.append(-dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_RRD]->value() * cos(radian(90.0 + pitchAngle * i)), 2, n);
-        crossSectionList.append(dspins[FFL_RRD]->value() * sin(radian(90.0 + pitchAngle * i)), 2, n);
-    }
-    for(int i = 0; i < 1; i++) {
-        crossSectionList.append(dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_FRD]->value() * cos(radian(-90.0 + pitchAngle * i)), 2, n);
-        crossSectionList.append(dspins[FFL_FRD]->value() * sin(radian(-90.0 + pitchAngle * i)), 2, n);
-    }
-
-    VectorXd spine(6);
-    spine << 0.0, -dspins[FFL_WDT]->value() / 2.0, 0.0, 0.0, dspins[FFL_WDT]->value() / 2.0, 0.0;
-    write(geometryNode, "spine", spine);
-
-    node->insert("geometry", geometryNode);
-
-    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
-    write(materialNode, "diffuseColor", extractColor(buttons[FFL_CLR]));
-    appearanceNode->insert("material", materialNode);
-
-    elementsNode->append(node);
-    if(!elementsNode->empty()) {
-        trackCommonNode->insert("elements", elementsNode);
-    }
-
-    MappingPtr trackLFNode = new Mapping;
-
-    trackLFNode->write("name", "TRACK_LF");
-    trackLFNode->write("parent", "SPACER_LF");
-    write(trackLFNode, "translation", Vector3(dspins[FFL_WBS]->value() / 2.0, (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0));
-    trackLFNode->insert(trackCommonNode);
-
-    linksNode->append(trackLFNode);
-
-    MappingPtr trackRFNode = new Mapping;
-
-    trackRFNode->write("name", "TRACK_RF");
-    trackRFNode->write("parent", "SPACER_RF");
-    write(trackRFNode, "translation", Vector3(dspins[FFL_WBS]->value() / 2.0, -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0));
-    trackRFNode->insert(trackCommonNode);
-
-    linksNode->append(trackRFNode);
-}
-
-
-void CrawlerGeneratorImpl::writeAISTTrackR(Listing* linksNode)
-{
-    MappingPtr trackCommonNode = new Mapping;
-
-    trackCommonNode->write("jointType", "pseudo_continuous_track");
-    trackCommonNode->write("jointAxis", "Y");
-    write(trackCommonNode, "centerOfMass", Vector3(0.0, 0.0, 0.0));
-    trackCommonNode->write("mass", dspins[RFL_MAS]->value());
-    double radius = std::max(dspins[RFL_FRD]->value(), dspins[RFL_RRD]->value());
-    write(trackCommonNode, "inertia", calcBoxInertia(dspins[RFL_MAS]->value(), dspins[RFL_WBS]->value(), dspins[RFL_WDT]->value(), radius * 2.0));
-
-    ListingPtr elementsNode = new Listing;
-    MappingPtr node = new Mapping;
-
-    node->write("type", "Shape");
-
-    MappingPtr geometryNode = new Mapping;
-    geometryNode->write("type", "Extrusion");
-    Listing& crossSectionList = *geometryNode->createFlowStyleListing("crossSection");
-
-    int numPoints = 5;
-    int pitch = numPoints - 1;
-    double pitchAngle = 180.0 / (double)pitch;
-    int n = numPoints * 4 + 2;
-    for(int i = 0; i < numPoints; i++) {
-        crossSectionList.append(dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_FRD]->value() * cos(radian(-90.0 + pitchAngle * i)), 2, n);
-        crossSectionList.append(dspins[RFL_FRD]->value() * sin(radian(-90.0 + pitchAngle * i)), 2, n);
-    }
-    for(int i = 0; i < numPoints; i++) {
-        crossSectionList.append(-dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_RRD]->value() * cos(radian(90.0 + pitchAngle * i)), 2, n);
-        crossSectionList.append(dspins[RFL_RRD]->value() * sin(radian(90.0 + pitchAngle * i)), 2, n);
-    }
-    for(int i = 0; i < 1; i++) {
-        crossSectionList.append(dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_FRD]->value() * cos(radian(-90.0 + pitchAngle * i)), 2, n);
-        crossSectionList.append(dspins[RFL_FRD]->value() * sin(radian(-90.0 + pitchAngle * i)), 2, n);
-    }
-
-    VectorXd spine(6);
-    spine << 0.0, -dspins[RFL_WDT]->value() / 2.0, 0.0, 0.0, dspins[RFL_WDT]->value() / 2.0, 0.0;
-    write(geometryNode, "spine", spine);
-
-    node->insert("geometry", geometryNode);
-
-    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
-    write(materialNode, "diffuseColor", extractColor(buttons[RFL_CLR]));
-    appearanceNode->insert("material", materialNode);
-
-    elementsNode->append(node);
-    if(!elementsNode->empty()) {
-        trackCommonNode->insert("elements", elementsNode);
-    }
-
-    MappingPtr trackLRNode = new Mapping;
-
-    trackLRNode->write("name", "TRACK_LR");
-    trackLRNode->write("parent", "SPACER_LR");
-    write(trackLRNode, "translation", Vector3(-dspins[RFL_WBS]->value() / 2.0, (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0, 0.0));
-    trackLRNode->insert(trackCommonNode);
-
-    linksNode->append(trackLRNode);
-
-    MappingPtr trackRRNode = new Mapping;
-
-    trackRRNode->write("name", "TRACK_RR");
-    trackRRNode->write("parent", "SPACER_RR");
-    write(trackRRNode, "translation", Vector3(-dspins[RFL_WBS]->value() / 2.0, -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0, 0.0));
-    trackRRNode->insert(trackCommonNode);
-
-    linksNode->append(trackRRNode);
 }
 
 
@@ -1170,6 +798,663 @@ MappingPtr CrawlerGeneratorImpl::writeConfig(const string& filename)
 }
 
 
+void CrawlerGeneratorImpl::writeBody(Listing* linksNode)
+{
+    int jointID = 0;
+
+    MappingPtr trackNode = writeTrack();
+    MappingPtr spacerNode = writeSpacer();
+    MappingPtr frontTrackNode = writeFrontTrack();
+    MappingPtr rearTrackNode = writeRearTrack();
+
+    {
+        static const char* name[] = { "TRACK_L", "TRACK_R" };
+        Vector3 translation[2];
+        translation[0] = Vector3(0.0, (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        translation[1] = Vector3(0.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+
+        for(int i = 0; i < 2; ++i) {
+            MappingPtr node = new Mapping;
+
+            node->write("name", name[i]);
+            write(node, "translation", translation[i]);
+            node->insert(trackNode);
+
+            linksNode->append(node);   
+        }
+    }
+
+    if(checks[FFL_CHK]->isChecked()) {
+        {
+            static const char* name[] = { "SPACER_LF", "SPACER_RF" };
+            Vector3 translation[2];
+            translation[0] = Vector3(dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            translation[1] = Vector3(dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+
+            for(int i = 0; i < 2; ++i) {
+                MappingPtr node = new Mapping;
+
+                node->write("name", name[i]);
+                write(node, "translation", translation[i]);
+                node->write("jointId", jointID++);
+                node->insert(spacerNode);
+
+                linksNode->append(node);
+            }
+        }
+
+        {
+            static const char* name[] = { "TRACK_LF", "TRACK_RF" };
+            static const char* parent[] = { "SPACER_LF", "SPACER_RF" };
+            Vector3 translation[2];
+            translation[0] = Vector3(dspins[FFL_WBS]->value() / 2.0,  (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0);
+            translation[1] = Vector3(dspins[FFL_WBS]->value() / 2.0, -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0);
+
+            for(int i = 0; i < 2; ++i) {
+                MappingPtr node = new Mapping;
+
+                node->write("name", name[i]);
+                node->write("parent", parent[i]);
+                write(node, "translation", translation[i]);
+                node->insert(frontTrackNode);
+
+                linksNode->append(node);
+            }
+        }
+    }
+
+    if(checks[RFL_CHK]->isChecked()) {
+        {
+            static const char* name[] = { "SPACER_LR", "SPACER_RR" };
+            Vector3 translation[2];
+            translation[0] = Vector3(-dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            translation[1] = Vector3(-dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+
+            for(int i = 0; i < 2; ++i) {
+                MappingPtr node = new Mapping;
+
+                node->write("name", name[i]);
+                write(node, "translation", translation[i]);
+                node->write("jointId", jointID++);
+                node->insert(spacerNode);
+
+                linksNode->append(node);
+            }
+        }
+
+        {
+            static const char* name[] = { "TRACK_LR", "TRACK_RR" };
+            static const char* parent[] = { "SPACER_LR", "SPACER_RR" };
+            Vector3 translation[2];
+            translation[0] = Vector3(-dspins[RFL_WBS]->value() / 2.0,  (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0, 0.0);
+            translation[1] = Vector3(-dspins[RFL_WBS]->value() / 2.0, -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0, 0.0);
+
+            for(int i = 0; i < 2; ++i) {
+                MappingPtr node = new Mapping;
+
+                node->write("name", name[i]);
+                node->write("parent", parent[i]);
+                write(node, "translation", translation[i]);
+                node->insert(rearTrackNode);
+
+                linksNode->append(node);
+            }
+        }
+    }
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeChassis()
+{
+    MappingPtr chassisNode = new Mapping;
+
+    chassisNode->write("name", "CHASSIS");
+    write(chassisNode, "translation", Vector3(0.0, 0.0, 0.0));
+    chassisNode->write("jointType", "free");
+    write(chassisNode, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    chassisNode->write("mass", dspins[CHS_MAS]->value());
+    write(chassisNode, "inertia", calcBoxInertia(dspins[CHS_MAS]->value(), dspins[CHS_XSZ]->value(), dspins[CHS_YSZ]->value(), dspins[CHS_ZSZ]->value()));
+
+    ListingPtr elementsNode = new Listing;
+    MappingPtr node = new Mapping;
+
+    node->write("type", "Shape");
+
+    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
+    geometryNode->write("type", "Box");
+    write(geometryNode, "size", Vector3(dspins[CHS_XSZ]->value(), dspins[CHS_YSZ]->value(), dspins[CHS_ZSZ]->value()));
+
+    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+    MappingPtr materialNode = new Mapping;
+    write(materialNode, "diffuseColor", extractColor(buttons[CHS_CLR]));
+    appearanceNode->insert("material", materialNode);
+
+    elementsNode->append(node);
+    if(!elementsNode->empty()) {
+        chassisNode->insert("elements", elementsNode);
+    }
+
+    return chassisNode;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeSpacer()
+{
+    MappingPtr node = new Mapping;
+
+    node->write("parent", "CHASSIS");
+    node->write("jointType", "revolute");
+    node->write("jointAxis", "-Y");
+    write(node, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    node->write("mass", dspins[SPC_MAS]->value());
+    write(node, "inertia", calcCylinderInertia(dspins[SPC_MAS]->value(), dspins[SPC_RAD]->value(), dspins[SPC_WDT]->value()));
+
+    ListingPtr elementsNode = new Listing;
+
+    elementsNode->append(writeCylinderShape(dspins[SPC_RAD]->value(), dspins[SPC_WDT]->value(), extractColor(buttons[SPC_CLR])));
+    if(!elementsNode->empty()) {
+        node->insert("elements", elementsNode);
+    }
+
+    return node;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeTrack()
+{
+    MappingPtr trackNode = new Mapping;
+    trackNode->write("parent", "CHASSIS");
+    trackNode->write("jointType", "pseudo_continuous_track");
+    trackNode->write("jointAxis", "Y");
+    write(trackNode, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    trackNode->write("mass", dspins[TRK_MAS]->value());
+    write(trackNode, "inertia", calcBoxInertia(dspins[TRK_MAS]->value(), dspins[TRK_WBS]->value(), dspins[TRK_WDT]->value(), dspins[TRK_RAD]->value() * 2.0));
+
+    ListingPtr elementsNode = new Listing;
+    MappingPtr node = new Mapping;
+
+    node->write("type", "Shape");
+
+    MappingPtr geometryNode = new Mapping;
+    geometryNode->write("type", "Extrusion");
+    Listing& crossSectionList = *geometryNode->createFlowStyleListing("crossSection");
+
+    int numPoints = 5;
+    int pitch = numPoints - 1;
+    double pitchAngle = 180.0 / (double)pitch;
+    int n = numPoints * 4 + 2;
+    for(int i = 0; i < numPoints; ++i) {
+        crossSectionList.append(dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos(radian(-90.0 + pitchAngle * i)), 2, n);
+        crossSectionList.append(dspins[TRK_RAD]->value() * sin(radian(-90.0 + pitchAngle * i)), 2, n);
+    }
+    for(int i = 0; i < numPoints; ++i) {
+        crossSectionList.append(-dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos(radian(90.0 + pitchAngle * i)), 2, n);
+        crossSectionList.append(dspins[TRK_RAD]->value() * sin(radian(90.0 + pitchAngle * i)), 2, n);
+    }
+    for(int i = 0; i < 1; ++i) {
+        crossSectionList.append(dspins[TRK_WBS]->value() / 2.0 + dspins[TRK_RAD]->value() * cos(radian(-90.0 + pitchAngle * i)), 2, n);
+        crossSectionList.append(dspins[TRK_RAD]->value() * sin(radian(-90.0 + pitchAngle * i)), 2, n);
+    }
+
+    VectorXd spine(6);
+    spine << 0.0, -dspins[TRK_WDT]->value() / 2.0, 0.0, 0.0, dspins[TRK_WDT]->value() / 2.0, 0.0;
+    write(geometryNode, "spine", spine);
+
+    node->insert("geometry", geometryNode);
+
+    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+    MappingPtr materialNode = new Mapping;
+    write(materialNode, "diffuseColor", extractColor(buttons[TRK_CLR]));
+    appearanceNode->insert("material", materialNode);
+
+    elementsNode->append(node);
+    if(!elementsNode->empty()) {
+        trackNode->insert("elements", elementsNode);
+    }
+
+    return trackNode;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeFrontTrack()
+{
+    MappingPtr trackNode = new Mapping;
+
+    trackNode->write("jointType", "pseudo_continuous_track");
+    trackNode->write("jointAxis", "Y");
+    write(trackNode, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    trackNode->write("mass", dspins[FFL_MAS]->value());
+    double radius = std::max(dspins[FFL_FRD]->value(), dspins[FFL_RRD]->value());
+    write(trackNode, "inertia", calcBoxInertia(dspins[FFL_MAS]->value(), dspins[FFL_WBS]->value(), dspins[FFL_WDT]->value(), radius * 2.0));
+
+    ListingPtr elementsNode = new Listing;
+    MappingPtr node = new Mapping;
+
+    node->write("type", "Shape");
+
+    MappingPtr geometryNode = new Mapping;
+    geometryNode->write("type", "Extrusion");
+    Listing& crossSectionList = *geometryNode->createFlowStyleListing("crossSection");
+
+    int numPoints = 5;
+    int pitch = numPoints - 1;
+    double pitchAngle = 180.0 / (double)pitch;
+    int n = numPoints * 4 + 2;
+    for(int i = 0; i < numPoints; i++) {
+        crossSectionList.append(dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_FRD]->value() * cos(radian(-90.0 + pitchAngle * i)), 2, n);
+        crossSectionList.append(dspins[FFL_FRD]->value() * sin(radian(-90.0 + pitchAngle * i)), 2, n);
+    }
+    for(int i = 0; i < numPoints; i++) {
+        crossSectionList.append(-dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_RRD]->value() * cos(radian(90.0 + pitchAngle * i)), 2, n);
+        crossSectionList.append(dspins[FFL_RRD]->value() * sin(radian(90.0 + pitchAngle * i)), 2, n);
+    }
+    for(int i = 0; i < 1; i++) {
+        crossSectionList.append(dspins[FFL_WBS]->value() / 2.0 + dspins[FFL_FRD]->value() * cos(radian(-90.0 + pitchAngle * i)), 2, n);
+        crossSectionList.append(dspins[FFL_FRD]->value() * sin(radian(-90.0 + pitchAngle * i)), 2, n);
+    }
+
+    VectorXd spine(6);
+    spine << 0.0, -dspins[FFL_WDT]->value() / 2.0, 0.0, 0.0, dspins[FFL_WDT]->value() / 2.0, 0.0;
+    write(geometryNode, "spine", spine);
+
+    node->insert("geometry", geometryNode);
+
+    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+    MappingPtr materialNode = new Mapping;
+    write(materialNode, "diffuseColor", extractColor(buttons[FFL_CLR]));
+    appearanceNode->insert("material", materialNode);
+
+    elementsNode->append(node);
+    if(!elementsNode->empty()) {
+        trackNode->insert("elements", elementsNode);
+    }
+
+    return trackNode;
+}
+
+
+MappingPtr CrawlerGeneratorImpl::writeRearTrack()
+{
+    MappingPtr trackNode = new Mapping;
+
+    trackNode->write("jointType", "pseudo_continuous_track");
+    trackNode->write("jointAxis", "Y");
+    write(trackNode, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    trackNode->write("mass", dspins[RFL_MAS]->value());
+    double radius = std::max(dspins[RFL_FRD]->value(), dspins[RFL_RRD]->value());
+    write(trackNode, "inertia", calcBoxInertia(dspins[RFL_MAS]->value(), dspins[RFL_WBS]->value(), dspins[RFL_WDT]->value(), radius * 2.0));
+
+    ListingPtr elementsNode = new Listing;
+    MappingPtr node = new Mapping;
+
+    node->write("type", "Shape");
+
+    MappingPtr geometryNode = new Mapping;
+    geometryNode->write("type", "Extrusion");
+    Listing& crossSectionList = *geometryNode->createFlowStyleListing("crossSection");
+
+    int numPoints = 5;
+    int pitch = numPoints - 1;
+    double pitchAngle = 180.0 / (double)pitch;
+    int n = numPoints * 4 + 2;
+    for(int i = 0; i < numPoints; i++) {
+        crossSectionList.append(dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_FRD]->value() * cos(radian(-90.0 + pitchAngle * i)), 2, n);
+        crossSectionList.append(dspins[RFL_FRD]->value() * sin(radian(-90.0 + pitchAngle * i)), 2, n);
+    }
+    for(int i = 0; i < numPoints; i++) {
+        crossSectionList.append(-dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_RRD]->value() * cos(radian(90.0 + pitchAngle * i)), 2, n);
+        crossSectionList.append(dspins[RFL_RRD]->value() * sin(radian(90.0 + pitchAngle * i)), 2, n);
+    }
+    for(int i = 0; i < 1; i++) {
+        crossSectionList.append(dspins[RFL_WBS]->value() / 2.0 + dspins[RFL_FRD]->value() * cos(radian(-90.0 + pitchAngle * i)), 2, n);
+        crossSectionList.append(dspins[RFL_FRD]->value() * sin(radian(-90.0 + pitchAngle * i)), 2, n);
+    }
+
+    VectorXd spine(6);
+    spine << 0.0, -dspins[RFL_WDT]->value() / 2.0, 0.0, 0.0, dspins[RFL_WDT]->value() / 2.0, 0.0;
+    write(geometryNode, "spine", spine);
+
+    node->insert("geometry", geometryNode);
+
+    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+    MappingPtr materialNode = new Mapping;
+    write(materialNode, "diffuseColor", extractColor(buttons[RFL_CLR]));
+    appearanceNode->insert("material", materialNode);
+
+    elementsNode->append(node);
+    if(!elementsNode->empty()) {
+        trackNode->insert("elements", elementsNode);
+    }
+
+    return trackNode;
+}
+
+
+void CrawlerGeneratorImpl::writeAGXBody(Listing* linksNode)
+{
+    int jointID = 0;
+
+    MappingPtr agxTrackNode = writeAGXTrack();
+    MappingPtr agxSprocketNode = writeAGXSprocket();
+    MappingPtr agxRollerNode = writeAGXRoller();
+    MappingPtr agxIdlerNode = writeAGXIdler();
+    MappingPtr spacerNode = writeSpacer();
+    MappingPtr agxFrontTrackNode = writeAGXFrontTrack();
+    MappingPtr agxFrontSprocketNode = writeAGXFrontSprocket();
+    MappingPtr agxFrontRollerNode = writeAGXFrontRoller();
+    MappingPtr agxFrontIdlerNode = writeAGXFrontIdler();
+    MappingPtr agxRearTrackNode = writeAGXRearTrack();
+    MappingPtr agxRearSprocketNode = writeAGXRearSprocket();
+    MappingPtr agxRearRollerNode = writeAGXRearRoller();
+    MappingPtr agxRearIdlerNode = writeAGXRearIdler();
+
+    {
+        static const char* name[] = { "TRACK_L", "TRACK_R" };
+        static const char* parent[] = { "CHASSIS", "CHASSIS" };
+        Vector3 translation[2];
+        translation[0] = Vector3(0.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        translation[1] = Vector3(0.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+
+        for(int i = 0; i < 2; ++i) {
+            MappingPtr node = new Mapping;
+
+            node->write("name", name[i]);
+            node->write("parent", parent[i]);
+            write(node, "translation", translation[i]);
+            node->insert(agxTrackNode);
+
+            ListingPtr elementsNode = new Listing;
+            static const AGXVehicleContinuousTrackDeviceInfo info[] = {
+                { "TRACK_L", "SPROCKET_L", "ROLLER_L", "IDLER_L", false },
+                { "TRACK_R", "SPROCKET_R", "ROLLER_R", "IDLER_R", false }
+            };
+
+            elementsNode->append(writeAGXVehicleContinuousTrackDevice(info[i].name, info[i].sprocketName, info[i].rollerName, info[i].idlerName, info[i].isSubTrack));
+            if(!elementsNode->empty()) {
+                node->insert("elements", elementsNode);
+            }
+
+            linksNode->append(node);
+        }
+    }
+
+    {
+        static const char* name[] = { "SPROCKET_L", "SPROCKET_R" };
+        Vector3 translation[2];
+        translation[0] = Vector3(dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        translation[1] = Vector3(dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+
+        for(int i = 0; i < 2;++i) {
+            MappingPtr node = new Mapping;
+
+            node->write("name", name[i]);
+            write(node, "translation", translation[i]);
+            node->write("jointId", jointID++);
+            node->insert(agxSprocketNode);
+
+            linksNode->append(node);
+        }
+    }
+
+    {
+        static const char* name[] = { "ROLLER_L", "ROLLER_R" };
+        Vector3 translation[2];
+        translation[0] = Vector3(0.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        translation[1] = Vector3(0.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+
+        for(int i = 0; i < 2;++i) {
+            MappingPtr node = new Mapping;
+
+            node->write("name", name[i]);
+            write(node, "translation", translation[i]);
+            node->write("jointId", jointID++);
+            node->insert(agxRollerNode);
+
+            linksNode->append(node);
+        }
+    }
+
+    {
+        static const char* name[] = { "IDLER_L", "IDLER_R" };
+        Vector3 translation[2];
+        translation[0] = Vector3(-dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        translation[1] = Vector3(-dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+
+        for(int i = 0; i < 2;++i) {
+            MappingPtr node = new Mapping;
+
+            node->write("name", name[i]);
+            write(node, "translation", translation[i]);
+            node->write("jointId", jointID++);
+            node->insert(agxIdlerNode);
+
+            linksNode->append(node);
+        }
+    }
+
+    if(checks[FFL_CHK]->isChecked()) {
+        {
+            static const char* name[] = { "SPACER_LF", "SPACER_RF" };
+            Vector3 translation[2];
+            translation[0] = Vector3(dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            translation[1] = Vector3(dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+
+            for(int i = 0; i < 2; ++i) {
+                MappingPtr node = new Mapping;
+
+                node->write("name", name[i]);
+                write(node, "translation", translation[i]);
+                node->write("jointId", jointID++);
+                node->insert(spacerNode);
+
+                linksNode->append(node);
+            }
+        }
+
+        {
+            static const char* name[] = { "TRACK_LF", "TRACK_RF" };
+            static const char* parent[] = { "SPACER_LF", "SPACER_RF" };
+            Vector3 translation[2];
+            translation[0] = Vector3(0.0,  (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0);
+            translation[1] = Vector3(0.0, -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0);
+
+            for(int i = 0; i < 2; ++i) {
+                MappingPtr node = new Mapping;
+
+                node->write("name", name[i]);
+                node->write("parent", parent[i]);
+                write(node, "translation", translation[i]);
+                node->insert(agxFrontTrackNode);
+
+                ListingPtr elementsNode = new Listing;
+                static const AGXVehicleContinuousTrackDeviceInfo info[] = {
+                    { "TRACK_LF", "SPROCKET_LF", "ROLLER_LF", "IDLER_LF", true },
+                    { "TRACK_RF", "SPROCKET_RF", "ROLLER_RF", "IDLER_RF", true }
+                };
+
+                elementsNode->append(writeAGXVehicleContinuousTrackDevice(info[i].name, info[i].sprocketName, info[i].rollerName, info[i].idlerName, info[i].isSubTrack));
+                if(!elementsNode->empty()) {
+                    node->insert("elements", elementsNode);
+                }
+
+                linksNode->append(node);
+            }
+        }
+
+        {
+            static const char* name[] = { "SPROCKET_LF", "SPROCKET_RF" };
+            static const char* parent[] = { "SPACER_LF", "SPACER_RF" };
+            Vector3 translation[2];
+            translation[0] = Vector3(0.0,  (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0);
+            translation[1] = Vector3(0.0, -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0);
+
+            for(int i = 0; i < 2; ++i) {
+                MappingPtr node = new Mapping;
+
+                node->write("name", name[i]);
+                node->write("parent", parent[i]);
+                write(node, "translation", translation[i]);
+                node->write("jointId", jointID++);
+                node->insert(agxFrontSprocketNode);
+
+                linksNode->append(node);
+            }
+        }
+
+        {
+            static const char* name[] = { "ROLLER_LF", "ROLLER_RF" };
+            static const char* parent[] = { "SPACER_LF", "SPACER_RF" };
+            Vector3 translation[2];
+            translation[0] = Vector3(dspins[FFL_WBS]->value() / 2.0,  (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0);
+            translation[1] = Vector3(dspins[FFL_WBS]->value() / 2.0, -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0);
+
+            for(int i = 0; i < 2; ++i) {
+                MappingPtr node = new Mapping;
+
+                node->write("name", name[i]);
+                node->write("parent", parent[i]);
+                write(node, "translation", translation[i]);
+                node->write("jointId", jointID++);
+                node->insert(agxFrontRollerNode);
+
+                linksNode->append(node);
+            }
+        }
+
+        {
+            static const char* name[] = { "IDLER_LF", "IDLER_RF" };
+            static const char* parent[] = { "SPACER_LF", "SPACER_RF" };
+            Vector3 translation[2];
+            translation[0] = Vector3(dspins[FFL_WBS]->value(), (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0);
+            translation[1] = Vector3(dspins[FFL_WBS]->value(), -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0);
+
+            for(int i = 0; i < 2; ++i) {
+                MappingPtr node = new Mapping;
+
+                node->write("name", name[i]);
+                node->write("parent", parent[i]);
+                write(node, "translation", translation[i]);
+                node->write("jointId", jointID++);
+                node->insert(agxFrontIdlerNode);
+
+                linksNode->append(node);
+            }
+        }
+    }
+
+
+    if(checks[RFL_CHK]->isChecked()) {
+        {
+            static const char* name[] = { "SPACER_LR", "SPACER_RR" };
+            Vector3 translation[2];
+            translation[0] = Vector3(-dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            translation[1] = Vector3(-dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+
+            for(int i = 0; i < 2; ++i) {
+                MappingPtr node = new Mapping;
+
+                node->write("name", name[i]);
+                write(node, "translation", translation[i]);
+                node->write("jointId", jointID++);
+                node->insert(spacerNode);
+
+                linksNode->append(node);
+            }
+        }
+
+        {
+            static const char* name[] = { "TRACK_LR", "TRACK_RR" };
+            static const char* parent[] = { "SPACER_LR", "SPACER_RR" };
+            Vector3 translation[2];
+            translation[0] = Vector3(0.0, (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0, 0.0);
+            translation[1] = Vector3(0.0, -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0, 0.0);
+
+            for(int i = 0; i < 2; ++i) {
+                MappingPtr node = new Mapping;
+
+                node->write("name", name[i]);
+                node->write("parent", parent[i]);
+                write(node, "translation", translation[i]);
+                node->insert(agxRearTrackNode);
+
+                ListingPtr elementsNode = new Listing;
+                static const AGXVehicleContinuousTrackDeviceInfo info[] = {
+                    { "TRACK_LR", "SPROCKET_LR", "ROLLER_LR", "IDLER_LR", true },
+                    { "TRACK_RR", "SPROCKET_RR", "ROLLER_RR", "IDLER_RR", true }
+                };
+
+                elementsNode->append(writeAGXVehicleContinuousTrackDevice(info[i].name, info[i].sprocketName, info[i].rollerName, info[i].idlerName, info[i].isSubTrack));
+                if(!elementsNode->empty()) {
+                    node->insert("elements", elementsNode);
+                }
+
+                linksNode->append(node);
+            }
+        }
+
+        {
+            static const char* name[] = { "SPROCKET_LR", "SPROCKET_RR" };
+            static const char* parent[] = { "SPACER_LR", "SPACER_RR" };
+            Vector3 translation[2];
+            translation[0] = Vector3(0.0,  (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0, 0.0);
+            translation[1] = Vector3(0.0, -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0, 0.0);
+
+            for(int i = 0; i < 2; ++i) {
+                MappingPtr node = new Mapping;
+
+                node->write("name", name[i]);
+                node->write("parent", parent[i]);
+                write(node, "translation", translation[i]);
+                node->write("jointId", jointID++);
+                node->insert(agxRearSprocketNode);
+
+                linksNode->append(node);
+            }
+        }
+
+        {
+            static const char* name[] = { "ROLLER_LR", "ROLLER_RR" };
+            static const char* parent[] = { "SPACER_LR", "SPACER_RR" };
+            Vector3 translation[2];
+            translation[0] = Vector3(-dspins[RFL_WBS]->value() / 2.0,  (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0, 0.0);
+            translation[1] = Vector3(-dspins[RFL_WBS]->value() / 2.0, -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0, 0.0);
+
+            for(int i = 0; i < 2; ++i) {
+                MappingPtr node = new Mapping;
+
+                node->write("name", name[i]);
+                node->write("parent", parent[i]);
+                write(node, "translation", translation[i]);
+                node->write("jointId", jointID++);
+                node->insert(agxRearRollerNode);
+
+                linksNode->append(node);
+            }
+        }
+
+        {
+            static const char* name[] = { "IDLER_LR", "IDLER_RR" };
+            static const char* parent[] = { "SPACER_LR", "SPACER_RR" };
+            Vector3 translation[2];
+            translation[0] = Vector3(-dspins[RFL_WBS]->value(),  (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0, 0.0);
+            translation[1] = Vector3(-dspins[RFL_WBS]->value(), -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0, 0.0);
+
+            for(int i = 0; i < 2; ++i) {
+                MappingPtr node = new Mapping;
+
+                node->write("name", name[i]);
+                node->write("parent", parent[i]);
+                write(node, "translation", translation[i]);
+                node->write("jointId", jointID++);
+                node->insert(agxRearIdlerNode);
+
+                linksNode->append(node);
+            }
+        }
+    }
+}
+
+
 MappingPtr CrawlerGeneratorImpl::writeAGXTrack()
 {
     MappingPtr node = new Mapping;
@@ -1209,31 +1494,18 @@ MappingPtr CrawlerGeneratorImpl::writeAGXTrackBelt()
 
 MappingPtr CrawlerGeneratorImpl::writeAGXSprocket()
 {
-    MappingPtr sprocketNode = new Mapping;
-
-    sprocketNode->write("parent", "CHASSIS");
-    sprocketNode->insert(writeAGXWheel());
-    sprocketNode->write("mass", dspins[TRK_MAS]->value() * 2.0 / 9.0);
-    write(sprocketNode, "inertia", calcCylinderInertia(dspins[TRK_MAS]->value(), dspins[TRK_RAD]->value(), dspins[TRK_WDT]->value()));
-
-    ListingPtr elementsNode = new Listing;
     MappingPtr node = new Mapping;
 
-    node->write("type", "Shape");
+    node->write("parent", "CHASSIS");
+    node->insert(writeAGXWheel());
+    node->write("mass", dspins[TRK_MAS]->value() * 2.0 / 9.0);
+    write(node, "inertia", calcCylinderInertia(dspins[TRK_MAS]->value(), dspins[TRK_RAD]->value(), dspins[TRK_WDT]->value()));
 
-    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
-    geometryNode->write("type", "Cylinder");
-    geometryNode->write("radius", dspins[TRK_RAD]->value());
-    geometryNode->write("height", dspins[TRK_WDT]->value());
+    ListingPtr elementsNode = new Listing;
 
-    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
-    write(materialNode, "diffuseColor", extractColor(buttons[TRK_CLR]));
-    appearanceNode->insert("material", materialNode);
-
-    elementsNode->append(node);
+    elementsNode->append(writeCylinderShape(dspins[TRK_RAD]->value(), dspins[TRK_WDT]->value(), extractColor(buttons[TRK_CLR])));
     if(!elementsNode->empty()) {
-        sprocketNode->insert("elements", elementsNode);
+        node->insert("elements", elementsNode);
     }
 
     return node;
@@ -1252,7 +1524,7 @@ MappingPtr CrawlerGeneratorImpl::writeAGXIdler()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXSubTrackF()
+MappingPtr CrawlerGeneratorImpl::writeAGXFrontTrack()
 {
     MappingPtr node = new Mapping;
 
@@ -1265,7 +1537,7 @@ MappingPtr CrawlerGeneratorImpl::writeAGXSubTrackF()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXSubTrackR()
+MappingPtr CrawlerGeneratorImpl::writeAGXRearTrack()
 {
     MappingPtr node = new Mapping;
 
@@ -1301,9 +1573,9 @@ MappingPtr CrawlerGeneratorImpl::writeAGXSubTrackBelt()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXSprocketF()
+MappingPtr CrawlerGeneratorImpl::writeAGXFrontSprocket()
 {
-    MappingPtr sprocketNode = new Mapping;
+    MappingPtr node = new Mapping;
 
     double r2spf = dspins[FFL_RRD]->value() * dspins[FFL_RRD]->value();
     double r2rof = ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0) * ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
@@ -1311,37 +1583,24 @@ MappingPtr CrawlerGeneratorImpl::writeAGXSprocketF()
     double totalf = r2spf + r2rof + r2idf;
     double mass = r2spf * r2spf / totalf * dspins[FFL_MAS]->value();
 
-    sprocketNode->insert(writeAGXWheel());
-    sprocketNode->write("mass", mass);
-    write(sprocketNode, "inertia", calcCylinderInertia(mass, dspins[FFL_RRD]->value(), dspins[FFL_WDT]->value()));
+    node->insert(writeAGXWheel());
+    node->write("mass", mass);
+    write(node, "inertia", calcCylinderInertia(mass, dspins[FFL_RRD]->value(), dspins[FFL_WDT]->value()));
 
     ListingPtr elementsNode = new Listing;
-    MappingPtr node = new Mapping;
 
-    node->write("type", "Shape");
-
-    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
-    geometryNode->write("type", "Cylinder");
-    geometryNode->write("radius", dspins[FFL_RRD]->value());
-    geometryNode->write("height", dspins[FFL_WDT]->value());
-
-    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
-    write(materialNode, "diffuseColor", extractColor(buttons[FFL_CLR]));
-    appearanceNode->insert("material", materialNode);
-
-    elementsNode->append(node);
+    elementsNode->append(writeCylinderShape(dspins[FFL_RRD]->value(), dspins[FFL_WDT]->value(), extractColor(buttons[FFL_CLR])));
     if(!elementsNode->empty()) {
-        sprocketNode->insert("elements", elementsNode);
+        node->insert("elements", elementsNode);
     }
 
-    return sprocketNode;
+    return node;
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXRollerF()
+MappingPtr CrawlerGeneratorImpl::writeAGXFrontRoller()
 {
-    MappingPtr rollerNode = new Mapping;
+    MappingPtr node = new Mapping;
 
     double r2spf = dspins[FFL_RRD]->value() * dspins[FFL_RRD]->value();
     double r2rof = ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0) * ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
@@ -1349,37 +1608,24 @@ MappingPtr CrawlerGeneratorImpl::writeAGXRollerF()
     double totalf = r2spf + r2rof + r2idf;
     double mass = r2rof * r2rof / totalf * dspins[FFL_MAS]->value();
 
-    rollerNode->insert(writeAGXWheel());
-    rollerNode->write("mass", mass);
-    write(rollerNode, "inertia", calcCylinderInertia(mass, (dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0, dspins[FFL_WDT]->value()));
+    node->insert(writeAGXWheel());
+    node->write("mass", mass);
+    write(node, "inertia", calcCylinderInertia(mass, (dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0, dspins[FFL_WDT]->value()));
 
     ListingPtr elementsNode = new Listing;
-    MappingPtr node = new Mapping;
 
-    node->write("type", "Shape");
-
-    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
-    geometryNode->write("type", "Cylinder");
-    geometryNode->write("radius", (dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
-    geometryNode->write("height", dspins[FFL_WDT]->value());
-
-    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
-    write(materialNode, "diffuseColor", extractColor(buttons[FFL_CLR]));
-    appearanceNode->insert("material", materialNode);
-
-    elementsNode->append(node);
+    elementsNode->append(writeCylinderShape((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0, dspins[FFL_WDT]->value(), extractColor(buttons[FFL_CLR])));
     if(!elementsNode->empty()) {
-        rollerNode->insert("elements", elementsNode);
+        node->insert("elements", elementsNode);
     }
 
-    return rollerNode;
+    return node;
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXIdlerF()
+MappingPtr CrawlerGeneratorImpl::writeAGXFrontIdler()
 {
-    MappingPtr idlerNode = new Mapping;
+    MappingPtr node = new Mapping;
 
     double r2spf = dspins[FFL_RRD]->value() * dspins[FFL_RRD]->value();
     double r2rof = ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0) * ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
@@ -1387,37 +1633,24 @@ MappingPtr CrawlerGeneratorImpl::writeAGXIdlerF()
     double totalf = r2spf + r2rof + r2idf;
     double mass = r2idf * r2idf / totalf * dspins[FFL_MAS]->value();
 
-    idlerNode->insert(writeAGXWheel());
-    idlerNode->write("mass", mass);
-    write(idlerNode, "inertia", calcCylinderInertia(mass, dspins[FFL_FRD]->value(), dspins[FFL_WDT]->value()));
+    node->insert(writeAGXWheel());
+    node->write("mass", mass);
+    write(node, "inertia", calcCylinderInertia(mass, dspins[FFL_FRD]->value(), dspins[FFL_WDT]->value()));
 
     ListingPtr elementsNode = new Listing;
-    MappingPtr node = new Mapping;
 
-    node->write("type", "Shape");
-
-    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
-    geometryNode->write("type", "Cylinder");
-    geometryNode->write("radius", dspins[FFL_FRD]->value());
-    geometryNode->write("height", dspins[FFL_WDT]->value());
-
-    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
-    write(materialNode, "diffuseColor", extractColor(buttons[FFL_CLR]));
-    appearanceNode->insert("material", materialNode);
-
-    elementsNode->append(node);
+    elementsNode->append(writeCylinderShape(dspins[FFL_FRD]->value(), dspins[FFL_WDT]->value(), extractColor(buttons[FFL_CLR])));
     if(!elementsNode->empty()) {
-        idlerNode->insert("elements", elementsNode);
+        node->insert("elements", elementsNode);
     }
 
-    return idlerNode;
+    return node;
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXSprocketR()
+MappingPtr CrawlerGeneratorImpl::writeAGXRearSprocket()
 {
-    MappingPtr sprocketNode = new Mapping;
+    MappingPtr node = new Mapping;
 
     double r2spr = dspins[RFL_RRD]->value() * dspins[RFL_RRD]->value();
     double r2ror = ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0) * ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
@@ -1425,37 +1658,24 @@ MappingPtr CrawlerGeneratorImpl::writeAGXSprocketR()
     double totalr = r2spr + r2ror + r2idr;
     double mass = r2spr * r2spr / totalr * dspins[RFL_MAS]->value();
 
-    sprocketNode->insert(writeAGXWheel());
-    sprocketNode->write("mass", mass);
-    write(sprocketNode, "inertia", calcCylinderInertia(mass, dspins[RFL_FRD]->value(), dspins[RFL_WDT]->value()));
+    node->insert(writeAGXWheel());
+    node->write("mass", mass);
+    write(node, "inertia", calcCylinderInertia(mass, dspins[RFL_FRD]->value(), dspins[RFL_WDT]->value()));
 
     ListingPtr elementsNode = new Listing;
-    MappingPtr node = new Mapping;
 
-    node->write("type", "Shape");
-
-    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
-    geometryNode->write("type", "Cylinder");
-    geometryNode->write("radius", dspins[RFL_FRD]->value());
-    geometryNode->write("height", dspins[RFL_WDT]->value());
-
-    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
-    write(materialNode, "diffuseColor", extractColor(buttons[RFL_CLR]));
-    appearanceNode->insert("material", materialNode);
-
-    elementsNode->append(node);
+    elementsNode->append(writeCylinderShape(dspins[RFL_FRD]->value(), dspins[RFL_WDT]->value(), extractColor(buttons[RFL_CLR])));
     if(!elementsNode->empty()) {
-        sprocketNode->insert("elements", elementsNode);
+        node->insert("elements", elementsNode);
     }
 
-    return sprocketNode;
+    return node;
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXRollerR()
+MappingPtr CrawlerGeneratorImpl::writeAGXRearRoller()
 {
-    MappingPtr rollerNode = new Mapping;
+    MappingPtr node = new Mapping;
 
     double r2spr = dspins[RFL_RRD]->value() * dspins[RFL_RRD]->value();
     double r2ror = ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0) * ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
@@ -1463,37 +1683,24 @@ MappingPtr CrawlerGeneratorImpl::writeAGXRollerR()
     double totalr = r2spr + r2ror + r2idr;
     double mass = r2ror * r2ror / totalr * dspins[RFL_MAS]->value();
 
-    rollerNode->insert(writeAGXWheel());
-    rollerNode->write("mass", mass);
-    write(rollerNode, "inertia", calcCylinderInertia(mass, (dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0, dspins[RFL_WDT]->value()));
+    node->insert(writeAGXWheel());
+    node->write("mass", mass);
+    write(node, "inertia", calcCylinderInertia(mass, (dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0, dspins[RFL_WDT]->value()));
 
     ListingPtr elementsNode = new Listing;
-    MappingPtr node = new Mapping;
 
-    node->write("type", "Shape");
-
-    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
-    geometryNode->write("type", "Cylinder");
-    geometryNode->write("radius", (dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
-    geometryNode->write("height", dspins[RFL_WDT]->value());
-
-    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
-    write(materialNode, "diffuseColor", extractColor(buttons[RFL_CLR]));
-    appearanceNode->insert("material", materialNode);
-
-    elementsNode->append(node);
+    elementsNode->append(writeCylinderShape((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0, dspins[RFL_WDT]->value(), extractColor(buttons[RFL_CLR])));
     if(!elementsNode->empty()) {
-        rollerNode->insert("elements", elementsNode);
+        node->insert("elements", elementsNode);
     }
 
-    return rollerNode;
+    return node;
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXIdlerR()
+MappingPtr CrawlerGeneratorImpl::writeAGXRearIdler()
 {
-    MappingPtr idlerNode = new Mapping;
+    MappingPtr node = new Mapping;
 
     double r2spr = dspins[RFL_RRD]->value() * dspins[RFL_RRD]->value();
     double r2ror = ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0) * ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
@@ -1501,31 +1708,18 @@ MappingPtr CrawlerGeneratorImpl::writeAGXIdlerR()
     double totalr = r2spr + r2ror + r2idr;
     double mass = r2idr * r2idr / totalr * dspins[RFL_MAS]->value();
 
-    idlerNode->insert(writeAGXWheel());
-    idlerNode->write("mass", mass);
-    write(idlerNode, "inertia", calcCylinderInertia(mass, dspins[RFL_RRD]->value(), dspins[RFL_WDT]->value()));
+    node->insert(writeAGXWheel());
+    node->write("mass", mass);
+    write(node, "inertia", calcCylinderInertia(mass, dspins[RFL_RRD]->value(), dspins[RFL_WDT]->value()));
 
     ListingPtr elementsNode = new Listing;
-    MappingPtr node = new Mapping;
 
-    node->write("type", "Shape");
-
-    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
-    geometryNode->write("type", "Cylinder");
-    geometryNode->write("radius", dspins[RFL_RRD]->value());
-    geometryNode->write("height", dspins[RFL_WDT]->value());
-
-    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
-    write(materialNode, "diffuseColor", extractColor(buttons[RFL_CLR]));
-    appearanceNode->insert("material", materialNode);
-
-    elementsNode->append(node);
+    elementsNode->append(writeCylinderShape(dspins[RFL_RRD]->value(), dspins[RFL_WDT]->value(), extractColor(buttons[RFL_CLR])));
     if(!elementsNode->empty()) {
-        idlerNode->insert("elements", elementsNode);
+        node->insert("elements", elementsNode);
     }
 
-    return idlerNode;
+    return node;
 }
 
 
@@ -1542,901 +1736,47 @@ MappingPtr CrawlerGeneratorImpl::writeAGXWheel()
 }
 
 
-bool CrawlerGeneratorImpl::writeAGX(const string& filename)
+MappingPtr CrawlerGeneratorImpl::writeCylinderShape(const double& radius, const double& height, const Vector3& color)
 {
-    YAMLWriter writer(filename);
-    int jointId = 0;
-    writer.startMapping(); {
-        writer.putKeyValue("format", "ChoreonoidBody");
-        writer.putKeyValue("formatVersion", "1.0");
-        writer.putKeyValue("angleUnit", "degree");
-        writer.putKeyValue("name", bodyname);
-        writer.putKey("links");
-        writer.startListing(); {
-            writer.startMapping(); {
-                writer.putKeyValue("name", "CHASSIS");
-                putKeyVector3(writer, "translation", Vector3(0.0, 0.0, 0.0));
-                writer.putKeyValue("jointType", "free");
-                putKeyVector3(writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
-                writer.putKeyValue("mass", dspins[CHS_MAS]->value());
-                writer.putKey("inertia");
-                writer.startFlowStyleListing(); {
-                    VectorXd inertia = calcBoxInertia(dspins[CHS_MAS]->value(),
-                                                      dspins[CHS_XSZ]->value(),
-                                                      dspins[CHS_YSZ]->value(),
-                                                      dspins[CHS_ZSZ]->value());
-                    for(int i = 0; i < 9; ++i) {
-                        writer.putScalar(inertia[i]);
-                    }
-                } writer.endListing(); // end inertia listing
-                writer.putKey("elements");
-                writer.startMapping(); {
-                    writer.putKey("Shape");
-                    writer.startMapping(); {
-                        writer.putKey("geometry");
-                        writer.startFlowStyleMapping(); {
-                            writer.putKeyValue("type", "Box");
-                            putKeyVector3(writer, "size", Vector3(dspins[CHS_XSZ]->value(),
-                                                                   dspins[CHS_YSZ]->value(),
-                                                                   dspins[CHS_ZSZ]->value()));
-                        } writer.endMapping(); // end geometry mapping
-                        writer.putKey("appearance");
-                        writer.startFlowStyleMapping(); {
-                            writer.putKey("material");
-                            writer.startFlowStyleMapping(); {
-                                putKeyVector3(writer, "diffuseColor", extractColor(buttons[CHS_CLR]));
-                                putKeyVector3(writer, "specularColor", extractColor(buttons[CHS_CLR]));
-                                writer.putKeyValue("shininess", 0.6);
-                            } writer.endMapping(); // end material mapping
-                        } writer.endMapping(); // end appearance mapping
-                    } writer.endMapping(); // end shape mapping
-                } writer.endMapping(); // end elements mapping
-            } writer.endMapping(); // end chassis mapping
+    MappingPtr node = new Mapping;
 
-            writer.startMapping(); {
-                writer.putKeyValue("name", "TRACK_L");
-                writer.putKeyValue("parent", "CHASSIS");
-                putKeyVector3(writer, "translation", Vector3(0.0,
-                                                             (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0,
-                                                             -dspins[CHS_ZSZ]->value() / 2.0));
-                writeAGXTrack(writer);
-                writer.putKey("elements");
-                writer.startListing(); {
-                    writer.startMapping(); {
-                        writer.putKeyValue("type", "AGXVehicleContinuousTrackDevice");
-                        writer.putKeyValue("name", "TRACK_L");
-                        writer.putKey("sprocketNames");
-                        writer.startFlowStyleListing(); {
-                            writer.putString("SPROCKET_L");
-                        } writer.endListing(); // end sprocketnames listing
-                        writer.putKey("rollerNames");
-                        writer.startFlowStyleListing(); {
-                            writer.putString("ROLLER_L");
-                        } writer.endListing(); // end rollernames listing
-                        writer.putKey("idlerNames");
-                        writer.startFlowStyleListing(); {
-                            writer.putString("IDLER_L");
-                        } writer.endListing(); // end idlernames listing
-                        writeAGXTrackBelt(writer);
-                    } writer.endMapping(); // end elements mapping
-                } writer.endListing(); // end elements listing
-            } writer.endMapping(); // end trackl mapping
+    node->write("type", "Shape");
 
-            writer.startMapping(); {
-                writer.putKeyValue("name", "TRACK_R");
-                writer.putKeyValue("parent", "CHASSIS");
-                putKeyVector3(writer, "translation", Vector3(0.0,
-                                                             -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0,
-                                                             -dspins[CHS_ZSZ]->value() / 2.0));
-                writeAGXTrack(writer);
-                writer.putKey("elements");
-                writer.startListing(); {
-                    writer.startMapping(); {
-                        writer.putKeyValue("type", "AGXVehicleContinuousTrackDevice");
-                        writer.putKeyValue("name", "TRACK_L");
-                        writer.putKey("sprocketNames");
-                        writer.startFlowStyleListing(); {
-                            writer.putString("SPROCKET_R");
-                        } writer.endListing(); // end sprocketnames listing
-                        writer.putKey("rollerNames");
-                        writer.startFlowStyleListing(); {
-                            writer.putString("ROLLER_R");
-                        } writer.endListing(); // end rollernames listing
-                        writer.putKey("idlerNames");
-                        writer.startFlowStyleListing(); {
-                            writer.putString("IDLER_R");
-                        } writer.endListing(); // end idlernames listing
-                        writeAGXTrackBelt(writer);
-                    } writer.endMapping(); // end elements mapping
-                } writer.endListing(); // end elements listing
-            } writer.endMapping(); // end trackr mapping
+    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
+    geometryNode->write("type", "Cylinder");
+    geometryNode->write("radius", radius);
+    geometryNode->write("height", height);
 
-            writer.startMapping(); {
-                writer.putKeyValue("name", "SPROCKET_L");
-                writer.putKeyValue("parent", "CHASSIS");
-                putKeyVector3(writer, "translation", Vector3(dspins[TRK_WBS]->value() / 2.0,
-                                                             (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0,
-                                                             -dspins[CHS_ZSZ]->value() / 2.0));
-                writer.putKeyValue("jointId", jointId++);
-                writeAGXSprocket(writer);
-            } writer.endMapping(); // end sprocketl mapping
+    MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+    MappingPtr materialNode = new Mapping;
+    write(materialNode, "diffuseColor", color);
+    appearanceNode->insert("material", materialNode);
 
-            writer.startMapping(); {
-                writer.putKeyValue("name", "ROLLER_L");
-                writer.putKeyValue("parent", "CHASSIS");
-                putKeyVector3(writer, "translation", Vector3(0.0,
-                                                             (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0,
-                                                             -dspins[CHS_ZSZ]->value() / 2.0));
-                writer.putKeyValue("jointId", jointId++);
-                writeAGXRoller(writer);
-            } writer.endMapping(); // end rollerl mapping
-
-            writer.startMapping(); {
-                writer.putKeyValue("name", "IDLER_L");
-                writer.putKeyValue("parent", "CHASSIS");
-                putKeyVector3(writer, "translation", Vector3(-dspins[TRK_WBS]->value() / 2.0,
-                                                             (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0,
-                                                             -dspins[CHS_ZSZ]->value() / 2.0));
-                writer.putKeyValue("jointId", jointId++);
-                writeAGXIdler(writer);
-            } writer.endMapping(); // end idlerl mapping
-
-            writer.startMapping(); {
-                writer.putKeyValue("name", "SPROCKET_R");
-                writer.putKeyValue("parent", "CHASSIS");
-                putKeyVector3(writer, "translation", Vector3(dspins[TRK_WBS]->value() / 2.0,
-                                                             -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0,
-                                                             -dspins[CHS_ZSZ]->value() / 2.0));
-                writer.putKeyValue("jointId", jointId++);
-                writeAGXSprocket(writer);
-            } writer.endMapping(); // end sprocketr mapping
-
-            writer.startMapping(); {
-                writer.putKeyValue("name", "ROLLER_R");
-                writer.putKeyValue("parent", "CHASSIS");
-                putKeyVector3(writer, "translation", Vector3(0.0,
-                                                             -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0,
-                                                             -dspins[CHS_ZSZ]->value() / 2.0));
-                writer.putKeyValue("jointId", jointId++);
-                writeAGXRoller(writer);
-            } writer.endMapping(); // end rollerr mapping
-
-            writer.startMapping(); {
-                writer.putKeyValue("name", "IDLER_R");
-                writer.putKeyValue("parent", "CHASSIS");
-                putKeyVector3(writer, "translation", Vector3(-dspins[TRK_WBS]->value() / 2.0,
-                                                             -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0,
-                                                             -dspins[CHS_ZSZ]->value() / 2.0));
-                writer.putKeyValue("jointId", jointId++);
-                writeAGXIdler(writer);
-            } writer.endMapping(); // end idlerr mapping
-
-            if(checks[FFL_CHK]->isChecked()) {
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "SPACER_LF");
-                    writer.putKeyValue("parent", "CHASSIS");
-                    putKeyVector3(writer, "translation", Vector3(dspins[TRK_WBS]->value() / 2.0,
-                                                                 (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(),
-                                                                 -dspins[CHS_ZSZ]->value() / 2.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXSpacer(writer);
-                } writer.endMapping(); // end spacerlf
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "SPACER_RF");
-                    writer.putKeyValue("parent", "CHASSIS");
-                    putKeyVector3(writer, "translation", Vector3(dspins[TRK_WBS]->value() / 2.0,
-                                                                 -((dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value()),
-                                                                 -dspins[CHS_ZSZ]->value() / 2.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXSpacer(writer);
-                } writer.endMapping(); // end spacerrf
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "TRACK_LF");
-                    writer.putKeyValue("parent", "SPACER_LF");
-                    putKeyVector3(writer, "translation", Vector3(0.0,
-                                                                 (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writeAGXSubTrackF(writer);
-                    writer.putKey("elements");
-                    writer.startListing(); {
-                        writer.startMapping(); {
-                            writer.putKeyValue("type", "AGXVehicleContinuousTrackDevice");
-                            writer.putKeyValue("name", "TRACK_LF");
-                            writer.putKey("sprocketNames");
-                            writer.startFlowStyleListing(); {
-                                writer.putString("SPROCKET_LF");
-                            } writer.endListing(); // end sprocketnames listing
-                            writer.putKey("rollerNames");
-                            writer.startFlowStyleListing(); {
-                                writer.putString("ROLLER_LF");
-                            } writer.endListing(); // end rollernames listing
-                            writer.putKey("idlerNames");
-                            writer.startFlowStyleListing(); {
-                                writer.putString("IDLER_LF");
-                            } writer.endListing(); // end idlernames listing
-                            writeAGXSubTrackBelt(writer);
-                        } writer.endMapping(); // end elements mapping
-                    } writer.endListing(); // end elements listing
-                } writer.endMapping(); // end trackl mapping
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "TRACK_RF");
-                    writer.putKeyValue("parent", "SPACER_RF");
-                    putKeyVector3(writer, "translation", Vector3(0.0,
-                                                                 -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writeAGXSubTrackF(writer);
-                    writer.putKey("elements");
-                    writer.startListing(); {
-                        writer.startMapping(); {
-                            writer.putKeyValue("type", "AGXVehicleContinuousTrackDevice");
-                            writer.putKeyValue("name", "TRACK_RF");
-                            writer.putKey("sprocketNames");
-                            writer.startFlowStyleListing(); {
-                                writer.putString("SPROCKET_RF");
-                            } writer.endListing(); // end sprocketnames listing
-                            writer.putKey("rollerNames");
-                            writer.startFlowStyleListing(); {
-                                writer.putString("ROLLER_RF");
-                            } writer.endListing(); // end rollernames listing
-                            writer.putKey("idlerNames");
-                            writer.startFlowStyleListing(); {
-                                writer.putString("IDLER_RF");
-                            } writer.endListing(); // end idlernames listing
-                            writeAGXSubTrackBelt(writer);
-                        } writer.endMapping(); // end elements mapping
-                    } writer.endListing(); // end elements listing
-                } writer.endMapping(); // end trackr mapping
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "SPROCKET_LF");
-                    writer.putKeyValue("parent", "SPACER_LF");
-                    putKeyVector3(writer, "translation", Vector3(0.0,
-                                                                 (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXSprocketF(writer);
-                } writer.endMapping(); // end sprocketl mapping
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "ROLLER_LF");
-                    writer.putKeyValue("parent", "SPACER_LF");
-                    putKeyVector3(writer, "translation", Vector3(dspins[FFL_WBS]->value() / 2.0,
-                                                                 (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXRollerF(writer);
-                } writer.endMapping(); // end rollerl mapping
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "IDLER_LF");
-                    writer.putKeyValue("parent", "SPACER_LF");
-                    putKeyVector3(writer, "translation", Vector3(dspins[FFL_WBS]->value(),
-                                                                 (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXIdlerF(writer);
-                } writer.endMapping(); // end idlerl mapping
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "SPROCKET_RF");
-                    writer.putKeyValue("parent", "SPACER_RF");
-                    putKeyVector3(writer, "translation", Vector3(0.0,
-                                                                 -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXSprocketF(writer);
-                } writer.endMapping(); // end sprocketr mapping
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "ROLLER_RF");
-                    writer.putKeyValue("parent", "SPACER_RF");
-                    putKeyVector3(writer, "translation", Vector3(dspins[FFL_WBS]->value() / 2.0,
-                                                                 -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXRollerF(writer);
-                } writer.endMapping(); // end rollerr mapping
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "IDLER_RF");
-                    writer.putKeyValue("parent", "SPACER_RF");
-                    putKeyVector3(writer, "translation", Vector3(dspins[FFL_WBS]->value(),
-                                                                 -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXIdlerF(writer);
-                } writer.endMapping(); // end idlerr mapping
-            }
-            if(checks[RFL_CHK]->isChecked()) {
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "SPACER_LR");
-                    writer.putKeyValue("parent", "CHASSIS");
-                    putKeyVector3(writer, "translation", Vector3(-dspins[TRK_WBS]->value() / 2.0,
-                                                                 (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(),
-                                                                 -dspins[CHS_ZSZ]->value() / 2.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXSpacer(writer);
-                } writer.endMapping(); // end spacerlf
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "SPACER_RR");
-                    writer.putKeyValue("parent", "CHASSIS");
-                    putKeyVector3(writer, "translation", Vector3(-dspins[TRK_WBS]->value() / 2.0,
-                                                                 -((dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value()),
-                                                                 -dspins[CHS_ZSZ]->value() / 2.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXSpacer(writer);
-                } writer.endMapping(); // end spacerrf
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "TRACK_LR");
-                    writer.putKeyValue("parent", "SPACER_LR");
-                    putKeyVector3(writer, "translation", Vector3(0.0,
-                                                                 (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writeAGXSubTrackF(writer);
-                    writer.putKey("elements");
-                    writer.startListing(); {
-                        writer.startMapping(); {
-                            writer.putKeyValue("type", "AGXVehicleContinuousTrackDevice");
-                            writer.putKeyValue("name", "TRACK_LR");
-                            writer.putKey("sprocketNames");
-                            writer.startFlowStyleListing(); {
-                                writer.putString("SPROCKET_LR");
-                            } writer.endListing(); // end sprocketnames listing
-                            writer.putKey("rollerNames");
-                            writer.startFlowStyleListing(); {
-                                writer.putString("ROLLER_LR");
-                            } writer.endListing(); // end rollernames listing
-                            writer.putKey("idlerNames");
-                            writer.startFlowStyleListing(); {
-                                writer.putString("IDLER_LR");
-                            } writer.endListing(); // end idlernames listing
-                            writeAGXSubTrackBelt(writer);
-                        } writer.endMapping(); // end elements mapping
-                    } writer.endListing(); // end elements listing
-                } writer.endMapping(); // end trackl mapping
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "TRACK_RR");
-                    writer.putKeyValue("parent", "SPACER_RR");
-                    putKeyVector3(writer, "translation", Vector3(0.0,
-                                                                 -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writeAGXSubTrackF(writer);
-                    writer.putKey("elements");
-                    writer.startListing(); {
-                        writer.startMapping(); {
-                            writer.putKeyValue("type", "AGXVehicleContinuousTrackDevice");
-                            writer.putKeyValue("name", "TRACK_RR");
-                            writer.putKey("sprocketNames");
-                            writer.startFlowStyleListing(); {
-                                writer.putString("SPROCKET_RR");
-                            } writer.endListing(); // end sprocketnames listing
-                            writer.putKey("rollerNames");
-                            writer.startFlowStyleListing(); {
-                                writer.putString("ROLLER_RR");
-                            } writer.endListing(); // end rollernames listing
-                            writer.putKey("idlerNames");
-                            writer.startFlowStyleListing(); {
-                                writer.putString("IDLER_RR");
-                            } writer.endListing(); // end idlernames listing
-                            writeAGXSubTrackBelt(writer);
-                        } writer.endMapping(); // end elements mapping
-                    } writer.endListing(); // end elements listing
-                } writer.endMapping(); // end trackr mapping
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "SPROCKET_LR");
-                    writer.putKeyValue("parent", "SPACER_LR");
-                    putKeyVector3(writer, "translation", Vector3(0.0,
-                                                                 (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXSprocketR(writer);
-                } writer.endMapping(); // end sprocketl mapping
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "ROLLER_LR");
-                    writer.putKeyValue("parent", "SPACER_LR");
-                    putKeyVector3(writer, "translation", Vector3(-dspins[RFL_WBS]->value() / 2.0,
-                                                                 (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXRollerR(writer);
-                } writer.endMapping(); // end rollerl mapping
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "IDLER_LR");
-                    writer.putKeyValue("parent", "SPACER_LR");
-                    putKeyVector3(writer, "translation", Vector3(-dspins[RFL_WBS]->value(),
-                                                                 (dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXIdlerR(writer);
-                } writer.endMapping(); // end idlerl mapping
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "SPROCKET_RR");
-                    writer.putKeyValue("parent", "SPACER_RR");
-                    putKeyVector3(writer, "translation", Vector3(0.0,
-                                                                 -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXSprocketR(writer);
-                } writer.endMapping(); // end sprocketr mapping
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "ROLLER_RR");
-                    writer.putKeyValue("parent", "SPACER_RR");
-                    putKeyVector3(writer, "translation", Vector3(-dspins[RFL_WBS]->value() / 2.0,
-                                                                 -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXRollerR(writer);
-                } writer.endMapping(); // end rollerr mapping
-
-                writer.startMapping(); {
-                    writer.putKeyValue("name", "IDLER_RR");
-                    writer.putKeyValue("parent", "SPACER_RR");
-                    putKeyVector3(writer, "translation", Vector3(-dspins[RFL_WBS]->value(),
-                                                                 -(dspins[SPC_WDT]->value() + dspins[RFL_WDT]->value()) / 2.0,
-                                                                 0.0));
-                    writer.putKeyValue("jointId", jointId++);
-                    writeAGXIdlerR(writer);
-                } writer.endMapping(); // end idlerr mapping
-            }
-        } writer.endListing(); // end links listing
-    } writer.endMapping(); // end body mapping
-    return true;
+    return node;
 }
 
 
-bool CrawlerGeneratorImpl::writeAGXTrack(YAMLWriter& writer)
+MappingPtr CrawlerGeneratorImpl::writeAGXVehicleContinuousTrackDevice(const char* name, const char* sprocketName, const char* rollerName, const char* idlerName, const bool isSubTrack)
 {
-    writer.putKeyValue("jointType", "fixed");
-    putKeyVector3(writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
-    writer.putKeyValue("mass", dspins[TRK_MAS]->value() / 3.0);
-    writer.putKey("inertia");
-    writer.startFlowStyleListing(); {
-        VectorXd inertia = calcBoxInertia(dspins[TRK_MAS]->value() / 3.0,
-                                          dspins[TRK_WBS]->value(),
-                                          dspins[TRK_WDT]->value(),
-                                          dspins[TRK_RAD]->value() * 2.0);
-        for(int i = 0; i < 9; ++i) {
-            writer.putScalar(inertia[i]);
-        }
-    } writer.endListing(); // end inertia listing
-    return true;
-}
+    MappingPtr node = new Mapping;
 
+    node->write("type", "AGXVehicleContinuousTrackDevice");
+    node->write("name", name);
 
-bool CrawlerGeneratorImpl::writeAGXTrackBelt(YAMLWriter& writer)
-{
-    putKeyVector3(writer, "upAxis", Vector3(0.0, 0.0, 1.0));
-    writer.putKeyValue("numberOfNodes", agxspins[TRK_BNN]->value());
-    writer.putKeyValue("nodeThickness", agxdspins[TRK_BNT]->value());
-    writer.putKeyValue("nodeWidth", agxdspins[TRK_BNW]->value());
-    writer.putKeyValue("nodeThickerThickness", agxdspins[TRK_BNTT]->value());
-    writer.putKeyValue("useThickerNodeEvery", agxspins[TRK_BUTNE]->value());
-    writer.putKeyValue("material", bodyname + "Tracks");
-    writer.putKeyValue("nodeDistanceTension", agxdspins[TRK_BNDTM]->value() * exp10(-agxspins[TRK_BNDTE]->value()));
-    writer.putKeyValue("stabilizingHingeFrictionParameter", agxdspins[TRK_BSHFPM]->value() * exp10(-agxspins[TRK_BSHFPE]->value()));
-    writer.putKeyValue("minStabilizingHingeNormalForce", agxspins[TRK_BMSHNF]->value());
-    writer.putKeyValue("hingeCompliance", agxdspins[TRK_BHCM]->value() * exp10(-agxspins[TRK_BHCE]->value()));
-    writer.putKeyValue("hingeSpookDamping", agxdspins[TRK_BHSD]->value());
-    writer.putKeyValue("nodesToWheelsMergeThreshold", agxdspins[TRK_BNWMT]->value());
-    writer.putKeyValue("nodesToWheelsSplitThreshold", agxdspins[TRK_BNWST]->value());
-    return true;
-}
+    Listing& sprocketNamesNode = *node->createFlowStyleListing("sprocketNames");
+    sprocketNamesNode.append(sprocketName);
 
+    Listing& rollerNamesNode = *node->createFlowStyleListing("rollerNames");
+    rollerNamesNode.append(rollerName);
 
-bool CrawlerGeneratorImpl::writeAGXSprocket(YAMLWriter& writer)
-{
-    writeAGXWheel(writer);
-    writer.putKeyValue("mass", dspins[TRK_MAS]->value() * 2.0 / 9.0);
-    writer.putKey("inertia");
-    writer.startFlowStyleListing(); {
-        VectorXd inertia = calcCylinderInertia(dspins[TRK_MAS]->value(),
-                                               dspins[TRK_RAD]->value(),
-                                               dspins[TRK_WDT]->value());
-        for(int i = 0; i < 9; ++i) {
-            writer.putScalar(inertia[i]);
-        }
-    } writer.endListing(); // end inertia listing
-    writer.putKey("elements");
-    writer.startMapping(); {
-        writer.putKey("Shape");
-        writer.startMapping(); {
-            writer.putKey("geometry");
-            writer.startFlowStyleMapping(); {
-                writer.putKeyValue("type", "Cylinder");
-                writer.putKeyValue("radius", dspins[TRK_RAD]->value());
-                writer.putKeyValue("height", dspins[TRK_WDT]->value());
-            } writer.endMapping(); // end geometry mapping
-            writer.putKey("appearance");
-            writer.startFlowStyleMapping(); {
-                writer.putKey("material");
-                writer.startFlowStyleMapping(); {
-                    putKeyVector3(writer, "diffuseColor", extractColor(buttons[TRK_CLR]));
-                } writer.endMapping(); // end material mapping
-            } writer.endMapping(); // end appearance mapping
-        } writer.endMapping(); // end shape mapping
-    } writer.endMapping(); // end elements mapping
-    return true;
-}
+    Listing& idlerNamesNode = *node->createFlowStyleListing("idlerNames");
+    idlerNamesNode.append(idlerName);
 
+    if(!isSubTrack) {
+        node->insert(writeAGXTrackBelt());
+    } else {
+        node->insert(writeAGXSubTrackBelt());
+    }
 
-bool CrawlerGeneratorImpl::writeAGXRoller(YAMLWriter& writer)
-{
-    return writeAGXSprocket(writer);
-}
-
-
-bool CrawlerGeneratorImpl::writeAGXIdler(YAMLWriter& writer)
-{
-    return writeAGXSprocket(writer);
-}
-
-
-bool CrawlerGeneratorImpl::writeAGXSpacer(YAMLWriter& writer)
-{
-    writer.putKeyValue("jointType", "revolute");
-    writer.putKeyValue("jointAxis", "-Y");
-    putKeyVector3(writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
-    writer.putKeyValue("mass", dspins[SPC_MAS]->value());
-    writer.putKey("inertia");
-    writer.startFlowStyleListing(); {
-        VectorXd inertia = calcCylinderInertia(dspins[SPC_MAS]->value(),
-                                               dspins[SPC_RAD]->value(),
-                                               dspins[SPC_WDT]->value());
-        for(int i = 0; i < 9; ++i) {
-            writer.putScalar(inertia[i]);
-        }
-    } writer.endListing(); // end inertia listing
-    writer.putKey("elements");
-    writer.startMapping(); {
-        writer.putKey("Shape");
-        writer.startMapping(); {
-            writer.putKey("geometry");
-            writer.startFlowStyleMapping(); {
-                writer.putKeyValue("type", "Cylinder");
-                writer.putKeyValue("radius", dspins[SPC_RAD]->value());
-                writer.putKeyValue("height", dspins[SPC_WDT]->value());
-            } writer.endMapping(); // end geometry mapping
-            writer.putKey("appearance");
-            writer.startFlowStyleMapping(); {
-                writer.putKey("material");
-                writer.startFlowStyleMapping(); {
-                    putKeyVector3(writer, "diffuseColor", extractColor(buttons[SPC_CLR]));
-                    putKeyVector3(writer, "specularColor", extractColor(buttons[SPC_CLR]));
-                    writer.putKeyValue("shininess", 0.6);
-                } writer.endMapping(); // end material mapping
-            } writer.endMapping(); // end appearance mapping
-        } writer.endMapping(); // end shape mapping
-    } writer.endMapping(); // end elements mapping
-    return true;
-}
-
-
-bool CrawlerGeneratorImpl::writeAGXSubTrackF(YAMLWriter& writer)
-{
-    writer.putKeyValue("jointType", "fixed");
-    putKeyVector3(writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
-    writer.putKeyValue("mass", dspins[FFL_MAS]->value() / 3.0);
-    writer.putKey("inertia");
-    writer.startFlowStyleListing(); {
-        VectorXd inertia = calcBoxInertia(dspins[FFL_MAS]->value() / 3.0,
-                                          dspins[FFL_WBS]->value(),
-                                          dspins[FFL_WDT]->value(),
-                                          std::max(dspins[FFL_FRD]->value(), dspins[FFL_RRD]->value()));
-        for(int i = 0; i < 9; ++i) {
-            writer.putScalar(inertia[i]);
-        }
-    } writer.endListing(); // end inertia listing
-    return true;
-}
-
-
-bool CrawlerGeneratorImpl::writeAGXSubTrackR(YAMLWriter& writer)
-{
-    writer.putKeyValue("jointType", "fixed");
-    putKeyVector3(writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
-    writer.putKeyValue("mass", dspins[RFL_MAS]->value() / 3.0);
-    writer.putKey("inertia");
-    writer.startFlowStyleListing(); {
-        VectorXd inertia = calcBoxInertia(dspins[RFL_MAS]->value() / 3.0,
-                                          dspins[RFL_WBS]->value(),
-                                          dspins[RFL_WDT]->value(),
-                                          std::max(dspins[RFL_FRD]->value(), dspins[RFL_RRD]->value()));
-        for(int i = 0; i < 9; ++i) {
-            writer.putScalar(inertia[i]);
-        }
-    } writer.endListing(); // end inertia listing
-    return true;
-}
-
-
-bool CrawlerGeneratorImpl::writeAGXSubTrackBelt(YAMLWriter& writer)
-{
-    putKeyVector3(writer, "upAxis", Vector3(0.0, 0.0, 1.0));
-    writer.putKeyValue("numberOfNodes", agxspins[FLP_BNN]->value());
-    writer.putKeyValue("nodeThickness", agxdspins[FLP_BNT]->value());
-    writer.putKeyValue("nodeWidth", agxdspins[FLP_BNW]->value());
-    writer.putKeyValue("nodeThickerThickness", agxdspins[FLP_BNTT]->value());
-    writer.putKeyValue("useThickerNodeEvery", agxspins[FLP_BUTNE]->value());
-    writer.putKeyValue("material", bodyname + "Tracks");
-    writer.putKeyValue("nodeDistanceTension", agxdspins[FLP_BNDTM]->value() * exp10(-agxspins[FLP_BNDTE]->value()));
-    writer.putKeyValue("stabilizingHingeFrictionParameter", agxdspins[FLP_BSHFPM]->value() * exp10(-agxspins[FLP_BSHFPE]->value()));
-    writer.putKeyValue("minStabilizingHingeNormalForce", agxspins[FLP_BMSHNF]->value());
-    writer.putKeyValue("hingeCompliance", agxdspins[FLP_BHCM]->value() * exp10(-agxspins[FLP_BHCE]->value()));
-    writer.putKeyValue("hingeSpookDamping", agxdspins[FLP_BHSD]->value());
-    writer.putKeyValue("nodesToWheelsMergeThreshold", agxdspins[FLP_BNWMT]->value());
-    writer.putKeyValue("nodesToWheelsSplitThreshold", agxdspins[FLP_BNWST]->value());
-    return true;
-}
-
-
-bool CrawlerGeneratorImpl::writeAGXSprocketF(YAMLWriter& writer)
-{
-    double r2spf = dspins[FFL_RRD]->value() * dspins[FFL_RRD]->value();
-    double r2rof = ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0) * ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
-    double r2idf = dspins[FFL_FRD]->value() * dspins[FFL_FRD]->value();
-    double totalf = r2spf + r2rof + r2idf;
-    double mass = r2spf * r2spf / totalf * dspins[FFL_MAS]->value();
-
-    writeAGXWheel(writer);
-    writer.putKeyValue("mass", mass);
-    writer.putKey("inertia");
-    writer.startFlowStyleListing(); {
-        VectorXd inertia = calcCylinderInertia(mass,
-                                               dspins[FFL_RRD]->value(),
-                                               dspins[FFL_WDT]->value());
-        for(int i = 0; i < 9; ++i) {
-            writer.putScalar(inertia[i]);
-        }
-    } writer.endListing(); // end inertia listing
-    writer.putKey("elements");
-    writer.startMapping(); {
-        writer.putKey("Shape");
-        writer.startMapping(); {
-            writer.putKey("geometry");
-            writer.startFlowStyleMapping(); {
-                writer.putKeyValue("type", "Cylinder");
-                writer.putKeyValue("radius", dspins[FFL_RRD]->value());
-                writer.putKeyValue("height", dspins[FFL_WDT]->value());
-            } writer.endMapping(); // end geometry mapping
-            writer.putKey("appearance");
-            writer.startFlowStyleMapping(); {
-                writer.putKey("material");
-                writer.startFlowStyleMapping(); {
-                    putKeyVector3(writer, "diffuseColor", extractColor(buttons[FFL_CLR]));
-                } writer.endMapping(); // end material mapping
-            } writer.endMapping(); // end appearance mapping
-        } writer.endMapping(); // end shape mapping
-    } writer.endMapping(); // end elements mapping
-    return true;
-}
-
-
-bool CrawlerGeneratorImpl::writeAGXRollerF(YAMLWriter& writer)
-{
-    double r2spf = dspins[FFL_RRD]->value() * dspins[FFL_RRD]->value();
-    double r2rof = ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0) * ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
-    double r2idf = dspins[FFL_FRD]->value() * dspins[FFL_FRD]->value();
-    double totalf = r2spf + r2rof + r2idf;
-    double mass = r2rof * r2rof / totalf * dspins[FFL_MAS]->value();
-
-    writeAGXWheel(writer);
-    writer.putKeyValue("mass", mass);
-    writer.putKey("inertia");
-    writer.startFlowStyleListing(); {
-        VectorXd inertia = calcCylinderInertia(mass,
-                                               (dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0,
-                                               dspins[FFL_WDT]->value());
-        for(int i = 0; i < 9; ++i) {
-            writer.putScalar(inertia[i]);
-        }
-    } writer.endListing(); // end inertia listing
-    writer.putKey("elements");
-    writer.startMapping(); {
-        writer.putKey("Shape");
-        writer.startMapping(); {
-            writer.putKey("geometry");
-            writer.startFlowStyleMapping(); {
-                writer.putKeyValue("type", "Cylinder");
-                writer.putKeyValue("radius", (dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
-                writer.putKeyValue("height", dspins[FFL_WDT]->value());
-            } writer.endMapping(); // end geometry mapping
-            writer.putKey("appearance");
-            writer.startFlowStyleMapping(); {
-                writer.putKey("material");
-                writer.startFlowStyleMapping(); {
-                    putKeyVector3(writer, "diffuseColor", extractColor(buttons[FFL_CLR]));
-                } writer.endMapping(); // end material mapping
-            } writer.endMapping(); // end appearance mapping
-        } writer.endMapping(); // end shape mapping
-    } writer.endMapping(); // end elements mapping
-    return true;
-}
-
-
-bool CrawlerGeneratorImpl::writeAGXIdlerF(YAMLWriter& writer)
-{
-    double r2spf = dspins[FFL_RRD]->value() * dspins[FFL_RRD]->value();
-    double r2rof = ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0) * ((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0);
-    double r2idf = dspins[FFL_FRD]->value() * dspins[FFL_FRD]->value();
-    double totalf = r2spf + r2rof + r2idf;
-    double mass = r2idf * r2idf / totalf * dspins[FFL_MAS]->value();
-
-    writeAGXWheel(writer);
-    writer.putKeyValue("mass", mass);
-    writer.putKey("inertia");
-    writer.startFlowStyleListing(); {
-        VectorXd inertia = calcCylinderInertia(mass,
-                                               dspins[FFL_FRD]->value(),
-                                               dspins[FFL_WDT]->value());
-        for(int i = 0; i < 9; ++i) {
-            writer.putScalar(inertia[i]);
-        }
-    } writer.endListing(); // end inertia listing
-    writer.putKey("elements");
-    writer.startMapping(); {
-        writer.putKey("Shape");
-        writer.startMapping(); {
-            writer.putKey("geometry");
-            writer.startFlowStyleMapping(); {
-                writer.putKeyValue("type", "Cylinder");
-                writer.putKeyValue("radius", dspins[FFL_FRD]->value());
-                writer.putKeyValue("height", dspins[FFL_WDT]->value());
-            } writer.endMapping(); // end geometry mapping
-            writer.putKey("appearance");
-            writer.startFlowStyleMapping(); {
-                writer.putKey("material");
-                writer.startFlowStyleMapping(); {
-                    putKeyVector3(writer, "diffuseColor", extractColor(buttons[FFL_CLR]));
-                } writer.endMapping(); // end material mapping
-            } writer.endMapping(); // end appearance mapping
-        } writer.endMapping(); // end shape mapping
-    } writer.endMapping(); // end elements mapping
-    return true;
-}
-
-
-bool CrawlerGeneratorImpl::writeAGXSprocketR(YAMLWriter& writer)
-{
-    double r2spr = dspins[RFL_RRD]->value() * dspins[RFL_RRD]->value();
-    double r2ror = ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0) * ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
-    double r2idr = dspins[RFL_FRD]->value() * dspins[RFL_FRD]->value();
-    double totalr = r2spr + r2ror + r2idr;
-    double mass = r2spr * r2spr / totalr * dspins[RFL_MAS]->value();
-
-    writeAGXWheel(writer);
-    writer.putKeyValue("mass", mass);
-    writer.putKey("inertia");
-    writer.startFlowStyleListing(); {
-        VectorXd inertia = calcCylinderInertia(mass,
-                                               dspins[RFL_FRD]->value(),
-                                               dspins[RFL_WDT]->value());
-        for(int i = 0; i < 9; ++i) {
-            writer.putScalar(inertia[i]);
-        }
-    } writer.endListing(); // end inertia listing
-    writer.putKey("elements");
-    writer.startMapping(); {
-        writer.putKey("Shape");
-        writer.startMapping(); {
-            writer.putKey("geometry");
-            writer.startFlowStyleMapping(); {
-                writer.putKeyValue("type", "Cylinder");
-                writer.putKeyValue("radius", dspins[RFL_FRD]->value());
-                writer.putKeyValue("height", dspins[RFL_WDT]->value());
-            } writer.endMapping(); // end geometry mapping
-            writer.putKey("appearance");
-            writer.startFlowStyleMapping(); {
-                writer.putKey("material");
-                writer.startFlowStyleMapping(); {
-                    putKeyVector3(writer, "diffuseColor", extractColor(buttons[RFL_CLR]));
-                } writer.endMapping(); // end material mapping
-            } writer.endMapping(); // end appearance mapping
-        } writer.endMapping(); // end shape mapping
-    } writer.endMapping(); // end elements mapping
-    return true;
-}
-
-
-bool CrawlerGeneratorImpl::writeAGXRollerR(YAMLWriter& writer)
-{
-    double r2spr = dspins[RFL_RRD]->value() * dspins[RFL_RRD]->value();
-    double r2ror = ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0) * ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
-    double r2idr = dspins[RFL_FRD]->value() * dspins[RFL_FRD]->value();
-    double totalr = r2spr + r2ror + r2idr;
-    double mass = r2ror * r2ror / totalr * dspins[RFL_MAS]->value();
-
-    writeAGXWheel(writer);
-    writer.putKeyValue("mass", mass);
-    writer.putKey("inertia");
-    writer.startFlowStyleListing(); {
-        VectorXd inertia = calcCylinderInertia(mass,
-                                               (dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0,
-                                               dspins[RFL_WDT]->value());
-        for(int i = 0; i < 9; ++i) {
-            writer.putScalar(inertia[i]);
-        }
-    } writer.endListing(); // end inertia listing
-    writer.putKey("elements");
-    writer.startMapping(); {
-        writer.putKey("Shape");
-        writer.startMapping(); {
-            writer.putKey("geometry");
-            writer.startFlowStyleMapping(); {
-                writer.putKeyValue("type", "Cylinder");
-                writer.putKeyValue("radius", (dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
-                writer.putKeyValue("height", dspins[RFL_WDT]->value());
-            } writer.endMapping(); // end geometry mapping
-            writer.putKey("appearance");
-            writer.startFlowStyleMapping(); {
-                writer.putKey("material");
-                writer.startFlowStyleMapping(); {
-                    putKeyVector3(writer, "diffuseColor", extractColor(buttons[RFL_CLR]));
-                } writer.endMapping(); // end material mapping
-            } writer.endMapping(); // end appearance mapping
-        } writer.endMapping(); // end shape mapping
-    } writer.endMapping(); // end elements mapping
-    return true;
-}
-
-
-bool CrawlerGeneratorImpl::writeAGXIdlerR(YAMLWriter& writer)
-{
-    double r2spr = dspins[RFL_RRD]->value() * dspins[RFL_RRD]->value();
-    double r2ror = ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0) * ((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0);
-    double r2idr = dspins[RFL_FRD]->value() * dspins[RFL_FRD]->value();
-    double totalr = r2spr + r2ror + r2idr;
-    double mass = r2idr * r2idr / totalr * dspins[RFL_MAS]->value();
-
-    writeAGXWheel(writer);
-    writer.putKeyValue("mass", mass);
-    writer.putKey("inertia");
-    writer.startFlowStyleListing(); {
-        VectorXd inertia = calcCylinderInertia(mass,
-                                               dspins[RFL_RRD]->value(),
-                                               dspins[RFL_WDT]->value());
-        for(int i = 0; i < 9; ++i) {
-            writer.putScalar(inertia[i]);
-        }
-    } writer.endListing(); // end inertia listing
-    writer.putKey("elements");
-    writer.startMapping(); {
-        writer.putKey("Shape");
-        writer.startMapping(); {
-            writer.putKey("geometry");
-            writer.startFlowStyleMapping(); {
-                writer.putKeyValue("type", "Cylinder");
-                writer.putKeyValue("radius", dspins[RFL_RRD]->value());
-                writer.putKeyValue("height", dspins[RFL_WDT]->value());
-            } writer.endMapping(); // end geometry mapping
-            writer.putKey("appearance");
-            writer.startFlowStyleMapping(); {
-                writer.putKey("material");
-                writer.startFlowStyleMapping(); {
-                    putKeyVector3(writer, "diffuseColor", extractColor(buttons[RFL_CLR]));
-                } writer.endMapping(); // end material mapping
-            } writer.endMapping(); // end appearance mapping
-        } writer.endMapping(); // end shape mapping
-    } writer.endMapping(); // end elements mapping
-    return true;
-}
-
-
-bool CrawlerGeneratorImpl::writeAGXWheel(YAMLWriter& writer)
-{
-    writer.putKeyValue("jointType", "revolute");
-    writer.putKeyValue("jointAxis", "Y");
-    putKeyVector3(writer, "centerOfMass", Vector3(0.0, 0.0, 0.0));
-    writer.putKeyValue("material", bodyname + "Wheel");
-    return true;
+    return node;
 }
