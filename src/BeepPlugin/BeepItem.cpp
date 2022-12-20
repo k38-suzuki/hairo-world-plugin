@@ -15,9 +15,19 @@
 #include "BeepView.h"
 #include "BeepWidget.h"
 #include "gettext.h"
-
+#include <iostream>
 using namespace cnoid;
 using namespace std;
+
+namespace {
+
+struct PairInfo {
+    string link0;
+    string link1;
+    bool isContacted;
+};
+
+}
 
 namespace cnoid {
 
@@ -31,6 +41,8 @@ public:
     SimulatorItem* simulatorItem;
     WorldItem* worldItem;
     BeepWidget* beepWidget;
+    vector<PairInfo> pairs;
+    bool isPlayed;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void onPostDynamicsFunction();
@@ -54,6 +66,8 @@ BeepItemImpl::BeepItemImpl(BeepItem* self)
     simulatorItem = nullptr;
     worldItem = nullptr;
     beepWidget = nullptr;
+    pairs.clear();
+    isPlayed = false;
 }
 
 
@@ -96,10 +110,23 @@ bool BeepItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
     this->simulatorItem = simulatorItem;
     worldItem = this->simulatorItem->findOwnerItem<WorldItem>();
     beepWidget = BeepView::instance()->beepWidget();
+    pairs.clear();
+    isPlayed = false;
 
-    if(worldItem) {
-        worldItem->setCollisionDetectionEnabled(true);
-        this->simulatorItem->addPostDynamicsFunction([&](){ onPostDynamicsFunction(); });
+    if(beepWidget) {
+        int numItems = beepWidget->treeWidget()->topLevelItemCount();
+        for(int i = 0; i < numItems; ++i) {
+            QTreeWidgetItem* item = beepWidget->treeWidget()->topLevelItem(i);
+            string link0 = item->text(1).toStdString();
+            string link1 = item->text(2).toStdString();
+            PairInfo info = { link0, link1, false };
+            pairs.push_back(info);
+        }
+
+        if(worldItem) {
+            worldItem->setCollisionDetectionEnabled(true);
+            this->simulatorItem->addPostDynamicsFunction([&](){ onPostDynamicsFunction(); });
+        }
     }
 
     return true;
@@ -108,37 +135,47 @@ bool BeepItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 
 void BeepItemImpl::onPostDynamicsFunction()
 {
-    int currentTime = simulatorItem->currentTime() * 1000.0;
-    if(beepWidget) {
-        int count = beepWidget->treeWidget()->topLevelItemCount();
-        for(int i = 0; i < count; ++i) {
-            QTreeWidgetItem* item = beepWidget->treeWidget()->topLevelItem(i);
-            string link0 = item->text(1).toStdString();
-            string link1 = item->text(2).toStdString();
+    double currentTime = simulatorItem->currentTime();
+    static double startTime = 0.0;
 
-            bool contacted = false;
-            vector<CollisionLinkPairPtr>& collisions = worldItem->collisions();
-            for(int j = 0; j < collisions.size(); ++j) {
-                Link* links[2] = { collisions[j]->link[0], collisions[j]->link[1] };
-                if((links[0]->name() == link0 && links[1]->name() == link1)
-                        || (links[0]->name() == link1 && links[1]->name() == link0)) {
+    int playID = 999;
+    for(size_t i = 0; i < pairs.size(); ++i) {
+        PairInfo& info = pairs[i];
+        string link0 = info.link0;
+        string link1 = info.link1;
+
+        bool contacted = false;
+        vector<CollisionLinkPairPtr>& collisions = worldItem->collisions();
+        for(int j = 0; j < collisions.size(); ++j) {
+            Link* links[2] = { collisions[j]->link[0], collisions[j]->link[1] };
+            if((links[0]->name() == link0 && links[1]->name() == link1)
+                    || (links[0]->name() == link1 && links[1]->name() == link0)) {
+                contacted = true;
+            } else if(link0 == "ALL") {
+                if(links[0]->name() == link1 || links[1]->name() == link1) {
                     contacted = true;
-                } else if(link0 == "ALL") {
-                    if(links[0]->name() == link1 || links[1]->name() == link1) {
-                        contacted = true;
-                    }
-                } else if(link1 == "ALL") {
-                    if(links[0]->name() == link0 || links[1]->name() == link0) {
-                        contacted = true;
-                    }
                 }
-                if(contacted) {
-                    if(currentTime % 200 == 0) {
-                        callLater([&, i](){ beepWidget->play(i); });
-                    }
+            } else if(link1 == "ALL") {
+                if(links[0]->name() == link0 || links[1]->name() == link0) {
+                    contacted = true;
                 }
             }
+            if(contacted && !info.isContacted) {
+                playID = i;
+            }
         }
+        info.isContacted = contacted;
+    }
+
+    if(playID != 999 && !isPlayed) {
+        startTime = currentTime;
+    }
+
+    if(currentTime < startTime + 0.2) {
+        callLater([&, playID](){ beepWidget->play(playID); });
+        isPlayed = true;
+    } else {
+        isPlayed = false;
     }
 }
 

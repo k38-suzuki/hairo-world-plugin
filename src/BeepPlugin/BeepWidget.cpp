@@ -52,14 +52,14 @@ BeepWidget::BeepWidget()
 BeepWidgetImpl::BeepWidgetImpl(BeepWidget* self)
     : self(self)
 {
-    const QStringList labels0 = { _("No"), _("Link0"), _("Link1"), _("Frequency") };
+    const QStringList label0 = { _("No"), _("Link0"), _("Link1"), _("Frequency") };
     treeWidget = new TreeWidget;
-    treeWidget->setHeaderLabels(labels0);
+    treeWidget->setHeaderLabels(label0);
 
-    static const char* labels1[] = { _("+"), _("-"), _("Play") };
+    static const char* label1[] = { _("+"), _("-"), _("Play") };
     QVBoxLayout* vbox = new QVBoxLayout;
     for(int i = 0; i < NUM_BUTTONS; ++i) {
-        buttons[i] = new PushButton(labels1[i]);
+        buttons[i] = new PushButton(label1[i]);
         PushButton* button = buttons[i];
         vbox->addWidget(button);
         button->sigClicked().connect([&, i](){ onButtonClicked(i); });
