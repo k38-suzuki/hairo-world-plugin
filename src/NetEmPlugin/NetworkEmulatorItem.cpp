@@ -7,6 +7,7 @@
 #include <cnoid/Archive>
 #include <cnoid/Body>
 #include <cnoid/ItemManager>
+#include <cnoid/LazyCaller>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
@@ -149,6 +150,7 @@ bool NetworkEmulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
     bodies.clear();
     prevItemID = INT_MAX;
     this->simulatorItem = simulatorItem;
+    
     const vector<SimulationBody*>& simuBodies = simulatorItem->simulationBodies();
     if(simuBodies.size()) {
         for(size_t i = 0; i < simuBodies.size(); i++) {
@@ -188,9 +190,9 @@ void NetworkEmulatorItemImpl::onPreDynamicsFunction()
         if(!body->isStaticModel()) {
             Link* link = body->rootLink();
             for(size_t j = 0; j <  areaItems.size(); ++j) {
-                TCAreaItem* targetItem = areaItems[j];
-                if(targetItem->isCollided(link->T().translation())) {
-                    currentItem = targetItem;
+                TCAreaItem* areaItem = areaItems[j];
+                if(areaItem->isCollided(link->T().translation())) {
+                    currentItem = areaItem;
                     currentItemID = j;
                 }
             }
@@ -221,7 +223,7 @@ void NetworkEmulatorItemImpl::onPreDynamicsFunction()
         if(checkIP(currentItem->destination())) {
             netem->setSourceIP(currentItem->destination());
         }
-        netem->update();
+        callLater([&](){ netem->update(); });
     }
     prevItemID = currentItemID;
 }

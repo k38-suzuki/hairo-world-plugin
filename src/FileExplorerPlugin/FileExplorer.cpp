@@ -89,9 +89,9 @@ void FileExplorer::initializeClass(ExtensionManager* ext)
 
 void FileExplorerImpl::execute(const Item* item, const int& id)
 {
-    static const string programs[] = { "gedit", "nautilus" };
+    static const string program[] = { "gedit", "nautilus" };
     const int argc = 2;
-    const char* argv[] = { programs[id].c_str(), item->filePath().c_str() };
+    const char* argv[] = { program[id].c_str(), item->filePath().c_str() };
     execute(argc, argv);
 }
 
