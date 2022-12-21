@@ -1,1 +1,1 @@
-add_subdirectory(controller)
+choreonoid_add_simple_controller(JACO2JoystickController JACO2JoystickController.cpp)
