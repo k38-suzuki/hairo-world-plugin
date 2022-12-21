@@ -1,0 +1,84 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: JACKAL
+
+WHEEL_COMMON: &WheelCommon
+  parent: CHASSIS
+  jointType: revolute
+  jointAxis: Y
+  mass: 0.477
+  inertia: [ 0.0013, 0, 0, 0, 0.0024, 0, 0, 0, 0.0013 ]
+  elements:
+    -
+      type: Visual
+      elements:
+        -
+          type: Shape
+          rotation: [ 1, 0, 0, 90 ]
+          geometry: { type: Resource, uri: "resource/jackal-wheel.stl" }
+          appearance: &black { material: { diffuseColor: [ 0.15, 0.15, 0.15 ] } }
+    -
+      type: Collision
+      elements:
+        -
+          type: Shape
+          geometry: { type: Cylinder, radius: 0.098, height: 0.04 }
+          appearance: *black
+
+links:
+  -
+    name: CHASSIS
+    jointType: free
+    translation: [ 0, 0, 0.1 ]
+    centerOfMass: [ 0.012, 0.002, 0.067 ]
+    mass: 16.523
+    inertia: [ 0.3136, -0.0008, 0.0164, 0, 0.3922, -0.0009, 0, 0, 0.4485 ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            translation: [ 0.0, 0.0, -0.0655 ]
+            rotation: [ [ 0, 0, 1, 90 ], [ 1, 0, 0, 90 ] ]
+            geometry: { type: Resource, uri: "resource/jackal-base.stl" }
+            appearance: &dark_grey { material: { diffuseColor: [ 0.2, 0.2, 0.2 ] } }
+          -
+            type: Shape
+#            translation: [ 0.25629, 0, 0.07455 ]
+            translation: [ 0.0, 0.0, 0.04005 ]
+            rotation: [ 1, 0, 0, 0 ]
+            geometry: { type: Resource, uri: "resource/jackal-fender.stl" }
+            appearance: &yellow { material: { diffuseColor: [ 0.8, 0.8, 0.0 ] } }
+          -
+            type: Shape
+#            translation: [ 0.25629, 0, 0.07455 ]
+            translation: [ 0.0, 0.0, 0.04005 ]
+            rotation: [ 0, 0, 1, 180 ]
+            geometry: { type: Resource, uri: "resource/accessory_fender.stl" }
+            appearance: *yellow
+      -
+        type: Collision
+        elements:
+          -
+            type: Shape
+            translation: [ 0.0, 0.0, 0.092 ]
+            geometry: { type: Box, size: [ 0.42, 0.31, 0.184 ] }
+            appearance: *dark_grey
+  -
+    name: FRONT_LEFT
+    translation: [ 0.131, 0.187795, 0.0345 ]
+    <<: *WheelCommon
+  -
+    name: FRONT_RIGHT
+    translation: [ 0.131, -0.187795, 0.0345 ]
+    <<: *WheelCommon
+  -
+    name: REAR_LEFT
+    translation: [ -0.131, 0.187795, 0.0345 ]
+    <<: *WheelCommon
+  -
+    name: REAR_RIGHT
+    translation: [ -0.131, -0.187795, 0.0345 ]
+    <<: *WheelCommon

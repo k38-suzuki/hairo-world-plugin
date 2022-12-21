@@ -1,0 +1,5 @@
+choreonoid_add_simple_controller(HUSKYJoystickController HUSKYJoystickController.cpp)
+
+choreonoid_add_simple_controller(JACKALJoystickController JACKALJoystickController.cpp)
+
+choreonoid_add_simple_controller(JACO2JoystickController JACO2JoystickController.cpp)
