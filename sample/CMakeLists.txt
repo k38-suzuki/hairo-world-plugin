@@ -1,5 +1,6 @@
-add_subdirectory(HAIROWorld)
+add_subdirectory(HaiROV)
 add_subdirectory(IKPlannerPlugin)
+add_subdirectory(JACO2)
 add_subdirectory(MarkerDetectPlugin)
 add_subdirectory(PHITS)
 add_subdirectory(tutorial)

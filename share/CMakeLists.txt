@@ -1,4 +1,3 @@
-
 set(make_symlink false)
 
 if(NOT CNOID_SOURCE_SHARE_DIR STREQUAL CNOID_BINARY_SHARE_DIR)
@@ -20,6 +19,19 @@ install(FILES default/elements.yaml DESTINATION ${CNOID_SHARE_SUBDIR}/default)
 install(FILES default/filters.yaml DESTINATION ${CNOID_SHARE_SUBDIR}/default)
 install(FILES default/nuclides.yaml DESTINATION ${CNOID_SHARE_SUBDIR}/default)
 install(FILES default/shields.yaml DESTINATION ${CNOID_SHARE_SUBDIR}/default)
+
+if(ENABLE_SAMPLES)
+  set(symlink_directories model)
+  foreach(dir ${symlink_directories})
+  install(DIRECTORY ${dir} DESTINATION ${CNOID_SHARE_SUBDIR}/HAIROWorld)
+  if(make_symlink)
+    add_custom_target(
+      symlink_to_HAIROWorld ALL
+      COMMAND ${CMAKE_COMMAND} -E create_symlink
+      ${CMAKE_CURRENT_SOURCE_DIR} ${CNOID_BINARY_SHARE_DIR}/HAIROWorld)
+    endif()
+  endforeach()
+endif()
 
 if(ENABLE_QAD)
   install(FILES default/LIB/ATTEN.DAT DESTINATION ${CNOID_SHARE_SUBDIR}/default)

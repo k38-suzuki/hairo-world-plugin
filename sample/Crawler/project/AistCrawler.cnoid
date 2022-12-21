@@ -22,22 +22,22 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "${SHARE}/HAIROWorld/model/aistcrawler.body"
+            file: "../model/aistcrawler.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0.2 ]
             rootAttitude: [ 
-              -1, -1.2246468e-16, 0, 
-              1.2246468e-16, -1, 0, 
+              1, 0, 0, 
+              0, 1, 0, 
               0, 0, 1 ]
             jointDisplacements: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
             jointPositions: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
             initialRootPosition: [ 0, 0, 0.2 ]
             initialRootAttitude: [ 
-              -1, -1.2246468e-16, 0, 
-              1.2246468e-16, -1, 0, 
+              1, 0, 0, 
+              0, 1, 0, 
               0, 0, 1 ]
             initialJointPositions: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-            staticModel: false
+            fix_root: false
             collisionDetection: true
             selfCollisionDetection: false
             location_editable: true
@@ -76,7 +76,7 @@ items:
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            staticModel: true
+            fix_root: true
             collisionDetection: true
             selfCollisionDetection: false
             location_editable: true
@@ -88,18 +88,18 @@ items:
           plugin: Body
           class: AISTSimulatorItem
           data: 
-            timeStep: 0.001
-            realtimeSync: true
-            recording: "full"
-            timeRangeMode: "Unlimited"
-            timeLength: 180
-            active_control_time_range_mode: false
-            allLinkPositionOutputMode: false
-            deviceStateOutput: true
-            controllerThreads: true
-            recordCollisionData: false
-            controllerOptions: ""
-            scene_view_edit_mode_blocking: false
+            time_step: 0.001
+            realtime_sync_mode: compensatory
+            recording: full
+            time_range_mode: unlimited
+            time_length: 180
+            is_active_control_time_range_mode: false
+            output_all_link_positions: false
+            output_device_states: true
+            use_controller_threads: true
+            record_collision_data: false
+            controller_options: ""
+            block_scene_view_edit_mode: false
             dynamicsMode: "Forward dynamics"
             integrationMode: "Runge Kutta"
             gravity: [ 0, 0, -9.80665 ]
@@ -160,21 +160,26 @@ views:
           isCurrent: true
           eye: [ 3, 1.5, 1.2 ]
           direction: [ -0.880451, -0.440225, -0.17609 ]
-          up: [ -0.1575, -0.0787499, 0.984374 ]
+          up: [ -0.1575, -0.0787498, 0.984374 ]
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
-      lightingMode: normal
-      cullingMode: enabled
-      worldLight: true
-      worldLightIntensity: 0.5
-      worldLightAmbient: 0.5
-      defaultHeadLight: true
-      defaultHeadLightIntensity: 0.5
+      lighting_mode: normal
+      culling_mode: enabled
+      shading_mode: smooth
+      world_light: true
+      world_light_intensity: 0.5
+      ambient_light: true
+      ambient_light_intensity: 0.5
+      head_light: true
+      head_light_intensity: 0.5
       world_light_shadow: true
-      backgroundColor: [ 0.1, 0.1, 0.3 ]
-      lineWidth: 1
-      pointSize: 1
+      shadow_lights: 
+        - { index: 0, enabled: false }
+        - { index: 1, enabled: false }
+      background_color: [ 0.1, 0.1, 0.3 ]
+      line_width: 1
+      point_size: 1
       field_of_view: 35
       clip_distances: [ 0.04, 200 ]
       floorGrid: true
@@ -210,7 +215,7 @@ views:
     mounted: true
     state: 
       element_type: all
-      listingMode: list
+      listing_mode: list
   - 
     id: 7
     plugin: Body
@@ -236,12 +241,12 @@ views:
     mounted: true
 toolbars: 
   "TimeBar": 
+    current_time: 0
     min_time: 0
     max_time: 30
     frame_rate: 1000
     playback_frame_rate: 60
     idle_loop_driven_mode: false
-    current_time: 0
     playback_speed_ratio: 1
     sync_to_ongoing_updates: true
     auto_expansion: true
@@ -294,17 +299,17 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 1287, 409 ]
+      sizes: [ 1399, 445 ]
       children: 
         - 
           type: splitter
           orientation: horizontal
-          sizes: [ 333, 950 ]
+          sizes: [ 362, 1033 ]
           children: 
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 430, 429 ]
+              sizes: [ 505, 503 ]
               children: 
                 - 
                   type: pane
@@ -316,7 +321,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 644, 215 ]
+              sizes: [ 756, 252 ]
               children: 
                 - 
                   type: pane
@@ -328,7 +333,7 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 198, 661 ]
+          sizes: [ 232, 776 ]
           children: 
             - 
               type: pane
@@ -336,7 +341,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 286, 371 ]
+              sizes: [ 336, 436 ]
               children: 
                 - 
                   type: pane

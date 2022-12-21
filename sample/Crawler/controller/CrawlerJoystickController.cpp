@@ -26,8 +26,8 @@ class CrawlerJoystickController : public SimpleController
         SPACER_RR, NUM_JOINTS
     };
 
-    Link* tracks[NUM_TRACKS];
-    Link* joints[NUM_JOINTS];
+    Link* track[NUM_TRACKS];
+    Link* spacer[NUM_JOINTS];
 
     Joystick* joystick;
 
@@ -52,22 +52,22 @@ public:
 
         joystick = new Joystick(device.c_str());
 
-        static const char* trackname[] = {
+        static const char* trackn_ame[] = {
             "TRACK_L", "TRACK_R", "TRACK_LF",
             "TRACK_RF", "TRACK_LR", "TRACK_RR",
         };
 
-        static const char* agxtrackname[] = {
+        static const char* agxtrack_name[] = {
             "SPROCKET_L", "SPROCKET_R", "SPROCKET_LF",
             "SPROCKET_RF", "SPROCKET_LR", "SPROCKET_RR",
         };
 
         for(int i = 0; i < NUM_TRACKS; ++i) {
-            Link* track = body->link(trackname[i]);
+            Link* track = body->link(track_name[i]);
             if(!usePseudoContinousTrackMode) {
-                track = body->link(agxtrackname[i]);
+                track = body->link(agxtrack_name[i]);
             }
-            tracks[i] = track;
+            track[i] = track;
             if(!track) {
                 os << "Track" << i << " is not found." << endl;
             } else {
@@ -75,13 +75,13 @@ public:
             }
         }
 
-        static const char* jointname[] = {
+        static const char* joint_name[] = {
             "SPACER_LF", "SPACER_RF", "SPACER_LR", "SPACER_RR"
         };
 
         for(int i = 0; i < NUM_JOINTS; ++i) {
-            Link* joint = body->link(jointname[i]);
-            joints[i] = joint;
+            Link* joint = body->link(joint_name[i]);
+            spacer[i] = joint;
             if(!joint) {
                 os << "Joint" << i << " is not found." << endl;
             } else {
@@ -107,8 +107,8 @@ public:
         }
 
         for(int i = 0; i < NUM_TRACKS / 2; ++i) {
-            Link* trackL = tracks[2 * i];
-            Link* trackR = tracks[2 * i + 1];
+            Link* trackL = track[2 * i];
+            Link* trackR = track[2 * i + 1];
             if(usePseudoContinousTrackMode) {
                 double k = 1.0;
                 if(trackL) {
@@ -143,13 +143,13 @@ public:
                 pos = 0.0;
             }
 
-            static const double ranges[] = { -90.0, 90.0 };
+            static const double range[] = { -90.0, 90.0 };
             for(int j = 0; j < 2; ++j) {
-                Link* joint = joints[2 * i + j];
+                Link* joint = spacer[2 * i + j];
                 if(joint) {
                     double q = joint->q();
-                    if((q > radian(ranges[1]) && pos > 0.0)
-                            || (q < radian(ranges[0]) && pos < 0.0)) {
+                    if((q > radian(range[1]) && pos > 0.0)
+                            || (q < radian(range[0]) && pos < 0.0)) {
                         pos = 0.0;
                     }
                     joint->dq_target() = pos;

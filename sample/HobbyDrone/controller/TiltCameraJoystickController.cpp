@@ -1,5 +1,5 @@
 /**
-   TiltCamera Controller
+   Camera Controller
    @author Kenta Suzuki
 */
 
