@@ -1,0 +1,457 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+#name: j2s7s300
+name: JACO2
+rootLink: BASE
+
+FINGER_PROXIMAL_COMMON: &FingerProximalCommon
+  parent: HAND_3FINGER
+  jointType: revolute
+  jointAxis: Z
+  jointRange: [ 0, 90 ]
+  maxJointVelocity: 48
+  centerOfMass: [ 0.022, 0, 0 ]
+  mass: 0.01
+  inertia: [ 7.9e-07, 0, 0, 0, 7.9e-07, 0, 0, 0, 8e-08 ]
+  rotorInertia: 0.005
+  elements:
+    -
+      type: Shape
+      geometry: { type: Resource, uri: "parts/finger_proximal.STL" }
+      appearance: &RingAppearance { material: { diffuseColor: [ 0.8, 0.8, 0.8 ] } }
+
+FINGER_DISTAL_COMMON: &FingerDistalCommon
+#  jointType: revolute
+  jointType: fixed
+  jointAxis: Z
+#  jointRange: [ 0, 114.6 ]
+  centerOfMass: [ 0.022, 0, 0 ]
+  mass: 0.01
+  inertia: [ 7.9e-07, 0, 0, 0, 7.9e-07, 0, 0, 0, 8e-08 ]
+  rotorInertia: 0.005
+  elements:
+    -
+      type: Shape
+      geometry: { type: Resource, uri: "parts/finger_distal.STL" }
+      appearance: *RingAppearance
+
+links:
+  -
+    name: BASE
+    translation: [ 0, 0, 0 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0.1255 ]
+    mass: 0.46784
+    inertia: [ 0.000951275, 0, 0, 0, 0.000951275, 0, 0, 0, 0.000374272 ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "parts/base.STL" }
+            appearance: &BodyAppearance { material: { diffuseColor: [ 0, 0, 0 ] } }
+      -
+        type: Collision
+        elements:
+          -
+            type: Shape
+            translation: [ 0, 0, 0.08 ]
+            rotation: [ 1, 0, 0, -90 ]
+            geometry: { type: Cylinder, radius: 0.04, height: 0.15 }
+            appearance: &CollisionAppearance { material: { diffuseColor: [ 1, 0, 0 ] } }
+  -
+    name: SHOULDER
+    parent: BASE
+    translation: [ 0, 0, 0.15675 ]
+    rotation: [ 0, 1, 0, 180 ]
+    jointType: revolute
+    jointAxis: Z
+    jointRange: [ -360, 360 ]
+    maxJointVelocity: 36
+    jointId: 0
+    centerOfMass: [ 0, -0.002, -0.0605 ]
+    mass: 0.7477
+    inertia: [ 0.00152032, 0, 0, 0, 0.00152032, 0, 0, 0, 0.00059816 ]
+    rotorInertia: 0.2
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "parts/shoulder.STL" }
+            appearance: *BodyAppearance
+      -
+        type: Collision
+        elements:
+          -
+            type: Shape
+            translation: [ 0, 0, -0.015 ]
+            rotation: [ 1, 0, 0, -90 ]
+            geometry: { type: Cylinder, radius: 0.04, height: 0.03 }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0, -0.025, -0.075 ]
+            geometry: { type: Box, size: [ 0.06, 0.02, 0.09 ] }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0, -0.02, -0.12 ]
+            geometry: { type: Cylinder, radius: 0.04, height: 0.04 }
+            appearance: { <<: *CollisionAppearance }
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "parts/ring_big.STL" }
+            appearance: *RingAppearance
+  -
+    name: ARM_HALF_1
+    parent: SHOULDER
+    translation: [ 0, 0.0016, -0.11875 ]
+    rotation: [ [ 1, 0, 0, 90 ], [ 0, 0, 1, 180 ] ]
+    jointType: revolute
+    jointAxis: Z
+    jointRange: [ 47, 313 ]
+    maxJointVelocity: 36
+    jointId: 1
+    centerOfMass: [ 0, -0.103563213, 0 ]
+    mass: 0.8447
+    inertia: [ 0.00247075, 0, 0, 0, 0.00247075, 0, 0, 0, 0.000380115 ]
+    rotorInertia: 0.2
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "parts/arm_half_1.STL" }
+            appearance: *BodyAppearance
+      -
+        type: Collision
+        elements:
+          -
+            type: Shape
+            translation: [ 0, 0, -0.02 ]
+            rotation: [ 1, 0, 0, -90 ]
+            geometry: { type: Cylinder, radius: 0.04, height: 0.04 }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0, -0.08, -0.03 ]
+            geometry: { type: Box, size: [ 0.06, 0.17, 0.02 ] }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0, -0.185, 0 ]
+            geometry: { type: Cylinder, radius: 0.04, height: 0.04 }
+            appearance: *CollisionAppearance
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "parts/ring_big.STL" }
+            appearance: *RingAppearance
+  -
+    name: ARM_HALF_2
+    parent: ARM_HALF_1
+    translation: [ 0, -0.205, 0 ]
+    rotation: [ 1, 0, 0, -90 ]
+    jointType: revolute
+    jointAxis: Z
+    jointRange: [ -360, 360 ]
+    maxJointVelocity: 36
+    jointId: 2
+    centerOfMass: [ 0, 0, -0.1022447445 ]
+    mass: 0.8447
+    inertia: [ 0.00247075, 0, 0, 0, 0.00247075, 0, 0, 0, 0.000380115 ]
+    rotorInertia: 0.2
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "parts/arm_half_2.STL" }
+            appearance: *BodyAppearance
+      -
+        type: Collision
+        elements:
+          -
+            type: Shape
+            translation: [ 0, 0, -0.02 ]
+            rotation: [ 1, 0, 0, -90 ]
+            geometry: { type: Cylinder, radius: 0.04, height: 0.04 }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0, 0.03, -0.12 ]
+            geometry: { type: Box, size: [ 0.06, 0.02, 0.17 ] }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0, 0.02, -0.205 ]
+            geometry: { type: Cylinder, radius: 0.04, height: 0.04 }
+            appearance: *CollisionAppearance
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "parts/ring_big.STL" }
+            appearance: *RingAppearance
+  -
+    name: FOREARM
+    parent: ARM_HALF_2
+    translation: [ 0, 0, -0.205 ]
+    rotation: [ [ 0, 0, 1, 180 ], [ 1, 0, 0, 90 ] ]
+    jointType: revolute
+    jointAxis: Z
+    jointRange: [ 30, 330 ]
+    maxJointVelocity: 36
+    jointId: 3
+    centerOfMass: [ 0, 0.081, -0.0086 ]
+    mass: 0.6763
+    inertia: [ 0.00142023, 0, 0, 0, 0.00142023, 0, 0, 0, 0.000304335 ]
+    rotorInertia: 0.1
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "parts/forearm.STL" }
+            appearance: *BodyAppearance
+      -
+        type: Collision
+        elements:
+          -
+            type: Shape
+            translation: [ 0, 0.192, -0.01 ]
+            geometry: { type: Cylinder, radius: 0.03, height: 0.03 }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0, 0.087, -0.03 ]
+            geometry: { type: Box, size: [ 0.06, 0.18, 0.02 ] }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0, 0, -0.02 ]
+            rotation: [ 1, 0, 0, -90 ]
+            geometry: { type: Cylinder, radius: 0.04, height: 0.04 }
+            appearance: *CollisionAppearance
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "parts/ring_big.STL" }
+            appearance: *RingAppearance
+  -
+    name: WRIST_SPHERICAL_1
+    parent: FOREARM
+    translation: [ 0, 0.2073, -0.0114 ]
+    rotation: [ [ 0, 0, 1, 180 ], [ 1, 0, 0, -90 ] ]
+    jointType: revolute
+    jointAxis: Z
+    jointRange: [ -360, 360 ]
+    maxJointVelocity: 48
+    jointId: 4
+    centerOfMass: [ 0, 0.0028848942, -0.0541932613 ]
+    mass: 0.463
+    inertia: [ 0.000432133, 0, 0, 0, 0.000432133, 0, 0, 0, 9.26e-05 ]
+    rotorInertia: 0.05
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "parts/wrist_spherical_1.STL" }
+            appearance: *BodyAppearance
+      -
+        type: Collision
+        elements:
+          -
+            type: Shape
+            translation: [ 0, 0, -0.02 ]
+            rotation: [ 1, 0, 0, -90 ]
+            geometry: { type: Cylinder, radius: 0.03, height: 0.04 }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0, 0.03, -0.077 ]
+            geometry: { type: Box, size: [ 0.06, 0.02, 0.07 ] }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0, 0.02, -0.104 ]
+            geometry: { type: Cylinder, radius: 0.03, height: 0.04 }
+            appearance: *CollisionAppearance
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "parts/ring_small.STL" }
+            appearance: *RingAppearance
+  -
+    name: WRIST_SPHERICAL_2
+    parent: WRIST_SPHERICAL_1
+    translation: [ 0, 0, -0.10375 ]
+    rotation: [ [ 0, 0, 1, 180 ], [ 1, 0, 0, 90 ] ]
+    jointType: revolute
+    jointAxis: Z
+    jointRange: [ 65, 295 ]
+    maxJointVelocity: 48
+    jointId: 5
+    centerOfMass: [ 0, 0.0497208855, -0.0028562765 ]
+    mass: 0.463
+    inertia: [ 0.000432133, 0, 0, 0, 0.000432133, 0, 0, 0, 9.26e-05 ]
+    rotorInertia: 0.05
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "parts/wrist_spherical_2.STL" }
+            appearance: *BodyAppearance
+      -
+        type: Collision
+        elements:
+          -
+            type: Shape
+            translation: [ 0, 0.084, 0 ]
+            geometry: { type: Cylinder, radius: 0.03, height: 0.04 }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0, 0.027, -0.03 ]
+            geometry: { type: Box, size: [ 0.06, 0.07, 0.03 ] }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0, 0, -0.023 ]
+            rotation: [ 1, 0, 0, -90 ]
+            geometry: { type: Cylinder, radius: 0.03, height: 0.045 }
+            appearance: *CollisionAppearance
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "parts/ring_small.STL" }
+            appearance: *RingAppearance
+  -
+    name: HAND_3FINGER
+    parent: WRIST_SPHERICAL_2
+    translation: [ 0, 0.10375, 0 ]
+    rotation: [ [ 0, 0, 1, 180 ], [ 1, 0, 0, -90 ] ]
+    jointType: revolute
+    jointAxis: Z
+    jointRange: [ -360, 360 ]
+    maxJointVelocity: 48
+    jointId: 6
+    centerOfMass: [ 0, 0, -0.06 ]
+    mass: 0.99
+    inertia: [ 0.000345325, 0, 0, 0, 0.000345325, 0, 0, 0, 0.0005816 ]
+    rotorInertia: 0.05
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "parts/hand_3finger.STL" }
+            appearance: *BodyAppearance
+      -
+        type: Collision
+        elements:
+          -
+            type: Shape
+            translation: [ 0, 0, -0.01 ]
+            rotation: [ 1, 0, 0, -90 ]
+            geometry: { type: Cylinder, radius: 0.03, height: 0.02 }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0, 0.015, -0.06 ]
+            rotation: [ 1, 0, 0, -70 ]
+            geometry: { type: Capsule, radius: 0.03, height: 0.05 }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ -0.015, -0.015, -0.06 ]
+            rotation: [ [ 1, 0, 0, -70 ], [ 0, 1, 0, -70 ], [ 0, 0, 1, 40 ] ]
+            geometry: { type: Capsule, radius: 0.03, height: 0.04 }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0.015, -0.015, -0.06 ]
+            rotation: [ [ 1, 0, 0, -70 ], [ 0, 1, 0, 70 ], [ 0, 0, 1, -40 ] ]
+            geometry: { type: Capsule, radius: 0.03, height: 0.04 }
+            appearance: *CollisionAppearance
+      -
+        type: Visual
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "parts/ring_small.STL" }
+            appearance: *RingAppearance
+  -
+    name: FINGER_PROXIMAL_1
+    translation: [ 0.00279, 0.03126, -0.11467 ]
+#    rotation: [ [ 0, 0, 1, 77.9 ], [ 0, 1, 0, 37.2 ], [ 1, 0, 0, -90 ] ]
+    rotation: [ [ 0, 0, 1, 95.21 ], [ 0, 1, 0, 37.2 ], [ 1, 0, 0, -97.91 ] ]
+    jointId: 7
+    <<: *FingerProximalCommon
+  -
+    name: FINGER_DISTAL_1
+    parent: FINGER_PROXIMAL_1
+    translation: [ 0.044, -0.003, 0 ]
+#    jointId: 10
+    <<: *FingerDistalCommon
+  -
+    name: FINGER_PROXIMAL_2
+    translation: [ 0.02226, -0.02707, -0.11482 ]
+    rotation: [ [ 0, 0, 1, -79.42 ], [ 0, 1, 0, 37.2 ], [ 1, 0, 0, -90 ] ]
+    jointId: 8
+    <<: *FingerProximalCommon
+  -
+    name: FINGER_DISTAL_2
+    parent: FINGER_PROXIMAL_2
+    translation: [ 0.044, -0.003, 0 ]
+#    jointId: 11
+    <<: *FingerDistalCommon
+  -
+    name: FINGER_PROXIMAL_3
+    parent: HAND_3FINGER
+    translation: [ -0.02226, -0.02707, -0.11482 ]
+    rotation: [ [ 0, 0, 1, -100.58 ], [ 0, 1, 0, 37.2 ], [ 1, 0, 0, -90 ] ]
+    jointId: 9
+    <<: *FingerProximalCommon
+  -
+    name: FINGER_DISTAL_3
+    parent: FINGER_PROXIMAL_3
+    translation: [ 0.044, -0.003, 0 ]
+#    jointId: 12
+    <<: *FingerDistalCommon
+  -
+    name: WRIST_ORIGIN
+    parent: HAND_3FINGER
+    translation: [ 0.0, 0.0, -0.15 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.001
+    inertia: [ 4e-08, 0, 0, 0, 4e-08, 0, 0, 0, 4e-08 ]
+#    elements:
+#      Shape:
+#        geometry: { type: Sphere, radius: 0.01 }
+#        appearance: { material: { diffuseColor: [ 1.0, 0.0, 0.0 ], transparency: 0.8 } }
