@@ -5,6 +5,8 @@
 
 #include "CollisionVisualizerItem.h"
 #include <cnoid/Archive>
+#include <cnoid/Body>
+#include <cnoid/DeviceList>
 #include <cnoid/ItemManager>
 #include <cnoid/MultiValueSeq>
 #include <cnoid/MultiValueSeqItem>

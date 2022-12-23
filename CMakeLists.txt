@@ -1,5 +1,9 @@
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
+  if(NOT ENABLE_GUI)
+    return()
+  endif()
+
   option(BUILD_HAIRO_WORLD_PLUGIN "Building a HAIROWorldPlugin" ON)
   if(NOT BUILD_HAIRO_WORLD_PLUGIN)
     return()
@@ -17,15 +21,19 @@ else()
   endif()
 endif()
 
-if(NOT ENABLE_GUI OR WIN32 OR APPLE)
-  return()
-endif()
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_subdirectory(src)
-add_subdirectory(sample)
-add_subdirectory(ext)
+add_subdirectory(include)
+
+if(ENABLE_SAMPLES)
+  add_subdirectory(sample)
+endif()
+
+if(ENABLE_EXT)
+  add_subdirectory(ext)
+endif()
 
 if(UNIX AND BUILD_PHITS_PLUGIN)
     option(ENABLE_QAD "Enable QAD option." OFF)

@@ -4,6 +4,8 @@
 */
 
 #include "MotionCaptureItem.h"
+#include <cnoid/Body>
+#include <cnoid/DeviceList>
 #include <cnoid/ExecutablePath>
 #include <cnoid/ItemManager>
 #include <cnoid/MultiPointSetItem>
