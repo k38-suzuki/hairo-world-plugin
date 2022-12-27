@@ -2,7 +2,7 @@
 <package format="2">
   <name>hairo-world-plugin</name>
   <version>1.7.0</version>
-  <description>The package for using HAIROWorldPlugin as a ROS library</description>
+  <description>The package for using HAIROWorldPlugin as a Choreonoid plugin</description>
   <maintainer email="suzuki.kenta38@jaea.go.jp">Kenta Suzuki</maintainer>
   <license>MIT</license>
   <author email="suzuki.kenta38@jaea.go.jp">Kenta Suzuki</author>

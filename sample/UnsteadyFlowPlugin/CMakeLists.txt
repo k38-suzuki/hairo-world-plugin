@@ -11,7 +11,7 @@ if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
 else()
   # Stand alone build
   set(target CnoidUnsteadyFlowPlugin)
-  choreonoid_add_library(${target} SHARED UnsteadyFlowPlugin.cpp)
+  add_library(${target} SHARED UnsteadyFlowPlugin.cpp)
   target_link_libraries(${target} ${CHOREONOID_BODY_PLUGIN_LIBRARIES} CnoidCFDPlugin)
   install(TARGETS ${target} LIBRARY DESTINATION ${CHOREONOID_PLUGIN_DIR})
 endif()

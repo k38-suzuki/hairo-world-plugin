@@ -45,7 +45,7 @@ else()
   # Stand alone build
   set(target CnoidKIOSKPlugin)
   make_gettext_mofiles(${target} mofiles)
-  choreonoid_add_library(${target} SHARED  ${sources} ${mofiles} ${RC_SRCS} HEADERS ${headers})
+  add_library(${target} SHARED  ${sources} ${mofiles} ${RC_SRCS} ${headers})
   target_link_libraries(${target} ${CHOREONOID_BASE_LIBRARIES} ${CHOREONOID_BODY_PLUGIN_LIBRARIES})
   install(TARGETS ${target} LIBRARY DESTINATION ${CHOREONOID_PLUGIN_DIR})
 endif()

@@ -34,7 +34,7 @@ else()
   # Stand alone build
   set(target CnoidCFDPlugin)
   make_gettext_mofiles(${target} mofiles)
-  choreonoid_add_library(${target} SHARED ${sources} ${mofiles} HEADERS ${headers})
+  add_library(${target} SHARED ${sources} ${mofiles} ${headers})
   target_link_libraries(${target} ${CHOREONOID_BODY_PLUGIN_LIBRARIES})
   install(TARGETS ${target} LIBRARY DESTINATION ${CHOREONOID_PLUGIN_DIR})
 endif()
