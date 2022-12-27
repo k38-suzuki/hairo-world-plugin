@@ -1,15 +1,15 @@
 
 set(make_symlink false)
-if(NOT CNOID_SOURCE_SHARE_DIR STREQUAL CNOID_BINARY_SHARE_DIR)
+if(NOT CHOREONOID_SOURCE_SHARE_DIR STREQUAL CHOREONOID_BINARY_SHARE_DIR)
   if(UNIX)
     set(make_symlink true)
   endif()
-  configure_file(project/layout_base.cnoid ${CNOID_BINARY_SHARE_DIR}/kiosk/layout_base.cnoid COPYONLY)
-  configure_file(project/layout_kiosk.cnoid ${CNOID_BINARY_SHARE_DIR}/kiosk/layout_kiosk.cnoid COPYONLY)
+  configure_file(project/layout_base.cnoid ${CHOREONOID_BINARY_SHARE_DIR}/kiosk/layout_base.cnoid COPYONLY)
+  configure_file(project/layout_kiosk.cnoid ${CHOREONOID_BINARY_SHARE_DIR}/kiosk/layout_kiosk.cnoid COPYONLY)
 endif()
 
-install(FILES project/layout_base.cnoid DESTINATION ${CNOID_SHARE_SUBDIR}/project)
-install(FILES project/layout_kiosk.cnoid DESTINATION ${CNOID_SHARE_SUBDIR}/project)
+install(FILES project/layout_base.cnoid DESTINATION ${CHOREONOID_SHARE_SUBDIR}/project)
+install(FILES project/layout_kiosk.cnoid DESTINATION ${CHOREONOID_SHARE_SUBDIR}/project)
 
 set(sources
     BookmarkWidget.cpp
