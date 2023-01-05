@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_PHITSWRITER_H
-#define CNOID_PHITSPLUGIN_PHITSWRITER_H
+#ifndef CNOID_PHITS_PLUGIN_PHITS_WRITER_H
+#define CNOID_PHITS_PLUGIN_PHITS_WRITER_H
 
 #include <cnoid/Camera>
 #include <cnoid/EigenUtil>
@@ -119,4 +119,4 @@ protected:
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_PHITS_WRITER_H

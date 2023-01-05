@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_ENERGYFILTER_H
-#define CNOID_PHITSPLUGIN_ENERGYFILTER_H
+#ifndef CNOID_PHITS_PLUGIN_ENERGY_FILTER_H
+#define CNOID_PHITS_PLUGIN_ENERGY_FILTER_H
 
 #include <cnoid/Archive>
 #include <cnoid/NullOut>
@@ -53,4 +53,4 @@ private:
 
 }
 
-#endif // CNOID_PHITSPLUGIN_ENERGYFILTER_H
+#endif // CNOID_PHITS_PLUGIN_ENERGY_FILTER_H

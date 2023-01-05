@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_ARRAY3D_H
-#define CNOID_PHITSPLUGIN_ARRAY3D_H
+#ifndef CNOID_PHITS_PLUGIN_ARRAY_3D_H
+#define CNOID_PHITS_PLUGIN_ARRAY_3D_H
 
 #include <vector>
 
@@ -55,4 +55,4 @@ typedef Array3D<double> array3d;
 
 }
 
-#endif // CNOID_PHITSPLUGIN_ARRAY3D_H
+#endif // CNOID_PHITS_PLUGIN_ARRAY_3D_H

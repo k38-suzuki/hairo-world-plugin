@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_CFDPLUGIN_FLUIDAREAITEM_H
-#define CNOID_CFDPLUGIN_FLUIDAREAITEM_H
+#ifndef CNOID_CFD_PLUGIN_FLUID_AREA_ITEM_H
+#define CNOID_CFD_PLUGIN_FLUID_AREA_ITEM_H
 
 #include "AreaItem.h"
 #include <cnoid/FloatingNumberString>
@@ -44,4 +44,4 @@ typedef ref_ptr<FluidAreaItem> FluidAreaItemPtr;
 
 }
 
-#endif // CNOID_CFDPLUGIN_FLUIDAREAITEM_H
+#endif // CNOID_CFD_PLUGIN_FLUID_AREA_ITEM_H

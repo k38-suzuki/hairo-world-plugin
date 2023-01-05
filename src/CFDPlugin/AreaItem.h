@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_CFDPLUGIN_AREAITEM_H
-#define CNOID_CFDPLUGIN_AREAITEM_H
+#ifndef CNOID_CFD_PLUGIN_AREA_ITEM_H
+#define CNOID_CFD_PLUGIN_AREA_ITEM_H
 
 #include <cnoid/Item>
 #include <cnoid/RenderableItem>
@@ -43,4 +43,4 @@ typedef ref_ptr<AreaItem> AreaItemPtr;
 
 }
 
-#endif // CNOID_CFDPLUGIN_AREAITEM_H
+#endif // CNOID_CFD_PLUGIN_AREA_ITEM_H

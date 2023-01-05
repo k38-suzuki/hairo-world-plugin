@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_ORTHOGRIDNODEDATA_H
-#define CNOID_PHITSPLUGIN_ORTHOGRIDNODEDATA_H
+#ifndef CNOID_PHITS_PLUGIN_ORTHO_GRID_NODE_DATA_H
+#define CNOID_PHITS_PLUGIN_ORTHO_GRID_NODE_DATA_H
 
 #include <cnoid/Referenced>
 #include <cstdint>
@@ -71,4 +71,4 @@ typedef ref_ptr<OrthoNodeData> OrthoNodeDataPtr;
 
 }
 
-#endif // CNOID_PHITSPLUGIN_ORTHOGRIDNODEDATA_H
+#endif // CNOID_PHITS_PLUGIN_ORTHO_GRID_NODE_DATA_H

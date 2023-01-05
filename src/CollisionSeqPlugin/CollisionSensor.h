@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_COLLISIONSEQPLUGIN_COLLISIONSENSOR_H
-#define CNOID_COLLISIONSEQPLUGIN_COLLISIONSENSOR_H
+#ifndef CNOID_COLLISION_SEQ_PLUGIN_COLLISION_SENSOR_H
+#define CNOID_COLLISION_SEQ_PLUGIN_COLLISION_SENSOR_H
 
 #include <cnoid/ForceSensor>
 #include "exportdecl.h"
@@ -51,4 +51,4 @@ typedef ref_ptr<CollisionSensor> CollisionSensorPtr;
 
 }
 
-#endif // CNOID_COLLISIONSEQPLUGIN_COLLISIONSENSOR_H
+#endif // CNOID_COLLISION_SEQ_PLUGIN_COLLISION_SENSOR_H

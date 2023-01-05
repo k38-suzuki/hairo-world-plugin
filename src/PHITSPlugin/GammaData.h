@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_GAMMADATA_H
-#define CNOID_PHITSPLUGIN_GAMMADATA_H
+#ifndef CNOID_PHITS_PLUGIN_GAMMA_DATA_H
+#define CNOID_PHITS_PLUGIN_GAMMA_DATA_H
 
 #include <cnoid/EigenUtil>
 #include <string>
@@ -116,4 +116,4 @@ private:
 
 }
 
-#endif // CNOID_PHITSPLUGIN_GAMMADATA_H
+#endif // CNOID_PHITS_PLUGIN_GAMMA_DATA_H

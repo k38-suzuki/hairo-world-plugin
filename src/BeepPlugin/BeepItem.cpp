@@ -38,6 +38,8 @@ public:
     BeepItemImpl(BeepItem* self, const BeepItemImpl& org);
     BeepItem* self;
 
+    typedef shared_ptr<CollisionLinkPair> CollisionLinkPairPtr;
+
     SimulatorItem* simulatorItem;
     WorldItem* worldItem;
     BeepWidget* beepWidget;
@@ -147,7 +149,7 @@ void BeepItemImpl::onPostDynamicsFunction()
         bool contacted = false;
         vector<CollisionLinkPairPtr>& collisions = worldItem->collisions();
         for(int j = 0; j < collisions.size(); ++j) {
-            Link* links[2] = { collisions[j]->link[0], collisions[j]->link[1] };
+            LinkPtr links[2] = { collisions[j]->link(0), collisions[j]->link(1) };
             if((links[0]->name() == link0 && links[1]->name() == link1)
                     || (links[0]->name() == link1 && links[1]->name() == link0)) {
                 contacted = true;

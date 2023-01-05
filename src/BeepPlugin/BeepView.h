@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_BEEPPLUGIN_BEEPVIEW_H
-#define CNOID_BEEPPLUGIN_BEEPVIEW_H
+#ifndef CNOID_BEEP_PLUGIN_BEEP_VIEW_H
+#define CNOID_BEEP_PLUGIN_BEEP_VIEW_H
 
 #include <cnoid/View>
 #include "BeepWidget.h"
@@ -35,4 +35,4 @@ private:
 
 }
 
-#endif // CNOID_BEEPPLUGIN_BEEPVIEW_H
+#endif // CNOID_BEEP_PLUGIN_BEEP_VIEW_H

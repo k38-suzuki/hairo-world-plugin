@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_PHITSRUNNER_H
-#define CNOID_PHITSPLUGIN_PHITSRUNNER_H
+#ifndef CNOID_PHITS_PLUGIN_PHITS_RUNNER_H
+#define CNOID_PHITS_PLUGIN_PHITS_RUNNER_H
 
 #include <cnoid/MessageView>
 #include <cnoid/Process>
@@ -68,4 +68,4 @@ private:
 };
 
 }
-#endif // CNOID_PHITSPLUGIN_PHITSRUNNER_H
+#endif // CNOID_PHITS_PLUGIN_PHITS_RUNNER_H

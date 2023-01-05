@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_GAMMACAMERA_H
-#define CNOID_PHITSPLUGIN_GAMMACAMERA_H
+#ifndef CNOID_PHITS_PLUGIN_GAMMA_CAMERA_H
+#define CNOID_PHITS_PLUGIN_GAMMA_CAMERA_H
 
 #include <cnoid/Camera>
 #include "GammaData.h"
@@ -54,4 +54,4 @@ typedef ref_ptr<GammaCamera> GammaCameraPtr;
 
 }
 
-#endif // CNOID_PHITSPLUGIN_GAMMACAMERA_H
+#endif // CNOID_PHITS_PLUGIN_GAMMA_CAMERA_H

@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_PINHOLECAMERA_H
-#define CNOID_PHITSPLUGIN_PINHOLECAMERA_H
+#ifndef CNOID_PHITS_PLUGIN_PINHOLE_CAMERA_H
+#define CNOID_PHITS_PLUGIN_PINHOLE_CAMERA_H
 
 #include "GammaCamera.h"
 #include "exportdecl.h"
@@ -46,4 +46,4 @@ typedef ref_ptr<PinholeCamera> PinholeCameraPtr;
 
 }
 
-#endif // CNOID_PHITSPLUGIN_PINHOLECAMERA_H
+#endif // CNOID_PHITS_PLUGIN_PINHOLE_CAMERA_H

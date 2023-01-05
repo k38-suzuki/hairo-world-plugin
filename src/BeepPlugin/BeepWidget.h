@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_BEEPPLUGIN_BEEPWIDGET_H
-#define CNOID_BEEPPLUGIN_BEEPWIDGET_H
+#ifndef CNOID_BEEP_PLUGIN_BEEP_WIDGET_H
+#define CNOID_BEEP_PLUGIN_BEEP_WIDGET_H
 
 #include <cnoid/Archive>
 #include <cnoid/TreeWidget>
@@ -35,4 +35,4 @@ private:
 
 }
 
-#endif // CNOID_BEEPPLUGIN_BEEPWIDGET_H
+#endif // CNOID_BEEP_PLUGIN_BEEP_WIDGET_H

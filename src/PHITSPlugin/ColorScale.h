@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_COLORSCALE_H
-#define CNOID_PHITSPLUGIN_COLORSCALE_H
+#ifndef CNOID_PHITS_PLUGIN_COLOR_SCALE_H
+#define CNOID_PHITS_PLUGIN_COLOR_SCALE_H
 
 #include <cnoid/EigenTypes>
 
@@ -29,4 +29,4 @@ private:
 
 }
 
-#endif // CNOID_PHITSPLUGIN_COLORSCALE_H
+#endif // CNOID_PHITS_PLUGIN_COLOR_SCALE_H

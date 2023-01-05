@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_BEEPPLUGIN_BEEPITEM_H
-#define CNOID_BEEPPLUGIN_BEEPITEM_H
+#ifndef CNOID_BEEP_PLUGIN_BEEP_ITEM_H
+#define CNOID_BEEP_PLUGIN_BEEP_ITEM_H
 
 #include <cnoid/SubSimulatorItem>
 
@@ -37,4 +37,4 @@ typedef ref_ptr<BeepItem> BeepItemPtr;
 
 }
 
-#endif // CNOID_BEEPPLUGIN_BEEPITEM_H
+#endif // CNOID_BEEP_PLUGIN_BEEP_ITEM_H

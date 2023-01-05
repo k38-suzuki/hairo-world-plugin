@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_BOX_H
-#define CNOID_PHITSPLUGIN_BOX_H
+#ifndef CNOID_PHITS_PLUGIN_BOX_H
+#define CNOID_PHITS_PLUGIN_BOX_H
 
 #include <cnoid/EigenTypes>
 
@@ -157,5 +157,4 @@ using  Boxd = Box<double>;
 
 }
 
-#endif // CNOID_PHITSPLUGIN_BOX_H
-
+#endif // CNOID_PHITS_PLUGIN_BOX_H

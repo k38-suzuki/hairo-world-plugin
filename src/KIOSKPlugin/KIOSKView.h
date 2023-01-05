@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_KIOSKPLUGIN_KIOSKVIEW_H
-#define CNOID_KIOSKPLUGIN_KIOSKVIEW_H
+#ifndef CNOID_KIOSK_PLUGIN_KIOSK_VIEW_H
+#define CNOID_KIOSK_PLUGIN_KIOSK_VIEW_H
 
 #include <cnoid/View>
 #include "BookmarkWidget.h"
@@ -40,4 +40,4 @@ private:
 
 }
 
-#endif // CNOID_KIOSKPLUGIN_KIOSKVIEW_H
+#endif // CNOID_KIOSK_PLUGIN_KIOSK_VIEW_H

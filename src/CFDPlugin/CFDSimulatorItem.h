@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_CFDPLUGIN_CFDSIMULATORITEM_H
-#define CNOID_CFDPLUGIN_CFDSIMULATORITEM_H
+#ifndef CNOID_CFD_PLUGIN_CFD_SIMULATOR_ITEM_H
+#define CNOID_CFD_PLUGIN_CFD_SIMULATOR_ITEM_H
 
 #include <cnoid/SubSimulatorItem>
 
@@ -37,4 +37,4 @@ typedef ref_ptr<CFDSimulatorItem> CFDSimulatorItemPtr;
 
 }
 
-#endif // CNOID_CFDPLUGIN_CFDSIMULATORITEM_H
+#endif // CNOID_CFD_PLUGIN_CFD_SIMULATOR_ITEM_H

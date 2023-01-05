@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_KIOSKPLUGIN_KIOSKMANAGER_H
-#define CNOID_KIOSKPLUGIN_KIOSKMANAGER_H
+#ifndef CNOID_KIOSK_PLUGIN_KIOSK_MANAGER_H
+#define CNOID_KIOSK_PLUGIN_KIOSK_MANAGER_H
 
 #include <cnoid/ExtensionManager>
 #include <cnoid/Signal>
@@ -32,4 +32,4 @@ private:
 
 }
 
-#endif // CNOID_KIOSKPLUGIN_KIOSKMANAGER_H
+#endif // CNOID_KIOSK_PLUGIN_KIOSK_MANAGER_H

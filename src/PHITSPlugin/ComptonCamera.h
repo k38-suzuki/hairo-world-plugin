@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_COMPTONCAMERA_H
-#define CNOID_PHITSPLUGIN_COMPTONCAMERA_H
+#ifndef CNOID_PHITS_PLUGIN_COMPTON_CAMERA_H
+#define CNOID_PHITS_PLUGIN_COMPTON_CAMERA_H
 
 #include "GammaCamera.h"
 #include "exportdecl.h"
@@ -55,4 +55,4 @@ typedef ref_ptr<ComptonCamera> ComptonCameraPtr;
 
 }
 
-#endif // CNOID_PHITSPLUGIN_COMPTONCAMERA_H
+#endif // CNOID_PHITS_PLUGIN_COMPTON_CAMERA_H

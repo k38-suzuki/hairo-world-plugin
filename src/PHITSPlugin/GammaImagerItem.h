@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_GAMMAIMAGERITEM_H
-#define CNOID_PHITSPLUGIN_GAMMAIMAGERITEM_H
+#ifndef CNOID_PHITS_PLUGIN_GAMMA_IMAGER_ITEM_H
+#define CNOID_PHITS_PLUGIN_GAMMA_IMAGER_ITEM_H
 
 #include <cnoid/Item>
 #include "exportdecl.h"
@@ -42,4 +42,4 @@ typedef ref_ptr<GammaImagerItem> GammaImagerItemPtr;
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_GAMMA_IMAGER_ITEM_H

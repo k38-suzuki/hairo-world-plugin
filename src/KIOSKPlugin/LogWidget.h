@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_KIOSKPLUGIN_LOGWIDGET_H
-#define CNOID_KIOSKPLUGIN_LOGWIDGET_H
+#ifndef CNOID_KIOSK_PLUGIN_LOG_WIDGET_H
+#define CNOID_KIOSK_PLUGIN_LOG_WIDGET_H
 
 #include <cnoid/Archive>
 #include <cnoid/Widget>
@@ -31,4 +31,4 @@ private:
 
 }
 
-#endif // CNOID_KIOSKPLUGIN_LOGWIDGET_H
+#endif // CNOID_KIOSK_PLUGIN_LOG_WIDGET_H

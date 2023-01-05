@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_QADWRITER_H
-#define CNOID_PHITSPLUGIN_QADWRITER_H
+#ifndef CNOID_PHITS_PLUGIN_QAD_WRITER_H
+#define CNOID_PHITS_PLUGIN_QAD_WRITER_H
 
 #include "PHITSWriter.h"
 
@@ -21,4 +21,4 @@ public:
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_QAD_WRITER_H

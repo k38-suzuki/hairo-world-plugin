@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_COMPTONCONE_H
-#define CNOID_PHITSPLUGIN_COMPTONCONE_H
+#ifndef CNOID_PHITS_PLUGIN_COMPTON_CONE_H
+#define CNOID_PHITS_PLUGIN_COMPTON_CONE_H
 
 #include <string>
 #include <vector>
@@ -38,4 +38,4 @@ private:
 
 }
 
-#endif // CNOID_PHITSPLUGIN_COMPTONCONE_H
+#endif // CNOID_PHITS_PLUGIN_COMPTON_CONE_H

@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_CONFIGTABLE_H
-#define CNOID_PHITSPLUGIN_CONFIGTABLE_H
+#ifndef CNOID_PHITS_PLUGIN_CONFIG_TABLE_H
+#define CNOID_PHITS_PLUGIN_CONFIG_TABLE_H
 
 #include <cnoid/NullOut>
 #include <vector>
@@ -63,4 +63,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_CONFIG_TABLE_H

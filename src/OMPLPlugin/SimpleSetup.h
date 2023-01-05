@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_OMPLPLUGIN_SIMPLESETUP_H
-#define CNOID_OMPLPLUGIN_SIMPLESETUP_H
+#ifndef CNOID_OMPL_PLUGIN_SIMPLE_SETUP_H
+#define CNOID_OMPL_PLUGIN_SIMPLE_SETUP_H
 
 #include <cnoid/BoundingBox>
 #include <cnoid/EigenTypes>
@@ -56,4 +56,4 @@ private:
 
 }
 
-#endif // CNOID_OMPLPLUGIN_SIMPLESETUP_H
+#endif // CNOID_OMPL_PLUGIN_SIMPLE_SETUP_H

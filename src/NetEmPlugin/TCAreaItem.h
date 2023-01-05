@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_NETEMPLUGIN_TCAREAITEM_H
-#define CNOID_NETEMPLUGIN_TCAREAITEM_H
+#ifndef CNOID_NETEM_PLUGIN_TC_AREA_ITEM_H
+#define CNOID_NETEM_PLUGIN_TC_AREA_ITEM_H
 
 #include <cnoid/FloatingNumberString>
 #include <cnoid/AreaItem>
@@ -50,4 +50,4 @@ typedef ref_ptr<TCAreaItem> TCAreaItemPtr;
 
 }
 
-#endif // CNOID_NETEMPLUGIN_TCAREAITEM_H
+#endif // CNOID_NETEM_PLUGIN_TC_AREA_ITEM_H

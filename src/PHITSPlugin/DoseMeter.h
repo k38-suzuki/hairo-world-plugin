@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_DOSEMETER_H
-#define CNOID_PHITSPLUGIN_DOSEMETER_H
+#ifndef CNOID_PHITS_PLUGIN_DOSE_METER_H
+#define CNOID_PHITS_PLUGIN_DOSE_METER_H
 
 #include <cnoid/Device>
 #include <cnoid/EigenTypes>
@@ -65,4 +65,4 @@ typedef ref_ptr<DoseMeter> DoseMeterPtr;
 
 }
 
-#endif // CNOID_PHITSPLUGIN_DOSEMETER_H
+#endif // CNOID_PHITS_PLUGIN_DOSE_METER_H

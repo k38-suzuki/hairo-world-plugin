@@ -3,8 +3,8 @@
   @author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_DOSESIMULATORITEM_H
-#define CNOID_PHITSPLUGIN_DOSESIMULATORITEM_H
+#ifndef CNOID_PHITS_PLUGIN_DOSE_SIMULATOR_ITEM_H
+#define CNOID_PHITS_PLUGIN_DOSE_SIMULATOR_ITEM_H
 
 #include <cnoid/SubSimulatorItem>
 
@@ -37,4 +37,4 @@ typedef ref_ptr<DoseSimulatorItem> DoseSimulatorItemPtr;
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_DOSE_SIMULATOR_ITEM_H

@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_PHITSPLUGIN_CROSSSECTIONITEM_H
-#define CNOID_PHITSPLUGIN_CROSSSECTIONITEM_H
+#ifndef CNOID_PHITS_PLUGIN_CROSSSECTION_ITEM_H
+#define CNOID_PHITS_PLUGIN_CROSSSECTION_ITEM_H
 
 #include <cnoid/Item>
 #include <cnoid/RenderableItem>
@@ -46,4 +46,4 @@ typedef ref_ptr<CrossSectionItem> CrossSectionItemPtr;
 
 }
 
-#endif // CNOID_PHITSPLUGIN_CROSSSECTIONITEM_H
+#endif // CNOID_PHITS_PLUGIN_CROSSSECTION_ITEM_H

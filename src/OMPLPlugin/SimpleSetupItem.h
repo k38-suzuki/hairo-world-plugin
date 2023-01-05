@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_OMPLPLUGIN_SIMPLESETUPITEM_H
-#define CNOID_OMPLPLUGIN_SIMPLESETUPITEM_H
+#ifndef CNOID_OMPL_PLUGIN_SIMPLE_SETUP_ITEM_H
+#define CNOID_OMPL_PLUGIN_SIMPLE_SETUP_ITEM_H
 
 #include <cnoid/Item>
 #include <cnoid/RenderableItem>
@@ -44,4 +44,4 @@ typedef ref_ptr<SimpleSetupItem> SimpleSetupItemPtr;
 
 }
 
-#endif // CNOID_OMPLPLUGIN_SIMPLESETUPITEM_H
+#endif // CNOID_OMPL_PLUGIN_SIMPLE_SETUP_ITEM_H

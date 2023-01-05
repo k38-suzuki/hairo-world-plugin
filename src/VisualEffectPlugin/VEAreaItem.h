@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_VISUALEFFECTPLUGIN_VEAREAITEM_H
-#define CNOID_VISUALEFFECTPLUGIN_VEAREAITEM_H
+#ifndef CNOID_VISUAL_EFFECT_PLUGIN_VE_AREA_ITEM_H
+#define CNOID_VISUAL_EFFECT_PLUGIN_VE_AREA_ITEM_H
 
 #include <cnoid/EigenTypes>
 #include <cnoid/Selection>
@@ -51,4 +51,4 @@ private:
 
 }
 
-#endif // CNOID_VISUALEFFECTPLUGIN_VEAREAITEM_H
+#endif // CNOID_VISUAL_EFFECT_PLUGIN_VE_AREA_ITEM_H
