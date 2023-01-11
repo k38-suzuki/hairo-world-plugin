@@ -1,15 +1,15 @@
-# Japanese translations for PACKAGE package.
-# Copyright (C) 2020 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# suzuki <suzuki.kenta38@jaea.go.jp>, 2020.
+# Japanese translations for VisualEffectPlugin package.
+# Copyright (C) 2023 THE VisualEffectPlugin'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the VisualEffectPlugin package.
+# k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2023.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-24 05:04-0800\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Project-Id-Version: VisualEffectPlugin\n"
+"Report-Msgid-Bugs-To: suzuki.kenta38@jaea.go.jp\n"
+"POT-Creation-Date: 2023-01-11 05:08-0800\n"
+"PO-Revision-Date: 2023-01-11 05:08-0800\n"
+"Last-Translator: k38-suzuki <suzuki.kenta38@jaea.go.jp>\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -17,102 +17,77 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../VisualEffectorItem.cpp:102
 msgid "VisualEffectorItem"
 msgstr "視覚効果アイテム"
 
-#: ../VisualEffectorItem.cpp:105
 msgid "VEImageVisualizerItem"
 msgstr "視覚効果画像可視化"
 
-#: ../VisualEffectDialog.cpp:100
 msgid "Flip"
 msgstr "反転"
 
-#: ../VisualEffectDialog.cpp:108
 msgid "No filter"
 msgstr "フィルタなし"
 
-#: ../VisualEffectDialog.cpp:108
 msgid "Gaussian 3x3"
 msgstr "ガウシアン 3x3"
 
-#: ../VisualEffectDialog.cpp:108
 msgid "Gaussian 5x5"
 msgstr "ガウシアン 5x5"
 
-#: ../VisualEffectDialog.cpp:108
 msgid "Sobel"
 msgstr "ソーベル"
 
-#: ../VisualEffectDialog.cpp:108
 msgid "Prewitt"
 msgstr "プリューウィット"
 
-#: ../VisualEffectDialog.cpp:105
 msgid "Hue"
 msgstr "色相"
 
-#: ../VisualEffectDialog.cpp:107
 msgid "Saturation"
 msgstr "彩度"
 
-#: ../VisualEffectDialog.cpp:109
 msgid "Value"
 msgstr "明度"
 
-#: ../VisualEffectDialog.cpp:111
 msgid "Red"
 msgstr "赤"
 
-#: ../VisualEffectDialog.cpp:113
 msgid "Green"
 msgstr "緑"
 
-#: ../VisualEffectDialog.cpp:115
 msgid "Blue"
 msgstr "青"
 
-#: ../VisualEffectDialog.cpp:117
 msgid "CoefB"
 msgstr "歪み"
 
-#: ../VisualEffectDialog.cpp:119
 msgid "CoefD"
 msgstr "拡大率"
 
-#: ../VisualEffectDialog.cpp:121
 msgid "Std_dev"
 msgstr "標準偏差"
 
-#: ../VisualEffectDialog.cpp:123
 msgid "Salt"
 msgstr "白色ノイズ"
 
-#: ../VisualEffectDialog.cpp:125
 msgid "Pepper"
 msgstr "黒色ノイズ"
 
-#: ../VisualEffectDialog.cpp:137
 msgid "Filter"
 msgstr "フィルタ"
 
-#: ../VisualEffectDialog.cpp:129
 msgid "&Reset"
 msgstr "リセット(&R)"
 
-#: ../VisualEffectDialog.cpp:130
 msgid "&Ok"
 msgstr "了解(&O)"
 
-#: ../VisualEffectDialog.cpp:138
 msgid "Effect Config"
 msgstr "視覚効果の設定"
 
-#: ../VisualEffectorItem.cpp:92
 msgid "Visual Effect"
 msgstr "視覚効果"
 
-#: ../VEAreaItem.cpp:145
 msgid "VEAreaItem"
 msgstr "視覚効果領域アイテム"

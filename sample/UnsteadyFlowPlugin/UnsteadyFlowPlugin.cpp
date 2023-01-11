@@ -23,7 +23,7 @@ public:
     
     UnsteadyFlowPlugin() : Plugin("UnsteadyFlow")
     {
-
+        require("CFD");
     }
     
     virtual bool initialize()

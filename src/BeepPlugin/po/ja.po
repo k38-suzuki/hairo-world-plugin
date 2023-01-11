@@ -1,16 +1,15 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2022.
+# Japanese translations for BeepPlugin package.
+# Copyright (C) 2023 THE BeepPlugin'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the BeepPlugin package.
+# k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2023.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-23 18:43-0700\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Project-Id-Version: BeepPlugin\n"
+"Report-Msgid-Bugs-To: suzuki.kenta38@jaea.go.jp\n"
+"POT-Creation-Date: 2023-01-11 05:08-0800\n"
+"PO-Revision-Date: 2023-01-11 05:08-0800\n"
+"Last-Translator: k38-suzuki <suzuki.kenta38@jaea.go.jp>\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -18,42 +17,32 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../BeepItem.cpp:82
 msgid "BeepItem"
 msgstr "ビープアイテム"
 
-#: ../BeepView.cpp:82
 msgid "BeepView"
 msgstr "ビープビュー"
 
-#: ../BeepView.cpp:82
 msgid "Beep"
 msgstr "ビープ"
 
-#: ../BeepWidget.cpp:55
 msgid "No"
 msgstr ""
 
-#: ../BeepWidget.cpp:55
 msgid "Link0"
 msgstr "リンク１"
 
-#: ../BeepWidget.cpp:55
 msgid "Link1"
 msgstr "リンク２"
 
-#: ../BeepWidget.cpp:55
 msgid "Frequency"
 msgstr "周波数"
 
-#: ../BeepWidget.cpp:59
 msgid "+"
 msgstr ""
 
-#: ../BeepWidget.cpp:59
 msgid "-"
 msgstr ""
 
-#: ../BeepWidget.cpp:59
 msgid "Play"
 msgstr "再生"

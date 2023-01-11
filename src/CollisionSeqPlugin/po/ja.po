@@ -1,15 +1,15 @@
-# Japanese translations for PACKAGE package.
-# Copyright (C) 2021 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# suzuki <suzuki.kenta38@jaea.go.jp>, 2021.
+# Japanese translations for CollisionSeqPlugin package.
+# Copyright (C) 2023 THE CollisionSeqPlugin'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the CollisionSeqPlugin package.
+# k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2023.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-27 09:57+0900\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Project-Id-Version: CollisionSeqPlugin\n"
+"Report-Msgid-Bugs-To: suzuki.kenta38@jaea.go.jp\n"
+"POT-Creation-Date: 2023-01-11 05:08-0800\n"
+"PO-Revision-Date: 2023-01-11 05:08-0800\n"
+"Last-Translator: k38-suzuki <suzuki.kenta38@jaea.go.jp>\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -17,14 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../CollisionVisualizerItem.cpp:146
 msgid "CollisionVisualizerItem"
 msgstr "干渉可視化"
 
-#: ../CollisionVisualizerItem.cpp:350
 msgid "Target bodies"
 msgstr "対象ボディ"
 
-#: ../CollisionVisualizerItem.cpp:352
 msgid "Record collision states"
 msgstr "干渉の記録"

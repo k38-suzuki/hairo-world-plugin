@@ -1,15 +1,15 @@
-# Japanese translations for PACKAGE package.
-# Copyright (C) 2021 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# suzuki <suzuki.kenta38@jaea.go.jp>, 2021.
+# Japanese translations for JoystickStatusPlugin package.
+# Copyright (C) 2023 THE JoystickStatusPlugin'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the JoystickStatusPlugin package.
+# k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2023.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-27 09:59+0900\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Project-Id-Version: JoystickStatusPlugin\n"
+"Report-Msgid-Bugs-To: suzuki.kenta38@jaea.go.jp\n"
+"POT-Creation-Date: 2023-01-11 05:08-0800\n"
+"PO-Revision-Date: 2023-01-11 05:08-0800\n"
+"Last-Translator: k38-suzuki <suzuki.kenta38@jaea.go.jp>\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -17,42 +17,32 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../JoystickLoggerItem.cpp:85
 msgid "JoystickLoggerItem"
 msgstr "ジョイスティックロガーアイテム"
 
-#: ../JoystickLoggerItem.cpp:150
 msgid "Device"
 msgstr "デバイス"
 
-#: ../JoystickStatusView.cpp:141
 msgid "Joystick Status"
 msgstr "ジョイスティック状態"
 
-#: ../JoystickStatusView.cpp:417
 msgid "Hide indicators"
 msgstr "インジケータを隠す"
 
-#: ../KeyConfig.cpp:118
 msgid "&Ok"
 msgstr "了解(&O)"
 
-#: ../KeyConfig.cpp:150
 msgid "KeyConfig"
 msgstr "キーコンフィグ"
 
-#: ../OnScreenJoystickView.cpp:115
 msgid "OnScreenJoystickView"
 msgstr "スクリーンジョイスティックビュー"
 
-#: ../OnScreenJoystickView.cpp:115
 msgid "Draggable Joystick"
 msgstr "スクリーンジョイスティック"
 
-#: ../SimulationManager.cpp:54
 msgid "Joystick"
 msgstr ""
 
-#: ../SimulationManager.cpp:55
 msgid "Start simulation (StartButton)"
 msgstr "シミュレーションを開始（スタートボタン）"

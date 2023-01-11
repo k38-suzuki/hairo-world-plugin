@@ -1,15 +1,15 @@
-# Japanese translations for PACKAGE package.
-# Copyright (C) 2020 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# suzuki <suzuki.kenta38@jaea.go.jp>, 2020.
+# Japanese translations for CFDPlugin package.
+# Copyright (C) 2023 THE CFDPlugin'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the CFDPlugin package.
+# k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2023.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-05 22:34+0900\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <suzuki.kenta38@jaea.go.jp>\n"
+"Project-Id-Version: CFDPlugin\n"
+"Report-Msgid-Bugs-To: suzuki.kenta38@jaea.go.jp\n"
+"POT-Creation-Date: 2023-01-11 05:08-0800\n"
+"PO-Revision-Date: 2023-01-11 05:08-0800\n"
+"Last-Translator: k38-suzuki <suzuki.kenta38@jaea.go.jp>\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -17,74 +17,56 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../FluidAreaItem.cpp:178
 msgid "Box"
 msgstr ""
 
-#: ../FluidAreaItem.cpp:179
 msgid "Cylinder"
 msgstr ""
 
-#: ../FluidAreaItem.cpp:180
 msgid "Sphere"
 msgstr ""
 
-#: ../FluidAreaItem.cpp:232
 msgid "FluidAreaItem"
 msgstr "流体領域アイテム"
 
-#: ../FluidAreaItem.cpp:236
 msgid "Fluid Area"
 msgstr "流体領域"
 
-#: ../FluidAreaItem.cpp:251
 msgid "Density"
 msgstr "密度"
 
-#: ../FluidAreaItem.cpp:253
 msgid "Viscosity"
 msgstr "粘度"
 
-#: ../FluidAreaItem.cpp:256
 msgid "Shape"
 msgstr "形状"
 
-#: ../FluidAreaItem.cpp:259
 msgid "Size"
 msgstr "サイズ"
 
-#: ../FluidAreaItem.cpp:263
 msgid "Radius"
 msgstr "半径"
 
-#: ../FluidAreaItem.cpp:266
 msgid "Height"
 msgstr "高さ"
 
-#: ../FluidAreaItem.cpp:270
 msgid "Translation"
 msgstr "位置"
 
-#: ../FluidAreaItem.cpp:273
 msgid "RPY"
 msgstr ""
 
-#: ../FluidAreaItem.cpp:276
 msgid "DiffuseColor"
 msgstr "拡散色"
 
-#: ../FluidAreaItem.cpp:282
 msgid "Shininess"
 msgstr "輝度"
 
-#: ../FluidAreaItem.cpp:284
 msgid "Transparency"
 msgstr "透過度"
 
-#: ../FluidAreaItem.cpp:62
 msgid "SteadyFlow"
 msgstr "定常流"
 
-#: ../CFDSimulatorItem.cpp:89
 msgid "CFDSimulatorItem"
 msgstr "流体力学シミュレータアイテム"
