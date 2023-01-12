@@ -1,13 +1,18 @@
 
 set(sources
+    SystemTrayIcon.cpp
     SystemTrayManager.cpp
     SystemTrayPlugin.cpp
     )
 
 set(headers
+    exportdecl.h
+    gettext.h
+    SystemTrayIcon.h
     SystemTrayManager.h
     )
 
+choreonoid_make_header_public(SystemTrayIcon.h)
 choreonoid_make_header_public(SystemTrayManager.h)
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")

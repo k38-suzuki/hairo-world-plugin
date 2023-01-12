@@ -5,17 +5,19 @@
 
 #include "SystemTrayManager.h"
 #include <cnoid/MainWindow>
+#include <cnoid/Menu>
 #include <cnoid/MessageView>
-#include <QSystemTrayIcon>
+#include <QStyle>
 #include "gettext.h"
 
 using namespace cnoid;
 
 namespace {
 
-QSystemTrayIcon* createTrayIcon()
+SystemTrayIcon* createTrayIcon()
 {
-    QSystemTrayIcon* systrayIcon = new QSystemTrayIcon(MainWindow::instance());
+    SystemTrayIcon* systrayIcon = new SystemTrayIcon(
+        QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_MessageBoxQuestion)), MainWindow::instance());
     systrayIcon->show();
 
     Menu* systrayMenu = new Menu(MainWindow::instance());
@@ -58,22 +60,21 @@ SystemTrayManager::~SystemTrayManager()
 
 void SystemTrayManager::initializeClass(ExtensionManager* ext)
 {
-    if(!QSystemTrayIcon::isSystemTrayAvailable()) {
+    if(!SystemTrayIcon::isSystemTrayAvailable()) {
         MessageView::instance()->putln(_("I couldn't detect any system tray on this system"));
     }
 }
 
 
-Menu* SystemTrayManager::addMenu()
+SystemTrayIcon* SystemTrayManager::addIcon()
 {
-    QSystemTrayIcon* systrayIcon = createTrayIcon();
-    return dynamic_cast<Menu*>(systrayIcon->contextMenu());
+    return createTrayIcon();
 }
 
 
-Menu* SystemTrayManager::addMenu(const QIcon& icon)
+SystemTrayIcon* SystemTrayManager::addIcon(const QIcon& icon)
 {
-    QSystemTrayIcon* systrayIcon = createTrayIcon();
+    SystemTrayIcon* systrayIcon = createTrayIcon();
     systrayIcon->setIcon(icon);
-    return dynamic_cast<Menu*>(systrayIcon->contextMenu());
+    return systrayIcon;
 }
