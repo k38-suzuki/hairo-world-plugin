@@ -6,6 +6,7 @@ add_subdirectory(InertiaCalculatorPlugin)
 add_subdirectory(JoystickStatusPlugin)
 add_subdirectory(MotionCapturePlugin)
 add_subdirectory(PHITSPlugin)
+add_subdirectory(SystemTrayPlugin)
 add_subdirectory(VisualEffectPlugin)
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
