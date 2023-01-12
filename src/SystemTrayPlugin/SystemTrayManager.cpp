@@ -5,7 +5,6 @@
 
 #include "SystemTrayManager.h"
 #include <cnoid/MainWindow>
-#include <cnoid/Menu>
 #include <cnoid/MessageView>
 #include <QStyle>
 #include "gettext.h"
@@ -20,8 +19,6 @@ SystemTrayIcon* createTrayIcon()
         QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_MessageBoxQuestion)), MainWindow::instance());
     systrayIcon->show();
 
-    Menu* systrayMenu = new Menu(MainWindow::instance());
-    systrayIcon->setContextMenu(systrayMenu);
     return systrayIcon;
 }
 
