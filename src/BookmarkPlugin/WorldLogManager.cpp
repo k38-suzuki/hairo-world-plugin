@@ -75,7 +75,7 @@ WorldLogManagerImpl::WorldLogManagerImpl(ExtensionManager* ext, WorldLogManager*
 {
     setWindowTitle(_("WorldLogManager"));
 
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Options")).setPath(_("KIOSK"));
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Options")).setPath(_("WorldLog"));
     enable_logging = mm.addCheckItem(_("Enable logging"));
 
     setFixedSize(800, 450);
@@ -140,19 +140,7 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
 
     MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
     mm.addItem(_("WorldLogManager"))->sigTriggered().connect(
-        [&](){ instance->showWorldLogManger(); });
-}
-
-
-void WorldLogManager::showWorldLogManger()
-{
-    impl->show();
-}
-
-
-void WorldLogManager::addItem(const string& filename)
-{
-    impl->addItem(filename);
+        [&](){ instance->impl->show(); });
 }
 
 

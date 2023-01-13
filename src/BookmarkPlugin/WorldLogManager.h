@@ -20,10 +20,6 @@ public:
 
     static void initializeClass(ExtensionManager* ext);
 
-    void addItem(const std::string& filename);
-
-    void showWorldLogManger();
-
 private:
     WorldLogManagerImpl* impl;
     friend class WorldLogManagerImpl;
