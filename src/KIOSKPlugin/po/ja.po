@@ -17,30 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "Lock"
-msgstr "ロック"
-
-msgid "Logging"
-msgstr "ログの保存"
-
-msgid "File"
-msgstr "ファイル"
-
-msgid "+"
-msgstr ""
-
-msgid "-"
-msgstr ""
-
-msgid "Add"
-msgstr "登録"
-
-msgid "Remove"
-msgstr "削除"
-
-msgid "Open"
-msgstr "開く"
-
 msgid "Select a Choreonoid project file"
 msgstr "Choreonoidプロジェクトファイルの選択"
 
@@ -58,9 +34,6 @@ msgstr "KIOSKモード"
 
 msgid "Hide tool bar"
 msgstr "ツールバーの非表示"
-
-msgid "Bookmark"
-msgstr "ブックマーク"
 
 msgid "KIOSK"
 msgstr ""

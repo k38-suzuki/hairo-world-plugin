@@ -23,11 +23,17 @@ msgstr "履歴"
 msgid "Clear all histories"
 msgstr "全ての履歴を削除"
 
+msgid "BookmarkBar"
+msgstr "ブックマークバー"
+
 msgid "Bookmark"
 msgstr "ブックマーク"
 
 msgid "Add current project"
 msgstr "現在のプロジェクトを登録"
+
+msgid "Add"
+msgstr "登録"
 
 msgid "Remove"
 msgstr "削除"
@@ -43,3 +49,15 @@ msgstr "ワールドログマネージャ"
 
 msgid "&Play"
 msgstr "再生(&P)"
+
+msgid "Open"
+msgstr "開く"
+
+msgid "&Open"
+msgstr "開く(&O)"
+
+msgid "BookmarkManager"
+msgstr "ブックマークマネージャ"
+
+msgid "Logging"
+msgstr "ログの保存"

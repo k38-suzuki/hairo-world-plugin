@@ -1,5 +1,6 @@
 
 set(sources
+    BookmarkBar.cpp
     BookmarkManager.cpp
     BookmarkPlugin.cpp
     HistoryManager.cpp
@@ -7,11 +8,15 @@ set(sources
     )
 
 set(headers
+    BookmarkBar.h
     BookmarkManager.h
     HistoryManager.h
     gettext.h
     WorldLogManager.h
     )
+
+choreonoid_make_header_public(BookmarkManager.h)
+choreonoid_make_header_public(WorldLogManager.h)
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project

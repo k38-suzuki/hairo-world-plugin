@@ -13,18 +13,16 @@
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/OptionManager>
-#include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
 #include <cnoid/TimeBar>
-#include <cnoid/UTF8>
 #include <cnoid/ViewArea>
 #include <src/Base/ToolBarArea.h>
+#include <cnoid/BookmarkManager>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QStatusBar>
 #include "JoyKey.h"
-#include "KIOSKView.h"
 #include "gettext.h"
 
 using namespace cnoid;
@@ -50,7 +48,6 @@ public:
     SimulatorItem* simulatorItem;
     JoyKey* key;
 
-    void loadProject(const bool& enabled);
     void onProjectOptionsParsed(boost::program_options::variables_map& v);
     void onEnableKIOSKToggled(const bool& on);
     void onHideMenuBarToggled(const bool& on);
@@ -73,8 +70,7 @@ KIOSKManagerImpl::KIOSKManagerImpl(ExtensionManager* ext, KIOSKManager* self)
     : self(self)
 {
     MenuManager& mm = ext->menuManager();
-    mm.setPath("/" N_("Options"));
-    mm.setPath("KIOSK");
+    mm.setPath("/" N_("View"));
     enable_kiosk = mm.addCheckItem(_("Enable KIOSK"));
     enable_kiosk->sigToggled().connect([&](bool on){ onEnableKIOSKToggled(on); });
 
@@ -123,33 +119,6 @@ void KIOSKManager::initializeClass(ExtensionManager* ext)
 }
 
 
-void KIOSKManagerImpl::loadProject(const bool& enabled)
-{
-    if(simulatorItem) {
-        if(simulatorItem->isRunning()) {
-            simulatorItem->stopSimulation(true);
-        }
-    }
-
-    TimeBar* tb = TimeBar::instance();
-    if(tb->isDoingPlayback()) {
-        tb->stopPlayback(true);
-    }
-    tb->setTime(0.0);
-
-    string filename = toUTF8((shareDirPath() / "kiosk" / "layout_base.cnoid").string());
-    // string filename = ":/KIOSKPlugin/project/layout_base.cnoid";
-    if(enabled) {
-        filename = toUTF8((shareDirPath() / "kiosk" / "layout_kiosk.cnoid").string());
-        // filename = ":/KIOSKPlugin/project/layout_kiosk.cnoid";
-    }
-
-    ProjectManager* pm = ProjectManager::instance();
-    pm->loadProject(filename);
-    pm->clearProject();
-}
-
-
 void KIOSKManagerImpl::onProjectOptionsParsed(boost::program_options::variables_map& v)
 {
     bool result = false;
@@ -175,8 +144,6 @@ void KIOSKManagerImpl::onEnableKIOSKToggled(const bool& on)
     mw->statusBar()->setVisible(!on);
     // onHideMenuBarToggled(on);
     hide_toolBar->setChecked(on);
-
-    loadProject(on);
 }
 
 
@@ -199,7 +166,18 @@ void KIOSKManagerImpl::onButton(const int& id, const bool& isPressed)
             int ret = QMessageBox::question(MainWindow::instance(),
                                             _("KIOSK"), _("Would you like to return to the home screen?"));
             if(ret == QMessageBox::Yes) {
-                loadProject(true);
+                if(simulatorItem) {
+                    if(simulatorItem->isRunning()) {
+                        simulatorItem->stopSimulation(true);
+                    }
+                }
+
+                TimeBar* tb = TimeBar::instance();
+                if(tb->isDoingPlayback()) {
+                    tb->stopPlayback(true);
+                }
+                tb->setTime(0.0);
+                // BookmarkManager::instance()->showBookmarkManagerDialog();
             } else {
                 onHideMenuBarToggled(false);
             }

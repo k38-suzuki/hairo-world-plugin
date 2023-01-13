@@ -1,9 +1,0 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
-  <qresource prefix="/KIOSKPlugin" >
-    
-    <file>project/layout_base.cnoid</file>
-    <file>project/layout_kiosk.cnoid</file>
-
-  </qresource>
-</RCC>

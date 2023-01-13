@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_BOOKMARK_PLUGIN_BOOKMARK_MANAGER_H
-#define CNOID_BOOKMARK_PLUGIN_BOOKMARK_MANAGER_H
+#ifndef CNOID_KIOSK_PLUGIN_BOOKMARK_MANAGER_H
+#define CNOID_KIOSK_PLUGIN_BOOKMARK_MANAGER_H
 
 #include <cnoid/ExtensionManager>
 
@@ -15,10 +15,13 @@ class BookmarkManagerImpl;
 class BookmarkManager
 {
 public:
-    BookmarkManager(ExtensionManager* ext);
+    BookmarkManager();
     virtual ~BookmarkManager();
 
     static void initializeClass(ExtensionManager* ext);
+    static BookmarkManager* instance();
+
+    void showBookmarkManagerDialog();
 
 private:
     BookmarkManagerImpl* impl;
@@ -27,4 +30,4 @@ private:
 
 }
 
-#endif // CNOID_BOOKMARK_PLUGIN_BOOKMARK_MANAGER_H
+#endif // CNOID_KIOSK_PLUGIN_BOOKMARK_MANAGER_H

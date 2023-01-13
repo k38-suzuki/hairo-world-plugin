@@ -26,6 +26,7 @@
 #include <QDateTime>
 #include <QDialogButtonBox>
 #include <QTreeWidgetItem>
+#include <QVBoxLayout>
 #include "gettext.h"
 
 using namespace cnoid;
@@ -34,7 +35,7 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
-WorldLogManager* instance = nullptr;
+WorldLogManager* instance_ = nullptr;
 Action* enable_logging = nullptr;
 
 }
@@ -101,7 +102,8 @@ WorldLogManagerImpl::WorldLogManagerImpl(ExtensionManager* ext, WorldLogManager*
     auto startButton  = new PushButton(_("&Play"));
     startButton->setIconSize(MainWindow::instance()->iconSize());
     buttonBox->addButton(startButton, QDialogButtonBox::ActionRole);
-    connect(buttonBox, &QDialogButtonBox::accepted, [this](){ this->onStartButtonClicked(); });
+    // connect(buttonBox, &QDialogButtonBox::accepted, [this](){ this->onStartButtonClicked(); });
+    startButton->sigClicked().connect([&](){ onStartButtonClicked(); });
 
     QVBoxLayout* vbox = new QVBoxLayout;
     vbox->addWidget(treeWidget);
@@ -113,7 +115,7 @@ WorldLogManagerImpl::WorldLogManagerImpl(ExtensionManager* ext, WorldLogManager*
     sb->sigSimulationAboutToStart().connect(
                 [&](SimulatorItem* simulatorItem){ onSimulationAboutToStart(simulatorItem); });
 
-    Mapping& config = *AppConfig::archive()->openMapping("world_log");
+    Mapping& config = *AppConfig::archive()->openMapping("world_log_manager");
     if(config.isValid()) {
         restore(config);
     }
@@ -128,19 +130,31 @@ WorldLogManager::~WorldLogManager()
 
 WorldLogManagerImpl::~WorldLogManagerImpl()
 {
-    store(*AppConfig::archive()->openMapping("world_log"));
+    store(*AppConfig::archive()->openMapping("world_log_manager"));
 }
 
 
 void WorldLogManager::initializeClass(ExtensionManager* ext)
 {
-    if(!instance) {
-        instance = ext->manage(new WorldLogManager(ext));
+    if(!instance_) {
+        instance_ = ext->manage(new WorldLogManager(ext));
     }
 
     MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
     mm.addItem(_("WorldLogManager"))->sigTriggered().connect(
-        [&](){ instance->impl->show(); });
+        [&](){ instance_->impl->show(); });
+}
+
+
+WorldLogManager* WorldLogManager::instance()
+{
+    return instance_;
+}
+
+
+void WorldLogManager::showWorldLogManagerDialog()
+{
+    instance_->impl->show();
 }
 
 

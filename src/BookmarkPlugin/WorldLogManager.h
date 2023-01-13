@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_KIOSK_PLUGIN_WORLD_LOG_MANAGER_H
-#define CNOID_KIOSK_PLUGIN_WORLD_LOG_MANAGER_H
+#ifndef CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_H
+#define CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_H
 
 #include <cnoid/ExtensionManager>
 
@@ -19,6 +19,9 @@ public:
     virtual ~WorldLogManager();
 
     static void initializeClass(ExtensionManager* ext);
+    static WorldLogManager* instance();
+
+    void showWorldLogManagerDialog();
 
 private:
     WorldLogManagerImpl* impl;
@@ -27,4 +30,4 @@ private:
 
 }
 
-#endif // CNOID_KIOSK_PLUGIN_WORLD_LOG_MANAGER_H
+#endif // CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_H

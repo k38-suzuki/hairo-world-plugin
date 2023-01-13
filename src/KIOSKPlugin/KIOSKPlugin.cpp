@@ -6,7 +6,6 @@
 #include <cnoid/Plugin>
 #include <fmt/format.h>
 #include "KIOSKManager.h"
-#include "KIOSKView.h"
 #include "SimpleSimulationView.h"
 
 using namespace cnoid;
@@ -25,7 +24,6 @@ public:
     virtual bool initialize() override
     {
         KIOSKManager::initializeClass(this);
-        KIOSKView::initializeClass(this);
         SimpleSimulationView::initializeClass(this);
         return true;
     }

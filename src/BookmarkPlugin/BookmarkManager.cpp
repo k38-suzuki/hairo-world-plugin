@@ -6,33 +6,46 @@
 #include "BookmarkManager.h"
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
+#include <cnoid/Button>
+#include <cnoid/Dialog>
+#include <cnoid/FileDialog>
+#include <cnoid/MainWindow>
 #include <cnoid/Menu>
-#include <cnoid/MenuManager>
 #include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
+#include <cnoid/Separator>
+#include <cnoid/SimulationBar>
+#include <cnoid/TreeWidget>
+#include <QDialogButtonBox>
+#include <QTreeWidgetItem>
+#include <QVBoxLayout>
 #include "gettext.h"
 
 using namespace cnoid;
 using namespace std;
 
+namespace {
+
+BookmarkManager* instance_ = nullptr;
+
+}
+
 namespace cnoid {
 
-class BookmarkManagerImpl
+class BookmarkManagerImpl : public Dialog
 {
 public:
-    BookmarkManagerImpl(BookmarkManager* self, ExtensionManager* ext);
+    BookmarkManagerImpl(BookmarkManager* self);
     virtual ~BookmarkManagerImpl();
     BookmarkManager* self;
 
-    Menu* currentMenu;
-    Menu* contextMenu;
-    Action* addProject;
-    ProjectManager* pm;
-    QPoint pos;
+    TreeWidget* treeWidget;
+    Menu contextMenu;
 
-    void onAddProjectTriggered();
-    void onRemoveProjectTriggered();
-    void onCurrentMenuTriggered(QAction* action);
+    void addItem(const string& filename);
+    void removeItem();
+    void onAddButtonClicked();
+    void onStartButtonClicked();
     void onCustomContextMenuRequested(const QPoint& pos);
     void store(Mapping& archive);
     void restore(const Mapping& archive);
@@ -41,35 +54,53 @@ public:
 }
 
 
-BookmarkManager::BookmarkManager(ExtensionManager* ext)
+BookmarkManager::BookmarkManager()
 {
-    impl = new BookmarkManagerImpl(this, ext);
+    impl = new BookmarkManagerImpl(this);
 }
 
 
-BookmarkManagerImpl::BookmarkManagerImpl(BookmarkManager* self, ExtensionManager* ext)
-    : self(self),
-      pm(ProjectManager::instance())
+BookmarkManagerImpl::BookmarkManagerImpl(BookmarkManager* self)
+    : self(self)
 {
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Bookmark"));
-    currentMenu = mm.currentMenu();
-    currentMenu->setContextMenuPolicy(Qt::CustomContextMenu);
-    addProject = new Action;
-    addProject->setText(_("Add current project"));
-    addProject->sigTriggered().connect([&](){ onAddProjectTriggered(); });
-    currentMenu->addAction(addProject);
-    currentMenu->addSeparator();
-    currentMenu->sigTriggered().connect([&](QAction* action){ onCurrentMenuTriggered(action); });
+    setWindowTitle(_("BookmarkManager"));
 
-    contextMenu = new Menu;
-    Action* removeProject = new Action;
-    removeProject->setText(_("Remove"));
-    removeProject->sigTriggered().connect([&](){ onRemoveProjectTriggered(); });
-    contextMenu->addAction(removeProject);
+    setFixedSize(800, 450);
+    treeWidget = new TreeWidget;
+    treeWidget->setHeaderHidden(false);
 
-    QObject::connect(currentMenu, &Menu::customContextMenuRequested, [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
+    treeWidget->setHeaderLabel(_("File"));
 
-    Mapping& config = *AppConfig::archive()->openMapping("bookmark");
+    treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    Action* addAct = new Action;
+    addAct->setText(_("Add"));
+    contextMenu.addAction(addAct);
+    Action* removeAct = new Action;
+    removeAct->setText(_("Remove"));
+    contextMenu.addAction(removeAct);
+    Action* openAct = new Action;
+    openAct->setText(_("Open"));
+    contextMenu.addAction(openAct);
+
+    addAct->sigTriggered().connect([&](){ onAddButtonClicked(); });
+    removeAct->sigTriggered().connect([&](){ removeItem(); });
+    openAct->sigTriggered().connect([&](){ onStartButtonClicked(); });
+    connect(treeWidget, &TreeWidget::customContextMenuRequested, [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
+
+    auto buttonBox = new QDialogButtonBox(this);
+    auto startButton  = new PushButton(_("&Open"));
+    startButton->setIconSize(MainWindow::instance()->iconSize());
+    buttonBox->addButton(startButton, QDialogButtonBox::ActionRole);
+    // connect(buttonBox, &QDialogButtonBox::accepted, [this](){ this->onStartButtonClicked(); });
+    startButton->sigClicked().connect([&](){ onStartButtonClicked(); });
+
+    QVBoxLayout* vbox = new QVBoxLayout;
+    vbox->addWidget(treeWidget);
+    vbox->addWidget(new HSeparator);
+    vbox->addWidget(buttonBox);
+    setLayout(vbox);
+
+    Mapping& config = *AppConfig::archive()->openMapping("bookmark_manager");
     if(config.isValid()) {
         restore(config);
     }
@@ -84,42 +115,91 @@ BookmarkManager::~BookmarkManager()
 
 BookmarkManagerImpl::~BookmarkManagerImpl()
 {
-    store(*AppConfig::archive()->openMapping("bookmark"));
+    store(*AppConfig::archive()->openMapping("bookmark_manager"));
 }
 
 
 void BookmarkManager::initializeClass(ExtensionManager* ext)
 {
-    ext->manage(new BookmarkManager(ext));
+    if(!instance_) {
+        instance_ = ext->manage(new BookmarkManager);
+    }
+
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
+    mm.addItem(_("BookmarkManager"))->sigTriggered().connect(
+        [&](){ instance_->impl->show(); });
 }
 
 
-void BookmarkManagerImpl::onAddProjectTriggered()
+BookmarkManager* BookmarkManager::instance()
 {
-    const string& filename = pm->currentProjectFile();
-    if(!filename.empty()) {
-        Action* currentProject = new Action;
-        currentProject->setText(filename.c_str());
-        currentMenu->addAction(currentProject);
+    return instance_;
+}
+
+
+void BookmarkManager::showBookmarkManagerDialog()
+{
+    instance_->impl->show();
+}
+
+
+void BookmarkManagerImpl::addItem(const string& filename)
+{
+    QTreeWidgetItem* item = new QTreeWidgetItem(treeWidget);
+    item->setText(0, filename.c_str());
+    treeWidget->setCurrentItem(item);
+}
+
+
+void BookmarkManagerImpl::removeItem()
+{
+    QTreeWidgetItem* item = treeWidget->currentItem();
+    if(item) {
+        int index = treeWidget->indexOfTopLevelItem(item);
+        treeWidget->takeTopLevelItem(index);
     }
 }
 
 
-void BookmarkManagerImpl::onRemoveProjectTriggered()
+void BookmarkManagerImpl::onAddButtonClicked()
 {
-    currentMenu->removeAction(currentMenu->actionAt(pos));
+    MainWindow* mw = MainWindow::instance();
+    FileDialog dialog(mw);
+    dialog.setWindowTitle(_("Select a Choreonoid project file"));
+    dialog.setFileMode(QFileDialog::ExistingFiles);
+    dialog.setViewMode(QFileDialog::List);
+    dialog.setLabelText(QFileDialog::Accept, _("Open"));
+    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
+
+    QStringList filters;
+    filters << _("Project files (*.cnoid)");
+    filters << _("Any files (*)");
+    dialog.setNameFilters(filters);
+
+    dialog.updatePresetDirectories();
+
+    if(dialog.exec()) {
+        int numFiles = dialog.selectedFiles().size();
+        for(int i = 0; i < numFiles; ++i) {
+            QString filename = dialog.selectedFiles()[i];
+            addItem(filename.toStdString());
+        }
+    }
 }
 
 
-void BookmarkManagerImpl::onCurrentMenuTriggered(QAction* action)
+void BookmarkManagerImpl::onStartButtonClicked()
 {
-    Action* triggeredProject = dynamic_cast<Action*>(action);
-    if(triggeredProject != addProject) {
+    QTreeWidgetItem* item = treeWidget->currentItem();
+    if(item) {
+        string filename = item->text(0).toStdString();
+        ProjectManager* pm = ProjectManager::instance();
         bool result = pm->tryToCloseProject();
         if(result) {
             pm->clearProject();
             MessageView::instance()->flush();
-            pm->loadProject(triggeredProject->text().toStdString());
+            pm->loadProject(filename);
+            SimulationBar::instance()->startSimulation(true);
         }
     }
 }
@@ -127,34 +207,33 @@ void BookmarkManagerImpl::onCurrentMenuTriggered(QAction* action)
 
 void BookmarkManagerImpl::onCustomContextMenuRequested(const QPoint& pos)
 {
-    this->pos = pos;
-    if(currentMenu->actionAt(this->pos) != addProject) {
-        contextMenu->exec(currentMenu->mapToGlobal(pos));
-    }
+    contextMenu.exec(treeWidget->mapToGlobal(pos));
 }
 
 
 void BookmarkManagerImpl::store(Mapping& archive)
 {
-    int numBookmarks = currentMenu->actions().size() - 2;
-    archive.write("num_bookmarks", numBookmarks);
-    for(int i = 0; i < numBookmarks; ++i) {
-        QAction* action = currentMenu->actions()[i + 2];
-        string key = "bookmark_" + to_string(i);
-        string filename = action->text().toStdString();
-        archive.write(key, filename);
+    int size = treeWidget->topLevelItemCount();
+    archive.write("num_bookmarks", size);
+    for(int i = 0; i < size; ++i) {
+        QTreeWidgetItem* item = treeWidget->topLevelItem(i);
+        if(item) {
+            string filename = item->text(0).toStdString();
+            string fileKey = "file_name_" + to_string(i);
+            archive.write(fileKey, filename);
+        }
     }
 }
 
 
 void BookmarkManagerImpl::restore(const Mapping& archive)
 {
-    int numBookmarks = archive.get("num_bookmarks", 0);
-    for(int i = 0; i < numBookmarks; ++i) {
-        string key = "bookmark_" + to_string(i);
-        string filename = archive.get(key, "");
-        Action* action = new Action;
-        action->setText(filename.c_str());
-        currentMenu->addAction(action);
+    int size = archive.get("num_bookmarks", 0);
+    for(int i = 0; i < size; ++i) {
+        string fileKey = "file_name_" + to_string(i);
+        string filename = archive.get(fileKey, "");
+        if(!filename.empty()) {
+            addItem(filename);
+        }
     }
 }
