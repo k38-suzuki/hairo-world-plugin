@@ -21,10 +21,6 @@ public:
 
     static void initializeClass(ExtensionManager* ext);
 
-    static void setLoggingEnabled(const bool& on);
-
-    static SignalProxy<void(bool)> sigLoggingEnabled();
-
 private:
     KIOSKManagerImpl* impl;
     friend class KIOSKManagerImpl;

@@ -12,7 +12,6 @@
 #include <cnoid/JoystickCapture>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
-#include <cnoid/MessageView>
 #include <cnoid/OptionManager>
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
@@ -40,7 +39,6 @@ namespace {
 
 Action* enable_kiosk = nullptr;
 Action* enable_logging = nullptr;
-Signal<void(bool)> sigLoggingEnabled_;
 
 }
 
@@ -54,7 +52,6 @@ public:
     virtual ~KIOSKManagerImpl();
 
     Action* hide_toolBar;
-    bool isInitialized;
     JoystickCapture joystick;
     SimulatorItem* simulatorItem;
     JoyKey* key;
@@ -64,7 +61,6 @@ public:
     void onEnableKIOSKToggled(const bool& on);
     void onHideMenuBarToggled(const bool& on);
     void onHideToolBarToggled(const bool& on);
-    void onEnableLoggingToggled(const bool& on);
     void onSimulationAboutToStart(SimulatorItem* simulatorItem);
     void onButton(const int& id, const bool& isPressed);
     void store(Mapping& archive);
@@ -89,7 +85,6 @@ KIOSKManagerImpl::KIOSKManagerImpl(ExtensionManager* ext, KIOSKManager* self)
     enable_kiosk = mm.addCheckItem(_("Enable KIOSK"));
     enable_kiosk->sigToggled().connect([&](bool on){ onEnableKIOSKToggled(on); });
     enable_logging = mm.addCheckItem(_("Enable logging"));
-    enable_logging->sigToggled().connect([&](bool on){ onEnableLoggingToggled(on); });
 
     mm.setPath("/" N_("View"));
     hide_toolBar = mm.addCheckItem(_("Hide tool bar"));
@@ -136,20 +131,6 @@ void KIOSKManager::initializeClass(ExtensionManager* ext)
 }
 
 
-void KIOSKManager::setLoggingEnabled(const bool& on)
-{
-    enable_logging->blockSignals(true);
-    enable_logging->setChecked(on);
-    enable_logging->blockSignals(false);
-}
-
-
-SignalProxy<void(bool)> KIOSKManager::sigLoggingEnabled()
-{
-    return sigLoggingEnabled_;
-}
-
-
 void KIOSKManagerImpl::loadProject(const bool& enabled)
 {
     if(simulatorItem) {
@@ -167,14 +148,13 @@ void KIOSKManagerImpl::loadProject(const bool& enabled)
     string filename = toUTF8((shareDirPath() / "kiosk" / "layout_base.cnoid").string());
     // string filename = ":/KIOSKPlugin/project/layout_base.cnoid";
     if(enabled) {
-        // filename = ":/KIOSKPlugin/project/layout_kiosk.cnoid";
         filename = toUTF8((shareDirPath() / "kiosk" / "layout_kiosk.cnoid").string());
+        // filename = ":/KIOSKPlugin/project/layout_kiosk.cnoid";
     }
 
     ProjectManager* pm = ProjectManager::instance();
-    pm->clearProject();
     pm->loadProject(filename);
-    MessageView::instance()->clear();
+    pm->clearProject();
 }
 
 
@@ -210,21 +190,13 @@ void KIOSKManagerImpl::onEnableKIOSKToggled(const bool& on)
 
 void KIOSKManagerImpl::onHideMenuBarToggled(const bool& on)
 {
-    MainWindow* mw = MainWindow::instance();
-    mw->menuBar()->setVisible(!on);
+    MainWindow::instance()->menuBar()->setVisible(!on);
 }
 
 
 void KIOSKManagerImpl::onHideToolBarToggled(const bool& on)
 {
-    MainWindow* mw = MainWindow::instance();
-    mw->toolBarArea()->setVisible(!on);
-}
-
-
-void KIOSKManagerImpl::onEnableLoggingToggled(const bool& on)
-{
-    sigLoggingEnabled_(on);
+    MainWindow::instance()->toolBarArea()->setVisible(!on);
 }
 
 
