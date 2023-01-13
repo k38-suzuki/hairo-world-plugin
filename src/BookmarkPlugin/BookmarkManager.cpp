@@ -125,9 +125,9 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
         instance_ = ext->manage(new BookmarkManager);
     }
 
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
-    mm.addItem(_("BookmarkManager"))->sigTriggered().connect(
-        [&](){ instance_->impl->show(); });
+    // MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
+    // mm.addItem(_("BookmarkManager"))->sigTriggered().connect(
+    //     [&](){ instance_->impl->show(); });
 }
 
 

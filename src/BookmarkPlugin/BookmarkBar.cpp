@@ -6,10 +6,14 @@
 #include "BookmarkBar.h"
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
+#include <cnoid/Button>
+#include <cnoid/MainWindow>
 #include <cnoid/Menu>
 #include <cnoid/MenuManager>
 #include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
+#include <cnoid/BookmarkManager>
+#include <QStyle>
 #include "gettext.h"
 
 using namespace cnoid;
@@ -74,9 +78,17 @@ BookmarkBarImpl::BookmarkBarImpl(BookmarkBar* self, ExtensionManager* ext)
     removeProject->sigTriggered().connect([&](){ onRemoveProjectTriggered(); });
     contextMenu->addAction(removeProject);
 
-    QObject::connect(currentMenu, &Menu::customContextMenuRequested, [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
+    self->connect(currentMenu, &Menu::customContextMenuRequested,
+        [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
 
-    Mapping& config = *AppConfig::archive()->openMapping("bookmark");
+    auto button1 = self->addButton(
+        QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_DialogApplyButton)));
+    button1->sigClicked().connect([&](){  });
+    auto button2 = self->addButton(
+        QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_FileDialogDetailedView)));
+    button2->sigClicked().connect([&](){ BookmarkManager::instance()->showBookmarkManagerDialog(); });
+
+    Mapping& config = *AppConfig::archive()->openMapping("bookmark_bar");
     if(config.isValid()) {
         restore(config);
     }
@@ -91,7 +103,7 @@ BookmarkBar::~BookmarkBar()
 
 BookmarkBarImpl::~BookmarkBarImpl()
 {
-    store(*AppConfig::archive()->openMapping("bookmark"));
+    store(*AppConfig::archive()->openMapping("bookmark_bar"));
 }
 
 
