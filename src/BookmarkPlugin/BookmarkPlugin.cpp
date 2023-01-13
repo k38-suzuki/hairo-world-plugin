@@ -7,6 +7,7 @@
 #include <fmt/format.h>
 #include "BookmarkManager.h"
 #include "HistoryManager.h"
+#include "WorldLogManager.h"
 
 using namespace cnoid;
 
@@ -25,6 +26,7 @@ public:
     {
         BookmarkManager::initializeClass(this);
         HistoryManager::initializeClass(this);
+        WorldLogManager::initializeClass(this);
         return true;
     }
 

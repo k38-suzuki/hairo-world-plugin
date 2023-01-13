@@ -19,8 +19,6 @@ public:
     BookmarkWidget();
     virtual ~BookmarkWidget();
 
-    std::string memo() const;
-
     void store(Mapping& archive);
     void restore(const Mapping& archive);
 

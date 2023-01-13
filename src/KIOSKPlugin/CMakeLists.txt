@@ -17,7 +17,6 @@ set(sources
     KIOSKManager.cpp
     KIOSKPlugin.cpp
     KIOSKView.cpp
-    LogWidget.cpp
     SimpleSimulationView.cpp
     SimpleTimeWidget.cpp
     )
@@ -28,7 +27,6 @@ set(headers
     JoyKey.h
     KIOSKManager.h
     KIOSKView.h
-    LogWidget.h
     SimpleSimulationView.h
     SimpleTimeWidget.h
     )

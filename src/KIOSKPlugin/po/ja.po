@@ -20,9 +20,6 @@ msgstr ""
 msgid "Lock"
 msgstr "ロック"
 
-msgid "Memo"
-msgstr "メモ"
-
 msgid "Logging"
 msgstr "ログの保存"
 
@@ -62,14 +59,8 @@ msgstr "KIOSKモード"
 msgid "Hide tool bar"
 msgstr "ツールバーの非表示"
 
-msgid "Enable logging"
-msgstr "ログの保存"
-
 msgid "Bookmark"
 msgstr "ブックマーク"
-
-msgid "Log"
-msgstr "ログ"
 
 msgid "KIOSK"
 msgstr ""

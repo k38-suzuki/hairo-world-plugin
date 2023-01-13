@@ -11,9 +11,8 @@
 #include <QKeyEvent>
 #include <QMenuBar>
 #include <QScrollArea>
-#include <QStackedWidget>
-#include <QTabWidget>
 #include <QVBoxLayout>
+#include "BookmarkWidget.h"
 #include "gettext.h"
 
 using namespace cnoid;
@@ -34,9 +33,7 @@ public:
     virtual ~KIOSKViewImpl();
 
     QScrollArea scrollArea;
-    QTabWidget* tabWidget;
     BookmarkWidget* bookmarkWidget;
-    LogWidget* logWidget;
 
     void store(Mapping& archive);
     void restore(const Mapping& archive);
@@ -75,12 +72,7 @@ KIOSKViewImpl::KIOSKViewImpl(KIOSKView* self)
     self->setLayout(baseLayout);
 
     bookmarkWidget = new BookmarkWidget;
-    logWidget = new LogWidget;
-    tabWidget = new QTabWidget;
-    tabWidget->setTabsClosable(false);
-    tabWidget->addTab(bookmarkWidget, _("Bookmark"));
-    tabWidget->addTab(logWidget, _("Log"));
-    topVBox->addWidget(tabWidget);
+    topVBox->addWidget(bookmarkWidget);
 
     Mapping& config = *AppConfig::archive()->openMapping("kiosk");
     if(config.isValid()) {
@@ -117,29 +109,15 @@ KIOSKView* KIOSKView::instance()
 }
 
 
-BookmarkWidget* KIOSKView::bookmarkWidget()
-{
-    return impl->bookmarkWidget;
-}
-
-
-LogWidget* KIOSKView::logWidget()
-{
-    return impl->logWidget;
-}
-
-
 void KIOSKViewImpl::store(Mapping& archive)
 {
     bookmarkWidget->store(archive);
-    logWidget->store(archive);
 }
 
 
 void KIOSKViewImpl::restore(const Mapping& archive)
 {
     bookmarkWidget->restore(archive);
-    logWidget->restore(archive);
 }
 
 

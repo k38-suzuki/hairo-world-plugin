@@ -3,12 +3,14 @@ set(sources
     BookmarkManager.cpp
     BookmarkPlugin.cpp
     HistoryManager.cpp
+    WorldLogManager.cpp
     )
 
 set(headers
     BookmarkManager.h
     HistoryManager.h
     gettext.h
+    WorldLogManager.h
     )
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")

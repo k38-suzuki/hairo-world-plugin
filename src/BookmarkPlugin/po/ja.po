@@ -31,3 +31,15 @@ msgstr "現在のプロジェクトを登録"
 
 msgid "Remove"
 msgstr "削除"
+
+msgid "File"
+msgstr "ファイル"
+
+msgid "Enable logging"
+msgstr "ログの保存"
+
+msgid "WorldLogManager"
+msgstr "ワールドログマネージャ"
+
+msgid "&Play"
+msgstr "再生(&P)"

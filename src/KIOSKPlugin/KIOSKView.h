@@ -7,8 +7,6 @@
 #define CNOID_KIOSK_PLUGIN_KIOSK_VIEW_H
 
 #include <cnoid/View>
-#include "BookmarkWidget.h"
-#include "LogWidget.h"
 #include "exportdecl.h"
 
 namespace cnoid {
@@ -23,9 +21,6 @@ public:
 
     static void initializeClass(ExtensionManager* ext);
     static KIOSKView* instance();
-
-    BookmarkWidget* bookmarkWidget();
-    LogWidget* logWidget();
 
     virtual bool storeState(Archive& archive) override;
     virtual bool restoreState(const Archive& archive) override;

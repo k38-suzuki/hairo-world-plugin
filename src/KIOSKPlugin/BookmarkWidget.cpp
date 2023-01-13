@@ -57,7 +57,6 @@ public:
     TreeWidget* treeWidget;
     PushButton* buttons[NUM_BUTTONS];
     Menu menu;
-    LineEdit* memoLine;
 
     void addItem(const string& filename, const string& text);
     void removeItem();
@@ -90,8 +89,6 @@ BookmarkWidgetImpl::BookmarkWidgetImpl(BookmarkWidget* self)
     treeWidget->setHeaderLabels(header_labels);
 
     static const char* labels[] = { _("+"), _("-"), _("Lock") };
-    memoLine = new LineEdit;
-    memoLine->setPlaceholderText(_("Memo"));
 
     MainWindow* mw = MainWindow::instance();
     QHBoxLayout* hbox = new QHBoxLayout;
@@ -108,7 +105,6 @@ BookmarkWidgetImpl::BookmarkWidgetImpl(BookmarkWidget* self)
         hbox->addWidget(button);
         if(i == LOCK) {
             hbox->addStretch();
-            hbox->addWidget(memoLine);
         }
     }
 
@@ -145,12 +141,6 @@ BookmarkWidgetImpl::BookmarkWidgetImpl(BookmarkWidget* self)
 BookmarkWidget::~BookmarkWidget()
 {
     delete impl;
-}
-
-
-string BookmarkWidget::memo() const
-{
-    return impl->memoLine->text().toStdString();
 }
 
 
