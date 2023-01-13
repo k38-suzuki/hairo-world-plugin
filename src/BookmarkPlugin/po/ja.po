@@ -41,8 +41,8 @@ msgstr "削除"
 msgid "File"
 msgstr "ファイル"
 
-msgid "Enable logging"
-msgstr "ログの保存"
+msgid "Save a WorldLog"
+msgstr "ワールドログの保存"
 
 msgid "WorldLogManager"
 msgstr "ワールドログマネージャ"
@@ -58,6 +58,3 @@ msgstr "開く(&O)"
 
 msgid "BookmarkManager"
 msgstr "ブックマークマネージャ"
-
-msgid "Logging"
-msgstr "ログの保存"

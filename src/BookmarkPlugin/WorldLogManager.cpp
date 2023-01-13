@@ -77,7 +77,7 @@ WorldLogManagerImpl::WorldLogManagerImpl(ExtensionManager* ext, WorldLogManager*
     setWindowTitle(_("WorldLogManager"));
 
     MenuManager& mm = ext->menuManager().setPath("/" N_("Options")).setPath(_("WorldLog"));
-    enable_logging = mm.addCheckItem(_("Enable logging"));
+    enable_logging = mm.addCheckItem(_("Save a WorldLog"));
 
     setFixedSize(800, 450);
     treeWidget = new TreeWidget;
