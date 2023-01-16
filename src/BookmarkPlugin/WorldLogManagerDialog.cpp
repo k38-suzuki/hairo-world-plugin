@@ -86,9 +86,7 @@ WorldLogManagerDialogImpl::WorldLogManagerDialogImpl(WorldLogManagerDialog* self
 
     self->setFixedSize(800, 450);
     treeWidget = new TreeWidget;
-    treeWidget->setHeaderHidden(false);
-
-    treeWidget->setHeaderLabel(_("File"));
+    treeWidget->setHeaderHidden(true);
 
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     Action* removeAct = new Action;

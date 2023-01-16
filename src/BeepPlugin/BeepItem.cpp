@@ -15,7 +15,7 @@
 #include "BeepView.h"
 #include "BeepWidget.h"
 #include "gettext.h"
-#include <iostream>
+
 using namespace cnoid;
 using namespace std;
 

@@ -23,9 +23,6 @@ msgstr "ブックマークバー"
 msgid "BookmarkManager"
 msgstr "ブックマークマネージャ"
 
-msgid "File"
-msgstr "ファイル"
-
 msgid "Add"
 msgstr "登録"
 
