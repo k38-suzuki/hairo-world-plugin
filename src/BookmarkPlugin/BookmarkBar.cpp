@@ -40,6 +40,7 @@ BookmarkBarImpl::BookmarkBarImpl(BookmarkBar* self)
 
     auto button1 = self->addButton(
         QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_DialogApplyButton)));
+    button1->setToolTip(_("Bookmark a current project"));
     button1->sigClicked().connect([&](){ 
         const string& filename = ProjectManager::instance()->currentProjectFile();
         if(!filename.empty()) {

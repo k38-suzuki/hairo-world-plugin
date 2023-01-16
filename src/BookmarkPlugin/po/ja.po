@@ -91,3 +91,6 @@ msgstr "再生(&P)"
 
 msgid "Show the worldlog manager"
 msgstr "ワールドログマネージャの表示"
+
+msgid "Bookmark a current project"
+msgstr "プロジェクトの登録"
