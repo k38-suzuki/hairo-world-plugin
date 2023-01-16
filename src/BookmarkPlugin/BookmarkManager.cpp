@@ -17,6 +17,7 @@
 #include <cnoid/SimulationBar>
 #include <cnoid/TreeWidget>
 #include <QDialogButtonBox>
+#include <QHBoxLayout>
 #include <QStyle>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
@@ -89,6 +90,17 @@ BookmarkManagerImpl::BookmarkManagerImpl(BookmarkManager* self)
     openAct->sigTriggered().connect([&](){ onStartButtonClicked(); });
     connect(treeWidget, &TreeWidget::customContextMenuRequested, [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
 
+    QHBoxLayout* hbox = new QHBoxLayout;
+    auto addButton = new PushButton;
+    addButton->setIcon(QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_DialogOpenButton)));
+    addButton->sigClicked().connect([&](){ onAddButtonClicked(); });
+    auto removeButton = new PushButton;
+    removeButton->setIcon(QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_TrashIcon)));
+    removeButton->sigClicked().connect([&](){ removeItem(); });
+    hbox->addWidget(addButton);
+    hbox->addStretch();
+    hbox->addWidget(removeButton);
+
     auto buttonBox = new QDialogButtonBox(this);
     auto startButton  = new PushButton(_("&Open"));
     startButton->setIconSize(MainWindow::instance()->iconSize());
@@ -97,6 +109,7 @@ BookmarkManagerImpl::BookmarkManagerImpl(BookmarkManager* self)
     startButton->sigClicked().connect([&](){ onStartButtonClicked(); });
 
     QVBoxLayout* vbox = new QVBoxLayout;
+    vbox->addLayout(hbox);
     vbox->addWidget(treeWidget);
     vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);

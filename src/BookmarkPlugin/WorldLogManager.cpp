@@ -25,6 +25,7 @@
 #include <src/BodyPlugin/WorldLogFileItem.h>
 #include <QDateTime>
 #include <QDialogButtonBox>
+#include <QHBoxLayout>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
 #include "BookmarkBar.h"
@@ -99,6 +100,14 @@ WorldLogManagerImpl::WorldLogManagerImpl(ExtensionManager* ext, WorldLogManager*
     connect(treeWidget, &TreeWidget::customContextMenuRequested,
         [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
 
+    QHBoxLayout* hbox = new QHBoxLayout;
+    auto removeButton = new PushButton;
+    removeButton->setIcon(QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_TrashIcon)));
+    removeButton->setToolTip(_("Remove project"));
+    removeButton->sigClicked().connect([&](){ removeItem(); });
+    hbox->addStretch();
+    hbox->addWidget(removeButton);
+
     auto buttonBox = new QDialogButtonBox(this);
     auto startButton  = new PushButton(_("&Play"));
     startButton->setIconSize(MainWindow::instance()->iconSize());
@@ -107,6 +116,7 @@ WorldLogManagerImpl::WorldLogManagerImpl(ExtensionManager* ext, WorldLogManager*
     startButton->sigClicked().connect([&](){ onStartButtonClicked(); });
 
     QVBoxLayout* vbox = new QVBoxLayout;
+    vbox->addLayout(hbox);
     vbox->addWidget(treeWidget);
     vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);
