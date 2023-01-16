@@ -128,9 +128,11 @@ void KIOSKManagerImpl::onEnableKIOSKToggled(const bool& on)
     mw->viewArea()->setViewTabsVisible(!on);
     mw->statusBar()->setVisible(!on);
     // onHideMenuBarToggled(on);
-    hide_toolBar->setChecked(on);
+    // hide_toolBar->setChecked(on);
     if(on) {
         BookmarkManagerDialog::instance()->showBookmarkManagerDialog();
+    } else {
+        BookmarkManagerDialog::instance()->hide();
     }
 }
 
