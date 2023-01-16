@@ -27,6 +27,7 @@
 #include <QDialogButtonBox>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
+#include "BookmarkBar.h"
 #include "gettext.h"
 
 using namespace cnoid;
@@ -140,9 +141,11 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
         instance_ = ext->manage(new WorldLogManager(ext));
     }
 
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
-    mm.addItem(_("WorldLogManager"))->sigTriggered().connect(
-        [&](){ instance_->impl->show(); });
+    auto bar = BookmarkBar::instance();
+    auto button1 = bar->addButton(
+        QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_FileDialogDetailedView)));
+    button1->setToolTip(_("Show the worldlog manager"));
+    button1->sigClicked().connect([&](){ instance_->impl->show(); });
 }
 
 
@@ -196,14 +199,14 @@ bool WorldLogManagerImpl::onOpenButtonClicked(const string& filename)
 {
     MessageView* mv = MessageView::instance();
     ProjectManager* pm = ProjectManager::instance();
-    TimeBar* tb = TimeBar::instance();
+    TimeBar* timeBar = TimeBar::instance();
     bool result = pm->tryToCloseProject();
     if(result) {
         pm->clearProject();
         mv->flush();
         pm->loadProject(filename);
-        tb->stopPlayback(true);
-        tb->startPlayback(0.0);
+        timeBar->stopPlayback(true);
+        timeBar->startPlayback(0.0);
     }
     return result;
 }
@@ -256,7 +259,7 @@ void WorldLogManagerImpl::store(Mapping& archive)
         QTreeWidgetItem* item = treeWidget->topLevelItem(i);
         if(item) {
             string filename = item->text(0).toStdString();
-            string fileKey = "file_name_" + to_string(i);
+            string fileKey = "filename_" + to_string(i);
             archive.write(fileKey, filename);
         }
     }
@@ -269,7 +272,7 @@ void WorldLogManagerImpl::restore(const Mapping& archive)
 
     int size = archive.get("num_logs", 0);
     for(int i = 0; i < size; ++i) {
-        string fileKey = "file_name_" + to_string(i);
+        string fileKey = "filename_" + to_string(i);
         string filename = archive.get(fileKey, "");
         if(!filename.empty()) {
             addItem(filename);

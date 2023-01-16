@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JoystickStatusPlugin\n"
-"Report-Msgid-Bugs-To: suzuki.kenta38@jaea.go.jp\n"
-"POT-Creation-Date: 2023-01-11 05:08-0800\n"
-"PO-Revision-Date: 2023-01-11 05:08-0800\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-01-16 17:02+0900\n"
+"PO-Revision-Date: 2023-01-16 17:02+0900\n"
 "Last-Translator: k38-suzuki <suzuki.kenta38@jaea.go.jp>\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -29,19 +29,73 @@ msgstr "ジョイスティック状態"
 msgid "Hide indicators"
 msgstr "インジケータを隠す"
 
-msgid "&Ok"
-msgstr "了解(&O)"
-
 msgid "KeyConfig"
 msgstr "キーコンフィグ"
 
-msgid "OnScreenJoystickView"
-msgstr "スクリーンジョイスティックビュー"
+msgid "&Ok"
+msgstr "了解(&O)"
 
 msgid "Draggable Joystick"
 msgstr "スクリーンジョイスティック"
 
+msgid "OnScreenJoystickView"
+msgstr "スクリーンジョイスティックビュー"
+
+msgid "Play mode"
+msgstr "再生モード"
+
+msgid "Simulation"
+msgstr "シミュレーション"
+
+msgid "Animation"
+msgstr "アニメーション"
+
+msgid "Start simulation from the beginning"
+msgstr "初期位置からのシミュレーションを開始"
+
+msgid "Start simulation from the current state"
+msgstr "現在位置からのシミュレーションを開始"
+
+msgid "Pause simulation"
+msgstr "シミュレーションの一時停止"
+
+msgid "Seek backward"
+msgstr "戻る"
+
+msgid "Seek forward"
+msgstr "進む"
+
+msgid "Stop simulation"
+msgstr "シミュレーションの停止"
+
+msgid "Seek time"
+msgstr "シーク時間"
+
+msgid "SimpleSimulation"
+msgstr "簡易シミュレーション"
+
+msgid "SimpleSimulationView"
+msgstr "簡易シミュレーションビュー"
+
+msgid "Resume playback"
+msgstr "再生再開"
+
+msgid "Start playback"
+msgstr "再生開始"
+
+msgid "Stop animation"
+msgstr "アニメーションの停止"
+
+msgid "Resume animation"
+msgstr "アニメーションの再生・停止"
+
+msgid "Time"
+msgstr "時間"
+
 msgid "Joystick"
+msgstr ""
+
+msgid "Options"
 msgstr ""
 
 msgid "Start simulation (StartButton)"

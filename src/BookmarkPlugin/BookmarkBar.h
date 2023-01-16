@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef MARK_PLUGIN_BOOKMARK_BAR_H
-#define MARK_PLUGIN_BOOKMARK_BAR_H
+#ifndef CNOID_BOOKMARK_PLUGIN_BOOKMARK_BAR_H
+#define CNOID_BOOKMARK_PLUGIN_BOOKMARK_BAR_H
 
 #include <cnoid/ExtensionManager>
 #include <cnoid/ToolBar>
@@ -16,7 +16,7 @@ class BookmarkBarImpl;
 class BookmarkBar : public ToolBar
 {
 public:
-    BookmarkBar(ExtensionManager* ext);
+    BookmarkBar();
     virtual ~BookmarkBar();
 
     static void initializeClass(ExtensionManager* ext);
@@ -29,4 +29,4 @@ private:
 
 }
 
-#endif // MARK_PLUGIN_BOOKMARK_BAR_H
+#endif // CNOID_BOOKMARK_PLUGIN_BOOKMARK_BAR_H

@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_KIOSK_PLUGIN_JOY_KEY_H
-#define CNOID_KIOSK_PLUGIN_JOY_KEY_H
+#ifndef CNOID_BOOKMARK_PLUGIN_JOY_KEY_H
+#define CNOID_BOOKMARK_PLUGIN_JOY_KEY_H
 
 #include <cnoid/Signal>
 
@@ -52,4 +52,4 @@ private:
 
 }
 
-#endif // CNOID_KIOSK_PLUGIN_JOY_KEY_H
+#endif // CNOID_BOOKMARK_PLUGIN_JOY_KEY_H

@@ -7,6 +7,8 @@ set(sources
     JoystickStatusView.cpp
     KeyConfig.cpp
     SimulationManager.cpp
+    SimpleSimulationView.cpp
+    SimpleTimeWidget.cpp
     )
 
 set(headers
@@ -19,6 +21,8 @@ set(headers
     JoystickStatusView.h
     KeyConfig.h
     SimulationManager.h
+    SimpleSimulationView.h
+    SimpleTimeWidget.h
     )
 
 choreonoid_make_header_public(ConfigurableJoystick.h)

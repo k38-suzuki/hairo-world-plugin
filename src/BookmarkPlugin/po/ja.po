@@ -1,14 +1,14 @@
-# Japanese translations for BookmarkPlugin package.
-# Copyright (C) 2023 THE BookmarkPlugin'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the BookmarkPlugin package.
+# Japanese translations for Choreonoid package.
+# Copyright (C) 2023 THE Choreonoid'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Choreonoid package.
 # k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2023.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: BookmarkPlugin\n"
-"Report-Msgid-Bugs-To: suzuki.kenta38@jaea.go.jp\n"
-"POT-Creation-Date: 2023-01-11 05:08-0800\n"
-"PO-Revision-Date: 2023-01-11 05:08-0800\n"
+"Project-Id-Version: Choreonoid\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-01-16 17:47+0900\n"
+"PO-Revision-Date: 2023-01-16 17:47+0900\n"
 "Last-Translator: k38-suzuki <suzuki.kenta38@jaea.go.jp>\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -17,20 +17,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "History"
-msgstr "履歴"
-
-msgid "Clear all histories"
-msgstr "全ての履歴を削除"
-
 msgid "BookmarkBar"
 msgstr "ブックマークバー"
 
-msgid "Bookmark"
-msgstr "ブックマーク"
+msgid "BookmarkManager"
+msgstr "ブックマークマネージャ"
 
-msgid "Add current project"
-msgstr "現在のプロジェクトを登録"
+msgid "File"
+msgstr "ファイル"
 
 msgid "Add"
 msgstr "登録"
@@ -38,23 +32,62 @@ msgstr "登録"
 msgid "Remove"
 msgstr "削除"
 
-msgid "File"
-msgstr "ファイル"
-
-msgid "Save a WorldLog"
-msgstr "ワールドログの保存"
-
-msgid "WorldLogManager"
-msgstr "ワールドログマネージャ"
-
-msgid "&Play"
-msgstr "再生(&P)"
-
 msgid "Open"
 msgstr "開く"
 
 msgid "&Open"
 msgstr "開く(&O)"
 
-msgid "BookmarkManager"
-msgstr "ブックマークマネージャ"
+msgid "Show the bookmark manager"
+msgstr "ブックマークマネージャの表示"
+
+msgid "Select a Choreonoid project file"
+msgstr "Choreonoidプロジェクトファイルの選択"
+
+msgid "Cancel"
+msgstr "キャンセル"
+
+msgid "Project files (*.cnoid)"
+msgstr "プロジェクトファイル (*.cnoid)"
+
+msgid "Any files (*)"
+msgstr "全てのファイル(*)"
+
+msgid "History"
+msgstr "履歴"
+
+msgid "Tools"
+msgstr ""
+
+msgid "Clear all histories"
+msgstr "全ての履歴を削除"
+
+msgid "View"
+msgstr ""
+
+msgid "Enable KIOSK"
+msgstr "KIOSKモード"
+
+msgid "Hide tool bar"
+msgstr "ツールバーの非表示"
+
+msgid "KIOSK"
+msgstr ""
+
+msgid "WorldLogManager"
+msgstr "ワールドログマネージャ"
+
+msgid "Options"
+msgstr ""
+
+msgid "WorldLog"
+msgstr "ワールドログ"
+
+msgid "Save a WorldLog"
+msgstr "ワールドログの保存"
+
+msgid "&Play"
+msgstr "再生(&P)"
+
+msgid "Show the worldlog manager"
+msgstr "ワールドログマネージャの表示"

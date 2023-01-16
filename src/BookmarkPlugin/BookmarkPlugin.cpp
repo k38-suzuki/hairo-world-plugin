@@ -8,6 +8,7 @@
 #include "BookmarkBar.h"
 #include "BookmarkManager.h"
 #include "HistoryManager.h"
+#include "KIOSKManager.h"
 #include "WorldLogManager.h"
 
 using namespace cnoid;
@@ -20,7 +21,7 @@ public:
 
     BookmarkPlugin() : Plugin("Bookmark")
     {
-
+        require("Body");
     }
 
     virtual bool initialize() override
@@ -28,6 +29,7 @@ public:
         BookmarkBar::initializeClass(this);
         BookmarkManager::initializeClass(this);
         HistoryManager::initializeClass(this);
+        KIOSKManager::initializeClass(this);
         WorldLogManager::initializeClass(this);
         return true;
     }
@@ -37,7 +39,7 @@ public:
         static std::string text =
             fmt::format("Bookmark Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
-            "Copyright (c) 2021 Japan Atomic Energy Agency.\n"
+            "Copyright (c) 2023 Japan Atomic Energy Agency.\n"
             "\n" +
             MITLicenseText();
         return text.c_str();

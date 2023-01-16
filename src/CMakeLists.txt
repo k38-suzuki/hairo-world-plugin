@@ -9,12 +9,6 @@ add_subdirectory(PHITSPlugin)
 add_subdirectory(SystemTrayPlugin)
 add_subdirectory(VisualEffectPlugin)
 
-if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
-  add_subdirectory(KIOSKPlugin)
-else()
-
-endif()
-
 if(WIN32 OR APPLE)
   return()
 endif()

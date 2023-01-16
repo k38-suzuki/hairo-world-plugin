@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_KIOSK_PLUGIN_BOOKMARK_MANAGER_H
-#define CNOID_KIOSK_PLUGIN_BOOKMARK_MANAGER_H
+#ifndef CNOID_BOOKMARK_PLUGIN_BOOKMARK_MANAGER_H
+#define CNOID_BOOKMARK_PLUGIN_BOOKMARK_MANAGER_H
 
 #include <cnoid/ExtensionManager>
 
@@ -22,6 +22,7 @@ public:
     static BookmarkManager* instance();
 
     void showBookmarkManagerDialog();
+    void addProject(const std::string& filename);
 
 private:
     BookmarkManagerImpl* impl;
@@ -30,4 +31,4 @@ private:
 
 }
 
-#endif // CNOID_KIOSK_PLUGIN_BOOKMARK_MANAGER_H
+#endif // CNOID_BOOKMARK_PLUGIN_BOOKMARK_MANAGER_H

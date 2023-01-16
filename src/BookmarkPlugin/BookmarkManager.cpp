@@ -17,8 +17,10 @@
 #include <cnoid/SimulationBar>
 #include <cnoid/TreeWidget>
 #include <QDialogButtonBox>
+#include <QStyle>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
+#include "BookmarkBar.h"
 #include "gettext.h"
 
 using namespace cnoid;
@@ -125,9 +127,19 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
         instance_ = ext->manage(new BookmarkManager);
     }
 
-    // MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
-    // mm.addItem(_("BookmarkManager"))->sigTriggered().connect(
-    //     [&](){ instance_->impl->show(); });
+    auto bar = BookmarkBar::instance();
+    auto button1 = bar->addButton(
+        QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_DialogApplyButton)));
+    button1->sigClicked().connect([&](){ 
+        const string& filename = ProjectManager::instance()->currentProjectFile();
+        if(!filename.empty()) {
+            instance_->addProject(filename);
+        }
+        });
+    auto button2 = bar->addButton(
+        QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_DialogOpenButton)));
+    button2->setToolTip(_("Show the bookmark manager"));
+    button2->sigClicked().connect([&](){ instance_->impl->show(); });
 }
 
 
@@ -140,6 +152,12 @@ BookmarkManager* BookmarkManager::instance()
 void BookmarkManager::showBookmarkManagerDialog()
 {
     instance_->impl->show();
+}
+
+
+void BookmarkManager::addProject(const string& filename)
+{
+    impl->addItem(filename);
 }
 
 
@@ -219,7 +237,7 @@ void BookmarkManagerImpl::store(Mapping& archive)
         QTreeWidgetItem* item = treeWidget->topLevelItem(i);
         if(item) {
             string filename = item->text(0).toStdString();
-            string fileKey = "file_name_" + to_string(i);
+            string fileKey = "filename_" + to_string(i);
             archive.write(fileKey, filename);
         }
     }
@@ -230,7 +248,7 @@ void BookmarkManagerImpl::restore(const Mapping& archive)
 {
     int size = archive.get("num_bookmarks", 0);
     for(int i = 0; i < size; ++i) {
-        string fileKey = "file_name_" + to_string(i);
+        string fileKey = "filename_" + to_string(i);
         string filename = archive.get(fileKey, "");
         if(!filename.empty()) {
             addItem(filename);
