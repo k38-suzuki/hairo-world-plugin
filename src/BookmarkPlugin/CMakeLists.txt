@@ -1,22 +1,22 @@
 
 set(sources
     BookmarkBar.cpp
-    BookmarkManager.cpp
+    BookmarkManagerDialog.cpp
     BookmarkPlugin.cpp
     HistoryManager.cpp
     JoyKey.cpp
     KIOSKManager.cpp
-    WorldLogManager.cpp
+    WorldLogManagerDialog.cpp
     )
 
 set(headers
     BookmarkBar.h
-    BookmarkManager.h
+    BookmarkManagerDialog.h
     gettext.h
     HistoryManager.h
     JoyKey.h
     KIOSKManager.h
-    WorldLogManager.h
+    WorldLogManagerDialog.h
     )
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")

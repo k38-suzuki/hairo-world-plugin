@@ -3,11 +3,10 @@
    \author Kenta Suzuki
 */
 
-#include "BookmarkManager.h"
+#include "BookmarkManagerDialog.h"
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
 #include <cnoid/Button>
-#include <cnoid/Dialog>
 #include <cnoid/FileDialog>
 #include <cnoid/MainWindow>
 #include <cnoid/Menu>
@@ -21,26 +20,19 @@
 #include <QStyle>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
-#include "BookmarkBar.h"
 #include "gettext.h"
 
 using namespace cnoid;
 using namespace std;
 
-namespace {
-
-BookmarkManager* instance_ = nullptr;
-
-}
-
 namespace cnoid {
 
-class BookmarkManagerImpl : public Dialog
+class BookmarkManagerDialogImpl
 {
 public:
-    BookmarkManagerImpl(BookmarkManager* self);
-    virtual ~BookmarkManagerImpl();
-    BookmarkManager* self;
+    BookmarkManagerDialogImpl(BookmarkManagerDialog* self);
+    virtual ~BookmarkManagerDialogImpl();
+    BookmarkManagerDialog* self;
 
     TreeWidget* treeWidget;
     Menu contextMenu;
@@ -57,18 +49,18 @@ public:
 }
 
 
-BookmarkManager::BookmarkManager()
+BookmarkManagerDialog::BookmarkManagerDialog()
 {
-    impl = new BookmarkManagerImpl(this);
+    impl = new BookmarkManagerDialogImpl(this);
 }
 
 
-BookmarkManagerImpl::BookmarkManagerImpl(BookmarkManager* self)
+BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self)
     : self(self)
 {
-    setWindowTitle(_("BookmarkManager"));
+    self->setWindowTitle(_("BookmarkManager"));
 
-    setFixedSize(800, 450);
+    self->setFixedSize(800, 450);
     treeWidget = new TreeWidget;
     treeWidget->setHeaderHidden(false);
 
@@ -88,7 +80,7 @@ BookmarkManagerImpl::BookmarkManagerImpl(BookmarkManager* self)
     addAct->sigTriggered().connect([&](){ onAddButtonClicked(); });
     removeAct->sigTriggered().connect([&](){ removeItem(); });
     openAct->sigTriggered().connect([&](){ onStartButtonClicked(); });
-    connect(treeWidget, &TreeWidget::customContextMenuRequested, [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
+    self->connect(treeWidget, &TreeWidget::customContextMenuRequested, [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
 
     QHBoxLayout* hbox = new QHBoxLayout;
     auto addButton = new PushButton;
@@ -101,7 +93,7 @@ BookmarkManagerImpl::BookmarkManagerImpl(BookmarkManager* self)
     hbox->addStretch();
     hbox->addWidget(removeButton);
 
-    auto buttonBox = new QDialogButtonBox(this);
+    auto buttonBox = new QDialogButtonBox(self);
     auto startButton  = new PushButton(_("&Open"));
     startButton->setIconSize(MainWindow::instance()->iconSize());
     buttonBox->addButton(startButton, QDialogButtonBox::ActionRole);
@@ -113,7 +105,7 @@ BookmarkManagerImpl::BookmarkManagerImpl(BookmarkManager* self)
     vbox->addWidget(treeWidget);
     vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);
-    setLayout(vbox);
+    self->setLayout(vbox);
 
     Mapping& config = *AppConfig::archive()->openMapping("bookmark_manager");
     if(config.isValid()) {
@@ -122,59 +114,41 @@ BookmarkManagerImpl::BookmarkManagerImpl(BookmarkManager* self)
 }
 
 
-BookmarkManager::~BookmarkManager()
+BookmarkManagerDialog::~BookmarkManagerDialog()
 {
     delete impl;
 }
 
 
-BookmarkManagerImpl::~BookmarkManagerImpl()
+BookmarkManagerDialogImpl::~BookmarkManagerDialogImpl()
 {
     store(*AppConfig::archive()->openMapping("bookmark_manager"));
 }
 
 
-void BookmarkManager::initializeClass(ExtensionManager* ext)
+BookmarkManagerDialog* BookmarkManagerDialog::instance()
 {
+    static BookmarkManagerDialog* instance_ = nullptr;
     if(!instance_) {
-        instance_ = ext->manage(new BookmarkManager);
+        instance_ = new BookmarkManagerDialog;
     }
-
-    auto bar = BookmarkBar::instance();
-    auto button1 = bar->addButton(
-        QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_DialogApplyButton)));
-    button1->sigClicked().connect([&](){ 
-        const string& filename = ProjectManager::instance()->currentProjectFile();
-        if(!filename.empty()) {
-            instance_->addProject(filename);
-        }
-        });
-    auto button2 = bar->addButton(
-        QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_DialogOpenButton)));
-    button2->setToolTip(_("Show the bookmark manager"));
-    button2->sigClicked().connect([&](){ instance_->impl->show(); });
-}
-
-
-BookmarkManager* BookmarkManager::instance()
-{
     return instance_;
 }
 
 
-void BookmarkManager::showBookmarkManagerDialog()
-{
-    instance_->impl->show();
-}
-
-
-void BookmarkManager::addProject(const string& filename)
+void BookmarkManagerDialog::addProject(const string& filename)
 {
     impl->addItem(filename);
 }
 
 
-void BookmarkManagerImpl::addItem(const string& filename)
+void BookmarkManagerDialog::showBookmarkManagerDialog()
+{
+    show();
+}
+
+
+void BookmarkManagerDialogImpl::addItem(const string& filename)
 {
     QTreeWidgetItem* item = new QTreeWidgetItem(treeWidget);
     item->setText(0, filename.c_str());
@@ -182,7 +156,7 @@ void BookmarkManagerImpl::addItem(const string& filename)
 }
 
 
-void BookmarkManagerImpl::removeItem()
+void BookmarkManagerDialogImpl::removeItem()
 {
     QTreeWidgetItem* item = treeWidget->currentItem();
     if(item) {
@@ -192,7 +166,7 @@ void BookmarkManagerImpl::removeItem()
 }
 
 
-void BookmarkManagerImpl::onAddButtonClicked()
+void BookmarkManagerDialogImpl::onAddButtonClicked()
 {
     MainWindow* mw = MainWindow::instance();
     FileDialog dialog(mw);
@@ -219,7 +193,7 @@ void BookmarkManagerImpl::onAddButtonClicked()
 }
 
 
-void BookmarkManagerImpl::onStartButtonClicked()
+void BookmarkManagerDialogImpl::onStartButtonClicked()
 {
     QTreeWidgetItem* item = treeWidget->currentItem();
     if(item) {
@@ -236,13 +210,13 @@ void BookmarkManagerImpl::onStartButtonClicked()
 }
 
 
-void BookmarkManagerImpl::onCustomContextMenuRequested(const QPoint& pos)
+void BookmarkManagerDialogImpl::onCustomContextMenuRequested(const QPoint& pos)
 {
     contextMenu.exec(treeWidget->mapToGlobal(pos));
 }
 
 
-void BookmarkManagerImpl::store(Mapping& archive)
+void BookmarkManagerDialogImpl::store(Mapping& archive)
 {
     int size = treeWidget->topLevelItemCount();
     archive.write("num_bookmarks", size);
@@ -257,7 +231,7 @@ void BookmarkManagerImpl::store(Mapping& archive)
 }
 
 
-void BookmarkManagerImpl::restore(const Mapping& archive)
+void BookmarkManagerDialogImpl::restore(const Mapping& archive)
 {
     int size = archive.get("num_bookmarks", 0);
     for(int i = 0; i < size; ++i) {

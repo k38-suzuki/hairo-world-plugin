@@ -20,7 +20,7 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QStatusBar>
-#include "BookmarkManager.h"
+#include "BookmarkManagerDialog.h"
 #include "JoyKey.h"
 #include "gettext.h"
 
@@ -116,7 +116,7 @@ void KIOSKManagerImpl::onProjectOptionsParsed(boost::program_options::variables_
     if(result) {
         enable_kiosk->setChecked(false);
         enable_kiosk->setChecked(true);
-        BookmarkManager::instance()->showBookmarkManagerDialog();
+        BookmarkManagerDialog::instance()->showBookmarkManagerDialog();
     }
 }
 
@@ -130,7 +130,7 @@ void KIOSKManagerImpl::onEnableKIOSKToggled(const bool& on)
     // onHideMenuBarToggled(on);
     hide_toolBar->setChecked(on);
     if(on) {
-        BookmarkManager::instance()->showBookmarkManagerDialog();
+        BookmarkManagerDialog::instance()->showBookmarkManagerDialog();
     }
 }
 
@@ -162,7 +162,7 @@ void KIOSKManagerImpl::onButton(const int& id, const bool& isPressed)
                 timeBar->stopPlayback(true);
             }
             timeBar->setTime(0.0);
-            BookmarkManager::instance()->showBookmarkManagerDialog();
+            BookmarkManagerDialog::instance()->showBookmarkManagerDialog();
         }
     }
 }

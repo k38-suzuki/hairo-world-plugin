@@ -4,9 +4,15 @@
 */
 
 #include "BookmarkBar.h"
+#include <cnoid/MainWindow>
+#include <cnoid/ProjectManager>
+#include <QStyle>
+#include "BookmarkManagerDialog.h"
+#include "WorldLogManagerDialog.h"
 #include "gettext.h"
 
 using namespace cnoid;
+using namespace std;
 
 namespace cnoid {
 
@@ -31,6 +37,24 @@ BookmarkBarImpl::BookmarkBarImpl(BookmarkBar* self)
     : self(self)
 {
     self->setVisibleByDefault(true);
+
+    auto button1 = self->addButton(
+        QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_DialogApplyButton)));
+    button1->sigClicked().connect([&](){ 
+        const string& filename = ProjectManager::instance()->currentProjectFile();
+        if(!filename.empty()) {
+            BookmarkManagerDialog::instance()->addProject(filename);
+        }
+        });
+    auto button2 = self->addButton(
+        QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_DialogOpenButton)));
+    button2->setToolTip(_("Show the bookmark manager"));
+    button2->sigClicked().connect([&](){ BookmarkManagerDialog::instance()->showBookmarkManagerDialog(); });
+
+    auto button3 = self->addButton(
+        QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_FileDialogDetailedView)));
+    button3->setToolTip(_("Show the worldlog manager"));
+    button3->sigClicked().connect([&](){ WorldLogManagerDialog::instance()->showWorldLogManagerDialog(); });
 }
 
 
