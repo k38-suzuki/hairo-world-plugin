@@ -53,6 +53,8 @@ public:
     TreeWidget* treeWidget;
     CheckBox* saveCheck;
     Menu contextMenu;
+    string projectFileName;
+    bool isSimulationStarted;
 
     void addItem(const string& filename);
     void removeItem();
@@ -60,6 +62,7 @@ public:
     void onCustomContextMenuRequested(const QPoint& pos);
     bool onOpenButtonClicked(const string& filename);
     void onSimulationAboutToStart(SimulatorItem* simulatorItem);
+    void onPlaybackStopped(double time, bool isStoppedManually);
     void store(Mapping& archive);
     void restore(const Mapping& archive);
 };
@@ -77,6 +80,9 @@ WorldLogManagerDialogImpl::WorldLogManagerDialogImpl(WorldLogManagerDialog* self
     : self(self)
 {
     self->setWindowTitle(_("WorldLogManager"));
+
+    projectFileName.clear();
+    isSimulationStarted = false;
 
     self->setFixedSize(800, 450);
     treeWidget = new TreeWidget;
@@ -121,6 +127,9 @@ WorldLogManagerDialogImpl::WorldLogManagerDialogImpl(WorldLogManagerDialog* self
     vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);
     self->setLayout(vbox);
+
+    TimeBar* timeBar = TimeBar::instance();
+    timeBar->sigPlaybackStopped().connect([&](double time, bool isStoppedManually){ onPlaybackStopped(time, isStoppedManually); });
 
     SimulationBar* sb = SimulationBar::instance();
     sb->sigSimulationAboutToStart().connect(
@@ -214,6 +223,7 @@ bool WorldLogManagerDialogImpl::onOpenButtonClicked(const string& filename)
 
 void WorldLogManagerDialogImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
+    isSimulationStarted = true;
     if(saveCheck->isChecked()) {
         filesystem::path homeDir(fromUTF8(getenv("HOME")));
         ProjectManager* pm = ProjectManager::instance();
@@ -224,8 +234,8 @@ void WorldLogManagerDialogImpl::onSimulationAboutToStart(SimulatorItem* simulato
         if(!filesystem::exists(dir)) {
             filesystem::create_directories(dir);
         }
-        string filename0 = toUTF8((dir / pm->currentProjectName().c_str()).string()) + suffix + ".cnoid";
 
+        projectFileName = toUTF8((dir / pm->currentProjectName().c_str()).string()) + ".cnoid";
         WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
         if(worldItem) {
             ItemList<WorldLogFileItem> logItems = worldItem->descendantItems<WorldLogFileItem>();
@@ -237,14 +247,22 @@ void WorldLogManagerDialogImpl::onSimulationAboutToStart(SimulatorItem* simulato
                 worldItem->addChildItem(logItem);
             }
             if(recordingStartTime.isValid()) {
-                string filename1 = toUTF8((dir / logItem->name().c_str()).string()) + suffix + ".log";
-                logItem->setLogFile(filename1);
+                string filename = toUTF8((dir / logItem->name().c_str()).string()) + ".log";
+                logItem->setLogFile(filename);
                 logItem->setTimeStampSuffixEnabled(false);
                 logItem->setSelected(true);
             }
-            pm->saveProject(filename0);
-            addItem(filename0);
         }
+    }
+}
+
+
+void WorldLogManagerDialogImpl::onPlaybackStopped(double time, bool isStoppedManually)
+{
+    if(isSimulationStarted) {
+        ProjectManager::instance()->saveProject(projectFileName);
+        addItem(projectFileName);
+        isSimulationStarted = false;
     }
 }
 
@@ -254,7 +272,7 @@ void WorldLogManagerDialogImpl::store(Mapping& archive)
     archive.write("save_world_log_file", saveCheck->isChecked());
 
     int size = treeWidget->topLevelItemCount();
-    archive.write("num_logs", size);
+    archive.write("num_world_logs", size);
     for(int i = 0; i < size; ++i) {
         QTreeWidgetItem* item = treeWidget->topLevelItem(i);
         if(item) {
@@ -270,7 +288,7 @@ void WorldLogManagerDialogImpl::restore(const Mapping& archive)
 {
     saveCheck->setChecked(archive.get("save_world_log_file", false));
 
-    int size = archive.get("num_logs", 0);
+    int size = archive.get("num_world_logs", 0);
     for(int i = 0; i < size; ++i) {
         string fileKey = "filename_" + to_string(i);
         string filename = archive.get(fileKey, "");
