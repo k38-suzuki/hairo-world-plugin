@@ -3,8 +3,8 @@
    \author Kenta Suzuki
 */
 
-#ifndef CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_H
-#define CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_H
+#ifndef CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_DIALOG_H
+#define CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_DIALOG_H
 
 #include <cnoid/Dialog>
 
@@ -20,8 +20,6 @@ public:
 
     static WorldLogManagerDialog* instance();
 
-    void showWorldLogManagerDialog();
-
 private:
     WorldLogManagerDialogImpl* impl;
     friend class WorldLogManagerDialogImpl;
@@ -29,4 +27,4 @@ private:
 
 }
 
-#endif // CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_H
+#endif // CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_DIALOG_H

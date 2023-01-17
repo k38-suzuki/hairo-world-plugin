@@ -162,12 +162,6 @@ WorldLogManagerDialog* WorldLogManagerDialog::instance()
 }
 
 
-void WorldLogManagerDialog::showWorldLogManagerDialog()
-{
-    show();
-}
-
-
 void WorldLogManagerDialogImpl::addItem(const string& filename)
 {
     QTreeWidgetItem* item = new QTreeWidgetItem(treeWidget);
@@ -198,7 +192,7 @@ void WorldLogManagerDialogImpl::onStartButtonClicked()
 
 void WorldLogManagerDialogImpl::onCustomContextMenuRequested(const QPoint& pos)
 {
-    contextMenu.exec(treeWidget->mapToGlobal(pos));
+    // contextMenu.exec(treeWidget->mapToGlobal(pos));
 }
 
 

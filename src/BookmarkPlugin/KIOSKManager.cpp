@@ -51,6 +51,7 @@ public:
     void onHideMenuBarToggled(const bool& on);
     void onHideToolBarToggled(const bool& on);
     void onButton(const int& id, const bool& isPressed);
+    void onSimulationAboutToStart(SimulatorItem* simulatorItem);
 };
 
 }
@@ -84,9 +85,8 @@ KIOSKManagerImpl::KIOSKManagerImpl(ExtensionManager* ext, KIOSKManager* self)
                 [&](boost::program_options::variables_map& v){ onProjectOptionsParsed(v); });
 
     simulatorItem = nullptr;
-    SimulationBar* sb = SimulationBar::instance();
-    sb->sigSimulationAboutToStart().connect(
-                [&](SimulatorItem* simulatorItem){ this->simulatorItem = simulatorItem; });
+    SimulationBar::instance()->sigSimulationAboutToStart().connect(
+                [&](SimulatorItem* simulatorItem){ onSimulationAboutToStart(simulatorItem); });
 }
 
 
@@ -116,7 +116,7 @@ void KIOSKManagerImpl::onProjectOptionsParsed(boost::program_options::variables_
     if(result) {
         enable_kiosk->setChecked(false);
         enable_kiosk->setChecked(true);
-        BookmarkManagerDialog::instance()->showBookmarkManagerDialog();
+        BookmarkManagerDialog::instance()->show();
     }
 }
 
@@ -130,7 +130,7 @@ void KIOSKManagerImpl::onEnableKIOSKToggled(const bool& on)
     // onHideMenuBarToggled(on);
     // hide_toolBar->setChecked(on);
     if(on) {
-        BookmarkManagerDialog::instance()->showBookmarkManagerDialog();
+        BookmarkManagerDialog::instance()->show();
     } else {
         BookmarkManagerDialog::instance()->hide();
     }
@@ -164,7 +164,16 @@ void KIOSKManagerImpl::onButton(const int& id, const bool& isPressed)
                 timeBar->stopPlayback(true);
             }
             timeBar->setTime(0.0);
-            BookmarkManagerDialog::instance()->showBookmarkManagerDialog();
+            BookmarkManagerDialog::instance()->show();
         }
+    }
+}
+
+
+void KIOSKManagerImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
+{
+    this->simulatorItem = simulatorItem;
+    if(enable_kiosk->isChecked()) {
+        BookmarkManagerDialog::instance()->hide();
     }
 }

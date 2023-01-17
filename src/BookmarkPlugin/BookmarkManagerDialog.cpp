@@ -134,15 +134,9 @@ BookmarkManagerDialog* BookmarkManagerDialog::instance()
 }
 
 
-void BookmarkManagerDialog::addProject(const string& filename)
+void BookmarkManagerDialog::addProjectFile(const string& filename)
 {
     impl->addItem(filename);
-}
-
-
-void BookmarkManagerDialog::showBookmarkManagerDialog()
-{
-    show();
 }
 
 
@@ -210,7 +204,7 @@ void BookmarkManagerDialogImpl::onStartButtonClicked()
 
 void BookmarkManagerDialogImpl::onCustomContextMenuRequested(const QPoint& pos)
 {
-    contextMenu.exec(treeWidget->mapToGlobal(pos));
+    // contextMenu.exec(treeWidget->mapToGlobal(pos));
 }
 
 
