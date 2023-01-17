@@ -1,21 +1,21 @@
 
 set(sources
-    CrawlerGenerator.cpp
+    CrawlerGeneratorDialog.cpp
     FileFormWidget.cpp
-    GratingGenerator.cpp
+    GratingGeneratorDialog.cpp
     BodyGeneratorPlugin.cpp
-    PipeGenerator.cpp
-    SlopeGenerator.cpp
-    TerrainGenerator.cpp
+    PipeGeneratorDialog.cpp
+    SlopeGeneratorDialog.cpp
+    TerrainGeneratorDialog.cpp
     )
 
 set(headers
-    CrawlerGenerator.h
+    CrawlerGeneratorDialog.h
     FileFormWidget.h
-    GratingGenerator.h
-    PipeGenerator.h
-    SlopeGenerator.h
-    TerrainGenerator.h
+    GratingGeneratorDialog.h
+    PipeGeneratorDialog.h
+    SlopeGeneratorDialog.h
+    TerrainGeneratorDialog.h
     gettext.h
     )
 

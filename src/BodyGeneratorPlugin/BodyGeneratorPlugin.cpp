@@ -3,13 +3,15 @@
    \author Kenta Suzuki
 */
 
+#include <cnoid/MenuManager>
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "PipeGenerator.h"
-#include "GratingGenerator.h"
-#include "SlopeGenerator.h"
-#include "TerrainGenerator.h"
-#include "CrawlerGenerator.h"
+#include "PipeGeneratorDialog.h"
+#include "GratingGeneratorDialog.h"
+#include "SlopeGeneratorDialog.h"
+#include "TerrainGeneratorDialog.h"
+#include "CrawlerGeneratorDialog.h"
+#include "gettext.h"
 
 using namespace cnoid;
 
@@ -26,11 +28,17 @@ public:
 
     virtual bool initialize()
     {
-        PipeGenerator::initializeClass(this);
-        GratingGenerator::initializeClass(this);
-        SlopeGenerator::initializeClass(this);
-        TerrainGenerator::initializeClass(this);
-        CrawlerGenerator::initializeClass(this);
+        MenuManager& mm = menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
+        mm.addItem(_("CrawlerRobot"))->sigTriggered().connect(
+                    [&](){ CrawlerGeneratorDialog::instance()->show(); });
+        mm.addItem(_("Grating"))->sigTriggered().connect(
+                    [&](){ GratingGeneratorDialog::instance()->show(); });
+        mm.addItem(_("Pipe"))->sigTriggered().connect(
+                    [&](){ PipeGeneratorDialog::instance()->show(); });
+        mm.addItem(_("Slope"))->sigTriggered().connect(
+                    [&](){ SlopeGeneratorDialog::instance()->show(); });
+        mm.addItem(_("BoxTerrain"))->sigTriggered().connect(
+                    [&](){ TerrainGeneratorDialog::instance()->show(); });
         return true;
     }
 
@@ -39,7 +47,7 @@ public:
         static std::string text =
             fmt::format("BodyGenerator Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
-            "Copyright (c) 2021 Japan Atomic Energy Agency.\n"
+            "Copyright (c) 2023 Japan Atomic Energy Agency.\n"
             "\n" +
             MITLicenseText();
         return text.c_str();

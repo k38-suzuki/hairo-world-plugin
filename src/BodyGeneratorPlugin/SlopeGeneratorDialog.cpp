@@ -3,14 +3,12 @@
    \author Kenta Suzuki
 */
 
-#include "SlopeGenerator.h"
+#include "SlopeGeneratorDialog.h"
 #include <cnoid/Button>
-#include <cnoid/Dialog>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/MainWindow>
-#include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/YAMLWriter>
@@ -27,8 +25,6 @@ using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
-
-SlopeGenerator* sgeneratorInstance = nullptr;
 
 struct DoubleSpinInfo
 {
@@ -52,11 +48,11 @@ DoubleSpinInfo doubleSpinInfo[] = {
 
 namespace cnoid {
 
-class SlopeGeneratorImpl : public Dialog
+class SlopeGeneratorDialogImpl
 {
 public:
-    SlopeGeneratorImpl(SlopeGenerator* self);
-    SlopeGenerator* self;
+    SlopeGeneratorDialogImpl(SlopeGeneratorDialog* self);
+    SlopeGeneratorDialog* self;
 
     enum DoubleSpinId {
         MASS, WIDTH, HEIGHT,
@@ -79,16 +75,16 @@ public:
 }
 
 
-SlopeGenerator::SlopeGenerator()
+SlopeGeneratorDialog::SlopeGeneratorDialog()
 {
-    impl = new SlopeGeneratorImpl(this);
+    impl = new SlopeGeneratorDialogImpl(this);
 }
 
 
-SlopeGeneratorImpl::SlopeGeneratorImpl(SlopeGenerator* self)
+SlopeGeneratorDialogImpl::SlopeGeneratorDialogImpl(SlopeGeneratorDialog* self)
     : self(self)
 {
-    setWindowTitle(_("Slope Builder"));
+    self->setWindowTitle(_("Slope Builder"));
     yamlWriter.setKeyOrderPreservationMode(true);
 
     QVBoxLayout* vbox = new QVBoxLayout;
@@ -119,32 +115,30 @@ SlopeGeneratorImpl::SlopeGeneratorImpl(SlopeGenerator* self)
     vbox->addLayout(gbox);
     vbox->addWidget(new HSeparator);
     vbox->addWidget(formWidget);
-    setLayout(vbox);
+    self->setLayout(vbox);
 
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
     formWidget->sigClicked().connect([&](string filename){ save(filename); });
 }
 
 
-SlopeGenerator::~SlopeGenerator()
+SlopeGeneratorDialog::~SlopeGeneratorDialog()
 {
     delete impl;
 }
 
 
-void SlopeGenerator::initializeClass(ExtensionManager* ext)
+SlopeGeneratorDialog* SlopeGeneratorDialog::instance()
 {
-    if(!sgeneratorInstance) {
-        sgeneratorInstance = ext->manage(new SlopeGenerator);
+    static SlopeGeneratorDialog* instance_ = nullptr;
+    if(!instance_) {
+        instance_ = new SlopeGeneratorDialog;
     }
-
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
-    mm.addItem(_("Slope"))->sigTriggered().connect(
-                [&](){ sgeneratorInstance->impl->show(); });
+    return instance_;
 }
 
 
-bool SlopeGeneratorImpl::save(const string& filename)
+bool SlopeGeneratorDialogImpl::save(const string& filename)
 {
     if(!filename.empty()) {
         auto topNode = writeBody(filename);
@@ -158,7 +152,7 @@ bool SlopeGeneratorImpl::save(const string& filename)
 }
 
 
-void SlopeGeneratorImpl::onColorButtonClicked()
+void SlopeGeneratorDialogImpl::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -178,7 +172,7 @@ void SlopeGeneratorImpl::onColorButtonClicked()
 }
 
 
-MappingPtr SlopeGeneratorImpl::writeBody(const string& filename)
+MappingPtr SlopeGeneratorDialogImpl::writeBody(const string& filename)
 {
     MappingPtr node = new Mapping;
 
@@ -200,7 +194,7 @@ MappingPtr SlopeGeneratorImpl::writeBody(const string& filename)
 }
 
 
-MappingPtr SlopeGeneratorImpl::writeLink()
+MappingPtr SlopeGeneratorDialogImpl::writeLink()
 {
     MappingPtr node = new Mapping;
 
@@ -222,7 +216,7 @@ MappingPtr SlopeGeneratorImpl::writeLink()
 }
 
 
-void SlopeGeneratorImpl::writeLinkShape(Listing* elementsNode)
+void SlopeGeneratorDialogImpl::writeLinkShape(Listing* elementsNode)
 {
     MappingPtr node = new Mapping;
 
@@ -273,7 +267,7 @@ void SlopeGeneratorImpl::writeLinkShape(Listing* elementsNode)
 }
 
 
-VectorXd SlopeGeneratorImpl::calcInertia()
+VectorXd SlopeGeneratorDialogImpl::calcInertia()
 {
     VectorXd inertia;
     inertia.resize(9);
