@@ -3,14 +3,16 @@
    \author Kenta Suzuki
 */
 
-#include "CrawlerGeneratorDialog.h"
+#include "CrawlerGenerator.h"
 #include <cnoid/Button>
 #include <cnoid/CheckBox>
+#include <cnoid/Dialog>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/FileDialog>
 #include <cnoid/MainWindow>
+#include <cnoid/MenuManager>
 #include <cnoid/NullOut>
 #include <cnoid/ProjectManager>
 #include <cnoid/Separator>
@@ -33,6 +35,8 @@ using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
+
+CrawlerGenerator* cgeneratorInstance = nullptr;
 
 VectorXd calcBoxInertia(double mass, double x, double y, double z)
 {
@@ -191,11 +195,11 @@ struct AGXVehicleContinuousTrackDeviceInfo {
 
 namespace cnoid {
 
-class CrawlerGeneratorDialogImpl
+class CrawlerGeneratorImpl : public Dialog
 {
 public:
-    CrawlerGeneratorDialogImpl(CrawlerGeneratorDialog* self);
-    CrawlerGeneratorDialog* self;
+    CrawlerGeneratorImpl(CrawlerGenerator* self);
+    CrawlerGenerator* self;
 
     enum DoubleSpinId {
         CHS_MAS, CHS_XSZ, CHS_YSZ, CHS_ZSZ,
@@ -285,16 +289,16 @@ public:
 }
 
 
-CrawlerGeneratorDialog::CrawlerGeneratorDialog()
+CrawlerGenerator::CrawlerGenerator()
 {
-    impl = new CrawlerGeneratorDialogImpl(this);
+    impl = new CrawlerGeneratorImpl(this);
 }
 
 
-CrawlerGeneratorDialogImpl::CrawlerGeneratorDialogImpl(CrawlerGeneratorDialog* self)
+CrawlerGeneratorImpl::CrawlerGeneratorImpl(CrawlerGenerator* self)
     : self(self)
 {
-    self->setWindowTitle(_("CrawlerRobot Builder"));
+    setWindowTitle(_("CrawlerRobot Builder"));
     yamlWriter.setKeyOrderPreservationMode(true);
     yamlWriter2.setKeyOrderPreservationMode(true);
 
@@ -407,7 +411,7 @@ CrawlerGeneratorDialogImpl::CrawlerGeneratorDialogImpl(CrawlerGeneratorDialog* s
     vbox->addLayout(hbox);
     vbox->addWidget(new HSeparator);
     vbox->addWidget(formWidget);
-    self->setLayout(vbox);
+    setLayout(vbox);
 
     toolButtons[RESET]->sigClicked().connect([&](){ onResetButtonClicked(); });
     toolButtons[IMPORT]->sigClicked().connect([&](){ onImportButtonClicked(); });
@@ -417,23 +421,25 @@ CrawlerGeneratorDialogImpl::CrawlerGeneratorDialogImpl(CrawlerGeneratorDialog* s
 }
 
 
-CrawlerGeneratorDialog::~CrawlerGeneratorDialog()
+CrawlerGenerator::~CrawlerGenerator()
 {
     delete impl;
 }
 
 
-CrawlerGeneratorDialog* CrawlerGeneratorDialog::instance()
+void CrawlerGenerator::initializeClass(ExtensionManager* ext)
 {
-    static CrawlerGeneratorDialog* instance_ = nullptr;
-    if(!instance_) {
-        instance_ = new CrawlerGeneratorDialog;
+    if(!cgeneratorInstance) {
+        cgeneratorInstance = ext->manage(new CrawlerGenerator);
+
+        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
+        mm.addItem(_("CrawlerRobot"))->sigTriggered().connect(
+                    [&](){ cgeneratorInstance->impl->show(); });
     }
-    return instance_;
 }
 
 
-bool CrawlerGeneratorDialogImpl::save(const string& filename)
+bool CrawlerGeneratorImpl::save(const string& filename)
 {
     if(!filename.empty()) {
         auto topNode = writeBody(filename);
@@ -447,7 +453,7 @@ bool CrawlerGeneratorDialogImpl::save(const string& filename)
 }
 
 
-bool CrawlerGeneratorDialogImpl::save2(const string& filename)
+bool CrawlerGeneratorImpl::save2(const string& filename)
 {
     if(!filename.empty()) {
         auto topNode = writeConfig(filename);
@@ -461,7 +467,7 @@ bool CrawlerGeneratorDialogImpl::save2(const string& filename)
 }
 
 
-void CrawlerGeneratorDialogImpl::initialize()
+void CrawlerGeneratorImpl::initialize()
 {
     for(int i = 0; i < NUM_DSPINS; ++i) {
         DoubleSpinInfo info = doubleSpinInfo[i];
@@ -502,13 +508,13 @@ void CrawlerGeneratorDialogImpl::initialize()
 }
 
 
-void CrawlerGeneratorDialogImpl::onResetButtonClicked()
+void CrawlerGeneratorImpl::onResetButtonClicked()
 {
     initialize();
 }
 
 
-void CrawlerGeneratorDialogImpl::onImportButtonClicked()
+void CrawlerGeneratorImpl::onImportButtonClicked()
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Open a configuration file"));
@@ -540,7 +546,7 @@ void CrawlerGeneratorDialogImpl::onImportButtonClicked()
 }
 
 
-bool CrawlerGeneratorDialogImpl::load2(const string& filename,std::ostream& os )
+bool CrawlerGeneratorImpl::load2(const string& filename,std::ostream& os )
 {
     try {
         YAMLReader reader;
@@ -594,7 +600,7 @@ bool CrawlerGeneratorDialogImpl::load2(const string& filename,std::ostream& os )
 }
 
 
-void CrawlerGeneratorDialogImpl::onExportButtonClicked()
+void CrawlerGeneratorImpl::onExportButtonClicked()
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Save a configuration file"));
@@ -632,7 +638,7 @@ void CrawlerGeneratorDialogImpl::onExportButtonClicked()
 }
 
 
-void CrawlerGeneratorDialogImpl::onEnableAGXCheckToggled(const bool& on)
+void CrawlerGeneratorImpl::onEnableAGXCheckToggled(const bool& on)
 {
     agxdspins[TRK_BNT]->setEnabled(on);
     agxdspins[TRK_BNW]->setEnabled(on);
@@ -672,7 +678,7 @@ void CrawlerGeneratorDialogImpl::onEnableAGXCheckToggled(const bool& on)
 }
 
 
-void CrawlerGeneratorDialogImpl::onColorChanged(PushButton* pushbutton)
+void CrawlerGeneratorImpl::onColorChanged(PushButton* pushbutton)
 {
     QColor selectedColor;
     QColor currentColor = pushbutton->palette().color(QPalette::Button);
@@ -692,7 +698,7 @@ void CrawlerGeneratorDialogImpl::onColorChanged(PushButton* pushbutton)
 }
 
 
-void CrawlerGeneratorDialogImpl::setColor(PushButton* pushbutton, const Vector3& color)
+void CrawlerGeneratorImpl::setColor(PushButton* pushbutton, const Vector3& color)
 {
     QColor selectedColor;
     selectedColor.setRed(color[0] * 255.0);
@@ -704,14 +710,14 @@ void CrawlerGeneratorDialogImpl::setColor(PushButton* pushbutton, const Vector3&
 }
 
 
-Vector3 CrawlerGeneratorDialogImpl::extractColor(PushButton* colorButton)
+Vector3 CrawlerGeneratorImpl::extractColor(PushButton* colorButton)
 {
     QColor selectedColor = colorButton->palette().color(QPalette::Button);
     return Vector3(selectedColor.red() / 255.0, selectedColor.green() / 255.0, selectedColor.blue() / 255.0);
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeBody(const string& filename)
+MappingPtr CrawlerGeneratorImpl::writeBody(const string& filename)
 {
     MappingPtr node = new Mapping;
 
@@ -741,7 +747,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeBody(const string& filename)
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeConfig(const string& filename)
+MappingPtr CrawlerGeneratorImpl::writeConfig(const string& filename)
 {
     MappingPtr node = new Mapping;
 
@@ -791,7 +797,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeConfig(const string& filename)
 }
 
 
-void CrawlerGeneratorDialogImpl::writeBody(Listing* linksNode)
+void CrawlerGeneratorImpl::writeBody(Listing* linksNode)
 {
     int jointID = 0;
 
@@ -897,7 +903,7 @@ void CrawlerGeneratorDialogImpl::writeBody(Listing* linksNode)
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeChassis()
+MappingPtr CrawlerGeneratorImpl::writeChassis()
 {
     MappingPtr chassisNode = new Mapping;
 
@@ -931,7 +937,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeChassis()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeSpacer()
+MappingPtr CrawlerGeneratorImpl::writeSpacer()
 {
     MappingPtr node = new Mapping;
 
@@ -953,7 +959,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeSpacer()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeTrack()
+MappingPtr CrawlerGeneratorImpl::writeTrack()
 {
     MappingPtr trackNode = new Mapping;
     trackNode->write("parent", "CHASSIS");
@@ -1009,7 +1015,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeTrack()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeFrontTrack()
+MappingPtr CrawlerGeneratorImpl::writeFrontTrack()
 {
     MappingPtr trackNode = new Mapping;
 
@@ -1066,7 +1072,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeFrontTrack()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeRearTrack()
+MappingPtr CrawlerGeneratorImpl::writeRearTrack()
 {
     MappingPtr trackNode = new Mapping;
 
@@ -1123,7 +1129,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeRearTrack()
 }
 
 
-void CrawlerGeneratorDialogImpl::writeAGXBody(Listing* linksNode)
+void CrawlerGeneratorImpl::writeAGXBody(Listing* linksNode)
 {
     int jointID = 0;
 
@@ -1448,7 +1454,7 @@ void CrawlerGeneratorDialogImpl::writeAGXBody(Listing* linksNode)
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXTrack()
+MappingPtr CrawlerGeneratorImpl::writeAGXTrack()
 {
     MappingPtr node = new Mapping;
 
@@ -1462,7 +1468,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeAGXTrack()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXTrackBelt()
+MappingPtr CrawlerGeneratorImpl::writeAGXTrackBelt()
 {
     MappingPtr node = new Mapping;
 
@@ -1485,7 +1491,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeAGXTrackBelt()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXSprocket()
+MappingPtr CrawlerGeneratorImpl::writeAGXSprocket()
 {
     MappingPtr node = new Mapping;
 
@@ -1505,19 +1511,19 @@ MappingPtr CrawlerGeneratorDialogImpl::writeAGXSprocket()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXRoller()
+MappingPtr CrawlerGeneratorImpl::writeAGXRoller()
 {
     return writeAGXSprocket();
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXIdler()
+MappingPtr CrawlerGeneratorImpl::writeAGXIdler()
 {
     return writeAGXSprocket();
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXFrontTrack()
+MappingPtr CrawlerGeneratorImpl::writeAGXFrontTrack()
 {
     MappingPtr node = new Mapping;
 
@@ -1530,7 +1536,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeAGXFrontTrack()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXRearTrack()
+MappingPtr CrawlerGeneratorImpl::writeAGXRearTrack()
 {
     MappingPtr node = new Mapping;
 
@@ -1543,7 +1549,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeAGXRearTrack()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXSubTrackBelt()
+MappingPtr CrawlerGeneratorImpl::writeAGXSubTrackBelt()
 {
     MappingPtr node = new Mapping;
 
@@ -1566,7 +1572,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeAGXSubTrackBelt()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXFrontSprocket()
+MappingPtr CrawlerGeneratorImpl::writeAGXFrontSprocket()
 {
     MappingPtr node = new Mapping;
 
@@ -1591,7 +1597,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeAGXFrontSprocket()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXFrontRoller()
+MappingPtr CrawlerGeneratorImpl::writeAGXFrontRoller()
 {
     MappingPtr node = new Mapping;
 
@@ -1616,7 +1622,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeAGXFrontRoller()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXFrontIdler()
+MappingPtr CrawlerGeneratorImpl::writeAGXFrontIdler()
 {
     MappingPtr node = new Mapping;
 
@@ -1641,7 +1647,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeAGXFrontIdler()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXRearSprocket()
+MappingPtr CrawlerGeneratorImpl::writeAGXRearSprocket()
 {
     MappingPtr node = new Mapping;
 
@@ -1666,7 +1672,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeAGXRearSprocket()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXRearRoller()
+MappingPtr CrawlerGeneratorImpl::writeAGXRearRoller()
 {
     MappingPtr node = new Mapping;
 
@@ -1691,7 +1697,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeAGXRearRoller()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXRearIdler()
+MappingPtr CrawlerGeneratorImpl::writeAGXRearIdler()
 {
     MappingPtr node = new Mapping;
 
@@ -1716,7 +1722,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeAGXRearIdler()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXWheel()
+MappingPtr CrawlerGeneratorImpl::writeAGXWheel()
 {
     MappingPtr node = new Mapping;
 
@@ -1729,7 +1735,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeAGXWheel()
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeCylinderShape(const double& radius, const double& height, const Vector3& color)
+MappingPtr CrawlerGeneratorImpl::writeCylinderShape(const double& radius, const double& height, const Vector3& color)
 {
     MappingPtr node = new Mapping;
 
@@ -1749,7 +1755,7 @@ MappingPtr CrawlerGeneratorDialogImpl::writeCylinderShape(const double& radius, 
 }
 
 
-MappingPtr CrawlerGeneratorDialogImpl::writeAGXVehicleContinuousTrackDevice(const char* name, const char* sprocketName, const char* rollerName, const char* idlerName, const bool isSubTrack)
+MappingPtr CrawlerGeneratorImpl::writeAGXVehicleContinuousTrackDevice(const char* name, const char* sprocketName, const char* rollerName, const char* idlerName, const bool isSubTrack)
 {
     MappingPtr node = new Mapping;
 

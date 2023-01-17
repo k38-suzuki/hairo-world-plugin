@@ -3,12 +3,14 @@
    \author Kenta Suzuki
 */
 
-#include "PipeGeneratorDialog.h"
+#include "PipeGenerator.h"
 #include <cnoid/Button>
+#include <cnoid/Dialog>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/MainWindow>
+#include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/stdx/filesystem>
@@ -25,6 +27,8 @@ using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
+
+PipeGenerator* pgeneratorInstance = nullptr;
 
 struct DoubleSpinInfo
 {
@@ -63,11 +67,11 @@ SpinInfo spinInfo[] = {
 
 namespace cnoid {
 
-class PipeGeneratorDialogImpl
+class PipeGeneratorImpl : public Dialog
 {
 public:
-    PipeGeneratorDialogImpl(PipeGeneratorDialog* self);
-    PipeGeneratorDialog* self;
+    PipeGeneratorImpl(PipeGenerator* self);
+    PipeGenerator* self;
 
     enum DoubleSpinId { MASS, LENGTH, IN_DIA, OUT_DIA, NUM_DSPINS };
     enum SpinId { ANGLE, STEP, NUM_SPINS };
@@ -91,16 +95,16 @@ public:
 }
 
 
-PipeGeneratorDialog::PipeGeneratorDialog()
+PipeGenerator::PipeGenerator()
 {
-    impl = new PipeGeneratorDialogImpl(this);
+    impl = new PipeGeneratorImpl(this);
 }
 
 
-PipeGeneratorDialogImpl::PipeGeneratorDialogImpl(PipeGeneratorDialog* self)
+PipeGeneratorImpl::PipeGeneratorImpl(PipeGenerator* self)
     : self(self)
 {
-    self->setWindowTitle(_("Pipe Builder"));
+    setWindowTitle(_("Pipe Builder"));
     yamlWriter.setKeyOrderPreservationMode(true);
 
     QVBoxLayout* vbox = new QVBoxLayout;
@@ -143,7 +147,7 @@ PipeGeneratorDialogImpl::PipeGeneratorDialogImpl(PipeGeneratorDialog* self)
     vbox->addLayout(gbox);
     vbox->addWidget(new HSeparator);
     vbox->addWidget(formWidget);
-    self->setLayout(vbox);
+    setLayout(vbox);
 
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
     dspins[IN_DIA]->sigValueChanged().connect([&](double value){ onInnerDiameterChanged(value); });
@@ -152,23 +156,25 @@ PipeGeneratorDialogImpl::PipeGeneratorDialogImpl(PipeGeneratorDialog* self)
 }
 
 
-PipeGeneratorDialog::~PipeGeneratorDialog()
+PipeGenerator::~PipeGenerator()
 {
     delete impl;
 }
 
 
-PipeGeneratorDialog* PipeGeneratorDialog::instance()
+void PipeGenerator::initializeClass(ExtensionManager* ext)
 {
-    static PipeGeneratorDialog* instance_ = nullptr;
-    if(!instance_) {
-        instance_ = new PipeGeneratorDialog;
+    if(!pgeneratorInstance) {
+        pgeneratorInstance = ext->manage(new PipeGenerator);
+
+        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
+        mm.addItem(_("Pipe"))->sigTriggered().connect(
+                    [&](){ pgeneratorInstance->impl->show(); });
     }
-    return instance_;
 }
 
 
-bool PipeGeneratorDialogImpl::save(const string& filename)
+bool PipeGeneratorImpl::save(const string& filename)
 {
     if(!filename.empty()) {
         auto topNode = writeBody(filename);
@@ -182,7 +188,7 @@ bool PipeGeneratorDialogImpl::save(const string& filename)
 }
 
 
-void PipeGeneratorDialogImpl::onColorButtonClicked()
+void PipeGeneratorImpl::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -202,7 +208,7 @@ void PipeGeneratorDialogImpl::onColorButtonClicked()
 }
 
 
-void PipeGeneratorDialogImpl::onInnerDiameterChanged(const double& diameter)
+void PipeGeneratorImpl::onInnerDiameterChanged(const double& diameter)
 {
     double outerDiameter = dspins[OUT_DIA]->value();
     if(diameter >= outerDiameter) {
@@ -212,7 +218,7 @@ void PipeGeneratorDialogImpl::onInnerDiameterChanged(const double& diameter)
 }
 
 
-void PipeGeneratorDialogImpl::onOuterDiameterChanged(const double& diameter)
+void PipeGeneratorImpl::onOuterDiameterChanged(const double& diameter)
 {
     double innerDiameter = dspins[IN_DIA]->value();
     if(diameter <= innerDiameter) {
@@ -222,7 +228,7 @@ void PipeGeneratorDialogImpl::onOuterDiameterChanged(const double& diameter)
 }
 
 
-MappingPtr PipeGeneratorDialogImpl::writeBody(const string& filename)
+MappingPtr PipeGeneratorImpl::writeBody(const string& filename)
 {
     MappingPtr node = new Mapping;
 
@@ -244,7 +250,7 @@ MappingPtr PipeGeneratorDialogImpl::writeBody(const string& filename)
 }
 
 
-MappingPtr PipeGeneratorDialogImpl::writeLink()
+MappingPtr PipeGeneratorImpl::writeLink()
 {
     MappingPtr node = new Mapping;
 
@@ -266,7 +272,7 @@ MappingPtr PipeGeneratorDialogImpl::writeLink()
 }
 
 
-void PipeGeneratorDialogImpl::writeLinkShape(Listing* elementsNode)
+void PipeGeneratorImpl::writeLinkShape(Listing* elementsNode)
 {
     MappingPtr node = new Mapping;
 
@@ -329,7 +335,7 @@ void PipeGeneratorDialogImpl::writeLinkShape(Listing* elementsNode)
 }
 
 
-VectorXd PipeGeneratorDialogImpl::calcInertia()
+VectorXd PipeGeneratorImpl::calcInertia()
 {
     VectorXd innerInertia, outerInertia;
     innerInertia.resize(9);

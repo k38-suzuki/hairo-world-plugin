@@ -3,12 +3,14 @@
    \author Kenta Suzuki
 */
 
-#include "SlopeGeneratorDialog.h"
+#include "SlopeGenerator.h"
 #include <cnoid/Button>
+#include <cnoid/Dialog>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/MainWindow>
+#include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/YAMLWriter>
@@ -25,6 +27,8 @@ using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
+
+SlopeGenerator* sgeneratorInstance = nullptr;
 
 struct DoubleSpinInfo
 {
@@ -48,11 +52,11 @@ DoubleSpinInfo doubleSpinInfo[] = {
 
 namespace cnoid {
 
-class SlopeGeneratorDialogImpl
+class SlopeGeneratorImpl : public Dialog
 {
 public:
-    SlopeGeneratorDialogImpl(SlopeGeneratorDialog* self);
-    SlopeGeneratorDialog* self;
+    SlopeGeneratorImpl(SlopeGenerator* self);
+    SlopeGenerator* self;
 
     enum DoubleSpinId {
         MASS, WIDTH, HEIGHT,
@@ -75,16 +79,16 @@ public:
 }
 
 
-SlopeGeneratorDialog::SlopeGeneratorDialog()
+SlopeGenerator::SlopeGenerator()
 {
-    impl = new SlopeGeneratorDialogImpl(this);
+    impl = new SlopeGeneratorImpl(this);
 }
 
 
-SlopeGeneratorDialogImpl::SlopeGeneratorDialogImpl(SlopeGeneratorDialog* self)
+SlopeGeneratorImpl::SlopeGeneratorImpl(SlopeGenerator* self)
     : self(self)
 {
-    self->setWindowTitle(_("Slope Builder"));
+    setWindowTitle(_("Slope Builder"));
     yamlWriter.setKeyOrderPreservationMode(true);
 
     QVBoxLayout* vbox = new QVBoxLayout;
@@ -115,30 +119,32 @@ SlopeGeneratorDialogImpl::SlopeGeneratorDialogImpl(SlopeGeneratorDialog* self)
     vbox->addLayout(gbox);
     vbox->addWidget(new HSeparator);
     vbox->addWidget(formWidget);
-    self->setLayout(vbox);
+    setLayout(vbox);
 
     colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
     formWidget->sigClicked().connect([&](string filename){ save(filename); });
 }
 
 
-SlopeGeneratorDialog::~SlopeGeneratorDialog()
+SlopeGenerator::~SlopeGenerator()
 {
     delete impl;
 }
 
 
-SlopeGeneratorDialog* SlopeGeneratorDialog::instance()
+void SlopeGenerator::initializeClass(ExtensionManager* ext)
 {
-    static SlopeGeneratorDialog* instance_ = nullptr;
-    if(!instance_) {
-        instance_ = new SlopeGeneratorDialog;
+    if(!sgeneratorInstance) {
+        sgeneratorInstance = ext->manage(new SlopeGenerator);
+
+        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
+        mm.addItem(_("Slope"))->sigTriggered().connect(
+                    [&](){ sgeneratorInstance->impl->show(); });
     }
-    return instance_;
 }
 
 
-bool SlopeGeneratorDialogImpl::save(const string& filename)
+bool SlopeGeneratorImpl::save(const string& filename)
 {
     if(!filename.empty()) {
         auto topNode = writeBody(filename);
@@ -152,7 +158,7 @@ bool SlopeGeneratorDialogImpl::save(const string& filename)
 }
 
 
-void SlopeGeneratorDialogImpl::onColorButtonClicked()
+void SlopeGeneratorImpl::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -172,7 +178,7 @@ void SlopeGeneratorDialogImpl::onColorButtonClicked()
 }
 
 
-MappingPtr SlopeGeneratorDialogImpl::writeBody(const string& filename)
+MappingPtr SlopeGeneratorImpl::writeBody(const string& filename)
 {
     MappingPtr node = new Mapping;
 
@@ -194,7 +200,7 @@ MappingPtr SlopeGeneratorDialogImpl::writeBody(const string& filename)
 }
 
 
-MappingPtr SlopeGeneratorDialogImpl::writeLink()
+MappingPtr SlopeGeneratorImpl::writeLink()
 {
     MappingPtr node = new Mapping;
 
@@ -216,7 +222,7 @@ MappingPtr SlopeGeneratorDialogImpl::writeLink()
 }
 
 
-void SlopeGeneratorDialogImpl::writeLinkShape(Listing* elementsNode)
+void SlopeGeneratorImpl::writeLinkShape(Listing* elementsNode)
 {
     MappingPtr node = new Mapping;
 
@@ -267,7 +273,7 @@ void SlopeGeneratorDialogImpl::writeLinkShape(Listing* elementsNode)
 }
 
 
-VectorXd SlopeGeneratorDialogImpl::calcInertia()
+VectorXd SlopeGeneratorImpl::calcInertia()
 {
     VectorXd inertia;
     inertia.resize(9);

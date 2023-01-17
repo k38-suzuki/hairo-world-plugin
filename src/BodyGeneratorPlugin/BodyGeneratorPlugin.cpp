@@ -3,15 +3,13 @@
    \author Kenta Suzuki
 */
 
-#include <cnoid/MenuManager>
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "PipeGeneratorDialog.h"
-#include "GratingGeneratorDialog.h"
-#include "SlopeGeneratorDialog.h"
-#include "TerrainGeneratorDialog.h"
-#include "CrawlerGeneratorDialog.h"
-#include "gettext.h"
+#include "CrawlerGenerator.h"
+#include "GratingGenerator.h"
+#include "PipeGenerator.h"
+#include "SlopeGenerator.h"
+#include "TerrainGenerator.h"
 
 using namespace cnoid;
 
@@ -28,17 +26,11 @@ public:
 
     virtual bool initialize()
     {
-        MenuManager& mm = menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
-        mm.addItem(_("CrawlerRobot"))->sigTriggered().connect(
-                    [&](){ CrawlerGeneratorDialog::instance()->show(); });
-        mm.addItem(_("Grating"))->sigTriggered().connect(
-                    [&](){ GratingGeneratorDialog::instance()->show(); });
-        mm.addItem(_("Pipe"))->sigTriggered().connect(
-                    [&](){ PipeGeneratorDialog::instance()->show(); });
-        mm.addItem(_("Slope"))->sigTriggered().connect(
-                    [&](){ SlopeGeneratorDialog::instance()->show(); });
-        mm.addItem(_("BoxTerrain"))->sigTriggered().connect(
-                    [&](){ TerrainGeneratorDialog::instance()->show(); });
+        CrawlerGenerator::initializeClass(this);
+        GratingGenerator::initializeClass(this);
+        PipeGenerator::initializeClass(this);
+        SlopeGenerator::initializeClass(this);
+        TerrainGenerator::initializeClass(this);
         return true;
     }
 

@@ -3,11 +3,13 @@
    \author Kenta Suzuki
 */
 
-#include "GratingGeneratorDialog.h"
+#include "GratingGenerator.h"
 #include <cnoid/Button>
+#include <cnoid/Dialog>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
 #include <cnoid/MainWindow>
+#include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/YAMLWriter>
@@ -24,6 +26,8 @@ using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
+
+GratingGenerator* ggeneratorInstance = nullptr;
 
 struct DoubleSpinInfo
 {
@@ -63,11 +67,11 @@ SpinInfo spinInfo[] = {
 
 namespace cnoid {
 
-class GratingGeneratorDialogImpl
+class GratingGeneratorImpl : public Dialog
 {
 public:
-    GratingGeneratorDialogImpl(GratingGeneratorDialog* self);
-    GratingGeneratorDialog* self;
+    GratingGeneratorImpl(GratingGenerator* self);
+    GratingGenerator* self;
 
     enum DoubleSpinId {
         MASS, HEIGHT, FRAME_WDT,
@@ -96,16 +100,16 @@ public:
 }
 
 
-GratingGeneratorDialog::GratingGeneratorDialog()
+GratingGenerator::GratingGenerator()
 {
-    impl = new GratingGeneratorDialogImpl(this);
+    impl = new GratingGeneratorImpl(this);
 }
 
 
-GratingGeneratorDialogImpl::GratingGeneratorDialogImpl(GratingGeneratorDialog* self)
+GratingGeneratorImpl::GratingGeneratorImpl(GratingGenerator* self)
     : self(self)
 {
-    self->setWindowTitle(_("Grating Builder"));
+    setWindowTitle(_("Grating Builder"));
     yamlWriter.setKeyOrderPreservationMode(true);
 
     QVBoxLayout* vbox = new QVBoxLayout;
@@ -162,7 +166,7 @@ GratingGeneratorDialogImpl::GratingGeneratorDialogImpl(GratingGeneratorDialog* s
     vbox->addLayout(gbox);
     vbox->addWidget(new HSeparator);
     vbox->addWidget(formWidget);
-    self->setLayout(vbox);
+    setLayout(vbox);
 
     onValueChanged();
 
@@ -178,23 +182,25 @@ GratingGeneratorDialogImpl::GratingGeneratorDialogImpl(GratingGeneratorDialog* s
 }
 
 
-GratingGeneratorDialog::~GratingGeneratorDialog()
+GratingGenerator::~GratingGenerator()
 {
     delete impl;
 }
 
 
-GratingGeneratorDialog* GratingGeneratorDialog::instance()
+void GratingGenerator::initializeClass(ExtensionManager* ext)
 {
-    static GratingGeneratorDialog* instance_ = nullptr;
-    if(!instance_) {
-        instance_ = new GratingGeneratorDialog;
+    if(!ggeneratorInstance) {
+        ggeneratorInstance = ext->manage(new GratingGenerator);
+
+        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
+        mm.addItem(_("Grating"))->sigTriggered().connect(
+                    [&](){ ggeneratorInstance->impl->show(); });
     }
-    return instance_;
 }
 
 
-bool GratingGeneratorDialogImpl::save(const string& filename)
+bool GratingGeneratorImpl::save(const string& filename)
 {
     if(!filename.empty()) {
         auto topNode = writeBody(filename);
@@ -208,7 +214,7 @@ bool GratingGeneratorDialogImpl::save(const string& filename)
 }
 
 
-void GratingGeneratorDialogImpl::onColorButtonClicked()
+void GratingGeneratorImpl::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -228,7 +234,7 @@ void GratingGeneratorDialogImpl::onColorButtonClicked()
 }
 
 
-void GratingGeneratorDialogImpl::onValueChanged()
+void GratingGeneratorImpl::onValueChanged()
 {
     double frameWidth = dspins[FRAME_WDT]->value();
     double frameHeight = dspins[FRAME_HGT]->value();
@@ -248,7 +254,7 @@ void GratingGeneratorDialogImpl::onValueChanged()
 }
 
 
-MappingPtr GratingGeneratorDialogImpl::writeBody(const string& filename)
+MappingPtr GratingGeneratorImpl::writeBody(const string& filename)
 {
     MappingPtr node = new Mapping;
 
@@ -270,7 +276,7 @@ MappingPtr GratingGeneratorDialogImpl::writeBody(const string& filename)
 }
 
 
-MappingPtr GratingGeneratorDialogImpl::writeLink()
+MappingPtr GratingGeneratorImpl::writeLink()
 {
     MappingPtr node = new Mapping;
 
@@ -292,7 +298,7 @@ MappingPtr GratingGeneratorDialogImpl::writeLink()
 }
 
 
-void GratingGeneratorDialogImpl::writeLinkShape(Listing* elementsNode)
+void GratingGeneratorImpl::writeLinkShape(Listing* elementsNode)
 {
     double frameWidth = dspins[FRAME_WDT]->value();
     double frameHeight = dspins[FRAME_HGT]->value();
@@ -448,7 +454,7 @@ void GratingGeneratorDialogImpl::writeLinkShape(Listing* elementsNode)
 }
 
 
-VectorXd GratingGeneratorDialogImpl::calcInertia()
+VectorXd GratingGeneratorImpl::calcInertia()
 {
     VectorXd inertia;
     inertia.resize(9);
