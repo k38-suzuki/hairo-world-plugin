@@ -7,6 +7,7 @@
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
 #include <cnoid/Button>
+#include <cnoid/CheckBox>
 #include <cnoid/FileDialog>
 #include <cnoid/MainWindow>
 #include <cnoid/Menu>
@@ -36,6 +37,7 @@ public:
 
     TreeWidget* treeWidget;
     Menu contextMenu;
+    CheckBox* autoCheck;
 
     void addItem(const string& filename);
     void removeItem();
@@ -87,7 +89,10 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
     auto removeButton = new PushButton;
     removeButton->setIcon(QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_TrashIcon)));
     removeButton->sigClicked().connect([&](){ removeItem(); });
+    autoCheck = new CheckBox;
+    autoCheck->setText(_("Autoplay"));
     hbox->addWidget(addButton);
+    hbox->addWidget(autoCheck);
     hbox->addStretch();
     hbox->addWidget(removeButton);
 
@@ -196,7 +201,9 @@ void BookmarkManagerDialogImpl::onStartButtonClicked()
             pm->clearProject();
             MessageView::instance()->flush();
             pm->loadProject(filename);
-            SimulationBar::instance()->startSimulation(true);
+            if(autoCheck->isChecked()) {
+                SimulationBar::instance()->startSimulation(true);
+            }
         }
     }
 }
@@ -210,6 +217,8 @@ void BookmarkManagerDialogImpl::onCustomContextMenuRequested(const QPoint& pos)
 
 void BookmarkManagerDialogImpl::store(Mapping& archive)
 {
+    archive.write("auto_play", autoCheck->isChecked());
+
     int size = treeWidget->topLevelItemCount();
     archive.write("num_bookmarks", size);
     for(int i = 0; i < size; ++i) {
@@ -225,6 +234,8 @@ void BookmarkManagerDialogImpl::store(Mapping& archive)
 
 void BookmarkManagerDialogImpl::restore(const Mapping& archive)
 {
+    autoCheck->setChecked(archive.get("auto_play", false));
+
     int size = archive.get("num_bookmarks", 0);
     for(int i = 0; i < size; ++i) {
         string fileKey = "filename_" + to_string(i);

@@ -26,6 +26,9 @@ msgstr "ブックマークマネージャ"
 msgid "Add"
 msgstr "登録"
 
+msgid "Autoplay"
+msgstr "自動再生"
+
 msgid "Remove"
 msgstr "削除"
 
