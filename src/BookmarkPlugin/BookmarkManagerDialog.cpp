@@ -42,6 +42,7 @@ public:
     void addItem(const string& filename);
     void removeItem();
     void onAddButtonClicked();
+    void onSetButtonClicked();
     void onStartButtonClicked();
     void onCustomContextMenuRequested(const QPoint& pos);
     void store(Mapping& archive);
@@ -67,6 +68,10 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
     treeWidget->setHeaderHidden(true);
 
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    treeWidget->setDragDropMode(QAbstractItemView::InternalMove);
+    treeWidget->setDragEnabled(true);
+    treeWidget->viewport()->setAcceptDrops(true);
+
     Action* addAct = new Action;
     addAct->setText(_("Add"));
     contextMenu.addAction(addAct);
@@ -89,9 +94,13 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
     auto removeButton = new PushButton;
     removeButton->setIcon(QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_TrashIcon)));
     removeButton->sigClicked().connect([&](){ removeItem(); });
+    auto setButton = new PushButton;
+    setButton->setIcon(QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_FileDialogNewFolder)));
+    setButton->sigClicked().connect([&](){ onSetButtonClicked(); });
     autoCheck = new CheckBox;
     autoCheck->setText(_("Autoplay"));
     hbox->addWidget(addButton);
+    // hbox->addWidget(setButton);
     hbox->addWidget(autoCheck);
     hbox->addStretch();
     hbox->addWidget(removeButton);
@@ -149,6 +158,7 @@ void BookmarkManagerDialogImpl::addItem(const string& filename)
 {
     QTreeWidgetItem* item = new QTreeWidgetItem(treeWidget);
     item->setText(0, filename.c_str());
+    // item->setFlags(item->flags() | Qt::ItemIsEditable);
     treeWidget->setCurrentItem(item);
 }
 
@@ -187,6 +197,15 @@ void BookmarkManagerDialogImpl::onAddButtonClicked()
             addItem(filename.toStdString());
         }
     }
+}
+
+
+void BookmarkManagerDialogImpl::onSetButtonClicked()
+{
+    QTreeWidgetItem* item = new QTreeWidgetItem(treeWidget);
+    item->setText(0, "new item");
+    item->setFlags(item->flags() | Qt::ItemIsEditable);
+    treeWidget->setCurrentItem(item);
 }
 
 

@@ -89,6 +89,10 @@ WorldLogManagerDialogImpl::WorldLogManagerDialogImpl(WorldLogManagerDialog* self
     treeWidget->setHeaderHidden(true);
 
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    treeWidget->setDragDropMode(QAbstractItemView::InternalMove);
+    treeWidget->setDragEnabled(true);
+    treeWidget->viewport()->setAcceptDrops(true);
+
     Action* removeAct = new Action;
     removeAct->setText(_("Remove"));
     contextMenu.addAction(removeAct);
