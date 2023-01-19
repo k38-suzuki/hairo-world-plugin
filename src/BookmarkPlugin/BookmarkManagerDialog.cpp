@@ -11,10 +11,10 @@
 #include <cnoid/FileDialog>
 #include <cnoid/MainWindow>
 #include <cnoid/Menu>
-#include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include <cnoid/Separator>
 #include <cnoid/SimulationBar>
+#include <cnoid/stdx/filesystem>
 #include <cnoid/TreeWidget>
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
@@ -25,6 +25,7 @@
 
 using namespace cnoid;
 using namespace std;
+namespace filesystem = cnoid::stdx::filesystem;
 
 namespace cnoid {
 
@@ -45,8 +46,8 @@ public:
     void onSetButtonClicked();
     void onStartButtonClicked();
     void onCustomContextMenuRequested(const QPoint& pos);
-    void store(Mapping& archive);
-    void restore(const Mapping& archive);
+    void storeState(Mapping& archive);
+    void restoreState(const Mapping& archive);
 };
 
 }
@@ -68,9 +69,9 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
     treeWidget->setHeaderHidden(true);
 
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    treeWidget->setDragDropMode(QAbstractItemView::InternalMove);
-    treeWidget->setDragEnabled(true);
-    treeWidget->viewport()->setAcceptDrops(true);
+    // treeWidget->setDragDropMode(QAbstractItemView::InternalMove);
+    // treeWidget->setDragEnabled(true);
+    // treeWidget->viewport()->setAcceptDrops(true);
 
     Action* addAct = new Action;
     addAct->setText(_("Add"));
@@ -121,7 +122,7 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
 
     Mapping& config = *AppConfig::archive()->openMapping("bookmark_manager");
     if(config.isValid()) {
-        restore(config);
+        restoreState(config);
     }
 }
 
@@ -134,7 +135,7 @@ BookmarkManagerDialog::~BookmarkManagerDialog()
 
 BookmarkManagerDialogImpl::~BookmarkManagerDialogImpl()
 {
-    store(*AppConfig::archive()->openMapping("bookmark_manager"));
+    storeState(*AppConfig::archive()->openMapping("bookmark_manager"));
 }
 
 
@@ -214,14 +215,19 @@ void BookmarkManagerDialogImpl::onStartButtonClicked()
     QTreeWidgetItem* item = treeWidget->currentItem();
     if(item) {
         string filename = item->text(0).toStdString();
-        ProjectManager* pm = ProjectManager::instance();
-        bool result = pm->tryToCloseProject();
-        if(result) {
-            pm->clearProject();
-            MessageView::instance()->flush();
-            pm->loadProject(filename);
-            if(autoCheck->isChecked()) {
-                SimulationBar::instance()->startSimulation(true);
+        if(!filename.empty()) {
+            filesystem::path path(filename);
+            string extension = path.extension().string();
+            if(extension == ".cnoid") {
+                ProjectManager* pm = ProjectManager::instance();
+                bool result = pm->tryToCloseProject();
+                if(result) {
+                    pm->clearProject();
+                    pm->loadProject(filename);
+                    if(autoCheck->isChecked()) {
+                        SimulationBar::instance()->startSimulation(true);
+                    }
+                }
             }
         }
     }
@@ -234,7 +240,7 @@ void BookmarkManagerDialogImpl::onCustomContextMenuRequested(const QPoint& pos)
 }
 
 
-void BookmarkManagerDialogImpl::store(Mapping& archive)
+void BookmarkManagerDialogImpl::storeState(Mapping& archive)
 {
     archive.write("auto_play", autoCheck->isChecked());
 
@@ -251,7 +257,7 @@ void BookmarkManagerDialogImpl::store(Mapping& archive)
 }
 
 
-void BookmarkManagerDialogImpl::restore(const Mapping& archive)
+void BookmarkManagerDialogImpl::restoreState(const Mapping& archive)
 {
     autoCheck->setChecked(archive.get("auto_play", false));
 

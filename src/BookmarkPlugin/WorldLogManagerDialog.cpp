@@ -12,7 +12,6 @@
 #include <cnoid/MainWindow>
 #include <cnoid/Menu>
 #include <cnoid/MenuManager>
-#include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include <cnoid/Separator>
 #include <cnoid/SimulationBar>
@@ -60,11 +59,10 @@ public:
     void removeItem();
     void onStartButtonClicked();
     void onCustomContextMenuRequested(const QPoint& pos);
-    bool onOpenButtonClicked(const string& filename);
     void onSimulationAboutToStart(SimulatorItem* simulatorItem);
     void onPlaybackStopped(double time, bool isStoppedManually);
-    void store(Mapping& archive);
-    void restore(const Mapping& archive);
+    void storeState(Mapping& archive);
+    void restoreState(const Mapping& archive);
 };
 
 }
@@ -89,9 +87,9 @@ WorldLogManagerDialogImpl::WorldLogManagerDialogImpl(WorldLogManagerDialog* self
     treeWidget->setHeaderHidden(true);
 
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    treeWidget->setDragDropMode(QAbstractItemView::InternalMove);
-    treeWidget->setDragEnabled(true);
-    treeWidget->viewport()->setAcceptDrops(true);
+    // treeWidget->setDragDropMode(QAbstractItemView::InternalMove);
+    // treeWidget->setDragEnabled(true);
+    // treeWidget->viewport()->setAcceptDrops(true);
 
     Action* removeAct = new Action;
     removeAct->setText(_("Remove"));
@@ -139,7 +137,7 @@ WorldLogManagerDialogImpl::WorldLogManagerDialogImpl(WorldLogManagerDialog* self
 
     Mapping& config = *AppConfig::archive()->openMapping("world_log_manager");
     if(config.isValid()) {
-        restore(config);
+        restoreState(config);
     }
 }
 
@@ -152,7 +150,7 @@ WorldLogManagerDialog::~WorldLogManagerDialog()
 
 WorldLogManagerDialogImpl::~WorldLogManagerDialogImpl()
 {
-    store(*AppConfig::archive()->openMapping("world_log_manager"));
+    storeState(*AppConfig::archive()->openMapping("world_log_manager"));
 }
 
 
@@ -189,7 +187,21 @@ void WorldLogManagerDialogImpl::onStartButtonClicked()
     QTreeWidgetItem* item = treeWidget->currentItem();
     if(item) {
         string filename = item->text(0).toStdString();
-        onOpenButtonClicked(filename);
+        if(!filename.empty()) {
+            filesystem::path path(filename);
+            string extension = path.extension().string();
+            if(extension == ".cnoid") {
+                ProjectManager* pm = ProjectManager::instance();
+                TimeBar* timeBar = TimeBar::instance();                
+                bool result = pm->tryToCloseProject();
+                if(result) {
+                    pm->clearProject();
+                    pm->loadProject(filename);
+                    timeBar->stopPlayback(true);
+                    timeBar->startPlayback(0.0);
+                }
+            }
+        }
     }
 }
 
@@ -197,23 +209,6 @@ void WorldLogManagerDialogImpl::onStartButtonClicked()
 void WorldLogManagerDialogImpl::onCustomContextMenuRequested(const QPoint& pos)
 {
     // contextMenu.exec(treeWidget->mapToGlobal(pos));
-}
-
-
-bool WorldLogManagerDialogImpl::onOpenButtonClicked(const string& filename)
-{
-    MessageView* mv = MessageView::instance();
-    ProjectManager* pm = ProjectManager::instance();
-    TimeBar* timeBar = TimeBar::instance();
-    bool result = pm->tryToCloseProject();
-    if(result) {
-        pm->clearProject();
-        mv->flush();
-        pm->loadProject(filename);
-        timeBar->stopPlayback(true);
-        timeBar->startPlayback(0.0);
-    }
-    return result;
 }
 
 
@@ -263,7 +258,7 @@ void WorldLogManagerDialogImpl::onPlaybackStopped(double time, bool isStoppedMan
 }
 
 
-void WorldLogManagerDialogImpl::store(Mapping& archive)
+void WorldLogManagerDialogImpl::storeState(Mapping& archive)
 {
     archive.write("save_world_log_file", saveCheck->isChecked());
 
@@ -280,7 +275,7 @@ void WorldLogManagerDialogImpl::store(Mapping& archive)
 }
 
 
-void WorldLogManagerDialogImpl::restore(const Mapping& archive)
+void WorldLogManagerDialogImpl::restoreState(const Mapping& archive)
 {
     saveCheck->setChecked(archive.get("save_world_log_file", false));
 
