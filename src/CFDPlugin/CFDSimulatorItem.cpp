@@ -243,55 +243,56 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
         for(int j = 0; j < cfdBody->numLinks(); ++j) {
             CFDLink* cfdLink = cfdBody->link(j);
             Link* link = cfdLink->link;
+            const Isometry3& T = link->T();
+
             double density = 0.0;
             double viscosity = 0.0;
-
-            //flow
-            Vector3 ff = Vector3::Zero();
-            for(size_t k = 0; k <  areaItems.size(); ++k) {
+            Vector3 sf = Vector3::Zero();
+            for(size_t k = 0; k < areaItems.size(); ++k) {
                 FluidAreaItem* areaItem = areaItems[k];
                 PositionDraggerPtr scene = dynamic_cast<PositionDragger*>(areaItem->getScene());
                 Matrix3 rot = scene->rotation();
-                if(areaItem->isCollided(link->T().translation())) {
+                if(areaItem->isCollided(T.translation())) {
                     density = areaItem->density();
                     viscosity = areaItem->viscosity();
-                    ff += rot * areaItem->steadyFlow();
-                    ff += rot * areaItem->unsteadyFlow();
+                    sf += rot * areaItem->steadyFlow();
+                    sf += rot * areaItem->unsteadyFlow();
                 }
             }
-
-            link->f_ext() += ff;
-            Vector3 cr = link->T() * cfdLink->link->centerOfMass();
-            link->tau_ext() += cr.cross(ff);
 
             // buoyancy
             double volume = 0.0;
             if(cfdLink->density > 0.0) {
                 volume = link->mass() / cfdLink->density;
             }
-            Vector3 fb = density * gravity * volume * -1.0;
-            link->f_ext() += fb;
-            Vector3 cb = link->T() * cfdLink->centerOfBuoyancy;
-            link->tau_ext() += cb.cross(fb);
+            Vector3 b = density * gravity * volume * -1.0;
+            link->f_ext() += b;
+            Vector3 cb = T * cfdLink->centerOfBuoyancy;
+            link->tau_ext() += cb.cross(b);
 
+            //flow
+            link->f_ext() += sf;
+            Vector3 c = T * link->centerOfMass();
+            link->tau_ext() += c.cross(sf);
+
+            //drag
             double cd = 0.0;
             if(density > 10.0) {
                 cd = cfdLink->cdw;
             } else {
                 cd = cfdLink->cda;
             }
+            
+            Vector3 a = link->R() * link->centerOfMass();
+            Vector3 v = link->v() + link->w().cross(a);
 
-            Vector3 v = link->v();
-            Vector3 w = link->w();
             Vector3 vn = v.normalized();
-
             static const Vector3 normals[]= {
                 Vector3(1.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0), Vector3(0.0, 0.0, 1.0),
                 Vector3(-1.0, 0.0, 0.0), Vector3(0.0, -1.0, 0.0), Vector3(0.0, 0.0, -1.0)
             };
 
-            //drag
-            Vector3 fd = Vector3::Zero();
+            Vector3 f = Vector3::Zero();
             for(int k = 0; k < 6; ++k) {
                 Vector3 n = normals[k];
                 double s = cfdLink->surface[k];
@@ -299,17 +300,17 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
                 if(vdotn < 0.0) {
                     s = 0.0;
                 }
-                fd[k % 3] += 0.5 * density * s * cd * v[k % 3] * fabs(v[k % 3]) * -1.0;
+                f[k % 3] += 0.5 * density * s * cd * v[k % 3] * fabs(v[k % 3]) * -1.0;
             }
+            link->f_ext() += f;
+            link->tau_ext() += c.cross(f);
 
             //viscous drag
             Vector3 fv = cfdLink->cv * viscosity * v * -1.0;
-            Vector3 tv = cfdLink->cw * viscosity * w * -1.0;
-
-            link->f_ext() += fd;
-            link->tau_ext() += cr.cross(fd);
+            Vector3 w = link->w();
+            Vector3 tv = cfdLink->cw * viscosity * w * -1.0;            
             link->f_ext() += fv;
-            link->tau_ext() += cr.cross(fv) + tv;
+            link->tau_ext() += c.cross(fv) + tv;
         }
     }
 

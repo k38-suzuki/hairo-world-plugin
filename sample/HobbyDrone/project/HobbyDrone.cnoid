@@ -125,7 +125,7 @@ items:
             transparency: 0.7
             density: 1.2
             viscosity: 0.00002
-            flow: [ 0, 0, 0 ]
+            steady_flow: [ 0, 0, 0 ]
         - 
           id: 7
           name: "FluidArea"
@@ -144,7 +144,7 @@ items:
             transparency: 0.8
             density: 1.2
             viscosity: 0.00002
-            flow: [ 1, 0, 0 ]
+            steady_flow: [ 1, 0, 0 ]
         - 
           id: 8
           name: "AISTSimulator"
