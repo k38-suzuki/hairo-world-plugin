@@ -6,10 +6,13 @@
 #include "CFDSimulatorItem.h"
 #include <cnoid/Archive>
 #include <cnoid/Body>
+#include <cnoid/DeviceList>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenUtil>
 #include <cnoid/ItemManager>
+#include <cnoid/MeshExtractor>
 #include <cnoid/PositionDragger>
+#include <cnoid/SceneDrawables>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
 #include <vector>
@@ -18,17 +21,22 @@
 #include "Rotor.h"
 #include "Thruster.h"
 #include "gettext.h"
+#include <iostream>
 
 using namespace cnoid;
 using namespace std;
 
 namespace {
 
+const double DEFAULT_GRAVITY_ACCELERATION = 9.80665;
+
+class CFDBody;
+
 class CFDLink : public Referenced
 {
 public:
-    CFDLink();
-    virtual ~CFDLink();
+    CFDLink(CFDSimulatorItemImpl* simImpl, CFDBody* cfdBody, Link* link);
+    ~CFDLink();
 
     Link* link;
     double density;
@@ -38,6 +46,9 @@ public:
     double cv;
     double cw;
     Vector6 surface;
+
+    void calcGeometry(CFDBody* cfdBody);
+    void calcMesh(MeshExtractor* extractor, CFDBody* cfdBody);
 };
 
 typedef ref_ptr<CFDLink> CFDLinkPtr;
@@ -46,13 +57,15 @@ class CFDBody : public SimulationBody
 {
 public:
     CFDBody(Body* body);
-    virtual ~CFDBody();
+    ~CFDBody();
 
-    CFDLink* createLink();
     CFDLink* link(const int& index) { return cfdLinks[index]; }
     size_t numLinks() const { return cfdLinks.size(); }
 
-    std::vector<CFDLinkPtr> cfdLinks;
+    vector<CFDLinkPtr> cfdLinks;
+
+    void createBody(CFDSimulatorItemImpl* simImpl);
+    void updateDevices();
 };
 
 typedef ref_ptr<CFDBody> CFDBodyPtr;
@@ -71,11 +84,11 @@ public:
     vector<CFDBody*> cfdBodies;
     DeviceList<Thruster> thrusters;
     DeviceList<Rotor> rotors;
-    SimulatorItem* simulatorItem;
+    Vector3 gravity;
     ItemList<FluidAreaItem> areaItems;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
-    void createCFDBody(Body* body);
+    void addBody(CFDBody* cfdBody);
     void onPreDynamicsFunction();
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
@@ -85,9 +98,9 @@ public:
 }
 
 
-CFDLink::CFDLink()
+CFDLink::CFDLink(CFDSimulatorItemImpl* simImpl, CFDBody* cfdBody, Link* link)
 {
-    link = nullptr;
+    this->link = link;
     density = 0.0;
     centerOfBuoyancy << 0.0, 0.0, 0.0;
     cdw = 0.0;
@@ -104,6 +117,41 @@ CFDLink::~CFDLink()
 }
 
 
+void CFDLink::calcGeometry(CFDBody* cfdBody)
+{
+    if(link->collisionShape()) {
+        MeshExtractor* extractor = new MeshExtractor;
+
+        if(extractor->extract(
+            link->collisionShape(), [=](){ calcMesh(extractor, cfdBody); })) {
+
+        }
+        delete extractor;
+    }
+}
+
+
+void CFDLink::calcMesh(MeshExtractor* extractor, CFDBody* cfdBody)
+{
+    SgMesh* mesh = extractor->currentMesh();
+    const Affine3& T = extractor->currentTransform();
+
+    const SgVertexArray& vertices_ = *mesh->vertices();
+    const int numVertices = vertices_.size();
+    for(int i = 0; i < numVertices; ++i) {
+        const Vector3 v = vertices_[i].cast<Isometry3::Scalar>();
+    }
+
+    const int numTriangles = mesh->numTriangles();
+    for(int i = 0; i < numTriangles; ++i) { 
+        SgMesh::TriangleRef src = mesh->triangle(i);
+        const Vector3 v0 = vertices_[src[0]].cast<Isometry3::Scalar>() - vertices_[src[2]].cast<Isometry3::Scalar>();
+        const Vector3 v1 = vertices_[src[1]].cast<Isometry3::Scalar>() - vertices_[src[2]].cast<Isometry3::Scalar>();
+        double s = 0.5 * sqrt(v0.norm() * v0.norm() * v1.norm() * v1.norm() - v0.dot(v1) * v0.dot(v1));
+    }
+}
+
+
 CFDBody::CFDBody(Body* body)
     : SimulationBody(body)
 {
@@ -117,11 +165,47 @@ CFDBody::~CFDBody()
 }
 
 
-CFDLink* CFDBody::createLink()
+void CFDBody::createBody(CFDSimulatorItemImpl* simImpl)
 {
-    CFDLink* cfdLink = new CFDLink;
-    cfdLinks.push_back(cfdLink);
-    return cfdLink;
+    Body* body = this->body();
+
+    for(int i = 0; i < body->numLinks(); ++i) {
+        Link* link = body->link(i);
+        CFDLink* cfdLink = new CFDLink(simImpl, this, link);
+
+        Mapping& node = *link->info();
+        node.read("density", cfdLink->density);
+        if(!read(node, "centerOfBuoyancy", cfdLink->centerOfBuoyancy)) {
+            cfdLink->centerOfBuoyancy = link->centerOfMass();
+        }
+        node.read("cdw", cfdLink->cdw);
+        node.read("cda", cfdLink->cda);
+        node.read("cv", cfdLink->cv);
+        node.read("cw", cfdLink->cw);
+        read(node, "surface", cfdLink->surface);
+
+        cfdLink->calcGeometry(this);
+        cfdLinks.push_back(cfdLink);
+        simImpl->cfdBodies.push_back(this);
+    }
+}
+
+
+void CFDBody::updateDevices()
+{
+    const DeviceList<Thruster>& thrusters = this->body()->devices();
+
+    for(int i = 0; i < thrusters.size(); ++i) {
+        Thruster* thruster = thrusters[i];
+        const Link* link = thruster->link();
+    }
+
+    const DeviceList<Rotor>& rotors = this->body()->devices();
+
+    for(int i = 0; i < rotors.size(); ++i) {
+        Rotor* rotor = rotors[i];
+        const Link* link = rotor->link();
+    }
 }
 
 
@@ -137,8 +221,9 @@ CFDSimulatorItemImpl::CFDSimulatorItemImpl(CFDSimulatorItem* self)
     cfdBodies.clear();
     thrusters.clear();
     rotors.clear();
-    simulatorItem = nullptr;
     areaItems.clear();
+
+    gravity << 0.0, 0.0, -DEFAULT_GRAVITY_ACCELERATION;
 }
 
 
@@ -156,6 +241,8 @@ CFDSimulatorItemImpl::CFDSimulatorItemImpl(CFDSimulatorItem* self, const CFDSimu
     cfdBodies = org.cfdBodies;
     thrusters = org.thrusters;
     rotors = org.rotors;
+
+    gravity = org.gravity;
 }
 
 
@@ -184,13 +271,13 @@ bool CFDSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
     cfdBodies.clear();
     thrusters.clear();
     rotors.clear();
-    this->simulatorItem = simulatorItem;
     areaItems.clear();
+    gravity = simulatorItem->getGravity();
 
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
     for(size_t i = 0; i < simBodies.size(); ++i) {
         Body* body = simBodies[i]->body();
-        createCFDBody(body);
+        addBody(static_cast<CFDBody*>(simBodies[i]));
         thrusters << body->devices();
         rotors << body->devices();
     }
@@ -211,33 +298,18 @@ bool CFDSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 }
 
 
-void CFDSimulatorItemImpl::createCFDBody(Body* body)
+void CFDSimulatorItemImpl::addBody(CFDBody* cfdBody)
 {
-    for(int i = 0; i < body->numLinks(); ++i) {
-        CFDBody* cfdBody = new CFDBody(body);
-        Link* link = body->link(i);
-        CFDLink* cfdLink = cfdBody->createLink();
+    // Body& body = *cfdBody->body();
+    CFDBody* body = new CFDBody(cfdBody->body());
 
-        Mapping& node = *link->info();
-        cfdLink->link = link;
-        node.read("density", cfdLink->density);
-        if(!read(node, "centerOfBuoyancy", cfdLink->centerOfBuoyancy)) {
-            cfdLink->centerOfBuoyancy = link->centerOfMass();
-        }
-        node.read("cdw", cfdLink->cdw);
-        node.read("cda", cfdLink->cda);
-        node.read("cv", cfdLink->cv);
-        node.read("cw", cfdLink->cw);
-        read(node, "surface", cfdLink->surface);
-        cfdBodies.push_back(cfdBody);
-    }
+    body->body()->clearExternalForces();
+    body->createBody(this);
 }
 
 
 void CFDSimulatorItemImpl::onPreDynamicsFunction()
 {
-    Vector3 gravity = simulatorItem->getGravity();
-
     for(size_t i = 0; i < cfdBodies.size(); ++i) {
         CFDBody* cfdBody = cfdBodies[i];
         for(int j = 0; j < cfdBody->numLinks(); ++j) {
@@ -261,14 +333,13 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
             }
 
             // buoyancy
-            double volume = 0.0;
             if(cfdLink->density > 0.0) {
-                volume = link->mass() / cfdLink->density;
+                double volume = link->mass() / cfdLink->density;
+                Vector3 b = density * gravity * volume * -1.0;
+                link->f_ext() += b;
+                Vector3 cb = T * cfdLink->centerOfBuoyancy;
+                link->tau_ext() += cb.cross(b);                
             }
-            Vector3 b = density * gravity * volume * -1.0;
-            link->f_ext() += b;
-            Vector3 cb = T * cfdLink->centerOfBuoyancy;
-            link->tau_ext() += cb.cross(b);
 
             //flow
             link->f_ext() += sf;
@@ -312,6 +383,8 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
             link->f_ext() += fv;
             link->tau_ext() += c.cross(fv) + tv;
         }
+
+        cfdBody->updateDevices();
     }
 
     // thruster
