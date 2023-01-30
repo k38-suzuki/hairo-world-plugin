@@ -21,7 +21,6 @@
 #include "Rotor.h"
 #include "Thruster.h"
 #include "gettext.h"
-#include <iostream>
 
 using namespace cnoid;
 using namespace std;
@@ -45,7 +44,8 @@ public:
     double cda;
     double cv;
     double cw;
-    Vector6 surface;
+    vector<Vector3> ns;
+    vector<Vector3> g;
 
     void calcGeometry(CFDBody* cfdBody);
     void calcMesh(MeshExtractor* extractor, CFDBody* cfdBody);
@@ -107,7 +107,8 @@ CFDLink::CFDLink(CFDSimulatorItemImpl* simImpl, CFDBody* cfdBody, Link* link)
     cda = 0.0;
     cv = 0.0;
     cw = 0.0;
-    surface << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+    ns.clear();
+    g.clear();
 }
 
 
@@ -145,9 +146,15 @@ void CFDLink::calcMesh(MeshExtractor* extractor, CFDBody* cfdBody)
     const int numTriangles = mesh->numTriangles();
     for(int i = 0; i < numTriangles; ++i) { 
         SgMesh::TriangleRef src = mesh->triangle(i);
-        const Vector3 v0 = vertices_[src[0]].cast<Isometry3::Scalar>() - vertices_[src[2]].cast<Isometry3::Scalar>();
-        const Vector3 v1 = vertices_[src[1]].cast<Isometry3::Scalar>() - vertices_[src[2]].cast<Isometry3::Scalar>();
+        Vector3 a = vertices_[src[0]].cast<Isometry3::Scalar>();
+        Vector3 b = vertices_[src[1]].cast<Isometry3::Scalar>();
+        Vector3 c = vertices_[src[2]].cast<Isometry3::Scalar>();
+        const Vector3 v0 = a - c;
+        const Vector3 v1 = b - c;
         double s = 0.5 * sqrt(v0.norm() * v0.norm() * v1.norm() * v1.norm() - v0.dot(v1) * v0.dot(v1));
+        Vector3 n = v0.cross(v1).normalized();
+        ns.push_back(n * s);
+        g.push_back((a + b + c) / 3.0);
     }
 }
 
@@ -182,7 +189,6 @@ void CFDBody::createBody(CFDSimulatorItemImpl* simImpl)
         node.read("cda", cfdLink->cda);
         node.read("cv", cfdLink->cv);
         node.read("cw", cfdLink->cw);
-        read(node, "surface", cfdLink->surface);
 
         cfdLink->calcGeometry(this);
         cfdLinks.push_back(cfdLink);
@@ -357,30 +363,23 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
             }
             
             Vector3 a = link->R() * link->centerOfMass();
-            Vector3 v = link->v() + link->w().cross(a);
+            Vector3 w = link->w();
+            Vector3 v = link->v() + w.cross(a);
 
-            Vector3 vn = v.normalized();
-            static const Vector3 normals[]= {
-                Vector3(1.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0), Vector3(0.0, 0.0, 1.0),
-                Vector3(-1.0, 0.0, 0.0), Vector3(0.0, -1.0, 0.0), Vector3(0.0, 0.0, -1.0)
-            };
-
-            Vector3 f = Vector3::Zero();
-            for(int k = 0; k < 6; ++k) {
-                Vector3 n = normals[k];
-                double s = cfdLink->surface[k];
-                double vdotn = vn.dot(n);
+            for(int k = 0; k < cfdLink->ns.size(); ++k) {
+                Vector3 ns = cfdLink->ns[k];
+                double vdotn = v.dot(ns);
                 if(vdotn < 0.0) {
-                    s = 0.0;
+                    Vector3 f = 0.5 * cd * density * ns.dot(v) * v;
+                    link->f_ext() += f;
+                    link->tau_ext() += c.cross(f);
+                    Vector3 g = T * cfdLink->g[k];
+                    // link->tau_ext() += g.cross(f);
                 }
-                f[k % 3] += 0.5 * density * s * cd * v[k % 3] * fabs(v[k % 3]) * -1.0;
             }
-            link->f_ext() += f;
-            link->tau_ext() += c.cross(f);
 
             //viscous drag
             Vector3 fv = cfdLink->cv * viscosity * v * -1.0;
-            Vector3 w = link->w();
             Vector3 tv = cfdLink->cw * viscosity * w * -1.0;            
             link->f_ext() += fv;
             link->tau_ext() += c.cross(fv) + tv;
