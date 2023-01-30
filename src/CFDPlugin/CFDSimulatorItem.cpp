@@ -59,8 +59,8 @@ public:
     CFDBody(Body* body);
     ~CFDBody();
 
-    CFDLink* link(const int& index) { return cfdLinks[index]; }
-    size_t numLinks() const { return cfdLinks.size(); }
+    CFDLink* cfdLink(const int& index) { return cfdLinks[index]; }
+    size_t numCFDLinks() const { return cfdLinks.size(); }
 
     vector<CFDLinkPtr> cfdLinks;
 
@@ -186,7 +186,7 @@ void CFDBody::createBody(CFDSimulatorItemImpl* simImpl)
 
         cfdLink->calcGeometry(this);
         cfdLinks.push_back(cfdLink);
-        simImpl->cfdBodies.push_back(this);
+        // simImpl->cfdBodies.push_back(this);
     }
 }
 
@@ -277,7 +277,10 @@ bool CFDSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
     for(size_t i = 0; i < simBodies.size(); ++i) {
         Body* body = simBodies[i]->body();
-        addBody(static_cast<CFDBody*>(simBodies[i]));
+        // addBody(static_cast<CFDBody*>(simBodies[i]));
+        CFDBody* cfdBody = new CFDBody(simBodies[i]->body());
+        cfdBody->createBody(this);
+        cfdBodies.push_back(cfdBody);
         thrusters << body->devices();
         rotors << body->devices();
     }
@@ -300,11 +303,10 @@ bool CFDSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 
 void CFDSimulatorItemImpl::addBody(CFDBody* cfdBody)
 {
-    // Body& body = *cfdBody->body();
-    CFDBody* body = new CFDBody(cfdBody->body());
+    Body& body = *cfdBody->body();
 
-    body->body()->clearExternalForces();
-    body->createBody(this);
+    body.clearExternalForces();
+    cfdBody->createBody(this);
 }
 
 
@@ -312,8 +314,8 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
 {
     for(size_t i = 0; i < cfdBodies.size(); ++i) {
         CFDBody* cfdBody = cfdBodies[i];
-        for(int j = 0; j < cfdBody->numLinks(); ++j) {
-            CFDLink* cfdLink = cfdBody->link(j);
+        for(int j = 0; j < cfdBody->numCFDLinks(); ++j) {
+            CFDLink* cfdLink = cfdBody->cfdLink(j);
             Link* link = cfdLink->link;
             const Isometry3& T = link->T();
 
