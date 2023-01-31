@@ -368,9 +368,10 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
 
             for(int k = 0; k < cfdLink->ns.size(); ++k) {
                 Vector3 ns = cfdLink->ns[k];
-                double vdotn = v.dot(ns);
-                if(vdotn < 0.0) {
-                    Vector3 f = 0.5 * cd * density * ns.dot(v) * v;
+                Vector3 vn = v.normalized();
+                double vnns = vn.dot(ns);
+                if(vnns < 0.0) {
+                    Vector3 f = 0.5 * cd * density * vn * vnns * v.dot(v);
                     link->f_ext() += f;
                     link->tau_ext() += c.cross(f);
                     Vector3 g = T * cfdLink->g[k];
