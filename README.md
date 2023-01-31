@@ -1,7 +1,7 @@
 # hairo-world-plugin
 HAIROWorldPlugin for Choreonoid
 
-Document of HAIROWorldPlugin (in Japanese)
+Document of HAIROWorldPlugin (in Japanese and in English)
 https://k38-suzuki.github.io/hairo-world-plugin-doc
 
 Detailed user manual (in Japanese)
