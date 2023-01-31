@@ -100,3 +100,6 @@ msgstr ""
 
 msgid "Start simulation (StartButton)"
 msgstr "シミュレーションを開始（スタートボタン）"
+
+msgid "JoystickTest"
+msgstr "ジョイスティックテスト"

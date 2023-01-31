@@ -5,6 +5,7 @@ set(sources
     JoystickLoggerItem.cpp
     JoystickStatusPlugin.cpp
     JoystickStatusView.cpp
+    JoystickTester.cpp
     KeyConfig.cpp
     SimulationManager.cpp
     SimpleSimulationView.cpp
@@ -19,6 +20,7 @@ set(headers
     gettext.h
     JoystickLoggerItem.h
     JoystickStatusView.h
+    JoystickTester.h
     KeyConfig.h
     SimulationManager.h
     SimpleSimulationView.h

@@ -19,7 +19,7 @@ using namespace std;
 namespace {
 
 SimulationManager* smanagerInstance = nullptr;
-Action* useStartButton = nullptr;
+Action* startCheck = nullptr;
 
 }
 
@@ -87,7 +87,7 @@ SimulationManagerImpl::~SimulationManagerImpl()
 void SimulationManager::initializeClass(ExtensionManager* ext)
 {
     MenuManager& mm = ext->menuManager().setPath("/" N_("Options")).setPath(N_("Joystick"));
-    useStartButton = mm.addCheckItem(_("Start simulation (StartButton)"));
+    startCheck = mm.addCheckItem(_("Start simulation (StartButton)"));
 
     if(!smanagerInstance) {
         smanagerInstance = ext->manage(new SimulationManager);
@@ -98,7 +98,7 @@ void SimulationManager::initializeClass(ExtensionManager* ext)
 void SimulationManagerImpl::onButton(const int& id, const bool& isPressed)
 {
     if(isPressed) {
-        if(useStartButton->isChecked()) {
+        if(startCheck->isChecked()) {
             if(id == Joystick::START_BUTTON) {
                 if(!startState) {
                     sb->startSimulation(true);
@@ -137,11 +137,11 @@ void SimulationManagerImpl::onSimulationAboutToStart(SimulatorItem* simulatorIte
 
 void SimulationManagerImpl::store(Mapping& archive)
 {
-    archive.write("use_start_button", useStartButton->isChecked());
+    archive.write("use_start_button", startCheck->isChecked());
 }
 
 
 void SimulationManagerImpl::restore(const Mapping& archive)
 {
-    useStartButton->setChecked(archive.get("use_start_button", false));
+    startCheck->setChecked(archive.get("use_start_button", false));
 }

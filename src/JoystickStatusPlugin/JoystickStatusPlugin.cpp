@@ -7,6 +7,7 @@
 #include "OnScreenJoystickView.h"
 #include "JoystickLoggerItem.h"
 #include "JoystickStatusView.h"
+#include "JoystickTester.h"
 #include "SimulationManager.h"
 #include "SimpleSimulationView.h"
 
@@ -28,6 +29,7 @@ public:
         OnScreenJoystickView::initializeClass(this);
         JoystickLoggerItem::initializeClass(this);
         JoystickStatusView::initializeClass(this);
+        JoystickTester::initializeClass(this);
         SimulationManager::initializeClass(this);
         SimpleSimulationView::initializeClass(this);
         return true;
