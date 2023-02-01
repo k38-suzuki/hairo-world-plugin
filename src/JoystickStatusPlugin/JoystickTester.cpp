@@ -59,7 +59,7 @@ JoystickTester::JoystickTester()
 JoystickTesterImpl::JoystickTesterImpl(JoystickTester* self)
     : self(self)
 {
-    setWindowTitle(_("JoystickTest"));
+    setWindowTitle(_("JoystickTester"));
 
     joystick.setDevice("/dev/input/js0");
 
@@ -127,7 +127,7 @@ void JoystickTester::initializeClass(ExtensionManager* ext)
     }
 
     MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));    
-    mm.addItem(_("JoystickTest"))->sigTriggered().connect(
+    mm.addItem(_("JoystickTester"))->sigTriggered().connect(
         [&](){ instance_->impl->show(); });
 }
 
