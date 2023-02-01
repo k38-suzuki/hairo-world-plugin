@@ -61,8 +61,8 @@ public:
     void onCustomContextMenuRequested(const QPoint& pos);
     void onSimulationAboutToStart(SimulatorItem* simulatorItem);
     void onPlaybackStopped(double time, bool isStoppedManually);
-    void storeState(Mapping& archive);
-    void restoreState(const Mapping& archive);
+    void store(Mapping* archive);
+    void restore(const Mapping* archive);
 };
 
 }
@@ -135,9 +135,9 @@ WorldLogManagerDialogImpl::WorldLogManagerDialogImpl(WorldLogManagerDialog* self
     sb->sigSimulationAboutToStart().connect(
                 [&](SimulatorItem* simulatorItem){ onSimulationAboutToStart(simulatorItem); });
 
-    Mapping& config = *AppConfig::archive()->openMapping("world_log_manager");
-    if(config.isValid()) {
-        restoreState(config);
+    auto config = AppConfig::archive()->openMapping("world_log_manager");
+    if(config->isValid()) {
+        restore(config);
     }
 }
 
@@ -150,7 +150,7 @@ WorldLogManagerDialog::~WorldLogManagerDialog()
 
 WorldLogManagerDialogImpl::~WorldLogManagerDialogImpl()
 {
-    storeState(*AppConfig::archive()->openMapping("world_log_manager"));
+    store(AppConfig::archive()->openMapping("world_log_manager"));
 }
 
 
@@ -258,31 +258,31 @@ void WorldLogManagerDialogImpl::onPlaybackStopped(double time, bool isStoppedMan
 }
 
 
-void WorldLogManagerDialogImpl::storeState(Mapping& archive)
+void WorldLogManagerDialogImpl::store(Mapping* archive)
 {
-    archive.write("save_world_log_file", saveCheck->isChecked());
+    archive->write("save_world_log_file", saveCheck->isChecked());
 
     int size = treeWidget->topLevelItemCount();
-    archive.write("num_world_logs", size);
+    archive->write("num_world_logs", size);
     for(int i = 0; i < size; ++i) {
         QTreeWidgetItem* item = treeWidget->topLevelItem(i);
         if(item) {
             string filename = item->text(0).toStdString();
             string fileKey = "filename_" + to_string(i);
-            archive.write(fileKey, filename);
+            archive->write(fileKey, filename);
         }
     }
 }
 
 
-void WorldLogManagerDialogImpl::restoreState(const Mapping& archive)
+void WorldLogManagerDialogImpl::restore(const Mapping* archive)
 {
-    saveCheck->setChecked(archive.get("save_world_log_file", false));
+    saveCheck->setChecked(archive->get("save_world_log_file", false));
 
-    int size = archive.get("num_world_logs", 0);
+    int size = archive->get("num_world_logs", 0);
     for(int i = 0; i < size; ++i) {
         string fileKey = "filename_" + to_string(i);
-        string filename = archive.get(fileKey, "");
+        string filename = archive->get(fileKey, "");
         if(!filename.empty()) {
             addItem(filename);
         }

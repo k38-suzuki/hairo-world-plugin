@@ -46,8 +46,8 @@ public:
     void onSetButtonClicked();
     void onStartButtonClicked();
     void onCustomContextMenuRequested(const QPoint& pos);
-    void storeState(Mapping& archive);
-    void restoreState(const Mapping& archive);
+    void store(Mapping* archive);
+    void restore(const Mapping* archive);
 };
 
 }
@@ -120,9 +120,9 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
     vbox->addWidget(buttonBox);
     self->setLayout(vbox);
 
-    Mapping& config = *AppConfig::archive()->openMapping("bookmark_manager");
-    if(config.isValid()) {
-        restoreState(config);
+    auto config = AppConfig::archive()->openMapping("bookmark_manager");
+    if(config->isValid()) {
+        restore(config);
     }
 }
 
@@ -135,7 +135,7 @@ BookmarkManagerDialog::~BookmarkManagerDialog()
 
 BookmarkManagerDialogImpl::~BookmarkManagerDialogImpl()
 {
-    storeState(*AppConfig::archive()->openMapping("bookmark_manager"));
+    store(AppConfig::archive()->openMapping("bookmark_manager"));
 }
 
 
@@ -240,31 +240,31 @@ void BookmarkManagerDialogImpl::onCustomContextMenuRequested(const QPoint& pos)
 }
 
 
-void BookmarkManagerDialogImpl::storeState(Mapping& archive)
+void BookmarkManagerDialogImpl::store(Mapping* archive)
 {
-    archive.write("auto_play", autoCheck->isChecked());
+    archive->write("auto_play", autoCheck->isChecked());
 
     int size = treeWidget->topLevelItemCount();
-    archive.write("num_bookmarks", size);
+    archive->write("num_bookmarks", size);
     for(int i = 0; i < size; ++i) {
         QTreeWidgetItem* item = treeWidget->topLevelItem(i);
         if(item) {
             string filename = item->text(0).toStdString();
             string fileKey = "filename_" + to_string(i);
-            archive.write(fileKey, filename);
+            archive->write(fileKey, filename);
         }
     }
 }
 
 
-void BookmarkManagerDialogImpl::restoreState(const Mapping& archive)
+void BookmarkManagerDialogImpl::restore(const Mapping* archive)
 {
-    autoCheck->setChecked(archive.get("auto_play", false));
+    autoCheck->setChecked(archive->get("auto_play", false));
 
-    int size = archive.get("num_bookmarks", 0);
+    int size = archive->get("num_bookmarks", 0);
     for(int i = 0; i < size; ++i) {
         string fileKey = "filename_" + to_string(i);
-        string filename = archive.get(fileKey, "");
+        string filename = archive->get(fileKey, "");
         if(!filename.empty()) {
             addItem(filename);
         }

@@ -76,14 +76,14 @@ void JoystickTester::initializeClass(ExtensionManager* ext)
     joystick.setDevice("/dev/input/js0");
 
     joystick.sigButton().connect(
-        [&](int id, bool isPressed) {
+        [&](int id, bool isPressed){
             if(isJoystickTestEnabled_) {
                 mv->putln(fmt::format("Joystick button {0}: {1}", id, isPressed));
             }
         });
 
     joystick.sigAxis().connect(
-        [&](int id, double position) {
+        [&](int id, double position){
             if(isJoystickTestEnabled_) {
                 mv->putln(fmt::format("Joystick axis {0}: {1}", id, position));
             }

@@ -29,7 +29,45 @@ using namespace std;
 
 namespace {
 
-Action* enable_kiosk = nullptr;
+Action* kioskCheck = nullptr;
+Action* hideCheck = nullptr;
+
+void onProjectOptionsParsed(boost::program_options::variables_map& v)
+{
+    bool result = false;
+    char* CNOID_USE_KIOSK = getenv("CNOID_USE_KIOSK");
+    if(v.count("kiosk")) {
+        result = true;
+    } else if(CNOID_USE_KIOSK && (strcmp(CNOID_USE_KIOSK, "0") == 0)) {
+        result = true;
+    }
+
+    if(result) {
+        kioskCheck->setChecked(false);
+        kioskCheck->setChecked(true);
+        BookmarkManagerDialog::instance()->show();
+    }
+}
+
+void onEnableKIOSKToggled(const bool& on)
+{
+    MainWindow* mw = MainWindow::instance();
+    mw->setFullScreen(on);
+    mw->viewArea()->setViewTabsVisible(!on);
+    mw->statusBar()->setVisible(!on);
+    // onHideMenuBarToggled(on);
+    // hideCheck->setChecked(on);
+    if(on) {
+        BookmarkManagerDialog::instance()->show();
+    } else {
+        BookmarkManagerDialog::instance()->hide();
+    }
+}
+
+void onHideToolBarToggled(const bool& on)
+{
+    MainWindow::instance()->toolBarArea()->setVisible(!on);
+}
 
 }
 
@@ -38,18 +76,14 @@ namespace cnoid {
 class KIOSKManagerImpl
 {
 public:
-    KIOSKManagerImpl(ExtensionManager* ext, KIOSKManager* self);
+    KIOSKManagerImpl(KIOSKManager* self);
     KIOSKManager* self;
 
-    Action* hide_toolBar;
     JoystickCapture joystick;
     SimulatorItem* simulatorItem;
     JoyKey* key;
 
-    void onProjectOptionsParsed(boost::program_options::variables_map& v);
-    void onEnableKIOSKToggled(const bool& on);
     void onHideMenuBarToggled(const bool& on);
-    void onHideToolBarToggled(const bool& on);
     void onButton(const int& id, const bool& isPressed);
     void onSimulationAboutToStart(SimulatorItem* simulatorItem);
 };
@@ -59,30 +93,18 @@ public:
 
 KIOSKManager::KIOSKManager(ExtensionManager* ext)
 {
-    impl = new KIOSKManagerImpl(ext, this);
+    impl = new KIOSKManagerImpl(this);
 }
 
 
-KIOSKManagerImpl::KIOSKManagerImpl(ExtensionManager* ext, KIOSKManager* self)
+KIOSKManagerImpl::KIOSKManagerImpl(KIOSKManager* self)
     : self(self)
 {
-    MenuManager& mm = ext->menuManager();
-    mm.setPath("/" N_("View"));
-    enable_kiosk = mm.addCheckItem(_("Enable KIOSK"));
-    enable_kiosk->sigToggled().connect([&](bool on){ onEnableKIOSKToggled(on); });
-
-    // hide_toolBar = mm.addCheckItem(_("Hide tool bar"));
-    // hide_toolBar->sigToggled().connect([&](bool on){ onHideToolBarToggled(on); });
-
     joystick.setDevice("/dev/input/js0");
     joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
 
     key = new JoyKey(true);
     key->sigUnlocked().connect([&](){ onHideMenuBarToggled(false); });
-
-    OptionManager& om = ext->optionManager().addOption("kiosk", "start kiosk mode automatically");
-    om.sigOptionsParsed(1).connect(
-                [&](boost::program_options::variables_map& v){ onProjectOptionsParsed(v); });
 
     simulatorItem = nullptr;
     SimulationBar::instance()->sigSimulationAboutToStart().connect(
@@ -98,42 +120,19 @@ KIOSKManager::~KIOSKManager()
 
 void KIOSKManager::initializeClass(ExtensionManager* ext)
 {
+    MenuManager& mm = ext->menuManager().setPath("/" N_("View"));
+    kioskCheck = mm.addCheckItem(_("Enable KIOSK"));
+    kioskCheck->sigToggled().connect([&](bool on){ onEnableKIOSKToggled(on); });
+
+    // hideCheck = mm.addCheckItem(_("Hide tool bar"));
+    // hideCheck->sigToggled().connect([&](bool on){ onHideToolBarToggled(on); });
+
+    OptionManager& om = ext->optionManager().addOption("kiosk", "start kiosk mode automatically");
+    om.sigOptionsParsed(1).connect(
+                [&](boost::program_options::variables_map& v){ onProjectOptionsParsed(v); });
+
     ext->manage(new KIOSKManager(ext));
     MainWindow::instance()->setFullScreen(false);
-}
-
-
-void KIOSKManagerImpl::onProjectOptionsParsed(boost::program_options::variables_map& v)
-{
-    bool result = false;
-    char* CNOID_USE_KIOSK = getenv("CNOID_USE_KIOSK");
-    if(v.count("kiosk")) {
-        result = true;
-    } else if(CNOID_USE_KIOSK && (strcmp(CNOID_USE_KIOSK, "0") == 0)) {
-        result = true;
-    }
-
-    if(result) {
-        enable_kiosk->setChecked(false);
-        enable_kiosk->setChecked(true);
-        BookmarkManagerDialog::instance()->show();
-    }
-}
-
-
-void KIOSKManagerImpl::onEnableKIOSKToggled(const bool& on)
-{
-    MainWindow* mw = MainWindow::instance();
-    mw->setFullScreen(on);
-    mw->viewArea()->setViewTabsVisible(!on);
-    mw->statusBar()->setVisible(!on);
-    // onHideMenuBarToggled(on);
-    // hide_toolBar->setChecked(on);
-    if(on) {
-        BookmarkManagerDialog::instance()->show();
-    } else {
-        BookmarkManagerDialog::instance()->hide();
-    }
 }
 
 
@@ -143,16 +142,10 @@ void KIOSKManagerImpl::onHideMenuBarToggled(const bool& on)
 }
 
 
-void KIOSKManagerImpl::onHideToolBarToggled(const bool& on)
-{
-    MainWindow::instance()->toolBarArea()->setVisible(!on);
-}
-
-
 void KIOSKManagerImpl::onButton(const int& id, const bool& isPressed)
 {
     if(id == Joystick::LOGO_BUTTON && isPressed) {
-        if(enable_kiosk->isChecked()) {
+        if(kioskCheck->isChecked()) {
             if(simulatorItem) {
                 if(simulatorItem->isRunning()) {
                     simulatorItem->stopSimulation(true);
@@ -173,7 +166,7 @@ void KIOSKManagerImpl::onButton(const int& id, const bool& isPressed)
 void KIOSKManagerImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
     this->simulatorItem = simulatorItem;
-    if(enable_kiosk->isChecked()) {
+    if(kioskCheck->isChecked()) {
         BookmarkManagerDialog::instance()->hide();
     }
 }

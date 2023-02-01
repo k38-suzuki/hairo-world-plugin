@@ -6,12 +6,10 @@
 #include "HistoryManager.h"
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
-#include <cnoid/ExecutablePath>
 #include <cnoid/Menu>
 #include <cnoid/MenuManager>
 #include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
-#include <cnoid/UTF8>
 #include "gettext.h"
 
 using namespace cnoid;
@@ -37,8 +35,8 @@ public:
     void onCurrentMenuTriggered(QAction* action);
     void onCustomContextMenuRequested(const QPoint& pos);
     void onProjectLoaded();
-    void store(Mapping& archive);
-    void restore(const Mapping& archive);
+    void store(Mapping* archive);
+    void restore(const Mapping* archive);
 };
 
 }
@@ -70,12 +68,13 @@ HistoryManagerImpl::HistoryManagerImpl(HistoryManager* self, ExtensionManager* e
     removeProject->sigTriggered().connect([&](){ onRemoveProjectTriggered(); });
     contextMenu->addAction(removeProject);
 
-    QObject::connect(currentMenu, &Menu::customContextMenuRequested, [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
+    QObject::connect(currentMenu, &Menu::customContextMenuRequested,
+        [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
 
     pm->sigProjectLoaded().connect([&](int level){ onProjectLoaded(); });
 
-    Mapping& config = *AppConfig::archive()->openMapping("history");
-    if(config.isValid()) {
+    auto config = AppConfig::archive()->openMapping("history");
+    if(config->isValid()) {
         restore(config);
     }
 }
@@ -89,7 +88,7 @@ HistoryManager::~HistoryManager()
 
 HistoryManagerImpl::~HistoryManagerImpl()
 {
-    store(*AppConfig::archive()->openMapping("history"));
+    store(AppConfig::archive()->openMapping("history"));
 }
 
 
@@ -140,10 +139,8 @@ void HistoryManagerImpl::onCustomContextMenuRequested(const QPoint& pos)
 void HistoryManagerImpl::onProjectLoaded()
 {
     string filename = pm->currentProjectFile();
-    string filename0 = toUTF8((shareDirPath() / "kiosk" / "layout_kiosk.cnoid").string());
-    string filename1 = toUTF8((shareDirPath() / "kiosk" / "layout_base.cnoid").string());
 
-    if(!filename.empty() && filename != filename0 && filename != filename1) {
+    if(!filename.empty()) {
         Action* action = new Action;
         action->setText(filename.c_str());
         currentMenu->addAction(action);
@@ -157,25 +154,25 @@ void HistoryManagerImpl::onProjectLoaded()
 }
 
 
-void HistoryManagerImpl::store(Mapping& archive)
+void HistoryManagerImpl::store(Mapping* archive)
 {
     int numHistories = currentMenu->actions().size() - 2;
-    archive.write("num_histories", numHistories);
+    archive->write("num_histories", numHistories);
     for(int i = 0; i < numHistories; ++i) {
         QAction* action = currentMenu->actions()[i + 2];
         string key = "history_" + to_string(i);
         string filename = action->text().toStdString();
-        archive.write(key, filename);
+        archive->write(key, filename);
     }
 }
 
 
-void HistoryManagerImpl::restore(const Mapping& archive)
+void HistoryManagerImpl::restore(const Mapping* archive)
 {
-    int numHistories = archive.get("num_histories", 0);
+    int numHistories = archive->get("num_histories", 0);
     for(int i = 0; i < numHistories; ++i) {
         string key = "history_" + to_string(i);
-        string filename = archive.get(key, "");
+        string filename = archive->get(key, "");
         Action* action = new Action;
         action->setText(filename.c_str());
         currentMenu->addAction(action);
