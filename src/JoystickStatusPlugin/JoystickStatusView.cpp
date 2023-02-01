@@ -13,11 +13,9 @@
 #include <cnoid/ViewManager>
 #include <cnoid/Widget>
 #include <QBoxLayout>
-#include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QKeyEvent>
-#include <QProgressBar>
 #include <QVBoxLayout>
 #include <thread>
 #include <mutex>
@@ -105,10 +103,7 @@ public:
     std::mutex mutex;
     vector<double> axisPositions;
     vector<bool> buttonStates;
-    vector<QProgressBar*> negativeBars;
-    vector<QProgressBar*> positiveBars;
     JoystickCapture joystick;
-    Widget* rightWidget;
 
     bool onKeyStateChanged(int key, bool on);
     void onButtonPressed(int index);
@@ -116,7 +111,6 @@ public:
     void onButtonClicked( const int& index, const bool& isPressed);
     void onAxis(const int& id, const double& position);
     void onButton(const int& id, const bool& isPressed);
-    void setPosition(const int& id, const double& position);
     
     virtual int numAxes() const;
     virtual int numButtons() const;
@@ -172,24 +166,6 @@ JoystickStatusViewImpl::JoystickStatusViewImpl(JoystickStatusView* self)
         button.sigReleased().connect([=](){ onButtonReleased(i); });
     }
 
-    QGridLayout* gbox = new QGridLayout;
-    for(size_t i = 0; i < axisPositions.size(); ++i) {
-        QProgressBar* negativeBar = new QProgressBar;
-        negativeBar->setValue(0);
-        negativeBar->setInvertedAppearance(true);
-        negativeBar->setStyleSheet("QProgressBar { text-align: center; }"
-                                   "QProgressBar::chunk { background-color: cyan; }");
-        gbox->addWidget(negativeBar, i, 0);
-        negativeBars.push_back(negativeBar);
-
-        QProgressBar* positiveBar = new QProgressBar;
-        positiveBar->setValue(0);
-        positiveBar->setStyleSheet("QProgressBar { text-align: center; }"
-                                   "QProgressBar::chunk { background-color: magenta; }");
-        gbox->addWidget(positiveBar, i, 1);
-        positiveBars.push_back(positiveBar);
-    }
-
     joystick.setDevice("/dev/input/js0");
     joystick.sigAxis().connect([&](int id, double position){ onAxis(id, position); });
     joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
@@ -202,14 +178,7 @@ JoystickStatusViewImpl::JoystickStatusViewImpl(JoystickStatusView* self)
     vbox->addStretch();
     vbox->addLayout(hbox);
     vbox->addStretch();
-
-    QHBoxLayout* mainbox = new QHBoxLayout;
-    mainbox->addLayout(vbox);
-    rightWidget = new Widget;
-    rightWidget->setHidden(false);
-    rightWidget->setLayout(gbox);
-    mainbox->addWidget(rightWidget);
-    self->setLayout(mainbox);
+    self->setLayout(vbox);
 
     ExtJoystick::registerJoystick("JoystickStatusView", this);
 }
@@ -281,13 +250,6 @@ void JoystickStatusViewImpl::onButtonClicked(const int& index, const bool& isPre
     QPalette palette;
     if(isPressed) {
         palette.setColor(QPalette::Button, QColor(Qt::red));
-        if(info.isAxis) {
-            setPosition(info.id, info.activeValue);
-        }
-    } else {
-        if(info.isAxis) {
-            setPosition(info.id, 0.0);
-        }
     }
     button.setPalette(palette);
 }
@@ -306,7 +268,6 @@ void JoystickStatusViewImpl::onAxis(const int& id, const double& position)
                     palette.setColor(QPalette::Button, QColor(Qt::red));
                 }
                 button.setPalette(palette);
-                setPosition(id, position);
             }
         }
     }
@@ -322,18 +283,6 @@ void JoystickStatusViewImpl::onButton(const int& id, const bool& isPressed)
                 onButtonClicked(i, isPressed);
             }
         }
-    }
-}
-
-
-void JoystickStatusViewImpl::setPosition(const int& id, const double& position)
-{
-    if(position < 0.0) {
-        negativeBars[id]->setValue(fabs(100.0 * position));
-        positiveBars[id]->setValue(0.0);
-    } else {
-        negativeBars[id]->setValue(0.0);
-        positiveBars[id]->setValue(fabs(100.0 * position));
     }
 }
 
@@ -415,26 +364,13 @@ SignalProxy<void(int id, double position)> JoystickStatusViewImpl::sigAxis()
 }
 
 
-void JoystickStatusView::onAttachedMenuRequest(MenuManager& menuManager)
-{
-    Action* hideIndicators = menuManager.setPath("/").addItem(_("Hide indicators"));
-    hideIndicators->setCheckable(true);
-    hideIndicators->setChecked(impl->rightWidget->isHidden());
-    hideIndicators->sigToggled().connect([&](bool on){ impl->rightWidget->setHidden(on); });
-    menuManager.setPath("/");
-    menuManager.addSeparator();
-}
-
-
 bool JoystickStatusView::storeState(Archive& archive)
 {
-    archive.write("hide_indicators", impl->rightWidget->isHidden());
     return true;
 }
 
 
 bool JoystickStatusView::restoreState(const Archive& archive)
 {
-    impl->rightWidget->setHidden(archive.get("hide_indicators", false));
     return true;
 }

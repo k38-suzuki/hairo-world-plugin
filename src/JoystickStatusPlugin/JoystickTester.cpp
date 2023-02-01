@@ -76,7 +76,7 @@ JoystickTesterImpl::JoystickTesterImpl(JoystickTester* self)
         QProgressBar* bar = new QProgressBar;
         bar->setValue(0);
         bar->setRange(-100, 100);
-        bar->setFormat(fmt::format("{0:.3}", 0.0).c_str());
+        bar->setFormat(fmt::format("{0:.3}%", 0.0).c_str());
         bars.push_back(bar);
         const string label = "Axis " + to_string(i) + ":";
         grid->addWidget(new QLabel(label.c_str()), i, 0);
@@ -137,7 +137,7 @@ void JoystickTesterImpl::onAxis(const int& id, const double& position)
     QProgressBar* bar = bars[id];
     double value = 100.0 * position;
     bar->setValue(value);
-    bar->setFormat(fmt::format("{0:.3}", value).c_str());
+    bar->setFormat(fmt::format("{0:.3}%", value).c_str());
 }
 
 
