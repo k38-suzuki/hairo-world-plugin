@@ -16,10 +16,12 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QKeyEvent>
+#include <QStackedLayout>
 #include <QVBoxLayout>
 #include <thread>
 #include <mutex>
 #include <cmath>
+#include "OnScreenJoystickWidget.h"
 #include "gettext.h"
 
 using namespace cnoid;
@@ -104,11 +106,13 @@ public:
     vector<double> axisPositions;
     vector<bool> buttonStates;
     JoystickCapture joystick;
+    bool isOnScreenJoystickEnabled;
+    QStackedLayout* sbox;
 
     bool onKeyStateChanged(int key, bool on);
     void onButtonPressed(int index);
     void onButtonReleased(int index);
-    void onButtonClicked( const int& index, const bool& isPressed);
+    void onButtonClicked( const int& id, const bool& isPressed);
     void onAxis(const int& id, const double& position);
     void onButton(const int& id, const bool& isPressed);
     
@@ -178,7 +182,14 @@ JoystickStatusViewImpl::JoystickStatusViewImpl(JoystickStatusView* self)
     vbox->addStretch();
     vbox->addLayout(hbox);
     vbox->addStretch();
-    self->setLayout(vbox);
+
+    Widget* topWidget = new Widget;
+    topWidget->setLayout(vbox);
+    OnScreenJoystickWidget* joystickWidget = new OnScreenJoystickWidget;
+    sbox = new QStackedLayout;
+    sbox->addWidget(topWidget);
+    sbox->addWidget(joystickWidget);
+    self->setLayout(sbox);
 
     ExtJoystick::registerJoystick("JoystickStatusView", this);
 }
@@ -243,10 +254,10 @@ void JoystickStatusViewImpl::onButtonReleased(int index)
 }
 
 
-void JoystickStatusViewImpl::onButtonClicked(const int& index, const bool& isPressed)
+void JoystickStatusViewImpl::onButtonClicked(const int& id, const bool& isPressed)
 {
-    ToolButton& button = buttons[index];
-    ButtonInfo& info = buttonInfo[index];
+    ToolButton& button = buttons[id];
+    ButtonInfo& info = buttonInfo[id];
     QPalette palette;
     if(isPressed) {
         palette.setColor(QPalette::Button, QColor(Qt::red));
@@ -361,6 +372,17 @@ SignalProxy<void(int id, bool isPressed)> JoystickStatusViewImpl::sigButton()
 SignalProxy<void(int id, double position)> JoystickStatusViewImpl::sigAxis()
 {
     return sigAxis_;
+}
+
+
+void JoystickStatusView::onAttachedMenuRequest(MenuManager& menuManager)
+{
+    auto screenCheck = menuManager.addCheckItem(_("OnScreenJoystick"));
+    screenCheck->setChecked(impl->isOnScreenJoystickEnabled);
+    screenCheck->sigToggled().connect([&](bool on){
+        impl->isOnScreenJoystickEnabled = on;
+        impl->sbox->setCurrentIndex(on ? 1 : 0);
+    });
 }
 
 

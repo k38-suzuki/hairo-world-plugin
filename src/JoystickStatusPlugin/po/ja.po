@@ -26,20 +26,14 @@ msgstr "デバイス"
 msgid "Joystick Status"
 msgstr "ジョイスティック状態"
 
-msgid "Hide indicators"
-msgstr "インジケータを隠す"
-
 msgid "KeyConfig"
 msgstr "キーコンフィグ"
 
 msgid "&Ok"
 msgstr "了解(&O)"
 
-msgid "Draggable Joystick"
+msgid "OnScreenJoystick"
 msgstr "スクリーンジョイスティック"
-
-msgid "OnScreenJoystickView"
-msgstr "スクリーンジョイスティックビュー"
 
 msgid "Play mode"
 msgstr "再生モード"

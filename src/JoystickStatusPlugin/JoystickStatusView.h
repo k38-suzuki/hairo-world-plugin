@@ -24,6 +24,7 @@ public:
 protected:
     virtual void keyPressEvent(QKeyEvent* event) override;
     virtual void keyReleaseEvent(QKeyEvent* event) override;
+    virtual void onAttachedMenuRequest(MenuManager& menuManager) override;
     virtual bool storeState(Archive& archive) override;
     virtual bool restoreState(const Archive& archive) override;
     

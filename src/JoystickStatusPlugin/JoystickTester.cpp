@@ -5,7 +5,7 @@
 
 #include "JoystickTester.h"
 #include <cnoid/Action>
-#include <cnoid/Buttons>
+#include <cnoid/Button>
 #include <cnoid/Dialog>
 #include <cnoid/JoystickCapture>
 #include <cnoid/MenuManager>

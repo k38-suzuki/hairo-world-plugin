@@ -1,7 +1,7 @@
 
 set(sources
     AxisWidget.cpp
-    OnScreenJoystickView.cpp
+    OnScreenJoystickWidget.cpp
     JoystickLoggerItem.cpp
     JoystickStatusPlugin.cpp
     JoystickStatusView.cpp
@@ -15,7 +15,7 @@ set(sources
 set(headers
     AxisWidget.h
     ConfigurableJoystick.h
-    OnScreenJoystickView.h
+    OnScreenJoystickWidget.h
     exportdecl.h
     gettext.h
     JoystickLoggerItem.h
