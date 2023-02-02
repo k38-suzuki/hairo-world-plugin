@@ -330,7 +330,7 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
             Vector3 sf = Vector3::Zero();
             for(size_t k = 0; k < areaItems.size(); ++k) {
                 FluidAreaItem* areaItem = areaItems[k];
-                PositionDraggerPtr scene = dynamic_cast<PositionDragger*>(areaItem->getScene());
+                SgPosTransformPtr scene = dynamic_cast<SgPosTransform*>(areaItem->getScene());
                 Matrix3 rot = scene->rotation();
                 if(areaItem->isCollided(T.translation())) {
                     density = areaItem->density();

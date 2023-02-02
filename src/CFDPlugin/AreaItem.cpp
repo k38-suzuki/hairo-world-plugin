@@ -63,12 +63,6 @@ public:
     void createScene();
     void updateScenePosition();
     void updateSceneMaterial();
-    bool onAreaTypePropertyChanged(const int& index);
-    bool onAreaAxesPropertyChanged(const int& index);
-    bool onAreaRadiusPropertyChanged(const string& str);
-    bool onAreaHeightPropertyChanged(const string& str);
-    bool onDiffuseColorPropertyChanged(const string& str);
-    bool onTransparencyPropertyChanged(const string& str);
     bool isCollided(const Vector3& position);
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
@@ -165,65 +159,6 @@ void AreaItem::setDiffuseColor(const Vector3& diffuseColor)
 }
 
 
-bool AreaItemImpl::onAreaTypePropertyChanged(const int& index)
-{
-    type.selectIndex(index);
-    createScene();
-    scene->notifyUpdate();
-    return true;
-}
-
-
-bool AreaItemImpl::onAreaRadiusPropertyChanged(const string& str)
-{
-    double radius = stod(str);
-    if(radius >= 0) {
-        this->radius = radius;
-        createScene();
-        scene->notifyUpdate();
-        return true;
-    }
-    return false;
-}
-
-
-bool AreaItemImpl::onAreaHeightPropertyChanged(const string& str)
-{
-    double height = stod(str);
-    if(height >= 0) {
-        this->height = height;
-        createScene();
-        scene->notifyUpdate();
-        return true;
-    }
-    return false;
-}
-
-
-bool AreaItemImpl::onDiffuseColorPropertyChanged(const string& str)
-{
-    if(toVector3(str, diffuseColor)) {
-        updateSceneMaterial();
-        self->notifyUpdate();
-        return true;
-    }
-    return false;
-}
-
-
-bool AreaItemImpl::onTransparencyPropertyChanged(const string& str)
-{
-    double transparency = stod(str);
-    if(transparency >= 0) {
-        this->transparency = transparency;
-        updateSceneMaterial();
-        self->notifyUpdate();
-        return true;
-    }
-    return false;
-}
-
-
 void AreaItemImpl::createScene()
 {
     if(!scene) {
@@ -281,8 +216,8 @@ bool AreaItemImpl::isCollided(const Vector3& position)
 {
     bool isCollided = false;
 
-    auto p = this->regionOffset.translation();
-    Matrix3 rot = this->regionOffset.linear();
+    auto p = regionOffset.translation();
+    Matrix3 rot = regionOffset.linear();
 
     int index = type.selectedIndex();
     if(index == BOX) {
@@ -377,11 +312,13 @@ void AreaItem::doPutProperties(PutPropertyFunction& putProperty)
 
 void AreaItemImpl::doPutProperties(PutPropertyFunction& putProperty)
 {
-    Vector3 p = regionOffset.translation();
-    Vector3 r = degree(rpyFromRot(regionOffset.linear()));
-
     putProperty(_("Shape"), type,
-                [&](int index){ return onAreaTypePropertyChanged(index); });
+                [&](int index){
+                    type.selectIndex(index);
+                    createScene();
+                    scene->notifyUpdate();
+                    return true;
+                });
     if(type.is(BOX)) {
         putProperty(_("Size"), str(size),
                 [&](const string& str){
@@ -394,36 +331,72 @@ void AreaItemImpl::doPutProperties(PutPropertyFunction& putProperty)
                 });
     } else if(type.is(CYLINDER) || type.is(SPHERE)) {
         putProperty(_("Radius"), to_string(radius.value()),
-                [&](const string& str){ return onAreaRadiusPropertyChanged(str); });
+                [&](const string& str){
+                    double radius = stod(str);
+                    if(radius >= 0) {
+                        this->radius = radius;
+                        createScene();
+                        scene->notifyUpdate();
+                        return true;
+                    }
+                    return false;
+                });
         if(type.is(CYLINDER)) {
             putProperty(_("Height"), to_string(height.value()),
-                    [&](const string& str){ return onAreaHeightPropertyChanged(str); });
+                    [&](const string& str){
+                        double height = stod(str);
+                        if(height >= 0) {
+                            this->height = height;
+                            createScene();
+                            scene->notifyUpdate();
+                            return true;
+                        }
+                        return false;
+                    });
         }
     }
-    putProperty(_("Translation"), str(p),
+    putProperty(_("Translation"), str(Vector3(regionOffset.translation())),
             [&](const string& str){
                 Vector3 p;
                 if(toVector3(str, p)) {
                     regionOffset.translation() = p;
-                    updateScenePosition();
+                    self->setRegionOffset(regionOffset);
                     return true;
                 }
                 return false;
             });
-    putProperty(_("RPY"), str(r),
+
+    auto rpy = rpyFromRot(regionOffset.linear());
+    putProperty(_("RPY"), str(degree(rpy)),
             [&](const string& str){
                 Vector3 rpy;
                 if(toVector3(str, rpy)) {
                     regionOffset.linear() = rotFromRpy(radian(rpy));
-                    updateScenePosition();
+                    self->setRegionOffset(regionOffset);
                     return true;
                 }
                 return false;
             });
     putProperty(_("DiffuseColor"), str(diffuseColor),
-            [&](const string& text){ return onDiffuseColorPropertyChanged(text); });
+            [&](const string& str){
+                if(toVector3(str, diffuseColor)) {
+                    updateSceneMaterial();
+                    self->notifyUpdate();
+                    return true;
+                }
+                return false;
+            });
     putProperty(_("Transparency"), to_string(transparency.value()),
-            [&](const string& text){ return onTransparencyPropertyChanged(text); });
+            [&](const string& str){
+                double transparency = stod(str);
+                if(transparency >= 0) {
+                    this->transparency = transparency;
+                    updateSceneMaterial();
+                    self->notifyUpdate();
+                    return true;
+                }
+                return false;
+            });
 }
 
 
