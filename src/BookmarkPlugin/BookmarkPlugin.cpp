@@ -24,7 +24,7 @@ public:
 
     virtual bool initialize() override
     {
-        BookmarkBar::initializeClass(this);
+        BookmarkBar::initialize(this);
         HistoryManager::initializeClass(this);
         KIOSKManager::initializeClass(this);
         return true;

@@ -3,7 +3,7 @@
    \author  Kenta Suzuki
 */
 
-#include "JoystickStatusView.h"
+#include "OnScreenJoystickView.h"
 #include <cnoid/ActionGroup>
 #include <cnoid/Archive>
 #include <cnoid/Buttons>
@@ -89,11 +89,11 @@ ButtonInfo buttonInfo[] = {
 
 namespace cnoid {
 
-class JoystickStatusViewImpl : public ExtJoystick
+class OnScreenJoystickViewImpl : public ExtJoystick
 {
 public:
-    JoystickStatusViewImpl(JoystickStatusView* self);
-    JoystickStatusView* self;
+    OnScreenJoystickViewImpl(OnScreenJoystickView* self);
+    OnScreenJoystickView* self;
 
     QGridLayout grid;
     ToolButton buttons[NUM_JOYSTICK_ELEMENTS];
@@ -129,20 +129,20 @@ public:
 }
 
 
-void JoystickStatusView::initializeClass(ExtensionManager* ext)
+void OnScreenJoystickView::initializeClass(ExtensionManager* ext)
 {
-    ext->viewManager().registerClass<JoystickStatusView>(
-        "JoystickStatusView", N_("Joystick Status"), ViewManager::SINGLE_OPTIONAL);
+    ext->viewManager().registerClass<OnScreenJoystickView>(
+        "OnScreenJoystickView", N_("Virtual Joystick2"), ViewManager::SINGLE_OPTIONAL);
 }
 
 
-JoystickStatusView::JoystickStatusView()
+OnScreenJoystickView::OnScreenJoystickView()
 {
-    impl = new JoystickStatusViewImpl(this);
+    impl = new OnScreenJoystickViewImpl(this);
 }
 
 
-JoystickStatusViewImpl::JoystickStatusViewImpl(JoystickStatusView* self)
+OnScreenJoystickViewImpl::OnScreenJoystickViewImpl(OnScreenJoystickView* self)
     : self(self),
       keyValues(NUM_JOYSTICK_ELEMENTS, 0.0)
 {
@@ -191,17 +191,17 @@ JoystickStatusViewImpl::JoystickStatusViewImpl(JoystickStatusView* self)
     sbox->addWidget(joystickWidget);
     self->setLayout(sbox);
 
-    ExtJoystick::registerJoystick("JoystickStatusView", this);
+    ExtJoystick::registerJoystick("OnScreenJoystickView", this);
 }
 
 
-JoystickStatusView::~JoystickStatusView()
+OnScreenJoystickView::~OnScreenJoystickView()
 {
     delete impl;
 }
 
 
-void JoystickStatusView::keyPressEvent(QKeyEvent* event)
+void OnScreenJoystickView::keyPressEvent(QKeyEvent* event)
 {
     if(!impl->onKeyStateChanged(event->key(), true)) {
         View::keyPressEvent(event);
@@ -209,7 +209,7 @@ void JoystickStatusView::keyPressEvent(QKeyEvent* event)
 }
 
 
-void JoystickStatusView::keyReleaseEvent(QKeyEvent* event)
+void OnScreenJoystickView::keyReleaseEvent(QKeyEvent* event)
 {
     if(!impl->onKeyStateChanged(event->key(), false)) {
         View::keyPressEvent(event);
@@ -217,7 +217,7 @@ void JoystickStatusView::keyReleaseEvent(QKeyEvent* event)
 }
 
 
-bool JoystickStatusViewImpl::onKeyStateChanged(int key, bool on)
+bool OnScreenJoystickViewImpl::onKeyStateChanged(int key, bool on)
 {
     KeyToButtonMap::iterator p = keyToButtonMap.find(key);
     if(p == keyToButtonMap.end()) {
@@ -237,7 +237,7 @@ bool JoystickStatusViewImpl::onKeyStateChanged(int key, bool on)
 }
 
 
-void JoystickStatusViewImpl::onButtonPressed(int index)
+void OnScreenJoystickViewImpl::onButtonPressed(int index)
 {
     ButtonInfo& info = buttonInfo[index];
     std::lock_guard<std::mutex> lock(mutex);
@@ -246,7 +246,7 @@ void JoystickStatusViewImpl::onButtonPressed(int index)
 }
 
 
-void JoystickStatusViewImpl::onButtonReleased(int index)
+void OnScreenJoystickViewImpl::onButtonReleased(int index)
 {
     std::lock_guard<std::mutex> lock(mutex);
     keyValues[index] = 0.0;
@@ -254,7 +254,7 @@ void JoystickStatusViewImpl::onButtonReleased(int index)
 }
 
 
-void JoystickStatusViewImpl::onButtonClicked(const int& id, const bool& isPressed)
+void OnScreenJoystickViewImpl::onButtonClicked(const int& id, const bool& isPressed)
 {
     ToolButton& button = buttons[id];
     ButtonInfo& info = buttonInfo[id];
@@ -266,7 +266,7 @@ void JoystickStatusViewImpl::onButtonClicked(const int& id, const bool& isPresse
 }
 
 
-void JoystickStatusViewImpl::onAxis(const int& id, const double& position)
+void OnScreenJoystickViewImpl::onAxis(const int& id, const double& position)
 {
     for(int i = 0; i < NUM_JOYSTICK_ELEMENTS; ++i) {
         ToolButton& button = buttons[i];
@@ -285,7 +285,7 @@ void JoystickStatusViewImpl::onAxis(const int& id, const double& position)
 }
 
 
-void JoystickStatusViewImpl::onButton(const int& id, const bool& isPressed)
+void OnScreenJoystickViewImpl::onButton(const int& id, const bool& isPressed)
 {
     for(int i = 0; i < NUM_JOYSTICK_ELEMENTS; ++i) {
         ButtonInfo& info = buttonInfo[i];
@@ -298,19 +298,19 @@ void JoystickStatusViewImpl::onButton(const int& id, const bool& isPressed)
 }
 
 
-int JoystickStatusViewImpl::numAxes() const
+int OnScreenJoystickViewImpl::numAxes() const
 {
     return axisPositions.size();
 }
 
 
-int JoystickStatusViewImpl::numButtons() const
+int OnScreenJoystickViewImpl::numButtons() const
 {
     return buttonStates.size();
 }
 
 
-bool JoystickStatusViewImpl::readCurrentState()
+bool OnScreenJoystickViewImpl::readCurrentState()
 {
     std::fill(axisPositions.begin(), axisPositions.end(), 0.0);
 
@@ -329,7 +329,7 @@ bool JoystickStatusViewImpl::readCurrentState()
 }
 
 
-double JoystickStatusViewImpl::getPosition(int axis) const
+double OnScreenJoystickViewImpl::getPosition(int axis) const
 {
     if(axis >=0 && axis < static_cast<int>(axisPositions.size())) {
         return axisPositions[axis];
@@ -338,7 +338,7 @@ double JoystickStatusViewImpl::getPosition(int axis) const
 }
 
 
-bool JoystickStatusViewImpl::getButtonState(int button) const
+bool OnScreenJoystickViewImpl::getButtonState(int button) const
 {
     if(button >= 0 && button < static_cast<int>(buttonStates.size())) {
         return buttonStates[button];
@@ -347,7 +347,7 @@ bool JoystickStatusViewImpl::getButtonState(int button) const
 }
 
 
-bool JoystickStatusViewImpl::isActive() const
+bool OnScreenJoystickViewImpl::isActive() const
 {
     for(size_t i = 0; i < axisPositions.size(); ++i) {
         if(axisPositions[i] != 0.0) {
@@ -363,21 +363,21 @@ bool JoystickStatusViewImpl::isActive() const
 }
 
 
-SignalProxy<void(int id, bool isPressed)> JoystickStatusViewImpl::sigButton()
+SignalProxy<void(int id, bool isPressed)> OnScreenJoystickViewImpl::sigButton()
 {
     return sigButton_;
 }
 
 
-SignalProxy<void(int id, double position)> JoystickStatusViewImpl::sigAxis()
+SignalProxy<void(int id, double position)> OnScreenJoystickViewImpl::sigAxis()
 {
     return sigAxis_;
 }
 
 
-void JoystickStatusView::onAttachedMenuRequest(MenuManager& menuManager)
+void OnScreenJoystickView::onAttachedMenuRequest(MenuManager& menuManager)
 {
-    auto screenCheck = menuManager.addCheckItem(_("OnScreenJoystick"));
+    auto screenCheck = menuManager.addCheckItem(_("On-screen Joystick"));
     screenCheck->setChecked(impl->isOnScreenJoystickEnabled);
     screenCheck->sigToggled().connect([&](bool on){
         impl->isOnScreenJoystickEnabled = on;
@@ -386,13 +386,13 @@ void JoystickStatusView::onAttachedMenuRequest(MenuManager& menuManager)
 }
 
 
-bool JoystickStatusView::storeState(Archive& archive)
+bool OnScreenJoystickView::storeState(Archive& archive)
 {
     return true;
 }
 
 
-bool JoystickStatusView::restoreState(const Archive& archive)
+bool OnScreenJoystickView::restoreState(const Archive& archive)
 {
     return true;
 }

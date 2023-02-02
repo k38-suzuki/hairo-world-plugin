@@ -65,7 +65,7 @@ BookmarkBar::~BookmarkBar()
 }
 
 
-void BookmarkBar::initializeClass(ExtensionManager* ext)
+void BookmarkBar::initialize(ExtensionManager* ext)
 {
     static bool initialized = false;
     if(!initialized) {

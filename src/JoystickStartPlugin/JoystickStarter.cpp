@@ -3,7 +3,7 @@
    \author Kenta Suzuki
 */
 
-#include "SimulationManager.h"
+#include "JoystickStarter.h"
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
 #include <cnoid/Joystick>
@@ -18,19 +18,18 @@ using namespace std;
 
 namespace {
 
-SimulationManager* smanagerInstance = nullptr;
+JoystickStarter* instance_ = nullptr;
 Action* startCheck = nullptr;
 
 }
 
 namespace cnoid {
 
-class SimulationManagerImpl
+class JoystickStarterImpl
 {
 public:
-  SimulationManagerImpl(SimulationManager* self);
-  virtual ~SimulationManagerImpl();
-  SimulationManager* self;
+  JoystickStarterImpl(JoystickStarter* self);
+  JoystickStarter* self;
 
   bool startState;
   bool pauseState;
@@ -40,20 +39,18 @@ public:
 
   void onButton(const int& id, const bool& isPressed);
   void onSimulationAboutToStart(SimulatorItem* simulatorItem);
-  void store(Mapping& archive);
-  void restore(const Mapping& archive);
 };
 
 }
 
 
-SimulationManager::SimulationManager()
+JoystickStarter::JoystickStarter()
 {
-    impl = new SimulationManagerImpl(this);
+    impl = new JoystickStarterImpl(this);
 }
 
 
-SimulationManagerImpl::SimulationManagerImpl(SimulationManager* self)
+JoystickStarterImpl::JoystickStarterImpl(JoystickStarter* self)
     : self(self),
       sb(SimulationBar::instance())
 {
@@ -64,38 +61,35 @@ SimulationManagerImpl::SimulationManagerImpl(SimulationManager* self)
 
     sb->sigSimulationAboutToStart().connect(
                 [&](SimulatorItem* simulatorItem){ onSimulationAboutToStart(simulatorItem); });
-
-    Mapping& config = *AppConfig::archive()->openMapping("simulation_manager");
-    if(config.isValid()) {
-        restore(config);
-    }
 }
 
 
-SimulationManager::~SimulationManager()
+JoystickStarter::~JoystickStarter()
 {
     delete impl;
 }
 
 
-SimulationManagerImpl::~SimulationManagerImpl()
-{
-    store(*AppConfig::archive()->openMapping("simulation_manager"));
-}
-
-
-void SimulationManager::initializeClass(ExtensionManager* ext)
+void JoystickStarter::initializeClass(ExtensionManager* ext)
 {
     MenuManager& mm = ext->menuManager().setPath("/" N_("Options")).setPath(N_("Joystick"));
-    startCheck = mm.addCheckItem(_("Start simulation (StartButton)"));
+    startCheck = mm.addCheckItem(_("Game Start Mode"));
+    startCheck->sigToggled().connect([&](bool on){
+        AppConfig::archive()->openMapping("joystick_starter")->write("game_start_mode", startCheck->isChecked());
+    });
 
-    if(!smanagerInstance) {
-        smanagerInstance = ext->manage(new SimulationManager);
+    if(!instance_) {
+        instance_ = ext->manage(new JoystickStarter);
+    }
+
+    auto config = AppConfig::archive()->openMapping("joystick_starter");
+    if(config->isValid()) {
+        startCheck->setChecked(config->get("game_start_mode", false));
     }
 }
 
 
-void SimulationManagerImpl::onButton(const int& id, const bool& isPressed)
+void JoystickStarterImpl::onButton(const int& id, const bool& isPressed)
 {
     if(isPressed) {
         if(startCheck->isChecked()) {
@@ -128,20 +122,8 @@ void SimulationManagerImpl::onButton(const int& id, const bool& isPressed)
 }
 
 
-void SimulationManagerImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
+void JoystickStarterImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
     this->simulatoritem = simulatorItem;
     startState = true;
-}
-
-
-void SimulationManagerImpl::store(Mapping& archive)
-{
-    archive.write("use_start_button", startCheck->isChecked());
-}
-
-
-void SimulationManagerImpl::restore(const Mapping& archive)
-{
-    startCheck->setChecked(archive.get("use_start_button", false));
 }

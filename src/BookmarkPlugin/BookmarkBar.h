@@ -19,7 +19,7 @@ public:
     BookmarkBar();
     virtual ~BookmarkBar();
 
-    static void initializeClass(ExtensionManager* ext);
+    static void initialize(ExtensionManager* ext);
     static BookmarkBar* instance();
 
 private:

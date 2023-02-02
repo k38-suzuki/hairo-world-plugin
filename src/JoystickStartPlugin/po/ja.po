@@ -1,11 +1,11 @@
-# Japanese translations for JoystickStatusPlugin package.
-# Copyright (C) 2023 THE JoystickStatusPlugin'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the JoystickStatusPlugin package.
+# Japanese translations for JoystickStartPlugin package.
+# Copyright (C) 2023 THE JoystickStartPlugin'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the JoystickStartPlugin package.
 # k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2023.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: JoystickStatusPlugin\n"
+"Project-Id-Version: JoystickStartPlugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-16 17:02+0900\n"
 "PO-Revision-Date: 2023-01-16 17:02+0900\n"
@@ -23,17 +23,17 @@ msgstr "ジョイスティックロガーアイテム"
 msgid "Device"
 msgstr "デバイス"
 
-msgid "Joystick Status"
-msgstr "ジョイスティック状態"
-
 msgid "KeyConfig"
 msgstr "キーコンフィグ"
 
 msgid "&Ok"
 msgstr "了解(&O)"
 
-msgid "OnScreenJoystick"
-msgstr "スクリーンジョイスティック"
+msgid "Virtual Joystick2"
+msgstr "仮想ジョイスティック2"
+
+msgid "On-screen Joystick"
+msgstr "オンスクリーンジョイスティック"
 
 msgid "Play mode"
 msgstr "再生モード"
@@ -92,8 +92,8 @@ msgstr ""
 msgid "Options"
 msgstr ""
 
-msgid "Start simulation (StartButton)"
-msgstr "シミュレーションを開始（スタートボタン）"
+msgid "Game Start Mode"
+msgstr "ゲームスタートモード"
 
 msgid "JoystickTester"
 msgstr "ジョイスティックテスタ"

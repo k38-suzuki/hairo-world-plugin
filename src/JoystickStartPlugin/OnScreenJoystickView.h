@@ -3,21 +3,21 @@
   @author Kenta Suzuki
 */
 
-#ifndef CNOID_JOYSTICK_STATUS_PLUGIN_JOYSTICK_STATUS_VIEW_H
-#define CNOID_JOYSTICK_STATUS_PLUGIN_JOYSTICK_STATUS_VIEW_H
+#ifndef CNOID_JOYSTICK_START_PLUGIN_JOYSTICK_START_VIEW_H
+#define CNOID_JOYSTICK_START_PLUGIN_JOYSTICK_START_VIEW_H
 
 #include <cnoid/View>
 #include "exportdecl.h"
 
 namespace cnoid {
 
-class JoystickStatusViewImpl;
+class OnScreenJoystickViewImpl;
 
-class CNOID_EXPORT JoystickStatusView : public View
+class CNOID_EXPORT OnScreenJoystickView : public View
 {
 public:
-    JoystickStatusView();
-    virtual ~JoystickStatusView();
+    OnScreenJoystickView();
+    virtual ~OnScreenJoystickView();
 
     static void initializeClass(ExtensionManager* ext);
     
@@ -29,10 +29,10 @@ protected:
     virtual bool restoreState(const Archive& archive) override;
     
 private:
-    JoystickStatusViewImpl* impl;
-    friend class JoystickStatusViewImpl;
+    OnScreenJoystickViewImpl* impl;
+    friend class OnScreenJoystickViewImpl;
 };
 
 }
 
-#endif // CNOID_JOYSTICK_STATUS_PLUGIN_JOYSTICK_STATUS_VIEW_H
+#endif // CNOID_JOYSTICK_START_PLUGIN_JOYSTICK_START_VIEW_H

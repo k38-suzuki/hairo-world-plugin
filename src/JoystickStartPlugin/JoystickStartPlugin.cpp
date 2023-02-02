@@ -5,20 +5,20 @@
 #include <cnoid/Plugin>
 #include <fmt/format.h>
 #include "JoystickLoggerItem.h"
-#include "JoystickStatusView.h"
+#include "OnScreenJoystickView.h"
 #include "JoystickTester.h"
-#include "SimulationManager.h"
+#include "JoystickStarter.h"
 #include "SimpleSimulationView.h"
 
 using namespace cnoid;
 
 namespace {
 
-class JoystickStatusPlugin : public Plugin
+class JoystickStartPlugin : public Plugin
 {
 public:
 
-    JoystickStatusPlugin() : Plugin("JoystickStatus")
+    JoystickStartPlugin() : Plugin("JoystickStart")
     {
         require("Body");
     }
@@ -26,9 +26,9 @@ public:
     virtual bool initialize() override
     {
         JoystickLoggerItem::initializeClass(this);
-        JoystickStatusView::initializeClass(this);
+        OnScreenJoystickView::initializeClass(this);
         JoystickTester::initializeClass(this);
-        SimulationManager::initializeClass(this);
+        JoystickStarter::initializeClass(this);
         SimpleSimulationView::initializeClass(this);
         return true;
     }
@@ -36,7 +36,7 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("JoystickStatus Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            fmt::format("JoystickStart Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyrigh (c) 2020 Japan Atomic Energy Agency.\n"
             "\n" +
@@ -47,4 +47,4 @@ public:
 
 }
 
-CNOID_IMPLEMENT_PLUGIN_ENTRY(JoystickStatusPlugin)
+CNOID_IMPLEMENT_PLUGIN_ENTRY(JoystickStartPlugin)
