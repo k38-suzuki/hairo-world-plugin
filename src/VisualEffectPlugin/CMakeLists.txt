@@ -15,7 +15,6 @@ set(headers
     )
 
 choreonoid_make_header_public(ImageGenerator.h)
-choreonoid_make_header_public(VisualEffectorItem.h)
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project

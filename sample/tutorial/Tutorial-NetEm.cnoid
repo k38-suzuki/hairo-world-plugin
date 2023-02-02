@@ -38,7 +38,7 @@ items:
               0, 1, 0, 
               0, 0, 1 ]
             initialJointPositions: [ 0, 0, 0, 0 ]
-            staticModel: false
+            fix_root: false
             collisionDetection: true
             selfCollisionDetection: false
             location_editable: true
@@ -79,7 +79,7 @@ items:
               0, 1, 0, 
               0, 0, 1 ]
             initialJointPositions: [ 0 ]
-            staticModel: false
+            fix_root: true
             collisionDetection: true
             selfCollisionDetection: false
             location_editable: false
@@ -103,20 +103,20 @@ items:
           plugin: Body
           class: AISTSimulatorItem
           data: 
-            timeStep: 0.001
-            realtimeSync: true
-            recording: "off"
-            timeRangeMode: "Unlimited"
-            timeLength: 60
-            active_control_time_range_mode: false
-            allLinkPositionOutputMode: false
-            deviceStateOutput: true
-            controllerThreads: true
-            recordCollisionData: false
-            controllerOptions: ""
-            scene_view_edit_mode_blocking: false
+            time_step: 0.001
+            realtime_sync_mode: compensatory
+            recording: off
+            time_range_mode: unlimited
+            time_length: 60
+            is_active_control_time_range_mode: false
+            output_all_link_positions: false
+            output_device_states: true
+            use_controller_threads: true
+            record_collision_data: false
+            controller_options: ""
+            block_scene_view_edit_mode: false
             dynamicsMode: "Forward dynamics"
-            integrationMode: "Runge Kutta"
+            integrationMode: runge-kutta
             gravity: [ 0, 0, -9.80665 ]
             min_friction_coefficient: 0
             max_friction_coefficient: 100
@@ -147,7 +147,6 @@ items:
           is_checked: true
           data: 
             translation: [ 0, -0.5, 0.6 ]
-            rpy: [ 0, 0, 0 ]
             type: 0
             size: [ 1, 1, 1 ]
             radius: 1
@@ -212,17 +211,22 @@ views:
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
-      lightingMode: normal
-      cullingMode: enabled
-      worldLight: false
-      worldLightIntensity: 0.1
-      worldLightAmbient: 0
-      defaultHeadLight: true
-      defaultHeadLightIntensity: 0.5
+      lighting_mode: normal
+      culling_mode: enabled
+      shading_mode: smooth
+      world_light: false
+      world_light_intensity: 0.1
+      ambient_light: true
+      ambient_light_intensity: 0
+      head_light: true
+      head_light_intensity: 0.5
       world_light_shadow: true
-      backgroundColor: [ 0.1, 0.1, 0.3 ]
-      lineWidth: 1
-      pointSize: 1
+      shadow_lights: 
+        - { index: 0, enabled: false }
+        - { index: 1, enabled: false }
+      background_color: [ 0.1, 0.1, 0.3 ]
+      line_width: 1
+      point_size: 1
       field_of_view: 39.981
       clip_distances: [ 0.01, 10000 ]
       floorGrid: false
@@ -261,20 +265,22 @@ views:
         - 
           camera: [ Tank, Kinect ]
           isCurrent: true
-      lightingMode: normal
-      cullingMode: enabled
-      worldLight: false
-      worldLightIntensity: 0.5
-      worldLightAmbient: 0.3
-      defaultHeadLight: true
-      defaultHeadLightIntensity: 0.5
+      lighting_mode: normal
+      culling_mode: enabled
+      shading_mode: smooth
+      world_light: false
+      world_light_intensity: 0.5
+      ambient_light: true
+      ambient_light_intensity: 0.3
+      head_light: true
+      head_light_intensity: 0.5
       world_light_shadow: false
       shadow_lights: 
-        - 0
-        - 1
-      backgroundColor: [ 0.1, 0.1, 0.3 ]
-      lineWidth: 1
-      pointSize: 1
+        - { index: 0, enabled: true }
+        - { index: 1, enabled: true }
+      background_color: [ 0.1, 0.1, 0.3 ]
+      line_width: 1
+      point_size: 1
       field_of_view: 39.981
       clip_distances: [ 0.01, 100 ]
       floorGrid: false
@@ -322,7 +328,7 @@ views:
     mounted: true
     state: 
       element_type: link
-      listingMode: list
+      listing_mode: list
   - 
     id: 10
     plugin: Body
@@ -371,18 +377,6 @@ Body:
   "BodySelectionManager": 
     current_body_item: 2
     current_link: "CHASSIS"
-  "EditableSceneBody": 
-    editableSceneBodies: 
-      - 
-        bodyItem: 2
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
-      - 
-        bodyItem: 4
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
   "KinematicFaultChecker": 
     checkJointPositions: true
     angleMargin: 0
@@ -392,6 +386,18 @@ Body:
     targetJoints: all
     checkSelfCollisions: true
     onlyTimeBarRange: false
+  "OperableSceneBody": 
+    scene_bodies: 
+      - 
+        body_item: 2
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
+      - 
+        body_item: 4
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
   "SplineFilterDialog": 
     isInputFrameRateSpecified: false
     inputFrameRate: 200
@@ -404,12 +410,12 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 351, 1498 ]
+      sizes: [ 350, 1494 ]
       children: 
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 466, 465 ]
+          sizes: [ 522, 520 ]
           children: 
             - 
               type: pane
@@ -421,12 +427,12 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 666, 265 ]
+          sizes: [ 745, 297 ]
           children: 
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 700, 794 ]
+              sizes: [ 698, 792 ]
               children: 
                 - 
                   type: pane
@@ -438,7 +444,7 @@ viewAreas:
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 900, 594 ]
+              sizes: [ 898, 592 ]
               children: 
                 - 
                   type: pane

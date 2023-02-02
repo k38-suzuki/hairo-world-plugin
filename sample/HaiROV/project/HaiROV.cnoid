@@ -36,7 +36,7 @@ items:
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            staticModel: false
+            fix_root: false
             collisionDetection: true
             selfCollisionDetection: false
             location_editable: true
@@ -115,7 +115,7 @@ items:
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            staticModel: true
+            fix_root: true
             collisionDetection: true
             selfCollisionDetection: false
             location_editable: true
@@ -129,7 +129,6 @@ items:
           is_checked: true
           data: 
             translation: [ 0, 0, -2.5 ]
-            rpy: [ 0, 0, 0 ]
             type: 0
             size: [ 5.4, 5.4, 5 ]
             radius: 1
@@ -139,27 +138,27 @@ items:
             transparency: 0.7
             density: 1000
             viscosity: 0.001
-            flow: [ 0, 0, 0 ]
+            steady_flow: [ 0, 0, 0 ]
         - 
           id: 7
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
           data: 
-            timeStep: 0.001
-            realtimeSync: true
-            recording: "full"
-            timeRangeMode: "Unlimited"
-            timeLength: 180
-            active_control_time_range_mode: false
-            allLinkPositionOutputMode: false
-            deviceStateOutput: true
-            controllerThreads: true
-            recordCollisionData: false
-            controllerOptions: ""
-            scene_view_edit_mode_blocking: false
+            time_step: 0.001
+            realtime_sync_mode: compensatory
+            recording: full
+            time_range_mode: unlimited
+            time_length: 180
+            is_active_control_time_range_mode: false
+            output_all_link_positions: false
+            output_device_states: true
+            use_controller_threads: true
+            record_collision_data: false
+            controller_options: ""
+            block_scene_view_edit_mode: false
             dynamicsMode: "Forward dynamics"
-            integrationMode: "Runge Kutta"
+            integrationMode: runge-kutta
             gravity: [ 0, 0, -9.80665 ]
             min_friction_coefficient: 0
             max_friction_coefficient: 100
@@ -180,17 +179,17 @@ items:
               class: GLVisionSimulatorItem
               data: 
                 enabled: true
-                maxFrameRate: 1000
-                maxLatency: 1
-                recordVisionData: true
-                threadMode: Sensor
-                bestEffort: false
-                allSceneObjects: false
-                rangeSensorPrecisionRatio: 2
-                depthError: 0
-                enableHeadLight: true
-                enableAdditionalLights: true
-                antiAliasing: false
+                max_frame_rate: 1000
+                max_latency: 1
+                record_vision_data: true
+                thread_mode: Sensor
+                best_effort: false
+                all_scene_objects: false
+                range_sensor_precision_ratio: 2
+                depth_error: 0
+                enable_head_light: true
+                enable_additional_lights: true
+                antialiasing: false
             - 
               id: 9
               name: "CFDSimulator"
@@ -255,17 +254,22 @@ views:
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
-      lightingMode: normal
-      cullingMode: enabled
-      worldLight: true
-      worldLightIntensity: 0.5
-      worldLightAmbient: 0.3
-      defaultHeadLight: true
-      defaultHeadLightIntensity: 0.75
+      lighting_mode: normal
+      culling_mode: enabled
+      shading_mode: smooth
+      world_light: true
+      world_light_intensity: 0.5
+      ambient_light: true
+      ambient_light_intensity: 0.3
+      head_light: true
+      head_light_intensity: 0.75
       world_light_shadow: true
-      backgroundColor: [ 0.1, 0.1, 0.3 ]
-      lineWidth: 1
-      pointSize: 1
+      shadow_lights: 
+        - { index: 0, enabled: false }
+        - { index: 1, enabled: false }
+      background_color: [ 0.1, 0.1, 0.3 ]
+      line_width: 1
+      point_size: 1
       field_of_view: 40
       clip_distances: [ 0.01, 100 ]
       floorGrid: false
@@ -313,7 +317,7 @@ views:
     mounted: true
     state: 
       element_type: link
-      listingMode: list
+      listing_mode: list
   - 
     id: 10
     plugin: Body
@@ -362,18 +366,6 @@ Body:
   "BodySelectionManager": 
     current_body_item: 5
     current_link: "Line0"
-  "EditableSceneBody": 
-    editableSceneBodies: 
-      - 
-        bodyItem: 2
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
-      - 
-        bodyItem: 5
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
   "KinematicFaultChecker": 
     checkJointPositions: true
     angleMargin: 0
@@ -383,6 +375,18 @@ Body:
     targetJoints: all
     checkSelfCollisions: true
     onlyTimeBarRange: false
+  "OperableSceneBody": 
+    scene_bodies: 
+      - 
+        body_item: 2
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
+      - 
+        body_item: 5
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
   "SplineFilterDialog": 
     isInputFrameRateSpecified: false
     inputFrameRate: 200
@@ -395,12 +399,12 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 323, 1526 ]
+      sizes: [ 322, 1522 ]
       children: 
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 509, 508 ]
+          sizes: [ 504, 504 ]
           children: 
             - 
               type: pane
@@ -412,12 +416,12 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 727, 290 ]
+          sizes: [ 721, 287 ]
           children: 
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 761, 761 ]
+              sizes: [ 759, 759 ]
               children: 
                 - 
                   type: pane
@@ -429,7 +433,7 @@ viewAreas:
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 761, 761 ]
+              sizes: [ 759, 759 ]
               children: 
                 - 
                   type: pane

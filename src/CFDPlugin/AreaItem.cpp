@@ -11,13 +11,30 @@
 #include <cnoid/FloatingNumberString>
 #include <cnoid/ItemManager>
 #include <cnoid/MeshGenerator>
-#include <cnoid/PositionDragger>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/Selection>
 #include "gettext.h"
 
 using namespace cnoid;
 using namespace std;
+
+namespace {
+
+class RegionLocation : public LocationProxy
+{
+public:
+    RegionLocation(AreaItemImpl* impl);
+    AreaItemImpl* impl;
+
+    Signal<void()> sigLocationChanged_;
+
+    virtual Item* getCorrespondingItem() override;
+    virtual Isometry3 getLocation() const override;
+    virtual bool setLocation(const Isometry3& T) override;
+    virtual SignalProxy<void()> sigLocationChanged() override;
+};
+
+}
 
 namespace cnoid {
 
@@ -28,7 +45,7 @@ public:
     AreaItemImpl(AreaItem* self, const AreaItemImpl& org);
     AreaItem* self;
 
-    Isometry3 position;
+    Isometry3 regionOffset;
     Selection type;
     Vector3 size;
     FloatingNumberString radius;
@@ -37,15 +54,15 @@ public:
     FloatingNumberString shininess;
     FloatingNumberString transparency;
     SgPosTransformPtr scene;
-    PositionDraggerPtr positionDragger;
     SgMaterialPtr material;
+
+    ref_ptr<RegionLocation> regionLocation;
 
     enum AreaTypeID { BOX, CYLINDER, SPHERE, NUM_AREA };
 
     void createScene();
     void updateScenePosition();
     void updateSceneMaterial();
-    void onPositionDragged();
     bool onAreaTypePropertyChanged(const int& index);
     bool onAreaAxesPropertyChanged(const int& index);
     bool onAreaRadiusPropertyChanged(const string& str);
@@ -70,7 +87,7 @@ AreaItem::AreaItem()
 AreaItemImpl::AreaItemImpl(AreaItem* self)
     : self(self)
 {
-    position.setIdentity();
+    regionOffset.setIdentity();
     type.setSymbol(BOX, N_("Box"));
     type.setSymbol(CYLINDER, N_("Cylinder"));
     type.setSymbol(SPHERE, N_("Sphere"));
@@ -94,7 +111,7 @@ AreaItem::AreaItem(const AreaItem& org)
 AreaItemImpl::AreaItemImpl(AreaItem* self, const AreaItemImpl& org)
     : self(self)
 {
-    position = org.position;
+    regionOffset = org.regionOffset;
     type = org.type;
     size = org.size;
     radius = org.radius;
@@ -123,6 +140,22 @@ SgNode* AreaItem::getScene()
         impl->createScene();
     }
     return impl->scene;
+}
+
+
+void AreaItem::setRegionOffset(const Isometry3& T)
+{
+    impl->regionOffset = T;
+    impl->updateScenePosition();
+    if(impl->regionLocation){
+        impl->regionLocation->sigLocationChanged_();
+    }
+}
+
+
+const Isometry3& AreaItem::regionOffset() const
+{
+    return impl->regionOffset;
 }
 
 
@@ -191,28 +224,10 @@ bool AreaItemImpl::onTransparencyPropertyChanged(const string& str)
 }
 
 
-void AreaItemImpl::onPositionDragged()
-{
-    auto p = positionDragger->globalDraggingPosition();
-    position.translation() = p.translation();
-    position.linear() = p.linear();
-    updateScenePosition();
-    self->notifyUpdate();
-}
-
-
 void AreaItemImpl::createScene()
 {
     if(!scene) {
-        scene = new SgPosTransform;
-        positionDragger = new PositionDragger(
-                    PositionDragger::AllAxes, PositionDragger::WideHandle);
-        positionDragger->setDragEnabled(true);
-        positionDragger->setOverlayMode(true);
-        positionDragger->setPixelSize(48, 2);
-        positionDragger->setDisplayMode(PositionDragger::DisplayInEditMode);
-        positionDragger->sigPositionDragged().connect([&](){ onPositionDragged(); });
-        // scene->addChild(positionDragger);
+        scene = new SgPosTransform(regionOffset);
         updateScenePosition();
         material = new SgMaterial;
         updateSceneMaterial();
@@ -232,15 +247,13 @@ void AreaItemImpl::createScene()
     }
     shape->setMaterial(material);
     scene->addChild(shape);
-    positionDragger->adjustSize(shape->boundingBox());
 }
 
 
 void AreaItemImpl::updateScenePosition()
 {
     if(scene) {
-        scene->setTranslation(position.translation());
-        scene->setRotation(position.linear());
+        scene->setPosition(regionOffset);
         scene->notifyUpdate();
     }
 }
@@ -268,8 +281,8 @@ bool AreaItemImpl::isCollided(const Vector3& position)
 {
     bool isCollided = false;
 
-    auto p = this->position.translation();
-    Matrix3 rot = this->position.linear();
+    auto p = this->regionOffset.translation();
+    Matrix3 rot = this->regionOffset.linear();
 
     int index = type.selectedIndex();
     if(index == BOX) {
@@ -307,6 +320,49 @@ bool AreaItemImpl::isCollided(const Vector3& position)
 }
 
 
+LocationProxyPtr AreaItem::getLocationProxy()
+{
+    if(!impl->regionLocation){
+        impl->regionLocation = new RegionLocation(impl);
+    }
+    return impl->regionLocation;
+}
+
+
+RegionLocation::RegionLocation(AreaItemImpl* impl)
+    : LocationProxy(GlobalLocation),
+      impl(impl)
+{
+
+}
+
+
+Item* RegionLocation::getCorrespondingItem()
+{
+    return impl->self;
+}
+
+
+Isometry3 RegionLocation::getLocation() const
+{
+    return impl->regionOffset;
+}
+
+
+bool RegionLocation::setLocation(const Isometry3& T)
+{
+    impl->self->setRegionOffset(T);
+    impl->self->notifyUpdate();
+    return true;
+}
+
+
+SignalProxy<void()> RegionLocation::sigLocationChanged()
+{
+    return sigLocationChanged_;
+}
+
+
 Item* AreaItem::doDuplicate() const
 {
     return new AreaItem(*this);
@@ -321,8 +377,8 @@ void AreaItem::doPutProperties(PutPropertyFunction& putProperty)
 
 void AreaItemImpl::doPutProperties(PutPropertyFunction& putProperty)
 {
-    Vector3 p = position.translation();
-    Vector3 r = degree(rpyFromRot(position.linear()));
+    Vector3 p = regionOffset.translation();
+    Vector3 r = degree(rpyFromRot(regionOffset.linear()));
 
     putProperty(_("Shape"), type,
                 [&](int index){ return onAreaTypePropertyChanged(index); });
@@ -348,7 +404,7 @@ void AreaItemImpl::doPutProperties(PutPropertyFunction& putProperty)
             [&](const string& str){
                 Vector3 p;
                 if(toVector3(str, p)) {
-                    position.translation() = p;
+                    regionOffset.translation() = p;
                     updateScenePosition();
                     return true;
                 }
@@ -358,7 +414,7 @@ void AreaItemImpl::doPutProperties(PutPropertyFunction& putProperty)
             [&](const string& str){
                 Vector3 rpy;
                 if(toVector3(str, rpy)) {
-                    position.linear() = rotFromRpy(radian(rpy));
+                    regionOffset.linear() = rotFromRpy(radian(rpy));
                     updateScenePosition();
                     return true;
                 }
@@ -379,8 +435,13 @@ bool AreaItem::store(Archive& archive)
 
 bool AreaItemImpl::store(Archive& archive)
 {
-    write(archive, "translation", position.translation());
-    write(archive, "rpy", degree(rpyFromRot(position.linear())));
+    if(!regionOffset.translation().isZero()){
+        write(archive, "translation", regionOffset.translation());
+    }
+    AngleAxis aa(regionOffset.linear());
+    if(aa.angle() != 0.0){
+        writeDegreeAngleAxis(archive, "rotation", aa);
+    }
     archive.write("type", type.selectedIndex());
     write(archive, "size", size);
     archive.write("radius", radius);
@@ -401,15 +462,23 @@ bool AreaItem::restore(const Archive &archive)
 bool AreaItemImpl::restore(const Archive& archive)
 {
     Vector3 p;
-    if(read(archive, "translation", p)) {
-        position.translation() = p;
+    if(read(archive, "size", size)) {
+
     }
-    Vector3 rpy;
-    if(read(archive, "rpy", rpy)) {
-        position.linear() = rotFromRpy(radian(rpy));
+    bool offsetUpdated = false;
+    if(read(archive, "translation", p)){
+        regionOffset.translation() = p;
+        offsetUpdated = true;
+    }
+    AngleAxis aa;
+    if(readDegreeAngleAxis(archive, "rotation", aa)){
+        regionOffset.linear() = aa.toRotationMatrix();
+        offsetUpdated = true;
+    }
+    if(offsetUpdated){
+        self->setRegionOffset(regionOffset);
     }
     type.selectIndex(archive.get("type", 0));
-    read(archive, "size", size);
     radius = archive.get("radius", radius.string());
     height = archive.get("height", height.string());
     read(archive, "diffuse_color", diffuseColor);
