@@ -11,7 +11,6 @@
 #include <cnoid/EigenUtil>
 #include <cnoid/ItemManager>
 #include <cnoid/MeshExtractor>
-#include <cnoid/PositionDragger>
 #include <cnoid/SceneDrawables>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
@@ -330,8 +329,8 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
             Vector3 sf = Vector3::Zero();
             for(size_t k = 0; k < areaItems.size(); ++k) {
                 FluidAreaItem* areaItem = areaItems[k];
-                SgPosTransformPtr scene = dynamic_cast<SgPosTransform*>(areaItem->getScene());
-                Matrix3 rot = scene->rotation();
+                const Isometry3& regionOffset = areaItem->regionOffset();
+                auto rot = regionOffset.linear();
                 if(areaItem->isCollided(T.translation())) {
                     density = areaItem->density();
                     viscosity = areaItem->viscosity();
