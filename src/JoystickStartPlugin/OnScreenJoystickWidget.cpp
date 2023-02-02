@@ -115,9 +115,18 @@ OnScreenJoystickWidgetImpl::OnScreenJoystickWidgetImpl(OnScreenJoystickWidget* s
         hbox1->addWidget(button);
     }
 
+    QVBoxLayout* vbox0 = new QVBoxLayout;
+    vbox0->addLayout(hbox0);
+    vbox0->addLayout(hbox1);
+
+    QHBoxLayout* hbox = new QHBoxLayout;
+    hbox->addStretch();
+    hbox->addLayout(vbox0);
+    hbox->addStretch();
     QVBoxLayout* vbox = new QVBoxLayout;
-    vbox->addLayout(hbox0);
-    vbox->addLayout(hbox1);
+    vbox->addStretch();
+    vbox->addLayout(hbox);
+    vbox->addStretch();   
     self->setLayout(vbox);
 
     joystick.setDevice("/dev/input/js0");

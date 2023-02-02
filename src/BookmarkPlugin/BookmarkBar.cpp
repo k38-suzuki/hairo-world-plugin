@@ -36,8 +36,6 @@ BookmarkBar::BookmarkBar()
 BookmarkBarImpl::BookmarkBarImpl(BookmarkBar* self)
     : self(self)
 {
-    self->setVisibleByDefault(true);
-
     auto button1 = self->addButton(
         QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_DialogApplyButton)));
     button1->setToolTip(_("Bookmark a current project"));
@@ -71,6 +69,11 @@ void BookmarkBar::initialize(ExtensionManager* ext)
     if(!initialized) {
         ext->addToolBar(instance());
         initialized = true;
+    }
+
+    char* CNOID_USE_BOOKMARK = getenv("CNOID_USE_BOOKMARK");
+    if(CNOID_USE_BOOKMARK && (strcmp(CNOID_USE_BOOKMARK, "0") == 0)){
+        instance()->setVisibleByDefault(true);
     }
 }
 
