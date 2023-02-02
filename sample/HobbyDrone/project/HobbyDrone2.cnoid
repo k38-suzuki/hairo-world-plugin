@@ -142,7 +142,7 @@ items:
           is_checked: true
           data: 
             translation: [ 0, 0, 0 ]
-            rotation: [ 0, 0, 0 ]
+            rpy: [ 0, 0, 0 ]
             type: 0
             size: [ 10, 10, 10 ]
             radius: 0.5

@@ -115,7 +115,7 @@ items:
           class: FluidAreaItem
           data: 
             translation: [ 0, 0, 0 ]
-            rotation: [ 0, 0, 0 ]
+            rpy: [ 0, 0, 0 ]
             type: 0
             size: [ 20, 20, 20 ]
             radius: 1
@@ -134,7 +134,7 @@ items:
           is_checked: true
           data: 
             translation: [ 0, 0, 2 ]
-            rotation: [ 0, 0, -90 ]
+            rpy: [ 0, 0, -90 ]
             type: 1
             size: [ 1, 1, 1 ]
             radius: 1
