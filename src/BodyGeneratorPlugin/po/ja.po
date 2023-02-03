@@ -119,8 +119,8 @@ msgstr "ノードのマージ閾値 [-]"
 msgid "nodes to wheels split threshold [-]"
 msgstr "ノードのスプリット閾値 [-]"
 
-msgid "&Reset"
-msgstr "リセット"
+msgid "&New"
+msgstr "新規"
 
 msgid "&Import"
 msgstr "インポート"
@@ -247,3 +247,9 @@ msgstr "CSVファイルの読み込み"
 
 msgid "CSV files (*.csv)"
 msgstr "CSVファイル(*.csv)"
+
+msgid "Setting 1"
+msgstr "設定1"
+
+msgid "Setting 2"
+msgstr "設定2"
