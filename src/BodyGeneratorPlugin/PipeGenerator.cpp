@@ -145,6 +145,7 @@ PipeGeneratorImpl::PipeGeneratorImpl(PipeGenerator* self)
     formWidget = new FileFormWidget;
 
     vbox->addLayout(gbox);
+    vbox->addStretch();
     vbox->addWidget(new HSeparator);
     vbox->addWidget(formWidget);
     setLayout(vbox);
