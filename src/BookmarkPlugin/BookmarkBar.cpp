@@ -4,9 +4,7 @@
 */
 
 #include "BookmarkBar.h"
-#include <cnoid/MainWindow>
 #include <cnoid/ProjectManager>
-#include <QStyle>
 #include "BookmarkManagerDialog.h"
 #include "WorldLogManagerDialog.h"
 #include "gettext.h"
@@ -36,8 +34,7 @@ BookmarkBar::BookmarkBar()
 BookmarkBarImpl::BookmarkBarImpl(BookmarkBar* self)
     : self(self)
 {
-    auto button1 = self->addButton(
-        QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_DialogApplyButton)));
+    auto button1 = self->addButton(QIcon::fromTheme("list-add"));
     button1->setToolTip(_("Bookmark a current project"));
     button1->sigClicked().connect([&](){ 
         const string& filename = ProjectManager::instance()->currentProjectFile();
@@ -45,13 +42,11 @@ BookmarkBarImpl::BookmarkBarImpl(BookmarkBar* self)
             BookmarkManagerDialog::instance()->addProjectFile(filename);
         }
         });
-    auto button2 = self->addButton(
-        QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_DialogOpenButton)));
+    auto button2 = self->addButton(QIcon::fromTheme("user-bookmarks"));
     button2->setToolTip(_("Show the bookmark manager"));
     button2->sigClicked().connect([&](){ BookmarkManagerDialog::instance()->show(); });
 
-    auto button3 = self->addButton(
-        QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_FileDialogDetailedView)));
+    auto button3 = self->addButton(QIcon::fromTheme("emblem-documents"));
     button3->setToolTip(_("Show the worldlog manager"));
     button3->sigClicked().connect([&](){ WorldLogManagerDialog::instance()->show(); });
 }

@@ -8,7 +8,6 @@
 #include <cnoid/MainWindow>
 #include <cnoid/Menu>
 #include <cnoid/MessageView>
-#include <QStyle>
 #include "gettext.h"
 
 using namespace cnoid;
@@ -17,8 +16,7 @@ namespace {
 
 SystemTrayIcon* createTrayIcon()
 {
-    SystemTrayIcon* systrayIcon = new SystemTrayIcon(
-        QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_MessageBoxQuestion)), MainWindow::instance());
+    SystemTrayIcon* systrayIcon = new SystemTrayIcon(QIcon(":/Base/icon/setup.svg"), MainWindow::instance());
     systrayIcon->show();
 
     return systrayIcon;

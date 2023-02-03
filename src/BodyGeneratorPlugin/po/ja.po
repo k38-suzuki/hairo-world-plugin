@@ -164,9 +164,6 @@ msgstr "上書き保存(&S)"
 msgid "Save &As..."
 msgstr "保存(&A)"
 
-msgid "&Reload"
-msgstr "再読み込み(&R)"
-
 msgid "Save a Body file"
 msgstr "ボディを保存"
 

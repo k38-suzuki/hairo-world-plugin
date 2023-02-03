@@ -39,7 +39,7 @@ public:
     FileFormWidgetImpl(FileFormWidget* self);
     FileFormWidget* self;
 
-    enum DialogButtonId { RELOAD, SAVE, SAVEAS, NUM_BUTTONS };
+    enum DialogButtonId { SAVE, SAVEAS, NUM_BUTTONS };
 
     LineEdit* fileLine;
     PushButton* buttons[NUM_BUTTONS];
@@ -51,6 +51,7 @@ public:
 
     void openSaveDialog();
     void save(const bool& overwrite);
+    void onSaveButtonClicked(const bool& overwrite);
     void onReloadButtonClicked();
 };
 
@@ -69,12 +70,11 @@ FileFormWidgetImpl::FileFormWidgetImpl(FileFormWidget* self)
     QVBoxLayout* vbox = new QVBoxLayout;
 
     fileLine = new LineEdit;
-    fileLine->setEnabled(false);
     QHBoxLayout* fhbox = new QHBoxLayout;
     fhbox->addWidget(new QLabel(_("File")));
     fhbox->addWidget(fileLine);
 
-    static const char* labels[] = { _("&Reload"), _("&Save"), _("Save &As...") };
+    static const char* labels[] = { _("&Save"), _("Save &As...") };
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
     for(int i = 0; i < NUM_BUTTONS; ++i) {
@@ -86,9 +86,8 @@ FileFormWidgetImpl::FileFormWidgetImpl(FileFormWidget* self)
     vbox->addWidget(buttonBox);
     self->setLayout(vbox);
 
-    buttons[RELOAD]->sigClicked().connect([&](){ onReloadButtonClicked(); });
-    buttons[SAVE]->sigClicked().connect([&](){ save(true); });
-    buttons[SAVEAS]->sigClicked().connect([&](){ save(false); });
+    buttons[SAVE]->sigClicked().connect([&](){ onSaveButtonClicked(true); });
+    buttons[SAVEAS]->sigClicked().connect([&](){ onSaveButtonClicked(false); });
 }
 
 
@@ -137,7 +136,7 @@ void FileFormWidgetImpl::openSaveDialog()
 }
 
 
-void FileFormWidgetImpl::save(const bool &overwrite)
+void FileFormWidgetImpl::save(const bool& overwrite)
 {
     string filename = fileLine->text().toStdString();
 
@@ -156,6 +155,13 @@ void FileFormWidgetImpl::save(const bool &overwrite)
 
         sigClicked_(filename);
     }
+}
+
+
+void FileFormWidgetImpl::onSaveButtonClicked(const bool& overwrite)
+{
+    save(overwrite);
+    onReloadButtonClicked();
 }
 
 

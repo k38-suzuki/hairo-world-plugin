@@ -17,7 +17,6 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QScrollArea>
-#include <QStyle>
 #include <QVBoxLayout>
 #include "SimpleTimeWidget.h"
 #include "gettext.h"
@@ -156,17 +155,16 @@ SimpleSimulationViewImpl::SimpleSimulationViewImpl(SimpleSimulationView* self)
         _("Pause simulation"), _("Stop simulation"), _("Seek backward"), _("Seek forward")
     };
     QGridLayout* gbox = new QGridLayout;
-    MainWindow* mw = MainWindow::instance();
     for(int i = 0; i < NUM_BUTTONS; ++i) {
         ButtonInfo info = buttonInfo[i];
         buttons[i] = new PushButton;
         PushButton* button = buttons[i];
-        button->setIconSize(mw->iconSize());
+        button->setIconSize(MainWindow::instance()->iconSize());
         QIcon icon;
         if(i == BACKWARD) {
-            icon = QIcon(mw->style()->standardIcon(QStyle::SP_MediaSeekBackward));
+            icon = QIcon::fromTheme("media-seek-backward");
         } else if(i == FORWARD) {
-            icon = QIcon(mw->style()->standardIcon(QStyle::SP_MediaSeekForward));
+            icon = QIcon::fromTheme("media-seek-forward");
         } else {
             icon = QIcon(info.icon);
         }

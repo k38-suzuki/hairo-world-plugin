@@ -71,7 +71,6 @@ public:
 
     LineEdit* inputFileLine;
     TerrainData* data;
-    PushButton* loadButton;
     FileFormWidget* formWidget;
     YAMLWriter yamlWriter;
 
@@ -107,7 +106,13 @@ TerrainGeneratorImpl::TerrainGeneratorImpl(TerrainGenerator* self)
     inputFileLine = new LineEdit;
     inputFileLine->setEnabled(false);
     data = nullptr;
-    loadButton = new PushButton(_("&Load"));
+    PushButton* loadButton = new PushButton;
+    QIcon openIcon = QIcon::fromTheme("document-open");
+    if(openIcon.isNull()) {
+        loadButton->setText(_("&Load"));
+    } else {
+        loadButton->setIcon(openIcon);
+    }
 
     QVBoxLayout* vbox = new QVBoxLayout;
     QGridLayout* gbox = new QGridLayout;

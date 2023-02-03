@@ -25,7 +25,6 @@
 #include <QDateTime>
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
-#include <QStyle>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
 #include "gettext.h"
@@ -107,7 +106,12 @@ WorldLogManagerDialogImpl::WorldLogManagerDialogImpl(WorldLogManagerDialog* self
     saveCheck = new CheckBox;
     saveCheck->setText(_("Save a WorldLog"));
     auto removeButton = new PushButton;
-    removeButton->setIcon(QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_TrashIcon)));
+    QIcon removeIcon = QIcon::fromTheme("user-trash");
+    if(removeIcon.isNull()) {
+        removeButton->setText(_("Remove"));
+    } else {
+        removeButton->setIcon(removeIcon);
+    }
     removeButton->setToolTip(_("Remove project"));
     removeButton->sigClicked().connect([&](){ removeItem(); });
     hbox->addWidget(saveCheck);

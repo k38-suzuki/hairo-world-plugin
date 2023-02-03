@@ -18,7 +18,6 @@
 #include <cnoid/TreeWidget>
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
-#include <QStyle>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
 #include "gettext.h"
@@ -43,7 +42,7 @@ public:
     void addItem(const string& filename);
     void removeItem();
     void onAddButtonClicked();
-    void onSetButtonClicked();
+    void onNewButtonClicked();
     void onStartButtonClicked();
     void onCustomContextMenuRequested(const QPoint& pos);
     void store(Mapping* archive);
@@ -86,22 +85,38 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
     addAct->sigTriggered().connect([&](){ onAddButtonClicked(); });
     removeAct->sigTriggered().connect([&](){ removeItem(); });
     openAct->sigTriggered().connect([&](){ onStartButtonClicked(); });
-    self->connect(treeWidget, &TreeWidget::customContextMenuRequested, [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
+    self->connect(treeWidget, &TreeWidget::customContextMenuRequested,
+        [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
 
     QHBoxLayout* hbox = new QHBoxLayout;
     auto addButton = new PushButton;
-    addButton->setIcon(QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_DialogOpenButton)));
+    QIcon addIcon = QIcon::fromTheme("folder");
+    if(addIcon.isNull()) {
+        addButton->setText(_("Add"));
+    } else {
+        addButton->setIcon(addIcon);
+    }
     addButton->sigClicked().connect([&](){ onAddButtonClicked(); });
     auto removeButton = new PushButton;
-    removeButton->setIcon(QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_TrashIcon)));
+    QIcon removeIcon = QIcon::fromTheme("user-trash");
+    if(removeIcon.isNull()) {
+        removeButton->setText(_("Remove"));
+    } else {
+        removeButton->setIcon(removeIcon);
+    }
     removeButton->sigClicked().connect([&](){ removeItem(); });
-    auto setButton = new PushButton;
-    setButton->setIcon(QIcon(MainWindow::instance()->style()->standardIcon(QStyle::SP_FileDialogNewFolder)));
-    setButton->sigClicked().connect([&](){ onSetButtonClicked(); });
+    auto newButton = new PushButton;
+    QIcon newIcon = QIcon::fromTheme("folder-open");
+    if(newIcon.isNull()) {
+        newButton->setText(_("New"));
+    } else {
+        newButton->setIcon(newIcon);
+    }
+    newButton->sigClicked().connect([&](){ onNewButtonClicked(); });
     autoCheck = new CheckBox;
     autoCheck->setText(_("Autoplay"));
     hbox->addWidget(addButton);
-    // hbox->addWidget(setButton);
+    // hbox->addWidget(newButton);
     hbox->addWidget(autoCheck);
     hbox->addStretch();
     hbox->addWidget(removeButton);
@@ -201,7 +216,7 @@ void BookmarkManagerDialogImpl::onAddButtonClicked()
 }
 
 
-void BookmarkManagerDialogImpl::onSetButtonClicked()
+void BookmarkManagerDialogImpl::onNewButtonClicked()
 {
     QTreeWidgetItem* item = new QTreeWidgetItem(treeWidget);
     item->setText(0, "new item");

@@ -32,6 +32,9 @@ msgstr "自動再生"
 msgid "Remove"
 msgstr "削除"
 
+msgid "New"
+msgstr "新規"
+
 msgid "Open"
 msgstr "開く"
 
