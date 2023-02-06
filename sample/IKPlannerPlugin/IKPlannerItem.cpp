@@ -58,6 +58,8 @@ public:
     IKPlannerItemImpl(IKPlannerItem* self, const IKPlannerItemImpl& org);
     IKPlannerItem* self;
 
+    typedef shared_ptr<CollisionLinkPair> CollisionLinkPairPtr;
+
     BodyItem* bodyItem;
     Link* base;
     Link* wrist;
@@ -289,7 +291,7 @@ bool IKPlannerItemImpl::midPlannerFunction(const ob::State* state)
                 vector<CollisionLinkPairPtr> collisions = bodyItem->collisions();
                 for(size_t i = 0; i < collisions.size(); ++i) {
                     CollisionLinkPairPtr collision = collisions[i];
-                    if((collision->body[0] == body) || (collision->body[1] == body)) {
+                    if((collision->link(0)->body() == body) || (collision->link(1)->body() == body)) {
                         if(!collision->isSelfCollision()) {
                             return false;
                         }

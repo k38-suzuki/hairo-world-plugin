@@ -37,10 +37,10 @@ public:
 
     void createScene();
     bool onPlannerPropertyChanged(const int& index);
-    bool onBBMinPropertyChanged(const string& text);
-    bool onBBMaxPropertyChanged(const string& text);
-    bool onStartPositionPropertyChanged(const string& text);
-    bool onGoalPositionPropertyChanged(const string& text);
+    bool onBBMinPropertyChanged(const string& str);
+    bool onBBMaxPropertyChanged(const string& str);
+    bool onStartPositionPropertyChanged(const string& str);
+    bool onGoalPositionPropertyChanged(const string& str);
     bool onCalculationTimePropertyChanged(const double& value);
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
@@ -168,10 +168,10 @@ bool SimpleSetupItemImpl::onPlannerPropertyChanged(const int& index)
 }
 
 
-bool SimpleSetupItemImpl::onBBMinPropertyChanged(const string& text)
+bool SimpleSetupItemImpl::onBBMinPropertyChanged(const string& str)
 {
     Vector3 min;
-    if(toVector3(text, min)) {
+    if(toVector3(str, min)) {
         Vector3 max = bb.max();
         bb.set(min, max);
         self->setBoundingBox(bb);
@@ -186,10 +186,10 @@ bool SimpleSetupItemImpl::onBBMinPropertyChanged(const string& text)
 }
 
 
-bool SimpleSetupItemImpl::onBBMaxPropertyChanged(const string& text)
+bool SimpleSetupItemImpl::onBBMaxPropertyChanged(const string& str)
 {
     Vector3 max;
-    if(toVector3(text, max)) {
+    if(toVector3(str, max)) {
         Vector3 min = bb.min();
         bb.set(min, max);
         self->setBoundingBox(bb);
@@ -204,9 +204,9 @@ bool SimpleSetupItemImpl::onBBMaxPropertyChanged(const string& text)
 }
 
 
-bool SimpleSetupItemImpl::onStartPositionPropertyChanged(const string& text)
+bool SimpleSetupItemImpl::onStartPositionPropertyChanged(const string& str)
 {
-    if(toVector3(text, startPosition)) {
+    if(toVector3(str, startPosition)) {
         self->setStartPosition(startPosition);
         return true;
     }
@@ -214,9 +214,9 @@ bool SimpleSetupItemImpl::onStartPositionPropertyChanged(const string& text)
 }
 
 
-bool SimpleSetupItemImpl::onGoalPositionPropertyChanged(const string& text)
+bool SimpleSetupItemImpl::onGoalPositionPropertyChanged(const string& str)
 {
-    if(toVector3(text, goalPosition)) {
+    if(toVector3(str, goalPosition)) {
         self->setGoalPosition(goalPosition);
         return true;
     }
@@ -266,13 +266,13 @@ void SimpleSetupItemImpl::doPutProperties(PutPropertyFunction& putProperty)
     putProperty(_("Geometric planner"), plannerType,
                 [&](int index){ return onPlannerPropertyChanged(index); });
     putProperty(_("BB min"), str(self->boundingBox().min()),
-                [this](const string& text){ return onBBMinPropertyChanged(text); });
+                [this](const string& str){ return onBBMinPropertyChanged(str); });
     putProperty(_("BB max"), str(self->boundingBox().max()),
-                [this](const string& text){ return onBBMaxPropertyChanged(text); });
+                [this](const string& str){ return onBBMaxPropertyChanged(str); });
     putProperty(_("Start position"), str(self->startPosition()),
-                [this](const string& text){ return onStartPositionPropertyChanged(text); });
+                [this](const string& str){ return onStartPositionPropertyChanged(str); });
     putProperty(_("Goal position"), str(self->goalPosition()),
-                [this](const string& text){ return onGoalPositionPropertyChanged(text); });
+                [this](const string& str){ return onGoalPositionPropertyChanged(str); });
     putProperty(_("Calculation time"), self->calculationTime(),
                 [&](double value){ return onCalculationTimePropertyChanged(value); });
 }
