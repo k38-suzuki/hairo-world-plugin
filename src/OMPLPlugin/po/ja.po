@@ -49,3 +49,9 @@ msgstr "幾何学プランナ"
 
 msgid "Calculation time"
 msgstr "計算時間"
+
+msgid "Region offset"
+msgstr "領域オフセット"
+
+msgid "Region angle"
+msgstr "領域角度"

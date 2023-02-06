@@ -7,6 +7,7 @@
 #define CNOID_OMPL_PLUGIN_SIMPLE_SETUP_ITEM_H
 
 #include <cnoid/Item>
+#include <cnoid/LocatableItem>
 #include <cnoid/RenderableItem>
 #include "SimpleSetup.h"
 #include "exportdecl.h"
@@ -15,7 +16,7 @@ namespace cnoid {
 
 class SimpleSetupItemImpl;
 
-class CNOID_EXPORT SimpleSetupItem : public Item, public SimpleSetup, public RenderableItem
+class CNOID_EXPORT SimpleSetupItem : public Item, public SimpleSetup, public LocatableItem, public RenderableItem
 {
 public:
     SimpleSetupItem();
@@ -23,6 +24,11 @@ public:
     virtual ~SimpleSetupItem();
 
     static void initializeClass(ExtensionManager* ext);
+
+    void setRegionOffset(const Isometry3& T);
+    const Isometry3& regionOffset() const;
+
+    // virtual LocationProxyPtr getLocationProxy() override;
 
     virtual SgNode* getScene() override;
 

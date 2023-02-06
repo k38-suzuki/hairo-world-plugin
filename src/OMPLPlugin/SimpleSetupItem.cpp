@@ -20,6 +20,24 @@ using namespace std;
 namespace ob = ompl::base;
 namespace og = ompl::geometric;
 
+namespace {
+
+class RegionLocation : public LocationProxy
+{
+public:
+    RegionLocation(SimpleSetupItemImpl* impl);
+    SimpleSetupItemImpl* impl;
+
+    Signal<void()> sigLocationChanged_;
+
+    virtual Item* getCorrespondingItem() override;
+    virtual Isometry3 getLocation() const override;
+    virtual bool setLocation(const Isometry3& T) override;
+    virtual SignalProxy<void()> sigLocationChanged() override;
+};
+
+}
+
 namespace cnoid {
 
 class SimpleSetupItemImpl
@@ -29,13 +47,17 @@ public:
     SimpleSetupItemImpl(SimpleSetupItem* self, const SimpleSetupItemImpl& org);
     SimpleSetupItem* self;
 
+    Isometry3 regionOffset;
     SgPosTransformPtr scene;
     Selection plannerType;
     BoundingBox bb;
     Vector3 startPosition;
     Vector3 goalPosition;
 
+    ref_ptr<RegionLocation> regionLocation;
+
     void createScene();
+    void updateScenePosition();
     bool onPlannerPropertyChanged(const int& index);
     bool onBBMinPropertyChanged(const string& str);
     bool onBBMaxPropertyChanged(const string& str);
@@ -69,6 +91,7 @@ SimpleSetupItemImpl::SimpleSetupItemImpl(SimpleSetupItem* self)
     bb.set(min, max);
     startPosition << 0.0, 0.0, 0.0;
     goalPosition << 0.0, 0.0, 0.0;
+    regionOffset.setIdentity();
 }
 
 
@@ -88,6 +111,7 @@ SimpleSetupItemImpl::SimpleSetupItemImpl(SimpleSetupItem* self, const SimpleSetu
     bb = org.bb;
     startPosition = org.startPosition;
     goalPosition = org.goalPosition;
+    regionOffset = org.regionOffset;
 }
 
 
@@ -106,6 +130,65 @@ void SimpleSetupItem::initializeClass(ExtensionManager* ext)
 }
 
 
+void SimpleSetupItem::setRegionOffset(const Isometry3& T)
+{
+    impl->regionOffset = T;
+    // impl->updateScenePosition();
+    if(impl->regionLocation) {
+        impl->regionLocation->sigLocationChanged_();
+    }
+}
+
+
+const Isometry3& SimpleSetupItem::regionOffset() const
+{
+    return impl->regionOffset;
+}
+
+
+// LocationProxyPtr SimpleSetupItem::getLocationProxy()
+// {
+//     if(!impl->regionLocation) {
+//         impl->regionLocation = new RegionLocation(impl);
+//     }
+//     return impl->regionLocation;
+// }
+
+
+RegionLocation::RegionLocation(SimpleSetupItemImpl* impl)
+    : LocationProxy(GlobalLocation),
+      impl(impl)
+{
+
+}
+
+
+Item* RegionLocation::getCorrespondingItem()
+{
+    return impl->self;
+}
+
+
+Isometry3 RegionLocation::getLocation() const
+{
+    return impl->regionOffset;
+}
+
+
+bool RegionLocation::setLocation(const Isometry3& T)
+{
+    impl->self->setRegionOffset(T);
+    impl->self->notifyUpdate();
+    return true;
+}
+
+
+SignalProxy<void()> RegionLocation::sigLocationChanged()
+{
+    return sigLocationChanged_;
+}
+
+
 SgNode* SimpleSetupItem::getScene()
 {
     if(!impl->scene) {
@@ -118,7 +201,7 @@ SgNode* SimpleSetupItem::getScene()
 void SimpleSetupItemImpl::createScene()
 {
     if(!scene) {
-        scene = new SgPosTransform;
+        scene = new SgPosTransform(regionOffset);
     } else {
         scene->clearChildren();
     }
@@ -158,6 +241,15 @@ void SimpleSetupItemImpl::createScene()
     auto material = lineSet->getOrCreateMaterial();
     material->setDiffuseColor(Vector3f(1.0f, 1.0f, 0.0f));
     scene->addChild(lineSet);
+}
+
+
+void SimpleSetupItemImpl::updateScenePosition()
+{
+    if(scene) {
+        scene->setPosition(regionOffset);
+        scene->notifyUpdate();
+    }
 }
 
 
@@ -265,6 +357,30 @@ void SimpleSetupItemImpl::doPutProperties(PutPropertyFunction& putProperty)
 {
     putProperty(_("Geometric planner"), plannerType,
                 [&](int index){ return onPlannerPropertyChanged(index); });
+
+    // putProperty(_("Region offset"), str(Vector3(regionOffset.translation())),
+    //             [&](const string& str) {
+    //                 Vector3 p;
+    //                 if(toVector3(str, p)) {
+    //                     regionOffset.translation() = p;
+    //                     self->setRegionOffset(regionOffset);
+    //                     return true;
+    //                 }
+    //                 return false;
+    //             });
+
+    // auto rpy = rpyFromRot(regionOffset.linear());
+    // putProperty(_("Region angle"), str(Vector3(rpy)),
+    //             [&](const string& str) {
+    //                 Vector3 rpy;
+    //                 if(toVector3(str, rpy)) {
+    //                     regionOffset.linear() = rotFromRpy(Vector3(rpy));
+    //                     self->setRegionOffset(regionOffset);
+    //                     return true;
+    //                 }
+    //                 return false;
+    //             });
+
     putProperty(_("BB min"), str(self->boundingBox().min()),
                 [this](const string& str){ return onBBMinPropertyChanged(str); });
     putProperty(_("BB max"), str(self->boundingBox().max()),
@@ -287,6 +403,13 @@ bool SimpleSetupItem::store(Archive& archive)
 bool SimpleSetupItemImpl::store(Archive& archive)
 {
     archive.write("planner_type", plannerType.which());
+    if(!regionOffset.translation().isZero()) {
+        write(archive, "translation", regionOffset.translation());
+    }
+    AngleAxis aa(regionOffset.linear());
+    if(aa.angle() != 0.0) {
+        writeDegreeAngleAxis(archive, "rotation", aa);
+    }
     write(archive, "bb_min", self->boundingBox().min());
     write(archive, "bb_max", self->boundingBox().max());
     write(archive, "start_position", self->startPosition());
@@ -304,19 +427,44 @@ bool SimpleSetupItem::restore(const Archive& archive)
 
 bool SimpleSetupItemImpl::restore(const Archive& archive)
 {
+    Vector3 p;
     plannerType.select(archive.get("planner_type", 0));
+    bool offsetUpdated = false;
+    if(read(archive, "translation", p)) {
+        regionOffset.translation() = p;
+        offsetUpdated = true;
+    }
+    AngleAxis aa;
+    if(readDegreeAngleAxis(archive, "rotation", aa)) {
+        regionOffset.linear() = aa.toRotationMatrix();
+        offsetUpdated = true;
+    }
+    if(offsetUpdated) {
+        self->setRegionOffset(regionOffset);
+    }
+
+    bool bbUpdated = false;
     Vector3 min(-5.0, -5.0, -5.0);
     Vector3 max(5.0, 5.0, 5.0);
-    read(archive, "bb_min", min);
-    read(archive, "bb_max", max);
-    bb.set(min, max);
-    read(archive, "start_position", startPosition);
-    read(archive, "goal_position", goalPosition);
+    if(read(archive, "bb_min", min)) {
+        bbUpdated = true;
+    }
+    if(read(archive, "bb_max", max)) {
+        bbUpdated = true;
+    }
+    if(bbUpdated) {
+        bb.set(min, max);
+        self->setBoundingBox(bb);
+    }
+
+    if(read(archive, "start_position", startPosition)) {
+        self->setStartPosition(startPosition);
+    }
+    if(read(archive, "goal_position", goalPosition)) {
+        self->setGoalPosition(goalPosition);
+    }
 
     self->setPlanner(plannerType.which());
-    self->setBoundingBox(bb);
-    self->setStartPosition(startPosition);
-    self->setGoalPosition(goalPosition);
     self->setCalculationTime(archive.get("calculation_time", 0));
     return true;
 }
