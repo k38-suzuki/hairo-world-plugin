@@ -7,6 +7,7 @@
 #include <fmt/format.h>
 #include "CrawlerGenerator.h"
 #include "GratingGenerator.h"
+#include "InertiaCalculator.h"
 #include "PipeGenerator.h"
 #include "SlopeGenerator.h"
 #include "TerrainGenerator.h"
@@ -15,11 +16,11 @@ using namespace cnoid;
 
 namespace {
 
-class BodyGeneratorPlugin : public Plugin
+class BodyEditPlugin : public Plugin
 {
 public:
 
-    BodyGeneratorPlugin() : Plugin("BodyGenerator")
+    BodyEditPlugin() : Plugin("BodyEdit")
     {
         require("Body");
     }
@@ -28,6 +29,7 @@ public:
     {
         CrawlerGenerator::initializeClass(this);
         GratingGenerator::initializeClass(this);
+        InertiaCalculator::initializeClass(this);
         PipeGenerator::initializeClass(this);
         SlopeGenerator::initializeClass(this);
         TerrainGenerator::initializeClass(this);
@@ -37,7 +39,7 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("BodyGenerator Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            fmt::format("BodyEdit Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyright (c) 2023 Japan Atomic Energy Agency.\n"
             "\n" +
@@ -48,4 +50,4 @@ public:
 
 }
 
-CNOID_IMPLEMENT_PLUGIN_ENTRY(BodyGeneratorPlugin)
+CNOID_IMPLEMENT_PLUGIN_ENTRY(BodyEditPlugin)

@@ -147,7 +147,7 @@ void TerrainGenerator::initializeClass(ExtensionManager* ext)
     if(!tgeneratorInstance) {
         tgeneratorInstance = ext->manage(new TerrainGenerator);
 
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
+        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
         mm.addItem(_("BoxTerrain"))->sigTriggered().connect(
                     [&](){ tgeneratorInstance->impl->show(); });
     }

@@ -1,11 +1,11 @@
-# Japanese translations for BodyGeneratorPlugin package.
-# Copyright (C) 2023 THE BodyGeneratorPlugin'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the BodyGeneratorPlugin package.
+# Japanese translations for BodyEditPlugin package.
+# Copyright (C) 2023 THE BodyEditPlugin'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the BodyEditPlugin package.
 # k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2023.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: BodyGeneratorPlugin\n"
+"Project-Id-Version: BodyEditPlugin\n"
 "Report-Msgid-Bugs-To: suzuki.kenta38@jaea.go.jp\n"
 "POT-Creation-Date: 2023-01-11 05:08-0800\n"
 "PO-Revision-Date: 2023-01-11 05:08-0800\n"
@@ -32,8 +32,8 @@ msgstr "ボックステレイン"
 msgid "CrawlerRobot"
 msgstr "クローラロボット"
 
-msgid "BodyGenerator"
-msgstr "ボディジェネレータ"
+msgid "Make Body File"
+msgstr "Bodyファイルの生成"
 
 msgid "CrawlerRobot Builder"
 msgstr "クローラロボットビルダ"
@@ -253,3 +253,57 @@ msgstr "設定1"
 
 msgid "Setting 2"
 msgstr "設定2"
+
+msgid "InertiaCalculator"
+msgstr "慣性モーメント計算機"
+
+msgid "Calculate Inertia"
+msgstr "慣性モーメントの計算"
+
+msgid "Box"
+msgstr ""
+
+msgid "Sphere"
+msgstr ""
+
+msgid "Cylinder"
+msgstr ""
+
+msgid "Cone"
+msgstr ""
+
+msgid "Shape"
+msgstr "形状"
+
+msgid "&Calc"
+msgstr "計算(&C)"
+
+msgid "x [m]"
+msgstr ""
+
+msgid "y [m]"
+msgstr ""
+
+msgid "z [m]"
+msgstr ""
+
+msgid "height [m]"
+msgstr "高さ [m]"
+
+msgid "axis [-]"
+msgstr "回転軸 [-]"
+
+msgid "shape: Box, mass: {0} [kg], x: {1} [m], y: {2} [m], z: {3} [m]"
+msgstr "形状: Box, 質量: {0} [kg], x: {1} [m], y: {2} [m], z: {3} [m]"
+
+msgid "shape: Sphere, mass: {0} [kg], radius: {1} [m]"
+msgstr "形状: Sphere, 質量: {0} [kg], 半径: {1} [m]"
+
+msgid "shape: Cylinder, mass: {0} [kg], radius: {1} [m], height: {2} [m], axis: {3} [-]"
+msgstr "形状: Cylinder, 質量: {0} [kg], 半径: {1} [m], 高さ: {2} [m], 回転軸: {3} [-]"
+
+msgid "shape: Cone, mass: {0} [kg], radius: {1} [m], height: {2} [m], axis: {3} [-]"
+msgstr "形状: Cylinder, 質量: {0} [kg], 半径: {1} [m], 高さ: {2} [m], 回転軸: {3} [-]"
+
+msgid "inertia: [ {0}, 0, 0, 0, {1}, 0, 0, 0, {2} ]\n"
+msgstr ""

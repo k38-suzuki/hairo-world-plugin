@@ -138,7 +138,7 @@ void SlopeGenerator::initializeClass(ExtensionManager* ext)
     if(!sgeneratorInstance) {
         sgeneratorInstance = ext->manage(new SlopeGenerator);
 
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("BodyGenerator"));
+        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
         mm.addItem(_("Slope"))->sigTriggered().connect(
                     [&](){ sgeneratorInstance->impl->show(); });
     }

@@ -1,7 +1,6 @@
-add_subdirectory(BodyGeneratorPlugin)
+add_subdirectory(BodyEditPlugin)
 add_subdirectory(CFDPlugin)
 add_subdirectory(CollisionSeqPlugin)
-add_subdirectory(InertiaCalculatorPlugin)
 add_subdirectory(JoystickStartPlugin)
 add_subdirectory(MotionCapturePlugin)
 add_subdirectory(PHITSPlugin)

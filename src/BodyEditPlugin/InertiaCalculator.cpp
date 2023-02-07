@@ -184,7 +184,7 @@ void InertiaCalculator::initializeClass(ExtensionManager* ext)
     }
 
     MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
-    mm.addItem(_("InertiaCalculator"))->sigTriggered().connect([&](){
+    mm.addItem(_("Calculate Inertia"))->sigTriggered().connect([&](){
         calculatorInstance->impl->mv->clear();
         calculatorInstance->impl->show();
     });
