@@ -66,7 +66,6 @@ public:
     Interpolator<VectorXd> interpolator;
     vector<Vector3> states;
     vector<Vector3> solutions;
-    TimeBar* tb;
     string baseName;
     string wristName;
     double timeLength;
@@ -97,8 +96,7 @@ IKPlannerItem::IKPlannerItem()
 
 
 IKPlannerItemImpl::IKPlannerItemImpl(IKPlannerItem* self)
-    : self(self),
-      tb(TimeBar::instance())
+    : self(self)
 {
     bodyItem = nullptr;
     base = nullptr;
@@ -110,8 +108,9 @@ IKPlannerItemImpl::IKPlannerItemImpl(IKPlannerItem* self)
     wristName.clear();
     timeLength = 1.0;
 
-    tb->sigPlaybackStarted().connect([&](double time){ onPlaybackStarted(time); });
-    tb->sigTimeChanged().connect([&](double time){ return onTimeChanged(time); });
+    TimeBar* timeBar = TimeBar::instance();
+    timeBar->sigPlaybackStarted().connect([&](double time){ onPlaybackStarted(time); });
+    timeBar->sigTimeChanged().connect([&](double time){ return onTimeChanged(time); });
 }
 
 
@@ -124,8 +123,7 @@ IKPlannerItem::IKPlannerItem(const IKPlannerItem& org)
 
 
 IKPlannerItemImpl::IKPlannerItemImpl(IKPlannerItem* self, const IKPlannerItemImpl& org)
-    : self(self),
-      tb(TimeBar::instance())
+    : self(self)
 {
     baseName = org.baseName;
     wristName = org.wristName;
@@ -220,12 +218,13 @@ void IKPlannerItemImpl::onPlaybackStarted(const double& time)
 bool IKPlannerItemImpl::onTimeChanged(const double& time)
 {
     if(self->isSolved()) {
-        if(tb->isDoingPlayback()) {
+        TimeBar* timeBar = TimeBar::instance();
+        if(timeBar->isDoingPlayback()) {
             VectorXd p(6);
             p = interpolator.interpolate(time);
             calcInverseKinematics(Vector3(p.head<3>()));
             if(time > timeLength) {
-                tb->stopPlayback(true);
+                timeBar->stopPlayback(true);
             }
         }
     }
@@ -323,7 +322,7 @@ void IKPlannerItemImpl::postPlannerFunction(og::PathGeometric& pathes)
 
     PointSetItem* statePointSetItem = new PointSetItem;
     statePointSetItem->setName("StatePointSet");
-//    statePointSetItem->setChecked(true);
+    statePointSetItem->setChecked(true);
     self->addSubItem(statePointSetItem);
     updatePointSet(statePointSetItem, states, Vector3f(1.0, 0.0, 0.0));
 
