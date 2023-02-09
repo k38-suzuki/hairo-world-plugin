@@ -47,8 +47,8 @@ public:
     SimpleSetupItemImpl(SimpleSetupItem* self, const SimpleSetupItemImpl& org);
     SimpleSetupItem* self;
 
+    Vector3 boxRegionSize;
     Isometry3 regionOffset;
-    SgPosTransformPtr scene;
     Selection plannerType;
     BoundingBox bb;
     Vector3 startPosition;
@@ -56,7 +56,12 @@ public:
 
     ref_ptr<RegionLocation> regionLocation;
 
+    SgPosTransformPtr scene;
+    SgLineSetPtr sceneLineSet;
+    SgVertexArrayPtr sceneVertices;
+
     void createScene();
+    void updateSceneVertices();
     void updateScenePosition();
     bool onPlannerPropertyChanged(const int& index);
     bool onBBMinPropertyChanged(const string& str);
@@ -91,6 +96,7 @@ SimpleSetupItemImpl::SimpleSetupItemImpl(SimpleSetupItem* self)
     bb.set(min, max);
     startPosition << 0.0, 0.0, 0.0;
     goalPosition << 0.0, 0.0, 0.0;
+    boxRegionSize.setOnes();
     regionOffset.setIdentity();
 }
 
@@ -111,6 +117,7 @@ SimpleSetupItemImpl::SimpleSetupItemImpl(SimpleSetupItem* self, const SimpleSetu
     bb = org.bb;
     startPosition = org.startPosition;
     goalPosition = org.goalPosition;
+    boxRegionSize = org.boxRegionSize;
     regionOffset = org.regionOffset;
 }
 
@@ -133,7 +140,7 @@ void SimpleSetupItem::initializeClass(ExtensionManager* ext)
 void SimpleSetupItem::setRegionOffset(const Isometry3& T)
 {
     impl->regionOffset = T;
-    // impl->updateScenePosition();
+    impl->updateScenePosition();
     if(impl->regionLocation) {
         impl->regionLocation->sigLocationChanged_();
     }
@@ -206,41 +213,54 @@ void SimpleSetupItemImpl::createScene()
         scene->clearChildren();
     }
 
-    SgVertexArray* vertices = new SgVertexArray;
-    auto& v = *vertices;
-    Vector3 min = self->boundingBox().min();
-    Vector3 max = self->boundingBox().max();
-    v.resize(8);
-    v[0] << min[0], min[1], min[2];
-    v[1] << min[0], min[1], max[2];
-    v[2] << min[0], max[1], min[2];
-    v[3] << min[0], max[1], max[2];
-    v[4] << max[0], min[1], min[2];
-    v[5] << max[0], min[1], max[2];
-    v[6] << max[0], max[1], min[2];
-    v[7] << max[0], max[1], max[2];
-//    vertices->notifyUpdate();
+    sceneVertices = new SgVertexArray;
+    updateSceneVertices();
 
-    SgLineSet* lineSet = new SgLineSet;
-    lineSet->setVertices(vertices);
-    lineSet->setLineWidth(2.0f);
-    lineSet->setNumLines(12);
-    lineSet->setLine(0, 0, 1);
-    lineSet->setLine(1, 1, 3);
-    lineSet->setLine(2, 3, 2);
-    lineSet->setLine(3, 2, 0);
-    lineSet->setLine(4, 4, 5);
-    lineSet->setLine(5, 5, 7);
-    lineSet->setLine(6, 7, 6);
-    lineSet->setLine(7, 6, 4);
-    lineSet->setLine(8, 0, 4);
-    lineSet->setLine(9, 1, 5);
-    lineSet->setLine(10, 3, 7);
-    lineSet->setLine(11, 2, 6);
+    sceneLineSet = new SgLineSet;
+    sceneLineSet->setVertices(sceneVertices);
+    sceneLineSet->setLineWidth(2.0f);
+    sceneLineSet->setNumLines(12);
+    sceneLineSet->setLine(0, 0, 1);
+    sceneLineSet->setLine(1, 1, 3);
+    sceneLineSet->setLine(2, 3, 2);
+    sceneLineSet->setLine(3, 2, 0);
+    sceneLineSet->setLine(4, 4, 5);
+    sceneLineSet->setLine(5, 5, 7);
+    sceneLineSet->setLine(6, 7, 6);
+    sceneLineSet->setLine(7, 6, 4);
+    sceneLineSet->setLine(8, 0, 4);
+    sceneLineSet->setLine(9, 1, 5);
+    sceneLineSet->setLine(10, 3, 7);
+    sceneLineSet->setLine(11, 2, 6);
 
-    auto material = lineSet->getOrCreateMaterial();
+    auto material = sceneLineSet->getOrCreateMaterial();
     material->setDiffuseColor(Vector3f(1.0f, 1.0f, 0.0f));
-    scene->addChild(lineSet);
+    scene->addChild(sceneLineSet);
+}
+
+
+void SimpleSetupItemImpl::updateSceneVertices()
+{
+    if(sceneVertices) {
+        auto& v = *sceneVertices;
+        boxRegionSize = bb.max() - bb.min();
+        Vector3 min = -boxRegionSize / 2.0;
+        Vector3 max = boxRegionSize / 2.0;
+        Vector3 p = bb.min() + boxRegionSize / 2.0;
+        regionOffset.translation() = p;
+        self->setRegionOffset(regionOffset);
+
+        v.resize(8);
+        v[0] << min[0], min[1], min[2];
+        v[1] << min[0], min[1], max[2];
+        v[2] << min[0], max[1], min[2];
+        v[3] << min[0], max[1], max[2];
+        v[4] << max[0], min[1], min[2];
+        v[5] << max[0], min[1], max[2];
+        v[6] << max[0], max[1], min[2];
+        v[7] << max[0], max[1], max[2];
+        sceneVertices->notifyUpdate();
+    }
 }
 
 
