@@ -28,7 +28,7 @@ public:
     void setRegionOffset(const Isometry3& T);
     const Isometry3& regionOffset() const;
 
-    // virtual LocationProxyPtr getLocationProxy() override;
+    virtual LocationProxyPtr getLocationProxy() override;
 
     virtual SgNode* getScene() override;
 

@@ -139,7 +139,8 @@ void SimpleSetupItem::initializeClass(ExtensionManager* ext)
 
 void SimpleSetupItem::setRegionOffset(const Isometry3& T)
 {
-    impl->regionOffset = T;
+    // impl->regionOffset = T;
+    impl->regionOffset.translation() = T.translation();
     impl->updateScenePosition();
     if(impl->regionLocation) {
         impl->regionLocation->sigLocationChanged_();
@@ -153,13 +154,13 @@ const Isometry3& SimpleSetupItem::regionOffset() const
 }
 
 
-// LocationProxyPtr SimpleSetupItem::getLocationProxy()
-// {
-//     if(!impl->regionLocation) {
-//         impl->regionLocation = new RegionLocation(impl);
-//     }
-//     return impl->regionLocation;
-// }
+LocationProxyPtr SimpleSetupItem::getLocationProxy()
+{
+    if(!impl->regionLocation) {
+        impl->regionLocation = new RegionLocation(impl);
+    }
+    return impl->regionLocation;
+}
 
 
 RegionLocation::RegionLocation(SimpleSetupItemImpl* impl)
@@ -268,6 +269,10 @@ void SimpleSetupItemImpl::updateScenePosition()
 {
     if(scene) {
         scene->setPosition(regionOffset);
+        Vector3 min = regionOffset.translation() - boxRegionSize / 2.0;
+        Vector3 max = regionOffset.translation() + boxRegionSize / 2.0;
+        bb.set(min, max);
+        self->setBoundingBox(bb);
         scene->notifyUpdate();
     }
 }
