@@ -24,7 +24,7 @@ using namespace cnoid;
 
 namespace {
 
-InertiaCalculator* calculatorInstance = nullptr;
+InertiaCalculator* instance_ = nullptr;
 
 struct DoubleSpinInfo {
     int row;
@@ -179,14 +179,14 @@ InertiaCalculator::~InertiaCalculator()
 
 void InertiaCalculator::initializeClass(ExtensionManager* ext)
 {
-    if(!calculatorInstance) {
-        calculatorInstance = ext->manage(new InertiaCalculator);
+    if(!instance_) {
+        instance_ = ext->manage(new InertiaCalculator);
     }
 
     MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
     mm.addItem(_("Calculate Inertia"))->sigTriggered().connect([&](){
-        calculatorInstance->impl->mv->clear();
-        calculatorInstance->impl->show();
+        instance_->impl->mv->clear();
+        instance_->impl->show();
     });
 }
 

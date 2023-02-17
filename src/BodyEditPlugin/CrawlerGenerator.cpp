@@ -38,7 +38,7 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
-CrawlerGenerator* cgeneratorInstance = nullptr;
+CrawlerGenerator* instance_ = nullptr;
 
 VectorXd calcBoxInertia(double mass, double x, double y, double z)
 {
@@ -488,12 +488,12 @@ CrawlerGenerator::~CrawlerGenerator()
 
 void CrawlerGenerator::initializeClass(ExtensionManager* ext)
 {
-    if(!cgeneratorInstance) {
-        cgeneratorInstance = ext->manage(new CrawlerGenerator);
+    if(!instance_) {
+        instance_ = ext->manage(new CrawlerGenerator);
 
         MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
         mm.addItem(_("CrawlerRobot"))->sigTriggered().connect(
-                    [&](){ cgeneratorInstance->impl->show(); });
+                    [&](){ instance_->impl->show(); });
     }
 }
 

@@ -30,7 +30,7 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
-TerrainGenerator* tgeneratorInstance = nullptr;
+TerrainGenerator* instance_ = nullptr;
 DoubleSpinBox* scaleSpin = nullptr;
 
 }
@@ -144,12 +144,12 @@ TerrainGenerator::~TerrainGenerator()
 
 void TerrainGenerator::initializeClass(ExtensionManager* ext)
 {
-    if(!tgeneratorInstance) {
-        tgeneratorInstance = ext->manage(new TerrainGenerator);
+    if(!instance_) {
+        instance_ = ext->manage(new TerrainGenerator);
 
         MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
         mm.addItem(_("BoxTerrain"))->sigTriggered().connect(
-                    [&](){ tgeneratorInstance->impl->show(); });
+                    [&](){ instance_->impl->show(); });
     }
 }
 

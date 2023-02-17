@@ -28,7 +28,7 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
-PipeGenerator* pgeneratorInstance = nullptr;
+PipeGenerator* instance_ = nullptr;
 
 struct DoubleSpinInfo
 {
@@ -165,12 +165,12 @@ PipeGenerator::~PipeGenerator()
 
 void PipeGenerator::initializeClass(ExtensionManager* ext)
 {
-    if(!pgeneratorInstance) {
-        pgeneratorInstance = ext->manage(new PipeGenerator);
+    if(!instance_) {
+        instance_ = ext->manage(new PipeGenerator);
 
         MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
         mm.addItem(_("Pipe"))->sigTriggered().connect(
-                    [&](){ pgeneratorInstance->impl->show(); });
+                    [&](){ instance_->impl->show(); });
     }
 }
 

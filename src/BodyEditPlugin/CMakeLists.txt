@@ -7,6 +7,7 @@ set(sources
     InertiaCalculator.cpp
     PipeGenerator.cpp
     SlopeGenerator.cpp
+    StairsGenerator.cpp
     TerrainGenerator.cpp
     )
 
@@ -17,6 +18,7 @@ set(headers
     InertiaCalculator.h
     PipeGenerator.h
     SlopeGenerator.h
+    StairsGenerator.h
     TerrainGenerator.h
     gettext.h
     )

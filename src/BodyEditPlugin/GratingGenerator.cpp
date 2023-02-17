@@ -27,7 +27,7 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
-GratingGenerator* ggeneratorInstance = nullptr;
+GratingGenerator* instance_ = nullptr;
 
 struct DoubleSpinInfo
 {
@@ -191,12 +191,12 @@ GratingGenerator::~GratingGenerator()
 
 void GratingGenerator::initializeClass(ExtensionManager* ext)
 {
-    if(!ggeneratorInstance) {
-        ggeneratorInstance = ext->manage(new GratingGenerator);
+    if(!instance_) {
+        instance_ = ext->manage(new GratingGenerator);
 
         MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
         mm.addItem(_("Grating"))->sigTriggered().connect(
-                    [&](){ ggeneratorInstance->impl->show(); });
+                    [&](){ instance_->impl->show(); });
     }
 }
 

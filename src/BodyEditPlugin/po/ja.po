@@ -26,6 +26,30 @@ msgstr "グレーチング"
 msgid "Slope"
 msgstr "スロープ"
 
+msgid "Stairs"
+msgstr "階段"
+
+msgid "Stairs Builder"
+msgstr "階段ビルダ"
+
+msgid "Tread [m]"
+msgstr "踏み面 [m]"
+
+msgid "Stair width [m]"
+msgstr "階段幅 [m]"
+
+msgid "Riser [m]"
+msgstr "蹴上げ [m]"
+
+msgid "Width of stringer [m]"
+msgstr "側桁の幅 [m]"
+
+msgid "Tread thickness [m]"
+msgstr "踏み板の厚さ [m]"
+
+msgid "Number of steps [-]"
+msgstr "段数 [-]"
+
 msgid "BoxTerrain"
 msgstr "ボックステレイン"
 

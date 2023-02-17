@@ -28,7 +28,7 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
-SlopeGenerator* sgeneratorInstance = nullptr;
+SlopeGenerator* instance_ = nullptr;
 
 struct DoubleSpinInfo
 {
@@ -135,12 +135,12 @@ SlopeGenerator::~SlopeGenerator()
 
 void SlopeGenerator::initializeClass(ExtensionManager* ext)
 {
-    if(!sgeneratorInstance) {
-        sgeneratorInstance = ext->manage(new SlopeGenerator);
+    if(!instance_) {
+        instance_ = ext->manage(new SlopeGenerator);
 
         MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
         mm.addItem(_("Slope"))->sigTriggered().connect(
-                    [&](){ sgeneratorInstance->impl->show(); });
+                    [&](){ instance_->impl->show(); });
     }
 }
 

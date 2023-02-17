@@ -10,6 +10,7 @@
 #include "InertiaCalculator.h"
 #include "PipeGenerator.h"
 #include "SlopeGenerator.h"
+#include "StairsGenerator.h"
 #include "TerrainGenerator.h"
 
 using namespace cnoid;
@@ -32,6 +33,7 @@ public:
         InertiaCalculator::initializeClass(this);
         PipeGenerator::initializeClass(this);
         SlopeGenerator::initializeClass(this);
+        StairsGenerator::initializeClass(this);
         TerrainGenerator::initializeClass(this);
         return true;
     }
