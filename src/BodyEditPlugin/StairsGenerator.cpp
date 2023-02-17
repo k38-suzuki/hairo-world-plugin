@@ -241,14 +241,16 @@ void StairsGeneratorImpl::writeLinkShape(Listing* elementsNode)
     double steps = stepsSpin->value();
 
     double y = (width + stringer) / 2.0;
+    ListingPtr elementsNode1 = new Listing;
+    writeStringerShape(elementsNode1);
+
     // Stringer 1
     {
         MappingPtr node = new Mapping;
 
         node->write("type", "Transform");
         write(node, "translation", Vector3(0.0, y, 0.0));
-        ListingPtr elementsNode1 = new Listing;
-        writeStringerShape(elementsNode1);
+
         if(!elementsNode1->empty()) {
             node->insert("elements", elementsNode1);
         }
@@ -262,25 +264,26 @@ void StairsGeneratorImpl::writeLinkShape(Listing* elementsNode)
 
         node->write("type", "Transform");
         write(node, "translation", Vector3(0.0, -y, 0.0));
-        ListingPtr elementsNode2 = new Listing;
-        writeStringerShape(elementsNode2);
-        if(!elementsNode2->empty()) {
-            node->insert("elements", elementsNode2);
+
+        if(!elementsNode1->empty()) {
+            node->insert("elements", elementsNode1);
         }
 
         elementsNode->append(node);
     }
 
     double depth = tread * steps;
+    ListingPtr elementsNode2 = new Listing;
+    writeStepShape(elementsNode2);
+    
     for(int i = 0; i < steps; ++i) {
         MappingPtr node = new Mapping;
 
         node->write("type", "Transform");
         write(node, "translation", Vector3(-depth / 2.0 + tread * i, 0.0, riser * (i + 1)));
-        ListingPtr elementsNode3 = new Listing;
-        writeStepShape(elementsNode3);
-        if(!elementsNode3->empty()) {
-            node->insert("elements", elementsNode3);
+
+        if(!elementsNode2->empty()) {
+            node->insert("elements", elementsNode2);
         }
 
         elementsNode->append(node);        
@@ -355,11 +358,9 @@ void StairsGeneratorImpl::writeStepShape(Listing* elementsNode)
     node->write("type", "Shape");
     write(node, "translation", Vector3(tread / 2.0, 0.0, -thickness / 2.0));
 
-    MappingPtr geometryNode = new Mapping;
+    MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
     geometryNode->write("type", "Box");
     write(geometryNode, "size", Vector3(tread, width, thickness));
-
-    node->insert("geometry", geometryNode);
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
     MappingPtr materialNode = new Mapping;
