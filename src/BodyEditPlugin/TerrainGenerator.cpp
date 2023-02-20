@@ -21,6 +21,7 @@
 #include <QVBoxLayout>
 #include <fstream>
 #include <sstream>
+#include <stdio.h>
 #include "FileFormWidget.h"
 #include "gettext.h"
 
@@ -44,6 +45,7 @@ public:
 
     bool read(const string& filename);
 
+    double height(const int& x, const int& y) const { return height_[y][x]; }
     int xsize() const { return xsize_; }
     int ysize() const { return ysize_; }
     Vector3 p_a(const int& x, const int& y, const int& index) const { return point_a_[y][x][index]; }
@@ -52,11 +54,11 @@ public:
     int id(const int& x, const int& y, const int& index, const int& sindex) const;
 
 private:
-    double height[512][512];
-    double cell_a[512][512][4];
-    double cell_b[512][512][4];
-    Vector3 point_a_[512][512][4];
-    Vector3 point_b_[512][512][4];
+    double height_[BUFSIZ][BUFSIZ];
+    double cell_a_[BUFSIZ][BUFSIZ][4];
+    double cell_b_[BUFSIZ][BUFSIZ][4];
+    Vector3 point_a_[BUFSIZ][BUFSIZ][4];
+    Vector3 point_b_[BUFSIZ][BUFSIZ][4];
     int xsize_;
     int ysize_;
     int id_;
@@ -79,6 +81,7 @@ public:
     MappingPtr writeBody(const string& filename);
     MappingPtr writeLink();
     void writeLinkShape(Listing* elementsNode);
+    void writeLinkShape2(Listing* elementsNode);
 };
 
 }
@@ -230,9 +233,11 @@ MappingPtr TerrainGeneratorImpl::writeLink()
     node->write("name", "Root");
     node->write("jointType", "fixed");
     node->write("material", "Ground");
+    node->write("AMOR", true);
 
     ListingPtr elementsNode = new Listing;
     writeLinkShape(elementsNode);
+    // writeLinkShape2(elementsNode);
     if(!elementsNode->empty()) {
         node->insert("elements", elementsNode);
     }
@@ -355,6 +360,39 @@ void TerrainGeneratorImpl::writeLinkShape(Listing* elementsNode)
 }
 
 
+void TerrainGeneratorImpl::writeLinkShape2(Listing* elementsNode)
+{
+    int xsize = data->xsize();
+    int ysize = data->ysize();
+    double scale = scaleSpin->value();
+    double unit = 0.1 * scale;    
+
+    for(int j = 0; j < ysize; ++j) {
+        for(int i = 0; i < xsize; ++i) {
+            MappingPtr node = new Mapping;
+
+            node->write("type", "Shape");
+
+            double x = (-xsize / 2.0 + i + 0.5) * unit;
+            double y = (ysize / 2.0 - j - 0.5) * unit;
+            double z = data->height(i, j) * unit ;
+            write(node, "translation", Vector3(x, y, z / 2.0));
+
+            MappingPtr geometryNode = node->createFlowStyleMapping("geometry");
+            geometryNode->write("type", "Box");
+            write(geometryNode, "size", Vector3(unit, unit, z));
+
+            MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
+            MappingPtr materialNode = new Mapping;
+            write(materialNode, "diffuseColor", Vector3(1.0, 1.0, 1.0));
+            appearanceNode->insert("material", materialNode);
+
+            elementsNode->append(node);
+        }
+    }
+}
+
+
 TerrainData::TerrainData()
 {
     xsize_ = 0;
@@ -380,9 +418,9 @@ bool TerrainData::read(const string& filename)
         istringstream stream(str);
         row = 0;
         while(getline(stream, token, ',')) {
-            height[clm][row] = atof(token.c_str());
-            if(height[clm][row] < 0.0) {
-                height[clm][row] = 0.0;
+            height_[clm][row] = atof(token.c_str());
+            if(height_[clm][row] < 0.0) {
+                height_[clm][row] = 0.0;
             }
             row++;
         }
@@ -391,20 +429,20 @@ bool TerrainData::read(const string& filename)
     xsize_ = row;
     ysize_ = clm;
 
-    //set cell_a
+    //set cell_a_
     for(int k = 0; k < ysize_; ++k) {
         for(int j = 0; j < xsize_; ++j) {
             for(int i = 0; i < 4; ++i) {
-                cell_a[k][j][i] = id_++;
+                cell_a_[k][j][i] = id_++;
             }
         }
     }
 
-    //set cell_b
+    //set cell_b_
     for(int k = 0; k < ysize_; ++k) {
         for(int j = 0; j < xsize_; ++j) {
             for(int i = 0; i < 4; ++i) {
-                cell_b[k][j][i] = id_++;
+                cell_b_[k][j][i] = id_++;
             }
         }
     }
@@ -416,7 +454,7 @@ bool TerrainData::read(const string& filename)
         for(int i = 0; i < xsize_; ++i) {
             double eq0 = scale * i;
             double eq1 = scale * j * -1;
-            double eq2 = scale * height[j][i];
+            double eq2 = scale * height_[j][i];
             double eq3 = scale * (j + 1) * -1;
             double eq4 = scale * (i + 1);
             double eq5 = scale * 0;
@@ -439,8 +477,8 @@ bool TerrainData::read(const string& filename)
 int TerrainData::id(const int& x, const int& y, const int& index, const int& sindex) const
 {
     if(sindex == 0) {
-        return cell_a[y][x][index];
+        return cell_a_[y][x][index];
     } else {
-        return cell_b[y][x][index];
+        return cell_b_[y][x][index];
     }
 }

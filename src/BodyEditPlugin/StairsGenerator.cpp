@@ -244,27 +244,14 @@ void StairsGeneratorImpl::writeLinkShape(Listing* elementsNode)
     ListingPtr elementsNode1 = new Listing;
     writeStringerShape(elementsNode1);
 
-    // Stringer 1
-    {
+    for(int i = 0; i < 2; ++i) {
         MappingPtr node = new Mapping;
-
-        node->write("type", "Transform");
-        write(node, "translation", Vector3(0.0, y, 0.0));
-
-        if(!elementsNode1->empty()) {
-            node->insert("elements", elementsNode1);
+        if(i != 0) {
+            node->setFlowStyle(true);
         }
 
-        elementsNode->append(node);
-    }
-
-    // Stringer 2
-    {
-        MappingPtr node = new Mapping;
-        node->setFlowStyle(true);
-
         node->write("type", "Transform");
-        write(node, "translation", Vector3(0.0, -y, 0.0));
+        write(node, "translation", Vector3(0.0, y * (1 - i * 2), 0.0));
 
         if(!elementsNode1->empty()) {
             node->insert("elements", elementsNode1);
