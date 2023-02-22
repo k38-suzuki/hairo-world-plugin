@@ -32,7 +32,7 @@ namespace filesystem = cnoid::stdx::filesystem;
 namespace {
 
 TerrainGenerator* instance_ = nullptr;
-DoubleSpinBox* scaleSpin = nullptr;
+double scale = 1.0;
 
 }
 
@@ -74,6 +74,7 @@ public:
     LineEdit* inputFileLine;
     TerrainData* data;
     FileFormWidget* formWidget;
+    DoubleSpinBox* scaleSpin;
     YAMLWriter yamlWriter;
 
     bool save(const string& filename);
@@ -105,6 +106,7 @@ TerrainGeneratorImpl::TerrainGeneratorImpl(TerrainGenerator* self)
     scaleSpin->setSingleStep(0.1);
     scaleSpin->setValue(1.0);
     scaleSpin->setRange(0.1, 10.0);
+    scaleSpin->sigValueChanged().connect([&](double value){ scale = value; });
 
     inputFileLine = new LineEdit;
     inputFileLine->setEnabled(false);
@@ -252,7 +254,7 @@ void TerrainGeneratorImpl::writeLinkShape(Listing* elementsNode)
 
     node->write("type", "Shape");
 
-    double unit = 0.1 * scaleSpin->value();
+    double unit = 0.1 * scale;
     double x = data->xsize() * unit / 2.0;
     double y = data->ysize() * unit / 2.0;
     write(node, "translation", Vector3(-x, y, 0.0));
@@ -364,8 +366,10 @@ void TerrainGeneratorImpl::writeLinkShape2(Listing* elementsNode)
 {
     int xsize = data->xsize();
     int ysize = data->ysize();
-    double scale = scaleSpin->value();
-    double unit = 0.1 * scale;    
+    double unit = 0.1 * scale;
+
+    MappingPtr materialNode = new Mapping;
+    write(materialNode, "diffuseColor", Vector3(1.0, 1.0, 1.0));
 
     for(int j = 0; j < ysize; ++j) {
         for(int i = 0; i < xsize; ++i) {
@@ -383,8 +387,6 @@ void TerrainGeneratorImpl::writeLinkShape2(Listing* elementsNode)
             write(geometryNode, "size", Vector3(unit, unit, z));
 
             MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-            MappingPtr materialNode = new Mapping;
-            write(materialNode, "diffuseColor", Vector3(1.0, 1.0, 1.0));
             appearanceNode->insert("material", materialNode);
 
             elementsNode->append(node);
@@ -448,16 +450,16 @@ bool TerrainData::read(const string& filename)
     }
 
     //set point_a, point_b
-    double scale = 0.1 * scaleSpin->value();
+    double unit = 0.1 * scale;
 
     for(int j = 0; j < ysize_; ++j) {
         for(int i = 0; i < xsize_; ++i) {
-            double eq0 = scale * i;
-            double eq1 = scale * j * -1;
-            double eq2 = scale * height_[j][i];
-            double eq3 = scale * (j + 1) * -1;
-            double eq4 = scale * (i + 1);
-            double eq5 = scale * 0;
+            double eq0 = unit * i;
+            double eq1 = unit * j * -1;
+            double eq2 = unit * height_[j][i];
+            double eq3 = unit * (j + 1) * -1;
+            double eq4 = unit * (i + 1);
+            double eq5 = unit * 0;
 
             point_a_[j][i][0] = Vector3(eq0, eq1, eq2);
             point_a_[j][i][1] = Vector3(eq0, eq3, eq2);
