@@ -16,7 +16,7 @@
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QLabel>
-#include <QStackedLayout>
+#include <QStackedWidget>
 #include <QVBoxLayout>
 #include "gettext.h"
 
@@ -73,7 +73,7 @@ public:
     enum PageID { BOX, SPHERE, CYLINDER, CONE, NUM_PAGES };
     enum AxisID { X, Y, Z, NUM_AXES };
 
-    QStackedLayout* stbox;
+    QStackedWidget* topWidget;
     MessageView* mv;
     DoubleSpinBox* dspins[NUM_DSPINS];
     ComboBox* combos[NUM_COMBOS];
@@ -113,7 +113,7 @@ InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self)
     hbox->addWidget(combos[SHAPE]);
     hbox->addStretch();
 
-    stbox = new QStackedLayout;
+    topWidget = new QStackedWidget;
     QGridLayout* gbox[NUM_PAGES];
     for(int i = 0; i < NUM_PAGES; ++i) {
         Widget* pageWidget = new Widget;
@@ -122,7 +122,7 @@ InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self)
         vbox->addLayout(gbox[i]);
         vbox->addStretch();
         pageWidget->setLayout(vbox);
-        stbox->addWidget(pageWidget);
+        topWidget->addWidget(pageWidget);
     }
 
     for(int i = 0; i < NUM_DSPINS; ++i) {
@@ -159,11 +159,11 @@ InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self)
 
     calcButton->sigClicked().connect([&](){ onCalcButtonClicked(); });
     combos[SHAPE]->sigCurrentIndexChanged().connect(
-                [&](int index){ stbox->setCurrentIndex(index); });
+                [&](int index){ topWidget->setCurrentIndex(index); });
 
     QVBoxLayout* vbox = new QVBoxLayout;
     vbox->addLayout(hbox);
-    vbox->addLayout(stbox);
+    vbox->addWidget(topWidget);
     vbox->addWidget(mv);
     vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);

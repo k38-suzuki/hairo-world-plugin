@@ -16,7 +16,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QKeyEvent>
-#include <QStackedLayout>
+#include <QStackedWidget>
 #include <QVBoxLayout>
 #include <thread>
 #include <mutex>
@@ -107,7 +107,7 @@ public:
     vector<bool> buttonStates;
     JoystickCapture joystick;
     bool isOnScreenJoystickEnabled;
-    QStackedLayout* sbox;
+    QStackedWidget* topWidget;
 
     bool onKeyStateChanged(int key, bool on);
     void onButtonPressed(int index);
@@ -174,22 +174,26 @@ OnScreenJoystickViewImpl::OnScreenJoystickViewImpl(OnScreenJoystickView* self)
     joystick.sigAxis().connect([&](int id, double position){ onAxis(id, position); });
     joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
 
-    QHBoxLayout* hbox = new QHBoxLayout;
-    hbox->addStretch();
-    hbox->addLayout(&grid);
-    hbox->addStretch();
-    QVBoxLayout* vbox = new QVBoxLayout;
-    vbox->addStretch();
-    vbox->addLayout(hbox);
-    vbox->addStretch();
+    Widget* joystickWidget = new Widget;
+    {
+        QHBoxLayout* hbox = new QHBoxLayout;
+        hbox->addStretch();
+        hbox->addLayout(&grid);
+        hbox->addStretch();
+        QVBoxLayout* vbox = new QVBoxLayout;
+        vbox->addStretch();
+        vbox->addLayout(hbox);
+        vbox->addStretch();
+        joystickWidget->setLayout(vbox);   
+    }
 
-    Widget* topWidget = new Widget;
-    topWidget->setLayout(vbox);
-    OnScreenJoystickWidget* joystickWidget = new OnScreenJoystickWidget;
-    sbox = new QStackedLayout;
-    sbox->addWidget(topWidget);
-    sbox->addWidget(joystickWidget);
-    self->setLayout(sbox);
+    topWidget = new QStackedWidget;
+    topWidget->addWidget(joystickWidget);
+    topWidget->addWidget(new OnScreenJoystickWidget);
+
+    QVBoxLayout* vbox = new QVBoxLayout;
+    vbox->addWidget(topWidget);
+    self->setLayout(vbox);
 
     ExtJoystick::registerJoystick("OnScreenJoystickView", this);
 }
@@ -381,7 +385,7 @@ void OnScreenJoystickView::onAttachedMenuRequest(MenuManager& menuManager)
     screenCheck->setChecked(impl->isOnScreenJoystickEnabled);
     screenCheck->sigToggled().connect([&](bool on){
         impl->isOnScreenJoystickEnabled = on;
-        impl->sbox->setCurrentIndex(on ? 1 : 0);
+        impl->topWidget->setCurrentIndex(on ? 1 : 0);
     });
 }
 
