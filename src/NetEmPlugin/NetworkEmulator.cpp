@@ -60,7 +60,7 @@ NetworkEmulatorImpl::NetworkEmulatorImpl(NetworkEmulator* self)
 
     emulator = new NetEm;
 
-    static const char* labels[] = {
+    static const char* label[] = {
         _("Interface"), _("IFB Device"),
         _("InboundDelay"), _("InboundRate"),_("InboundLoss"),
         _("OutboundDelay"), _("OutboundRate"), _("OutboundLoss")
@@ -68,7 +68,7 @@ NetworkEmulatorImpl::NetworkEmulatorImpl(NetworkEmulator* self)
 
     QGridLayout* gbox = new QGridLayout;
     for(int i = 0; i < 8; ++i) {
-        gbox->addWidget(new QLabel(labels[i]), i, 0);
+        gbox->addWidget(new QLabel(label[i]), i, 0);
     }
 
     interfaceCombo = new ComboBox;

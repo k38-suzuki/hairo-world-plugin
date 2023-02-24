@@ -98,7 +98,7 @@ TerrainGenerator::TerrainGenerator()
 TerrainGeneratorImpl::TerrainGeneratorImpl(TerrainGenerator* self)
     : self(self)
 {
-    setWindowTitle(_("BoxTerrain Builder"));
+    setWindowTitle(_("BoxTerrain Generator"));
     yamlWriter.setKeyOrderPreservationMode(true);
 
     scaleSpin = new DoubleSpinBox;
@@ -119,7 +119,6 @@ TerrainGeneratorImpl::TerrainGeneratorImpl(TerrainGenerator* self)
         loadButton->setIcon(openIcon);
     }
 
-    QVBoxLayout* vbox = new QVBoxLayout;
     QGridLayout* gbox = new QGridLayout;
     int index = 0;
     gbox->addWidget(new QLabel(_("Input File (.csv)")), index, 0);
@@ -130,6 +129,7 @@ TerrainGeneratorImpl::TerrainGeneratorImpl(TerrainGenerator* self)
 
     formWidget = new FileFormWidget;
 
+    QVBoxLayout* vbox = new QVBoxLayout;
     vbox->addLayout(gbox);
     vbox->addStretch();
     vbox->addWidget(new HSeparator);

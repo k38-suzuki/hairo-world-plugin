@@ -88,13 +88,12 @@ SlopeGenerator::SlopeGenerator()
 SlopeGeneratorImpl::SlopeGeneratorImpl(SlopeGenerator* self)
     : self(self)
 {
-    setWindowTitle(_("Slope Builder"));
+    setWindowTitle(_("Slope Generator"));
     yamlWriter.setKeyOrderPreservationMode(true);
 
-    QVBoxLayout* vbox = new QVBoxLayout;
     QGridLayout* gbox = new QGridLayout;
 
-    static const char* dlabels[] = {
+    static const char* label0[] = {
         _("Mass [kg]"),  _("Width [m]"),
         _("Height [m]"), _("Length [m]")
     };
@@ -106,7 +105,7 @@ SlopeGeneratorImpl::SlopeGeneratorImpl(SlopeGenerator* self)
         dspins[i]->setSingleStep(info.step);
         dspins[i]->setDecimals(info.decimals);
         dspins[i]->setValue(info.value);
-        gbox->addWidget(new QLabel(dlabels[i]), info.row, info.column - 1);
+        gbox->addWidget(new QLabel(label0[i]), info.row, info.column - 1);
         gbox->addWidget(dspins[i], info.row, info.column);
     }
 
@@ -116,6 +115,7 @@ SlopeGeneratorImpl::SlopeGeneratorImpl(SlopeGenerator* self)
 
     formWidget = new FileFormWidget;
 
+    QVBoxLayout* vbox = new QVBoxLayout;
     vbox->addLayout(gbox);
     vbox->addStretch();
     vbox->addWidget(new HSeparator);

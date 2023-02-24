@@ -14,7 +14,6 @@
 #include <cnoid/RootItem>
 #include <cnoid/Separator>
 #include <cnoid/stdx/filesystem>
-#include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -25,12 +24,6 @@ using namespace cnoid;
 using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
-namespace {
-
-FileFormWidget* formWidget = nullptr;
-
-}
-
 namespace cnoid {
 
 class FileFormWidgetImpl
@@ -39,10 +32,7 @@ public:
     FileFormWidgetImpl(FileFormWidget* self);
     FileFormWidget* self;
 
-    enum DialogButtonId { SAVE, SAVEAS, NUM_BUTTONS };
-
     LineEdit* fileLine;
-    PushButton* buttons[NUM_BUTTONS];
 
     Signal<void(string)> sigClicked_;
     SignalProxy<void(string)> sigClicked() {
@@ -50,8 +40,7 @@ public:
     }
 
     void openSaveDialog();
-    void save(const bool& overwrite);
-    void onSaveButtonClicked(const bool& overwrite);
+    void onSaveButtonClicked();
     void onReloadButtonClicked();
 };
 
@@ -67,27 +56,18 @@ FileFormWidget::FileFormWidget()
 FileFormWidgetImpl::FileFormWidgetImpl(FileFormWidget* self)
     : self(self)
 {
-    QVBoxLayout* vbox = new QVBoxLayout;
-
     fileLine = new LineEdit;
-    QHBoxLayout* fhbox = new QHBoxLayout;
-    fhbox->addWidget(new QLabel(_("File")));
-    fhbox->addWidget(fileLine);
+    PushButton* saveButton = new PushButton(_("&Save"));
+    saveButton->sigClicked().connect([&](){ onSaveButtonClicked(); });
 
-    static const char* labels[] = { _("&Save"), _("Save &As...") };
+    QHBoxLayout* hbox = new QHBoxLayout;
+    hbox->addWidget(new QLabel(_("File")));
+    hbox->addWidget(fileLine);
+    hbox->addWidget(saveButton);
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(self);
-    for(int i = 0; i < NUM_BUTTONS; ++i) {
-        buttons[i] = new PushButton(labels[i]);
-        buttonBox->addButton(buttons[i], QDialogButtonBox::ActionRole);
-    }
-
-    vbox->addLayout(fhbox);
-    vbox->addWidget(buttonBox);
+    QVBoxLayout* vbox = new QVBoxLayout;
+    vbox->addLayout(hbox);
     self->setLayout(vbox);
-
-    buttons[SAVE]->sigClicked().connect([&](){ onSaveButtonClicked(true); });
-    buttons[SAVEAS]->sigClicked().connect([&](){ onSaveButtonClicked(false); });
 }
 
 
@@ -136,11 +116,11 @@ void FileFormWidgetImpl::openSaveDialog()
 }
 
 
-void FileFormWidgetImpl::save(const bool& overwrite)
+void FileFormWidgetImpl::onSaveButtonClicked()
 {
     string filename = fileLine->text().toStdString();
 
-    if(!overwrite || filename.empty()) {
+    if(filename.empty()) {
         openSaveDialog();
         filename = fileLine->text().toStdString();
     }
@@ -152,15 +132,9 @@ void FileFormWidgetImpl::save(const bool& overwrite)
            filename += ".body";
            fileLine->setText(filename.c_str());
         }
-
         sigClicked_(filename);
     }
-}
 
-
-void FileFormWidgetImpl::onSaveButtonClicked(const bool& overwrite)
-{
-    save(overwrite);
     onReloadButtonClicked();
 }
 

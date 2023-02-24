@@ -29,8 +29,8 @@ msgstr "スロープ"
 msgid "Stairs"
 msgstr "階段"
 
-msgid "Stairs Builder"
-msgstr "階段ビルダ"
+msgid "Stairs Generator"
+msgstr "階段ジェネレータ"
 
 msgid "Tread [m]"
 msgstr "踏み面 [m]"
@@ -59,8 +59,8 @@ msgstr "クローラロボット"
 msgid "Make Body File"
 msgstr "Bodyファイルの生成"
 
-msgid "CrawlerRobot Builder"
-msgstr "クローラロボットビルダ"
+msgid "CrawlerRobot Generator"
+msgstr "クローラロボットジェネレータ"
 
 msgid "Front SubTrack"
 msgstr "サブトラック（前）"
@@ -183,10 +183,7 @@ msgid "File"
 msgstr "ファイル"
 
 msgid "&Save"
-msgstr "上書き保存(&S)"
-
-msgid "Save &As..."
-msgstr "保存(&A)"
+msgstr "保存(&S)"
 
 msgid "Save a Body file"
 msgstr "ボディを保存"
@@ -194,8 +191,8 @@ msgstr "ボディを保存"
 msgid "Body files (*.body)"
 msgstr "ボディファイル (*.body)"
 
-msgid "Grating Builder"
-msgstr "グレーチングビルダ"
+msgid "Grating Generator"
+msgstr "グレーチングジェネレータ"
 
 msgid "Mass [kg]"
 msgstr "質量 [kg]"
@@ -230,8 +227,8 @@ msgstr "色 [-]"
 msgid "Size [m, m, m]"
 msgstr "大きさ [m, m, m]"
 
-msgid "Pipe Builder"
-msgstr "パイプビルダ"
+msgid "Pipe Generator"
+msgstr "パイプジェネレータ"
 
 msgid "Length [m]"
 msgstr "長さ [m]"
@@ -248,14 +245,14 @@ msgstr "開口角度 [deg]"
 msgid "Step angle [deg]"
 msgstr "きざみ角度 [deg]"
 
-msgid "Slope Builder"
-msgstr "スロープビルダ"
+msgid "Slope Generator"
+msgstr "スロープジェネレータ"
 
 msgid "Width [m]"
 msgstr "幅 [m]"
 
-msgid "BoxTerrain Builder"
-msgstr "ボックステレインビルダ"
+msgid "BoxTerrain Generator"
+msgstr "ボックステレインジェネレータ"
 
 msgid "&Load"
 msgstr "読み込み"

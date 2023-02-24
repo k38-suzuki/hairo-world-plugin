@@ -623,11 +623,11 @@ DoseConfigDialog::DoseConfigDialog()
     gbox0->addWidget(messageCheck, index++, 2, 1, 2);
 
     QGridLayout* gbox1 = new QGridLayout;
-    static const char* labels[] = { "XY", "YZ", "ZX" };
+    static const char* label[] = { "XY", "YZ", "ZX" };
 
     plainCombo = new ComboBox;
     for(int i = 0; i < 3; ++i) {
-        plainCombo->addItem(labels[i]);
+        plainCombo->addItem(label[i]);
     }
     dspin = new DoubleSpinBox;
     dspin->setRange(0.0, 100.0);

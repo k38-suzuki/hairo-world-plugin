@@ -104,17 +104,14 @@ PipeGenerator::PipeGenerator()
 PipeGeneratorImpl::PipeGeneratorImpl(PipeGenerator* self)
     : self(self)
 {
-    setWindowTitle(_("Pipe Builder"));
+    setWindowTitle(_("Pipe Generator"));
     yamlWriter.setKeyOrderPreservationMode(true);
 
-    QVBoxLayout* vbox = new QVBoxLayout;
     QGridLayout* gbox = new QGridLayout;
 
-    static const char* dlabels[] = { _("Mass [kg]"), _("Length [m]"),
+    static const char* label0[] = { _("Mass [kg]"), _("Length [m]"),
                               _("Inner diameter [m]"), _("Outer diameter [m]")
                             };
-
-    static const char* slabels[] = { _("Opening angle [deg]"), _("Step angle [deg]") };
 
     for(int i = 0; i < NUM_DSPINS; ++i) {
         DoubleSpinInfo info = doubleSpinInfo[i];
@@ -124,9 +121,11 @@ PipeGeneratorImpl::PipeGeneratorImpl(PipeGenerator* self)
         dspin->setSingleStep(info.step);
         dspin->setDecimals(info.decimals);
         dspin->setValue(info.value);
-        gbox->addWidget(new QLabel(dlabels[i]), info.row, info.column - 1);
+        gbox->addWidget(new QLabel(label0[i]), info.row, info.column - 1);
         gbox->addWidget(dspin, info.row, info.column);
     }
+
+    static const char* label1[] = { _("Opening angle [deg]"), _("Step angle [deg]") };
 
     for(int i = 0; i < NUM_SPINS; ++i) {
         SpinInfo info = spinInfo[i];
@@ -134,7 +133,7 @@ PipeGeneratorImpl::PipeGeneratorImpl(PipeGenerator* self)
         SpinBox* spin = spins[i];
         spin->setRange(info.min, info.max);
         spin->setValue(info.value);
-        gbox->addWidget(new QLabel(slabels[i]), info.row, info.column - 1);
+        gbox->addWidget(new QLabel(label1[i]), info.row, info.column - 1);
         gbox->addWidget(spin, info.row, info.column);
     }
 
@@ -144,6 +143,7 @@ PipeGeneratorImpl::PipeGeneratorImpl(PipeGenerator* self)
 
     formWidget = new FileFormWidget;
 
+    QVBoxLayout* vbox = new QVBoxLayout;
     vbox->addLayout(gbox);
     vbox->addStretch();
     vbox->addWidget(new HSeparator);

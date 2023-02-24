@@ -525,7 +525,7 @@ EffectConfigDialog::EffectConfigDialog()
         {  0.0, 1.0 }, {  0.0,  1.0 }, {  0.0, 1.0 }
     };
 
-    static const char* labels[] = {
+    static const char* label[] = {
         _("Hue"), _("Saturation"), _("Value"),
         _("Red"), _("Green"), _("Blue"),
         _("CoefB"), _("CoefD"),
@@ -540,7 +540,7 @@ EffectConfigDialog::EffectConfigDialog()
         WidgetInfo linfo = labelInfo[i];
         dspin->setRange(ranges[i][0], ranges[i][1]);
         dspin->setSingleStep(0.1);
-        gbox->addWidget(new QLabel(labels[i]), linfo.row, linfo.column);
+        gbox->addWidget(new QLabel(label[i]), linfo.row, linfo.column);
         gbox->addWidget(dspin, dinfo.row, dinfo.column);
     }
     dspins[COEFD]->setValue(1.0);

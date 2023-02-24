@@ -135,7 +135,7 @@ InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self)
         gbox[info.page]->addWidget(dspin, info.row, info.column);
     }
 
-    static const char* labels[] = {
+    static const char* label[] = {
         _("mass [kg]"), _("x [m]"), _("y [m]"), _("z [m]"),
         _("mass [kg]"), _("radius [m]"),
         _("mass [kg]"), _("radius [m]"), _("height [m]"), _("axis [-]"),
@@ -144,7 +144,7 @@ InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self)
 
     for(int i = 0; i < 14; ++i) {
         LabelInfo info = labelInfo[i];
-        gbox[info.page]->addWidget(new QLabel(labels[i]), info.row, info.column);
+        gbox[info.page]->addWidget(new QLabel(label[i]), info.row, info.column);
     }
 
     const QStringList axisList = { "x", "y", "z" };

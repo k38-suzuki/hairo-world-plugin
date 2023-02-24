@@ -314,7 +314,7 @@ CrawlerGenerator::CrawlerGenerator()
 CrawlerGeneratorImpl::CrawlerGeneratorImpl(CrawlerGenerator* self)
     : self(self)
 {
-    setWindowTitle(_("CrawlerRobot Builder"));
+    setWindowTitle(_("CrawlerRobot Generator"));
 
     yamlWriter.setKeyOrderPreservationMode(true);
     yamlWriter2.setKeyOrderPreservationMode(true);
@@ -353,16 +353,16 @@ CrawlerGeneratorImpl::CrawlerGeneratorImpl(CrawlerGenerator* self)
         gbox[info.page]->addWidget(button, info.row, info.column);
     }
 
-    static const char* hlabels[] = {
+    static const char* label0[] = {
         _("Chassis"), _("Track"), _("Front SubTrack"), _("Rear SubTrack"), _("Spacer")
     };
 
     for(int i = 0; i < 5; ++i) {
         Info info = separatorInfo[i];
-        gbox[info.page]->addLayout(new HSeparatorBox(new QLabel(hlabels[i])), info.row, info.column, 1, 4);
+        gbox[info.page]->addLayout(new HSeparatorBox(new QLabel(label0[i])), info.row, info.column, 1, 4);
     }
 
-    static const char* dlabels[] = {
+    static const char* label1[] = {
         _("mass [kg]"), _("color"), _("size(x-y-z) [m, m, m]"),
         _("mass [kg]"), _("color"), _("radius [m]"), _("width [m]"), _("wheelbase [m]"),
         _("mass [kg]"), _("color"), _("radius(forward-backward) [m]"), _("width [m]"), _("wheelbase [m]"),
@@ -372,17 +372,17 @@ CrawlerGeneratorImpl::CrawlerGeneratorImpl(CrawlerGenerator* self)
 
     for(int i = 0; i < 22; ++i) {
         LabelInfo info = labelInfo[i];
-        gbox[info.page]->addWidget(new QLabel(dlabels[i]), info.row, info.column);
+        gbox[info.page]->addWidget(new QLabel(label1[i]), info.row, info.column);
     }
 
-    static const char* agxhlabels[] = { _("Track Belt"), _("SubTrack Belt") };
+    static const char* label2[] = { _("Track Belt"), _("SubTrack Belt") };
 
     for(int i = 0; i < 2; ++i) {
         Info info = agxseparatorInfo[i];
-        agbox->addLayout(new HSeparatorBox(new QLabel(agxhlabels[i])), info.row, info.column, 1, 6);
+        agbox->addLayout(new HSeparatorBox(new QLabel(label2[i])), info.row, info.column, 1, 6);
     }
 
-    static const char* agxdlabels[] = {
+    static const char* label3[] = {
         _("number of nodes [-]"), _("node thickness [m]"),
         _("node width [m]"), _("node thickerthickness [m]"),
         _("use thicker node every [-]"), _("node distance tension [m, e-]"),
@@ -393,17 +393,17 @@ CrawlerGeneratorImpl::CrawlerGeneratorImpl(CrawlerGenerator* self)
 
     for(int i = 0; i < 24; ++i) {
         LabelInfo info = agxlabelInfo[i];
-        agbox->addWidget(new QLabel(agxdlabels[i % 12]), info.row, info.column);
+        agbox->addWidget(new QLabel(label3[i % 12]), info.row, info.column);
     }
 
-    static const char* clabel[] = { _("Front SubTrack"), _("Rear SubTrack"), _("AGX") };
+    static const char* label4[] = { _("Front SubTrack"), _("Rear SubTrack"), _("AGX") };
     
     QHBoxLayout* hbox1 = new QHBoxLayout;
     for(int i = 0; i < NUM_CHECKS; ++i) {
         CheckInfo info = checkInfo[i];
         checks[i] = new CheckBox;
         CheckBox* check = checks[i];
-        check->setText(clabel[i]);
+        check->setText(label4[i]);
         hbox1->addWidget(check);
     }
     hbox1->addStretch();
@@ -821,7 +821,7 @@ MappingPtr CrawlerGeneratorImpl::writeConfig(const string& filename)
     filesystem::path path(filename);
     string name = path.stem().string();
 
-    node->write("format", "CrawlerRobotBuilderYaml");
+    node->write("format", "CrawlerRobotGeneratorYaml");
     node->write("formatVersion", "1.0");
     node->write("name", name);
 
