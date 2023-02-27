@@ -278,6 +278,12 @@ bool LayoutSwitcher::restoreState(const Archive& archive)
 
 bool LayoutSwitcherImpl::restoreState(const Archive& archive)
 {
+    int size = layoutInfos.size();
+    for(int i = 0; i < size; ++i) {
+        LayoutInfoPtr info = layoutInfos[size - 1 - i];
+        removeLayout(info);
+    }
+
     int numLayouts = archive.get("num_layouts", 0);
     for(int i = 0; i < numLayouts; ++i) {
         string key0 = "name_" + to_string(i);
