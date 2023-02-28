@@ -187,7 +187,7 @@ void LayoutSwitcherImpl::adjustSize()
 {
     auto parent = self->parentWidget();
     while(parent) {
-        if(auto menuBar = dynamic_cast<QMenuBar*>(parent)){
+        if(auto menuBar = dynamic_cast<QMenuBar*>(parent)) {
             menuBar->adjustSize();
             break;
         }

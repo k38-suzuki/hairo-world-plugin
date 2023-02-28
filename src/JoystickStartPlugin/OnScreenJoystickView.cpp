@@ -52,37 +52,37 @@ struct ButtonInfo {
 
 ButtonInfo buttonInfo[] = {
 
-    { "^", 0, 1, true, -1.0, 5, Qt::Key_Up },
-    { "v", 2, 1, true,  1.0, 5, Qt::Key_Down },
-    { "<", 1, 0, true, -1.0, 4, Qt::Key_Left },
-    { ">", 1, 2, true,  1.0, 4, Qt::Key_Right },
+    { "^", 0,  1,  true, -1.0, 5,    Qt::Key_Up },
+    { "v", 2,  1,  true,  1.0, 5,  Qt::Key_Down },
+    { "<", 1,  0,  true, -1.0, 4,  Qt::Key_Left },
+    { ">", 1,  2,  true,  1.0, 4, Qt::Key_Right },
 
-    { "E", 3, 3, true, -1.0, 1, Qt::Key_E },
-    { "D", 5, 3, true,  1.0, 1, Qt::Key_D },
-    { "S", 4, 2, true, -1.0, 0, Qt::Key_S },
-    { "F", 4, 4, true,  1.0, 0, Qt::Key_F },
+    { "E", 3,  3,  true, -1.0, 1,     Qt::Key_E },
+    { "D", 5,  3,  true,  1.0, 1,     Qt::Key_D },
+    { "S", 4,  2,  true, -1.0, 0,     Qt::Key_S },
+    { "F", 4,  4,  true,  1.0, 0,     Qt::Key_F },
 
-    { "I", 3, 8, true, -1.0, 3, Qt::Key_I },
-    { "K", 5, 8, true,  1.0, 3, Qt::Key_K },
-    { "J", 4, 7, true, -1.0, 2, Qt::Key_J },
-    { "L", 4, 9, true,  1.0, 2, Qt::Key_L },
+    { "I", 3,  7,  true, -1.0, 3,     Qt::Key_I },
+    { "K", 5,  7,  true,  1.0, 3,     Qt::Key_K },
+    { "J", 4,  6,  true, -1.0, 2,     Qt::Key_J },
+    { "L", 4,  8,  true,  1.0, 2,     Qt::Key_L },
 
-    { "Q", 3, 1, true,  1.0, 6, Qt::Key_Q },
-    { "P", 3, 10, true, 1.0, 7, Qt::Key_P },
+    { "Q", 3,  1,  true, 1.0,  6,     Qt::Key_Q },
+    { "P", 3,  9,  true, 1.0,  7,     Qt::Key_P },
 
-    { "A", 2, 10, false, 1.0, 0, Qt::Key_A },
-    { "B", 1, 11, false, 1.0, 1, Qt::Key_B },
-    { "X", 1,  9, false, 1.0, 2, Qt::Key_X },
-    { "Y", 0, 10, false, 1.0, 3, Qt::Key_Y },
+    { "A", 2,  9, false, 1.0,  0,     Qt::Key_A },
+    { "B", 1, 10, false, 1.0,  1,     Qt::Key_B },
+    { "X", 1,  8, false, 1.0,  2,     Qt::Key_X },
+    { "Y", 0,  9, false, 1.0,  3,     Qt::Key_Y },
 
-    { "W", 3, 2, false, 1.0, 4, Qt::Key_W },
-    { "O", 3, 9, false, 1.0, 5, Qt::Key_O },
-    { "G", 4, 5, false, 1.0, 6, Qt::Key_G },
-    { "H", 4, 6, false, 1.0, 7, Qt::Key_H },
+    { "W", 3,  2, false, 1.0,  4,     Qt::Key_W },
+    { "O", 3,  8, false, 1.0,  5,     Qt::Key_O },
+    { "R", 3,  4, false, 1.0,  6,     Qt::Key_R },
+    { "U", 3,  6, false, 1.0,  7,     Qt::Key_U },
 
-    { "C", 4, 3, false, 1.0, 8, Qt::Key_C },
-    { "M", 4, 8, false, 1.0, 9, Qt::Key_M },
-    { " ", 3, 5, false, 1.0, 10, Qt::Key_Space }
+    { "V", 5,  4, false, 1.0,  8,     Qt::Key_V },
+    { "N", 5,  6, false, 1.0,  9,     Qt::Key_N },
+    { " ", 5,  5, false, 1.0, 10, Qt::Key_Space }
 };
     
 }
