@@ -40,14 +40,16 @@ public:
     Menu contextMenu;
     CheckBox* autoCheck;
 
-    void addItem(const string& filename);
+    QTreeWidgetItem* addItem(const string& filename, QTreeWidgetItem* parentItem);
     void removeItem();
     void onAddButtonClicked();
     void onNewButtonClicked();
     void onStartButtonClicked();
     void onCustomContextMenuRequested(const QPoint& pos);
     void store(Mapping* archive);
+    void storeChildItem(Mapping* archive, QTreeWidgetItem* parentItem);
     void restore(const Mapping* archive);
+    void restoreChildItem(const Mapping* archive, QTreeWidgetItem* parentItem);
 };
 
 }
@@ -69,9 +71,9 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
     treeWidget->setHeaderHidden(true);
 
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    // treeWidget->setDragDropMode(QAbstractItemView::InternalMove);
-    // treeWidget->setDragEnabled(true);
-    // treeWidget->viewport()->setAcceptDrops(true);
+    treeWidget->setDragDropMode(QAbstractItemView::InternalMove);
+    treeWidget->setDragEnabled(true);
+    treeWidget->viewport()->setAcceptDrops(true);
 
     Action* addAct = new Action;
     addAct->setText(_("Add"));
@@ -117,7 +119,7 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
     autoCheck = new CheckBox;
     autoCheck->setText(_("Autoplay"));
     hbox->addWidget(addButton);
-    // hbox->addWidget(newButton);
+    hbox->addWidget(newButton);
     hbox->addWidget(autoCheck);
     hbox->addStretch();
     hbox->addWidget(removeButton);
@@ -167,16 +169,22 @@ BookmarkManagerDialog* BookmarkManagerDialog::instance()
 
 void BookmarkManagerDialog::addProjectFile(const string& filename)
 {
-    impl->addItem(filename);
+    QTreeWidgetItem* parentItem = impl->treeWidget->currentItem();
+    if(!parentItem) {
+        parentItem = impl->treeWidget->invisibleRootItem();
+    }
+    impl->addItem(filename, parentItem);
 }
 
 
-void BookmarkManagerDialogImpl::addItem(const string& filename)
+QTreeWidgetItem* BookmarkManagerDialogImpl::addItem(const string& filename, QTreeWidgetItem* parentItem)
 {
-    QTreeWidgetItem* item = new QTreeWidgetItem(treeWidget);
+    QTreeWidgetItem* item = new QTreeWidgetItem(parentItem);
     item->setText(0, filename.c_str());
-    // item->setFlags(item->flags() | Qt::ItemIsEditable);
+    item->setFlags(item->flags() | Qt::ItemIsEditable);
     treeWidget->setCurrentItem(item);
+
+    return item;
 }
 
 
@@ -184,8 +192,13 @@ void BookmarkManagerDialogImpl::removeItem()
 {
     QTreeWidgetItem* item = treeWidget->currentItem();
     if(item) {
-        int index = treeWidget->indexOfTopLevelItem(item);
-        treeWidget->takeTopLevelItem(index);
+        QTreeWidgetItem* parentItem = item->parent();
+        if(parentItem) {
+            parentItem->takeChildren();
+        } else {
+            int index = treeWidget->indexOfTopLevelItem(item);
+            treeWidget->takeTopLevelItem(index);
+        }
     }
 }
 
@@ -211,7 +224,11 @@ void BookmarkManagerDialogImpl::onAddButtonClicked()
         int numFiles = dialog.selectedFiles().size();
         for(int i = 0; i < numFiles; ++i) {
             QString filename = dialog.selectedFiles()[i];
-            addItem(filename.toStdString());
+            QTreeWidgetItem* parentItem = treeWidget->currentItem();
+            if(!parentItem) {
+                parentItem = treeWidget->invisibleRootItem();
+            }
+            addItem(filename.toStdString(), parentItem);
         }
     }
 }
@@ -219,7 +236,11 @@ void BookmarkManagerDialogImpl::onAddButtonClicked()
 
 void BookmarkManagerDialogImpl::onNewButtonClicked()
 {
-    QTreeWidgetItem* item = new QTreeWidgetItem(treeWidget);
+    QTreeWidgetItem* parentItem = treeWidget->currentItem();
+    if(!parentItem) {
+        parentItem = treeWidget->invisibleRootItem();
+    }
+    QTreeWidgetItem* item = new QTreeWidgetItem(parentItem);
     item->setText(0, "new item");
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     treeWidget->setCurrentItem(item);
@@ -259,36 +280,48 @@ void BookmarkManagerDialogImpl::onCustomContextMenuRequested(const QPoint& pos)
 void BookmarkManagerDialogImpl::store(Mapping* archive)
 {
     archive->write("auto_play", autoCheck->isChecked());
+    storeChildItem(archive, treeWidget->invisibleRootItem());
+}
 
-    ListingPtr itemListing = new Listing;
 
-    for(int i = 0; i < treeWidget->topLevelItemCount(); ++i) {
-        QTreeWidgetItem* item = treeWidget->topLevelItem(i);
+void BookmarkManagerDialogImpl::storeChildItem(Mapping* archive, QTreeWidgetItem* parentItem)
+{
+    ListingPtr childItemListing = new Listing;
+
+    for(int i = 0; i < parentItem->childCount(); ++i) {
+        QTreeWidgetItem* item = parentItem->child(i);
         if(item) {
             string filename = item->text(0).toStdString();
 
             ArchivePtr subArchive = new Archive;
             subArchive->write("file", filename);
+            storeChildItem(subArchive, item);
 
-            itemListing->append(subArchive);
+            childItemListing->append(subArchive);
         }
     }
 
-    archive->insert("bookmarks", itemListing);
+    archive->insert("children", childItemListing);
 }
 
 
 void BookmarkManagerDialogImpl::restore(const Mapping* archive)
 {
     autoCheck->setChecked(archive->get("auto_play", false));
+    restoreChildItem(archive, treeWidget->invisibleRootItem());
+}
 
-    ListingPtr itemListing = archive->findListing("bookmarks");
-    if(itemListing->isValid()) {
-        for(int i = 0; i < itemListing->size(); ++i) {
-            auto subArchive = itemListing->at(i)->toMapping();
+
+void BookmarkManagerDialogImpl::restoreChildItem(const Mapping* archive, QTreeWidgetItem* parentItem)
+{
+    ListingPtr childItemListing = archive->findListing("children");
+    if(childItemListing->isValid()) {
+        for(int i = 0; i < childItemListing->size(); ++i) {
+            auto subArchive = childItemListing->at(i)->toMapping();
             string filename;
             subArchive->read("file", filename);
-            addItem(filename);
+            QTreeWidgetItem* item = addItem(filename, parentItem);
+            restoreChildItem(subArchive, item);
         }
     }
 }
