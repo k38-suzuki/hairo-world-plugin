@@ -195,17 +195,22 @@ bool BeepWidget::storeState(Archive& archive)
 
 bool BeepWidgetImpl::storeState(Archive& archive)
 {
-    int numChildren = treeWidget->topLevelItemCount();
-    archive.write("num_children", numChildren);
-    for(int i = 0; i < numChildren; ++i) {
+    ListingPtr itemListing = new Listing;
+
+    for(int i = 0; i < treeWidget->topLevelItemCount(); ++i) {
         QTreeWidgetItem* item = treeWidget->topLevelItem(i);
-        string key0 = "link0_" + to_string(i);
-        string key1 = "link1_" + to_string(i);
-        string key2 = "frequency_" + to_string(i);
-        archive.write(key0, item->text(LINK0).toStdString());
-        archive.write(key1, item->text(LINK1).toStdString());
-        archive.write(key2, item->text(FREQUENCY).toStdString());
+        if(item) {
+            ArchivePtr subArchive = new Archive;
+            subArchive->write("link0", item->text(LINK0).toStdString());
+            subArchive->write("link1", item->text(LINK1).toStdString());
+            subArchive->write("frequency", item->text(FREQUENCY).toStdString());
+
+            itemListing->append(subArchive);
+        }
     }
+
+    archive.insert("items", itemListing);
+
     return true;
 }
 
@@ -219,15 +224,18 @@ bool BeepWidget::restoreState(const Archive& archive)
 bool BeepWidgetImpl::restoreState(const Archive& archive)
 {
     clearItems();
-    int numChildren = archive.get("num_children", 0);
-    for(int i = 0; i < numChildren; ++i) {
-        string key0 = "link0_" + to_string(i);
-        string key1 = "link1_" + to_string(i);
-        string key2 = "frequency_" + to_string(i);
-        string link0 = archive.get(key0, "");
-        string link1 = archive.get(key1, "");
-        int frequency = archive.get(key2, 440);
-        addItem(link0, link1, frequency);
+
+    ListingPtr itemListing = archive.findListing("items");
+    if(itemListing->isValid()) {
+        for(int i = 0; i < itemListing->size(); ++i) {
+            auto subArchive = archive.subArchive(itemListing->at(i)->toMapping());
+            string link0, link1;
+            int frequency;
+            subArchive->read("link0", link0);
+            subArchive->read("link1", link1);
+            subArchive->read("frequency", frequency);
+            addItem(link0, link1, frequency);
+        }
     }
     return true;
 }

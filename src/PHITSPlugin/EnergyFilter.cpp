@@ -264,18 +264,24 @@ bool EnergyFilterDialog::storeState(Archive& archive)
     archive.write("mode", mode);
     archive.write("min", minChSpin->value());
     archive.write("max", maxChSpin->value());
-    int numFilters = nuclideTree->topLevelItemCount();
-    archive.write("num_filters", numFilters);
-    for(int i = 0; i < numFilters; ++i) {
+
+    ListingPtr filterListing = new Listing;
+
+    for(int i = 0; i < nuclideTree->topLevelItemCount(); ++i) {
         bool checked = false;
-        string filter = "filter_" + to_string(i);
         QTreeWidgetItem* item = nuclideTree->topLevelItem(i);
         if(item) {
+            ArchivePtr subArchive = new Archive;
             CheckBox* check = dynamic_cast<CheckBox*>(nuclideTree->itemWidget(item, CHECK));
             checked = check->isChecked();
-            archive.write(filter, checked);
+            subArchive->write("filter", checked);
+
+            filterListing->append(subArchive);
         }
     }
+
+    archive.insert("filters", filterListing);
+
     return true;
 }
 
@@ -291,23 +297,23 @@ bool EnergyFilterDialog::restoreState(const Archive& archive)
     } else if(mode == EnergyFilter::NUCLIDE_FILTER) {
         nuclideFilterRadio.setChecked(true);
     }
-    int min;
-    archive.read("min", min);
-    minChSpin->setValue(min);
-    int max;
-    archive.read("max", max);
-    maxChSpin->setValue(max);
+    
+    minChSpin->setValue(archive.get("min", 0));
+    maxChSpin->setValue(archive.get("max", 0));
 
-    int numFilters;
-    archive.read("num_filters", numFilters);
-    for(int i = 0; i < numFilters; ++i) {
-        bool checked = false;
-        string filter = "filter_" + to_string(i);
-        QTreeWidgetItem* item = nuclideTree->topLevelItem(i);
-        if(item) {
-            CheckBox* check = dynamic_cast<CheckBox*>(nuclideTree->itemWidget(item, CHECK));
-            archive.read(filter, checked);
-            check->setChecked(checked);
+    ListingPtr filterListing = archive.findListing("filters");
+    if(filterListing->isValid()) {
+        for(int i = 0; i < filterListing->size(); ++i) {
+            bool checked = false;
+            QTreeWidgetItem* item = nuclideTree->topLevelItem(i);
+            if(item) {
+                auto subArchive = archive.subArchive(filterListing->at(i)->toMapping());
+                subArchive->read("filter", checked);
+                CheckBox* check = dynamic_cast<CheckBox*>(nuclideTree->itemWidget(item, CHECK));
+                if(check) {
+                    check->setChecked(checked);
+                }
+            }
         }
     }
     return true;

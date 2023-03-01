@@ -266,16 +266,21 @@ void WorldLogManagerDialogImpl::store(Mapping* archive)
 {
     archive->write("save_world_log_file", saveCheck->isChecked());
 
-    int size = treeWidget->topLevelItemCount();
-    archive->write("num_world_logs", size);
-    for(int i = 0; i < size; ++i) {
+    ListingPtr itemListing = new Listing;
+
+    for(int i = 0; i < treeWidget->topLevelItemCount(); ++i) {
         QTreeWidgetItem* item = treeWidget->topLevelItem(i);
         if(item) {
             string filename = item->text(0).toStdString();
-            string fileKey = "filename_" + to_string(i);
-            archive->write(fileKey, filename);
+
+            ArchivePtr subArchive = new Archive;
+            subArchive->write("file", filename);
+
+            itemListing->append(subArchive);
         }
     }
+
+    archive->insert("world_logs", itemListing);
 }
 
 
@@ -283,11 +288,12 @@ void WorldLogManagerDialogImpl::restore(const Mapping* archive)
 {
     saveCheck->setChecked(archive->get("save_world_log_file", false));
 
-    int size = archive->get("num_world_logs", 0);
-    for(int i = 0; i < size; ++i) {
-        string fileKey = "filename_" + to_string(i);
-        string filename = archive->get(fileKey, "");
-        if(!filename.empty()) {
+    ListingPtr itemListing = archive->findListing("world_logs");
+    if(itemListing->isValid()) {
+        for(int i = 0; i < itemListing->size(); ++i) {
+            auto subArchive = itemListing->at(i)->toMapping();
+            string filename;
+            subArchive->read("file", filename);
             addItem(filename);
         }
     }

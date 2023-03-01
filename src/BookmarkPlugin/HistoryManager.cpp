@@ -6,6 +6,7 @@
 #include "HistoryManager.h"
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
+#include <cnoid/Archive>
 #include <cnoid/Menu>
 #include <cnoid/MenuManager>
 #include <cnoid/MessageView>
@@ -73,7 +74,7 @@ HistoryManagerImpl::HistoryManagerImpl(HistoryManager* self, ExtensionManager* e
 
     pm->sigProjectLoaded().connect([&](int level){ onProjectLoaded(); });
 
-    auto config = AppConfig::archive()->openMapping("history");
+    auto config = AppConfig::archive()->openMapping("history_manager");
     if(config->isValid()) {
         restore(config);
     }
@@ -88,7 +89,7 @@ HistoryManager::~HistoryManager()
 
 HistoryManagerImpl::~HistoryManagerImpl()
 {
-    store(AppConfig::archive()->openMapping("history"));
+    store(AppConfig::archive()->openMapping("history_manager"));
 }
 
 
@@ -157,24 +158,31 @@ void HistoryManagerImpl::onProjectLoaded()
 void HistoryManagerImpl::store(Mapping* archive)
 {
     int numHistories = currentMenu->actions().size() - 2;
-    archive->write("num_histories", numHistories);
+
+    ListingPtr itemListing = new Listing;
+
     for(int i = 0; i < numHistories; ++i) {
         QAction* action = currentMenu->actions()[i + 2];
-        string key = "history_" + to_string(i);
         string filename = action->text().toStdString();
-        archive->write(key, filename);
+
+        itemListing->append(filename, DOUBLE_QUOTED);
     }
+
+    archive->insert("histories", itemListing);
 }
 
 
 void HistoryManagerImpl::restore(const Mapping* archive)
 {
-    int numHistories = archive->get("num_histories", 0);
-    for(int i = 0; i < numHistories; ++i) {
-        string key = "history_" + to_string(i);
-        string filename = archive->get(key, "");
-        Action* action = new Action;
-        action->setText(filename.c_str());
-        currentMenu->addAction(action);
+    auto& itemListing = *archive->findListing("histories");
+    if(itemListing.isValid() && !itemListing.empty()) {
+        for(int i = 0; i < itemListing.size(); ++i) {
+            if(itemListing[i].isString()) {
+                string filename = itemListing[i].toString();
+                Action* action = new Action;
+                action->setText(filename.c_str());
+                currentMenu->addAction(action);
+            }
+        }
     }
 }

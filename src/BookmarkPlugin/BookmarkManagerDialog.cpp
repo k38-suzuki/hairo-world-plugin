@@ -6,6 +6,7 @@
 #include "BookmarkManagerDialog.h"
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
+#include <cnoid/Archive>
 #include <cnoid/Button>
 #include <cnoid/CheckBox>
 #include <cnoid/FileDialog>
@@ -259,16 +260,21 @@ void BookmarkManagerDialogImpl::store(Mapping* archive)
 {
     archive->write("auto_play", autoCheck->isChecked());
 
-    int size = treeWidget->topLevelItemCount();
-    archive->write("num_bookmarks", size);
-    for(int i = 0; i < size; ++i) {
+    ListingPtr itemListing = new Listing;
+
+    for(int i = 0; i < treeWidget->topLevelItemCount(); ++i) {
         QTreeWidgetItem* item = treeWidget->topLevelItem(i);
         if(item) {
             string filename = item->text(0).toStdString();
-            string fileKey = "filename_" + to_string(i);
-            archive->write(fileKey, filename);
+
+            ArchivePtr subArchive = new Archive;
+            subArchive->write("file", filename);
+
+            itemListing->append(subArchive);
         }
     }
+
+    archive->insert("bookmarks", itemListing);
 }
 
 
@@ -276,11 +282,12 @@ void BookmarkManagerDialogImpl::restore(const Mapping* archive)
 {
     autoCheck->setChecked(archive->get("auto_play", false));
 
-    int size = archive->get("num_bookmarks", 0);
-    for(int i = 0; i < size; ++i) {
-        string fileKey = "filename_" + to_string(i);
-        string filename = archive->get(fileKey, "");
-        if(!filename.empty()) {
+    ListingPtr itemListing = archive->findListing("bookmarks");
+    if(itemListing->isValid()) {
+        for(int i = 0; i < itemListing->size(); ++i) {
+            auto subArchive = itemListing->at(i)->toMapping();
+            string filename;
+            subArchive->read("file", filename);
             addItem(filename);
         }
     }

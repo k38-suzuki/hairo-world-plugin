@@ -257,15 +257,18 @@ bool LayoutSwitcher::storeState(Archive& archive)
 
 bool LayoutSwitcherImpl::storeState(Archive& archive)
 {
-    int numLayouts = layoutInfos.size();
-    archive.write("num_layouts", numLayouts);
-    for(int i = 0; i < numLayouts; ++i) {
-        LayoutInfoPtr info = layoutInfos[i];
-        string key0 = "name_" + to_string(i);
-        string key1 = "layout_data_" + to_string(i);
-        archive.write(key0, info->name);
-        archive.insert(key1, info->layoutData);
+    ListingPtr layoutInfoListing = new Listing;
+
+    for(auto& info : layoutInfos) {
+        ArchivePtr subArchive = new Archive;
+        subArchive->write("name", info->name);
+        subArchive->write("layout_data", info->layoutData);
+
+        layoutInfoListing->append(subArchive);
     }
+
+    archive.insert("layouts", layoutInfoListing);
+
     return true;
 }
 
@@ -284,13 +287,15 @@ bool LayoutSwitcherImpl::restoreState(const Archive& archive)
         removeLayout(info);
     }
 
-    int numLayouts = archive.get("num_layouts", 0);
-    for(int i = 0; i < numLayouts; ++i) {
-        string key0 = "name_" + to_string(i);
-        string key1 = "layout_data_" + to_string(i);
-        string name = archive.get(key0, "");
-        MappingPtr layoutData = archive.findMapping(key1)->toMapping();
-        storeCurrentLayoutAs(name, layoutData);
+    ListingPtr layoutInfoListing = archive.findListing("layouts");
+    if(layoutInfoListing->isValid()) {
+        for(int i = 0; i < layoutInfoListing->size(); ++i) {
+            auto subArchive = archive.subArchive(layoutInfoListing->at(i)->toMapping());
+            string name;
+            subArchive->read("name", name);
+            MappingPtr layoutData = subArchive->findMapping("layout_data")->toMapping();
+            storeCurrentLayoutAs(name, layoutData);
+        }
     }
     return true;
 }

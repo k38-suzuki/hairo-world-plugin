@@ -85,10 +85,13 @@ items:
                     mode: 0
                     min: 1
                     max: 10
-                    num_filters: 3
-                    filter_0: false
-                    filter_1: false
-                    filter_2: false
+                    filters: 
+                      - 
+                        filter: false
+                      - 
+                        filter: false
+                      - 
+                        filter: false
                     maxcas: 100000
                     maxbch: 10
                     put_messages: true
@@ -101,10 +104,13 @@ items:
                     mode: 0
                     min: 22012
                     max: 0
-                    num_filters: 3
-                    filter_0: false
-                    filter_1: false
-                    filter_2: false
+                    filters: 
+                      - 
+                        filter: false
+                      - 
+                        filter: false
+                      - 
+                        filter: false
                     maxcas: 1000000
                     maxbch: 10
                     put_messages: true

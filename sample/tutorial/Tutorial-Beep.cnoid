@@ -331,10 +331,11 @@ views:
     class: BeepView
     mounted: true
     state: 
-      num_children: 1
-      link0_0: TURRET_P
-      link1_0: ALL
-      frequency_0: 440
+      items: 
+        - 
+          link0: TURRET_P
+          link1: ALL
+          frequency: 440
   - 
     id: 8
     plugin: Body
