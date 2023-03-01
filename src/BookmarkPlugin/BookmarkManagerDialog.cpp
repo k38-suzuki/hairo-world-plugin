@@ -93,7 +93,7 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
 
     QHBoxLayout* hbox = new QHBoxLayout;
     auto addButton = new PushButton;
-    QIcon addIcon = QIcon::fromTheme("folder");
+    QIcon addIcon = QIcon::fromTheme("document-open");
     if(addIcon.isNull()) {
         addButton->setText(_("Add"));
     } else {
@@ -109,7 +109,7 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
     }
     removeButton->sigClicked().connect([&](){ removeItem(); });
     auto newButton = new PushButton;
-    QIcon newIcon = QIcon::fromTheme("folder-open");
+    QIcon newIcon = QIcon::fromTheme("document-new");
     if(newIcon.isNull()) {
         newButton->setText(_("New"));
     } else {
@@ -118,8 +118,8 @@ BookmarkManagerDialogImpl::BookmarkManagerDialogImpl(BookmarkManagerDialog* self
     newButton->sigClicked().connect([&](){ onNewButtonClicked(); });
     autoCheck = new CheckBox;
     autoCheck->setText(_("Autoplay"));
-    hbox->addWidget(addButton);
     hbox->addWidget(newButton);
+    hbox->addWidget(addButton);
     hbox->addWidget(autoCheck);
     hbox->addStretch();
     hbox->addWidget(removeButton);
