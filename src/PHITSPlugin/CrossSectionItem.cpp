@@ -159,8 +159,8 @@ public:
 
     bool readPHITSData(const string& filename);
     void onItemTriggered(const bool& on);
-    bool storeState(Archive& archive);
-    bool restoreState(const Archive& archive);
+    void storeState(Archive& archive);
+    void restoreState(const Archive& archive);
 };
 
 
@@ -801,7 +801,7 @@ void DoseConfigDialog::onItemTriggered(const bool& on)
 }
 
 
-bool DoseConfigDialog::storeState(Archive& archive)
+void DoseConfigDialog::storeState(Archive& archive)
 {
     archive.write("code", codeCombo->currentIndex());
     archive.write("maxcas", maxCasSpin->value());
@@ -823,11 +823,10 @@ bool DoseConfigDialog::storeState(Archive& archive)
     archive.write("put_messages", messageCheck->isChecked());
     archive.writeRelocatablePath("default_nuclide_table_file", defaultNuclideTableFile);
     archive.writeRelocatablePath("default_element_table_file", defaultElementTableFile);
-    return true;
 }
 
 
-bool DoseConfigDialog::restoreState(const Archive& archive)
+void DoseConfigDialog::restoreState(const Archive& archive)
 {
     codeCombo->setCurrentIndex(archive.get("code", 0));
     maxCasSpin->setValue(archive.get("maxcas", 0));
@@ -849,5 +848,4 @@ bool DoseConfigDialog::restoreState(const Archive& archive)
     messageCheck->setChecked(archive.get("put_messages", true));
     archive.readRelocatablePath("default_nuclide_table_file", defaultNuclideTableFile);
     archive.readRelocatablePath("default_element_table_file", defaultElementTableFile);
-    return true;
 }

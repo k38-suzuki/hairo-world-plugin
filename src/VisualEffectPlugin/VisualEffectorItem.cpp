@@ -81,8 +81,8 @@ public:
     ComboBox* filterCombo;
 
     void onResetButtonClicked();
-    bool storeState(Archive& archive);
-    bool restoreState(const Archive& archive);
+    void storeState(Archive& archive);
+    void restoreState(const Archive& archive);
 };
 
 class VisualEffectorItemBase
@@ -590,7 +590,7 @@ void EffectConfigDialog::onResetButtonClicked()
 }
 
 
-bool EffectConfigDialog::storeState(Archive& archive)
+void EffectConfigDialog::storeState(Archive& archive)
 {
     archive.write("hue", dspins[HUE]->value());
     archive.write("saturation", dspins[SATURATION]->value());
@@ -605,11 +605,10 @@ bool EffectConfigDialog::storeState(Archive& archive)
     archive.write("pepper", dspins[PEPPER]->value());
     archive.write("flip", flipCheck->isChecked());
     archive.write("filter", filterCombo->currentIndex());
-    return true;
 }
 
 
-bool EffectConfigDialog::restoreState(const Archive& archive)
+void EffectConfigDialog::restoreState(const Archive& archive)
 {
     dspins[HUE]->setValue(archive.get("hue", 0.0));
     dspins[SATURATION]->setValue(archive.get("saturation", 0.0));
@@ -624,5 +623,4 @@ bool EffectConfigDialog::restoreState(const Archive& archive)
     dspins[PEPPER]->setValue(archive.get("pepper", 0.0));
     flipCheck->setChecked(archive.get("flip", false));
     filterCombo->setCurrentIndex(archive.get("filter", 0));
-    return true;
 }

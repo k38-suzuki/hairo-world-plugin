@@ -43,8 +43,8 @@ public:
 
     bool load(const std::string& filename, std::ostream& os = nullout());
 
-    void store(Mapping* archive);
-    void restore(const Mapping* archive);
+    void storeState(Archive& archive);
+    void restoreState(const Archive& archive);
 
 private:
     EnergyFilterImpl* impl;

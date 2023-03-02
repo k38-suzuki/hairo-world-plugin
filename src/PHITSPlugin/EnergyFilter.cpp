@@ -42,8 +42,8 @@ public:
     SpinBox* maxChSpin;
     TreeWidget* nuclideTree;
 
-    void store(Mapping* archive);
-    void restore(const Mapping* archive);
+    void storeState(Archive& archive);
+    void restoreState(const Archive& archive);
 };
 
 }
@@ -170,15 +170,15 @@ bool EnergyFilter::load(const string& filename, ostream& os)
 }
 
 
-void EnergyFilter::store(Mapping* archive)
+void EnergyFilter::storeState(Archive& archive)
 {
-    impl->config->store(archive);
+    impl->config->storeState(archive);
 }
 
 
-void EnergyFilter::restore(const Mapping* archive)
+void EnergyFilter::restoreState(const Archive& archive)
 {
-    impl->config->restore(archive);
+    impl->config->restoreState(archive);
 }
 
 
@@ -249,7 +249,7 @@ EnergyFilterDialog::EnergyFilterDialog()
 }
 
 
-void EnergyFilterDialog::store(Mapping* archive)
+void EnergyFilterDialog::storeState(Archive& archive)
 {
     int mode = 0;
     if(noFilterRadio.isChecked()) {
@@ -259,9 +259,9 @@ void EnergyFilterDialog::store(Mapping* archive)
     } else if(nuclideFilterRadio.isChecked()) {
         mode = EnergyFilter::NUCLIDE_FILTER;
     }
-    archive->write("mode", mode);
-    archive->write("min", minChSpin->value());
-    archive->write("max", maxChSpin->value());
+    archive.write("mode", mode);
+    archive.write("min", minChSpin->value());
+    archive.write("max", maxChSpin->value());
 
     ListingPtr filterListing = new Listing;
 
@@ -278,14 +278,14 @@ void EnergyFilterDialog::store(Mapping* archive)
         }
     }
 
-    archive->insert("filters", filterListing);
+    archive.insert("filters", filterListing);
 }
 
 
-void EnergyFilterDialog::restore(const Mapping* archive)
+void EnergyFilterDialog::restoreState(const Archive& archive)
 {
     int mode = 0;
-    archive->read("mode", mode);
+    archive.read("mode", mode);
     if(mode == EnergyFilter::NO_FILTER) {
         noFilterRadio.setChecked(true);
     } else if(mode == EnergyFilter::RANGE_FILTER) {
@@ -294,10 +294,10 @@ void EnergyFilterDialog::restore(const Mapping* archive)
         nuclideFilterRadio.setChecked(true);
     }
     
-    minChSpin->setValue(archive->get("min", 0));
-    maxChSpin->setValue(archive->get("max", 0));
+    minChSpin->setValue(archive.get("min", 0));
+    maxChSpin->setValue(archive.get("max", 0));
 
-    ListingPtr filterListing = archive->findListing("filters");
+    ListingPtr filterListing = archive.findListing("filters");
     if(filterListing->isValid()) {
         for(int i = 0; i < filterListing->size(); ++i) {
             bool checked = false;

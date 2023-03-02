@@ -80,8 +80,8 @@ public:
 
     void setCamera(Camera* camera);
     void onItemTriggered(const bool& on);
-    bool storeState(Archive& archive);
-    bool restoreState(const Archive& archive);
+    void storeState(Archive& archive);
+    void restoreState(const Archive& archive);
 };
 
 class GammaImagerItemBase
@@ -319,7 +319,7 @@ bool GammaImagerItem::store(Archive& archive)
         item->store(*subArchive);
         GammaImageVisualizerItem* vitem = dynamic_cast<GammaImageVisualizerItem*>(item);
         if(vitem) {
-            vitem->filter->store(subArchive);
+            vitem->filter->storeState(*subArchive);
             ConfigDialog* config = vitem->config;
             config->storeState(*subArchive);
             subArchive->write("default_nuclide_table_file", archive.getRelocatablePath(config->defaultNuclideTableFile_));
@@ -361,7 +361,7 @@ bool GammaImagerItem::restore(const Archive& archive)
                 Item* tmpItem = item;
                 GammaImageVisualizerItem* vitem = dynamic_cast<GammaImageVisualizerItem*>(tmpItem);
                 if(vitem) {
-                    vitem->filter->restore(subArchive);
+                    vitem->filter->restoreState(*subArchive);
                     ConfigDialog* config = vitem->config;
                     config->restoreState(*subArchive);
                     string default_nuclide_table_file;
@@ -591,19 +591,17 @@ void ConfigDialog::setCamera(Camera* camera)
 }
 
 
-bool ConfigDialog::storeState(Archive& archive)
+void ConfigDialog::storeState(Archive& archive)
 {
     archive.write("maxcas", maxCasSpin->value());
     archive.write("maxbch", maxBchSpin->value());
     archive.write("put_messages", messageCheck->isChecked());
-    return true;
 }
 
 
-bool ConfigDialog::restoreState(const Archive& archive)
+void ConfigDialog::restoreState(const Archive& archive)
 {
     maxCasSpin->setValue(archive.get("maxcas", 0));
     maxBchSpin->setValue(archive.get("maxbch", 0));
     messageCheck->setChecked(archive.get("put_messages", true));
-    return true;
 }
