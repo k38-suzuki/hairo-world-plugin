@@ -632,11 +632,17 @@ bool CrawlerGeneratorImpl::load2(const string& filename,std::ostream& os )
                         }
                     }
 
-                    for(int j = 0; j < NUM_BUTTONS; ++j) {
-                        Vector3 color;
-                        string key = "button" + to_string(j);
-                        if(read(info, key, color)) {
-                            setColor(buttons[j], color);
+                    auto& buttonList = *info->findListing("button");
+                    if(buttonList.isValid()) {
+                        for(int j = 0; j < buttonList.size(); ++j) {
+                            Listing& colorList = *buttonList[j].toListing();
+                            if(colorList.isValid()) {
+                                Vector3 color;
+                                for(int k = 0; k < colorList.size(); ++k) {
+                                    color[k] = colorList[k].toDouble();
+                                }
+                                setColor(buttons[j], color);
+                            }
                         }
                     }
 
@@ -829,28 +835,32 @@ MappingPtr CrawlerGeneratorImpl::writeConfig(const string& filename)
     {
         MappingPtr node = new Mapping;
 
-        Listing& doubleSpinList = *node->createFlowStyleListing("doubleSpin");
+        auto doubleSpinList = node->createFlowStyleListing("doubleSpin");
         int n = NUM_DSPINS;
         for(int i = 0; i < NUM_DSPINS; ++i) {
-            doubleSpinList.append(dspins[i]->value()), n, n;
+            doubleSpinList->append(dspins[i]->value()), n, n;
         }
 
-        Listing& spinList = *node->createFlowStyleListing("spin");
+        auto spinList = node->createFlowStyleListing("spin");
         int n1 = NUM_SPINS;
         for(int i = 0; i < NUM_SPINS; ++i) {
-            spinList.append(agxspins[i]->value(), n1, n1);
+            spinList->append(agxspins[i]->value(), n1, n1);
         }
 
         int n2 = NUM_BUTTONS;
+        auto buttonList = node->createFlowStyleListing("button");
         for(int i = 0; i < NUM_BUTTONS; ++i) {
-            string key = "button" + to_string(i);
-            write(node, key, extractColor(buttons[i]));
+            ListingPtr colorList = new Listing;
+            for(int j = 0; j < 3; ++j) {
+                colorList->append(extractColor(buttons[i])[j], 5, 5);
+            }
+            buttonList->append(colorList);
         }
 
-        Listing& checkList = *node->createFlowStyleListing("check");
+        auto checkList = node->createFlowStyleListing("check");
         int n3 = NUM_CHECKS;
         for(int i = 0; i < NUM_CHECKS; ++i) {
-            checkList.append(checks[i]->isChecked() ? 1 : 0, n3, n3);
+            checkList->append(checks[i]->isChecked() ? 1 : 0, n3, n3);
         }
 
         configsNode->append(node);
