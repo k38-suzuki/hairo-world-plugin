@@ -319,7 +319,7 @@ bool GammaImagerItem::store(Archive& archive)
         item->store(*subArchive);
         GammaImageVisualizerItem* vitem = dynamic_cast<GammaImageVisualizerItem*>(item);
         if(vitem) {
-            vitem->filter->store(*subArchive);
+            vitem->filter->store(subArchive);
             ConfigDialog* config = vitem->config;
             config->storeState(*subArchive);
             subArchive->write("default_nuclide_table_file", archive.getRelocatablePath(config->defaultNuclideTableFile_));
@@ -361,7 +361,7 @@ bool GammaImagerItem::restore(const Archive& archive)
                 Item* tmpItem = item;
                 GammaImageVisualizerItem* vitem = dynamic_cast<GammaImageVisualizerItem*>(tmpItem);
                 if(vitem) {
-                    vitem->filter->restore(*subArchive);
+                    vitem->filter->restore(subArchive);
                     ConfigDialog* config = vitem->config;
                     config->restoreState(*subArchive);
                     string default_nuclide_table_file;

@@ -266,21 +266,18 @@ void WorldLogManagerDialogImpl::store(Mapping* archive)
 {
     archive->write("save_world_log_file", saveCheck->isChecked());
 
-    ListingPtr itemListing = new Listing;
+    ListingPtr logListing = new Listing;
 
     for(int i = 0; i < treeWidget->topLevelItemCount(); ++i) {
         QTreeWidgetItem* item = treeWidget->topLevelItem(i);
         if(item) {
             string filename = item->text(0).toStdString();
 
-            ArchivePtr subArchive = new Archive;
-            subArchive->write("file", filename);
-
-            itemListing->append(subArchive);
+            logListing->append(filename, DOUBLE_QUOTED);
         }
     }
 
-    archive->insert("world_logs", itemListing);
+    archive->insert("world_logs", logListing);
 }
 
 
@@ -288,12 +285,10 @@ void WorldLogManagerDialogImpl::restore(const Mapping* archive)
 {
     saveCheck->setChecked(archive->get("save_world_log_file", false));
 
-    ListingPtr itemListing = archive->findListing("world_logs");
-    if(itemListing->isValid()) {
-        for(int i = 0; i < itemListing->size(); ++i) {
-            auto subArchive = itemListing->at(i)->toMapping();
-            string filename;
-            subArchive->read("file", filename);
+    auto& logListing = *archive->findListing("world_logs");
+    if(logListing.isValid() && !logListing.empty()) {
+        for(int i = 0; i < logListing.size(); ++i) {
+            string filename = logListing[i].toString();
             addItem(filename);
         }
     }

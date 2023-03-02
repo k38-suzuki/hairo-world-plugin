@@ -42,8 +42,8 @@ public:
     SpinBox* maxChSpin;
     TreeWidget* nuclideTree;
 
-    bool storeState(Archive& archive);
-    bool restoreState(const Archive& archive);
+    void store(Mapping* archive);
+    void restore(const Mapping* archive);
 };
 
 }
@@ -170,17 +170,15 @@ bool EnergyFilter::load(const string& filename, ostream& os)
 }
 
 
-bool EnergyFilter::store(Archive& archive)
+void EnergyFilter::store(Mapping* archive)
 {
-    impl->config->storeState(archive);
-    return true;
+    impl->config->store(archive);
 }
 
 
-bool EnergyFilter::restore(const Archive& archive)
+void EnergyFilter::restore(const Mapping* archive)
 {
-    impl->config->restoreState(archive);
-    return true;
+    impl->config->restore(archive);
 }
 
 
@@ -251,7 +249,7 @@ EnergyFilterDialog::EnergyFilterDialog()
 }
 
 
-bool EnergyFilterDialog::storeState(Archive& archive)
+void EnergyFilterDialog::store(Mapping* archive)
 {
     int mode = 0;
     if(noFilterRadio.isChecked()) {
@@ -261,9 +259,9 @@ bool EnergyFilterDialog::storeState(Archive& archive)
     } else if(nuclideFilterRadio.isChecked()) {
         mode = EnergyFilter::NUCLIDE_FILTER;
     }
-    archive.write("mode", mode);
-    archive.write("min", minChSpin->value());
-    archive.write("max", maxChSpin->value());
+    archive->write("mode", mode);
+    archive->write("min", minChSpin->value());
+    archive->write("max", maxChSpin->value());
 
     ListingPtr filterListing = new Listing;
 
@@ -280,16 +278,14 @@ bool EnergyFilterDialog::storeState(Archive& archive)
         }
     }
 
-    archive.insert("filters", filterListing);
-
-    return true;
+    archive->insert("filters", filterListing);
 }
 
 
-bool EnergyFilterDialog::restoreState(const Archive& archive)
+void EnergyFilterDialog::restore(const Mapping* archive)
 {
     int mode = 0;
-    archive.read("mode", mode);
+    archive->read("mode", mode);
     if(mode == EnergyFilter::NO_FILTER) {
         noFilterRadio.setChecked(true);
     } else if(mode == EnergyFilter::RANGE_FILTER) {
@@ -298,16 +294,16 @@ bool EnergyFilterDialog::restoreState(const Archive& archive)
         nuclideFilterRadio.setChecked(true);
     }
     
-    minChSpin->setValue(archive.get("min", 0));
-    maxChSpin->setValue(archive.get("max", 0));
+    minChSpin->setValue(archive->get("min", 0));
+    maxChSpin->setValue(archive->get("max", 0));
 
-    ListingPtr filterListing = archive.findListing("filters");
+    ListingPtr filterListing = archive->findListing("filters");
     if(filterListing->isValid()) {
         for(int i = 0; i < filterListing->size(); ++i) {
             bool checked = false;
             QTreeWidgetItem* item = nuclideTree->topLevelItem(i);
             if(item) {
-                auto subArchive = archive.subArchive(filterListing->at(i)->toMapping());
+                auto subArchive = filterListing->at(i)->toMapping();
                 subArchive->read("filter", checked);
                 CheckBox* check = dynamic_cast<CheckBox*>(nuclideTree->itemWidget(item, CHECK));
                 if(check) {
@@ -316,5 +312,4 @@ bool EnergyFilterDialog::restoreState(const Archive& archive)
             }
         }
     }
-    return true;
 }
