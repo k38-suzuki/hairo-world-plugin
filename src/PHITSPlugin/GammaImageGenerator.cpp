@@ -661,14 +661,14 @@ bool GammaImageGeneratorImpl::calc(GammaCamera* camera, const uint32_t width,
 
     for(int dirIndex = 0; dirIndex < nDir; dirIndex++) {
         DirClippingInfo dc = dirsClip[dirIndex];
-        for(size_t j=0 ; j<resY ; ++j) {
+        for(size_t j = 0 ; j < resY ; ++j) {
             baseY = 1.0 - j * pitchY;
-            for(size_t i=0 ; i<resX ; ++i) {
+            for(size_t i = 0 ; i<resX ; ++i) {
                 baseX = -1.0 + i * pitchX;
                 innerCnt = 0;
-                for(size_t jj= 0; jj<innerPixel; ++jj) {
+                for(size_t jj = 0; jj < innerPixel; ++jj) {
                     pointY = baseY - (2 * jj + 1) * pitchYY;
-                    for(size_t ii= 0; ii<innerPixel; ++ii) {
+                    for(size_t ii = 0; ii < innerPixel; ++ii) {
                         pointX = baseX + (2 * ii + 1) * pitchXX;
 
                         if(isInnerPointRectangle(dc.tl_x, dc.tl_y, dc.bl_x, dc.bl_y,

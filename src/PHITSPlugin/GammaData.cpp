@@ -120,7 +120,7 @@ bool GammaData::read(const string& filename)
 
     //geometry header
     in.seekg(2048,ios_base::beg);
-    for(int i=0;i<calculatingPointNumber;i++) {
+    for(int i = 0;i<calculatingPointNumber;i++) {
         GeometryInfo geometryHeader;
         origin.resize(3);
         in.read((char *) &geometryHeader.calcPointID,4);
@@ -675,7 +675,7 @@ bool GammaData::write(const string& filename)
 
     //geometry header
     //out.seekp(2048,ios_base::beg);
-    for(int i=0;i< _calculatingPointNumber;i++) {
+    for(int i = 0;i< _calculatingPointNumber;i++) {
         out.write((const char *) &_geometryHeaderInfo[i].calcPointID,4);
         out.write((const char *) &origin_[0],4);
         out.write((const char *) &origin_[1],4);
@@ -692,7 +692,8 @@ bool GammaData::write(const string& filename)
 }
 
 
-bool GammaData::getDataHeaderInfo(GeometryInfo geoInfo) {
+bool GammaData::getDataHeaderInfo(GeometryInfo geoInfo)
+{
     ifstream in;
     in.open(filename_.data(),ios_base::in |ios_base::binary);
     if(!in) {
@@ -705,7 +706,7 @@ bool GammaData::getDataHeaderInfo(GeometryInfo geoInfo) {
     //data header Move : (geoInfo.calcPointID-1) roop ,(32+(28+4*_energySpectrumChannelNumber)*_geometryHeaderInfo[i].calcDirectionNumber) byte
     int seekNum=2048;
     seekNum+=32*_geometryHeaderInfo.size();
-    for(int i=0;i<geoInfo.calcPointID-1;i++) {
+    for(int i = 0;i<geoInfo.calcPointID-1;i++) {
         seekNum+=(32+(28+4*_energySpectrumChannelNumber)*_geometryHeaderInfo[i].calcDirectionNumber);
     }
 
@@ -733,7 +734,7 @@ bool GammaData::getDataHeaderInfo(GeometryInfo geoInfo) {
     _dataInfo.calcDirectionNumber=geoInfo.calcDirectionNumber;
     if(_dataMode==0) {
         _dataInfo.calcDirectionPo.resize(_dataInfo.calcDirectionNumber);
-        for(int i=0;i<_dataInfo.calcDirectionNumber;i++) {
+        for(int i = 0; i < _dataInfo.calcDirectionNumber; i++) {
             in.read((char *) &_dataInfo.calcDirectionPo[i].directionID,4);
             in.read((char *) &_dataInfo.calcDirectionPo[i].phi,4);
             in.read((char *) &_dataInfo.calcDirectionPo[i].lambda,4);
@@ -742,13 +743,13 @@ bool GammaData::getDataHeaderInfo(GeometryInfo geoInfo) {
             in.read((char *) &_dataInfo.calcDirectionPo[i].deltaLambda,4);
             in.read((char *) &_dataInfo.calcDirectionPo[i].deltaDistance,4);
             _dataInfo.calcDirectionPo[i].dirData.resize(_energySpectrumChannelNumber);
-            for(int j=0;j<_energySpectrumChannelNumber;j++) {
+            for(int j = 0; j < _energySpectrumChannelNumber; j++) {
                 in.read((char *) &_dataInfo.calcDirectionPo[i].dirData[j],4);
             }
         }
     } else if(_dataMode==1) {
         _dataInfo.calcDirectionRec.resize(_dataInfo.calcDirectionNumber);
-        for(int i=0;i<_dataInfo.calcDirectionNumber;i++) {
+        for(int i = 0; i < _dataInfo.calcDirectionNumber; i++) {
             in.read((char *) &_dataInfo.calcDirectionRec[i].directionID,4);
             in.read((char *) &_dataInfo.calcDirectionRec[i].directionX,4);
             in.read((char *) &_dataInfo.calcDirectionRec[i].directionY,4);
@@ -757,7 +758,7 @@ bool GammaData::getDataHeaderInfo(GeometryInfo geoInfo) {
             in.read((char *) &_dataInfo.calcDirectionRec[i].deltaY,4);
             in.read((char *) &_dataInfo.calcDirectionRec[i].deltaZ,4);
             _dataInfo.calcDirectionRec[i].dirData.resize(_energySpectrumChannelNumber);
-            for(int j=0;j<_energySpectrumChannelNumber;j++) {
+            for(int j = 0; j < _energySpectrumChannelNumber; j++) {
                 in.read((char *) &_dataInfo.calcDirectionRec[i].dirData[j],4);
             }
         }

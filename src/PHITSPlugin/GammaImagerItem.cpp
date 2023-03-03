@@ -254,7 +254,7 @@ void GammaImagerItemImpl::onPositionChanged()
     BodyItem* newBodyItem = self->findOwnerItem<BodyItem>();
     if(newBodyItem != bodyItem) {
         bodyItem = newBodyItem;
-        for(size_t i=0; i < subItems.size(); i++) {
+        for(size_t i = 0; i < subItems.size(); i++) {
             subItems[i]->removeFromParentItem();
         }
         subItems.clear();
@@ -266,7 +266,7 @@ void GammaImagerItemImpl::onPositionChanged()
             Body* body = bodyItem->body();
 
             DeviceList<Camera> camera = body->devices<Camera>();
-            for(size_t i=0; i < camera.size(); ++i) {
+            for(size_t i = 0; i < camera.size(); ++i) {
                 Camera* tmpCamera = camera[i];
                 GammaCamera* gcamera = dynamic_cast<GammaCamera*>(tmpCamera);
                 if(gcamera) {
@@ -291,7 +291,7 @@ void GammaImagerItemImpl::onPositionChanged()
 
 void GammaImagerItem::onDisconnectedFromRoot()
 {
-    for(size_t i=0; i < impl->subItems.size(); i++) {
+    for(size_t i = 0; i < impl->subItems.size(); i++) {
         impl->subItems[i]->removeFromParentItem();
     }
     impl->subItems.clear();
@@ -302,7 +302,7 @@ bool GammaImagerItem::store(Archive& archive)
 {
     ListingPtr subItems = new Listing;
 
-    for(size_t i=0; i < impl->subItems.size(); i++) {
+    for(size_t i = 0; i < impl->subItems.size(); i++) {
         Item* item = impl->subItems[i];
         string pluginName, className;
         ItemManager::getClassIdentifier(item, pluginName, className);
@@ -344,7 +344,7 @@ bool GammaImagerItem::restore(const Archive& archive)
         subItems = archive.findListing("subItems"); // Old
     }
     if(subItems->isValid()) {
-        for(int i=0; i < subItems->size(); i++) {
+        for(int i = 0; i < subItems->size(); i++) {
             Archive* subArchive = dynamic_cast<Archive*>(subItems->at(i)->toMapping());
             string className, itemName;
             subArchive->read("class", className);

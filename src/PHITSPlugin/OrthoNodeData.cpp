@@ -142,20 +142,20 @@ bool OrthoCellData::createSampleData(const GammaData& gammaData)
 
 
     //get xyz coordinates_
-    for(int i=0;i<directionNumber;i++) {
+    for(int i = 0; i < directionNumber; i++) {
         //cout<<i<<endl;
         GammaData::CalcDirectionRecInfo recInfo = dataInfo.calcDirectionRec[i];
         for(int ix=0;ix<2;ix++) {
             calcPoint[0]=origin[0]+pow(-1.0,ix)*recInfo.deltaX*0.5+recInfo.directionX;
-            if(coordinates_[OrthoNodeData::X_AXIS].size()>0) {
+            if(coordinates_[OrthoNodeData::X_AXIS].size() > 0) {
                 bool xFlag=true;
-                for(int j=0;j<coordinates_[OrthoNodeData::X_AXIS].size();j++) {
+                for(int j = 0; j < coordinates_[OrthoNodeData::X_AXIS].size(); j++) {
                     if(fabs(coordinates_[OrthoNodeData::X_AXIS][j]-calcPoint[0]) < arrowableError_) {
                         xFlag=false;
                         break;
                     }
                 }
-                if(xFlag==true) {
+                if(xFlag == true) {
                     coordinates_[OrthoNodeData::X_AXIS].push_back(calcPoint[0]);
                 }
             } else {
@@ -166,14 +166,14 @@ bool OrthoCellData::createSampleData(const GammaData& gammaData)
         for(int iy=0;iy<2;iy++) {
             calcPoint[1]=origin[1]+pow(-1.0,iy)*recInfo.deltaY*0.5+recInfo.directionY;
             if(coordinates_[OrthoNodeData::Y_AXIS].size()>0) {
-                bool yFlag=true;
-                for(int j=0;j<coordinates_[OrthoNodeData::Y_AXIS].size();j++) {
+                bool yFlag = true;
+                for(int j = 0; j < coordinates_[OrthoNodeData::Y_AXIS].size(); j++) {
                     if(fabs(coordinates_[OrthoNodeData::Y_AXIS][j]-calcPoint[1]) < arrowableError_) {
                         yFlag=false;
                         break;
                     }
                 }
-                if(yFlag==true) {
+                if(yFlag == true) {
                     coordinates_[OrthoNodeData::Y_AXIS].push_back(calcPoint[1]);
                 }
             } else {
@@ -185,13 +185,13 @@ bool OrthoCellData::createSampleData(const GammaData& gammaData)
             calcPoint[2]=origin[2]+pow(-1.0,iz)*recInfo.deltaZ*0.5+recInfo.directionZ;
             if(coordinates_[OrthoNodeData::Z_AXIS].size()>0) {
                 bool zFlag=true;
-                for(int j=0;j<coordinates_[OrthoNodeData::Z_AXIS].size();j++) {
+                for(int j = 0; j < coordinates_[OrthoNodeData::Z_AXIS].size(); j++) {
                     if(fabs(coordinates_[OrthoNodeData::Z_AXIS][j]-calcPoint[2]) < arrowableError_) {
                         zFlag=false;
                         break;
                     }
                 }
-                if(zFlag==true) {
+                if(zFlag == true) {
                     coordinates_[OrthoNodeData::Z_AXIS].push_back(calcPoint[2]);
                 }
             } else {
@@ -211,7 +211,7 @@ bool OrthoCellData::createSampleData(const GammaData& gammaData)
     int xNum=0;
     int yNum=0;
     int zNum=0;
-    for(int i=0;i<directionNumber;i++) {
+    for(int i = 0; i < directionNumber; i++) {
         //cout<<i<<endl;
         GammaData::CalcDirectionRecInfo recInfo = dataInfo.calcDirectionRec[i];
         xNum=yNum=zNum=0;
@@ -219,21 +219,21 @@ bool OrthoCellData::createSampleData(const GammaData& gammaData)
         calcPoint[1]=origin[1]+recInfo.directionY;
         calcPoint[2]=origin[2]+recInfo.directionZ;
 
-        for(int j=0;j<coordinates_[OrthoNodeData::X_AXIS].size()-1;j++) {
+        for(int j = 0; j < coordinates_[OrthoNodeData::X_AXIS].size() - 1; j++) {
             if(fabs((coordinates_[OrthoNodeData::X_AXIS][j]+coordinates_[OrthoNodeData::X_AXIS][j+1])*0.5-calcPoint[0]) < arrowableError_) {
                 xNum=j;
                 break;
             }
         }
 
-        for(int j=0;j<coordinates_[OrthoNodeData::Y_AXIS].size()-1;j++) {
+        for(int j = 0; j < coordinates_[OrthoNodeData::Y_AXIS].size() - 1; j++) {
             if(fabs((coordinates_[OrthoNodeData::Y_AXIS][j]+coordinates_[OrthoNodeData::Y_AXIS][j+1])*0.5-calcPoint[1]) < arrowableError_) {
                 yNum=j;
                 break;
             }
         }
 
-        for(int j=0;j<coordinates_[OrthoNodeData::Z_AXIS].size()-1;j++) {
+        for(int j = 0; j < coordinates_[OrthoNodeData::Z_AXIS].size() - 1; j++) {
             if(fabs((coordinates_[OrthoNodeData::Z_AXIS][j]+coordinates_[OrthoNodeData::Z_AXIS][j+1])*0.5-calcPoint[2]) < arrowableError_) {
                 zNum=j;
                 break;

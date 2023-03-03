@@ -38,9 +38,9 @@ public:
         joystick.readCurrentState();
 
         double pos[2];
-        for(int i=0; i < 2; ++i) {
+        for(int i = 0; i < 2; ++i) {
             pos[i] = joystick.getPosition(
-                i==0 ? Joystick::L_STICK_H_AXIS : Joystick::L_STICK_V_AXIS);
+                i == 0 ? Joystick::L_STICK_H_AXIS : Joystick::L_STICK_V_AXIS);
             if(fabs(pos[i]) < 0.2) {
                 pos[i] = 0.0;
             }

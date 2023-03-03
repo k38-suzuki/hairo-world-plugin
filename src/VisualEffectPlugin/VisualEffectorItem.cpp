@@ -243,7 +243,7 @@ void VisualEffectorItemImpl::onPositionChanged()
     BodyItem* newBodyItem = self->findOwnerItem<BodyItem>();
     if(newBodyItem != bodyItem) {
         bodyItem = newBodyItem;
-        for(size_t i=0; i < subItems.size(); i++) {
+        for(size_t i = 0; i < subItems.size(); i++) {
             subItems[i]->removeFromParentItem();
         }
         subItems.clear();

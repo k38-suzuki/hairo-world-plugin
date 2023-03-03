@@ -30,7 +30,7 @@ string getNameListString(const vector<string>& names)
     string nameList;
     if(!names.empty()) {
         size_t n = names.size() - 1;
-        for(size_t i=0; i < n; ++i) {
+        for(size_t i = 0; i < n; ++i) {
             nameList += names[i];
             nameList += ", ";
         }
