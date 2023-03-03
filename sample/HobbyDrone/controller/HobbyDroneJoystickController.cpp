@@ -51,11 +51,11 @@ public:
         mode1 = true;
         wailly = false;
 
-        for(auto opt : io->options()){
-            if(opt == "manual"){
+        for(auto opt : io->options()) {
+            if(opt == "manual") {
                 manualMode = true;
             }
-            if(opt == "mode2"){
+            if(opt == "mode2") {
                 mode1 = false;
             }
             if(opt == "wailly") {

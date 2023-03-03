@@ -37,7 +37,7 @@ const char* GammaCamera::typeName() const
 
 void GammaCamera::copyStateFrom(const DeviceState& other)
 {
-    if(typeid(other) != typeid(GammaCamera)){
+    if(typeid(other) != typeid(GammaCamera)) {
         throw std::invalid_argument("Type mismatch in the Device::copyStateFrom function");
     }
     copyGammaCameraStateFrom(static_cast<const GammaCamera&>(other), true, true);
@@ -71,7 +71,7 @@ DeviceState* GammaCamera::cloneState() const
 
 void GammaCamera::forEachActualType(std::function<bool(const std::type_info& type)> func)
 {
-    if(!func(typeid(GammaCamera))){
+    if(!func(typeid(GammaCamera))) {
         Camera::forEachActualType(func);
     }
 }

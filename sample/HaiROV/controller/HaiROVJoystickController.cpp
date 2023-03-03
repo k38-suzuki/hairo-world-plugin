@@ -44,8 +44,8 @@ public:
         on = true;
         manualMode = false;
 
-        for(auto opt : io->options()){
-            if(opt == "manual"){
+        for(auto opt : io->options()) {
+            if(opt == "manual") {
                 manualMode = true;
             }
         }
@@ -107,10 +107,10 @@ public:
         };
 
         double ppos[2];
-        for(int i=0; i < 2; ++i){
+        for(int i=0; i < 2; ++i) {
             ppos[i] = joystick->getPosition(targetMode,
                 i==0 ? Joystick::L_STICK_H_AXIS : Joystick::L_STICK_V_AXIS);
-            if(fabs(ppos[i]) < 0.2){
+            if(fabs(ppos[i]) < 0.2) {
                 ppos[i] = 0.0;
             }
         }

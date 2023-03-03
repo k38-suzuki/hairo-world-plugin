@@ -50,7 +50,7 @@ public:
     std::vector<int>& atomicNum() { return atomicNum_; }
 
     //std::string element(int im, int id) { return element[im][id]; }
-    //double weightRate(int im, int id)  { return weightRate[im][id]; }
+    //double weightRate(int im, int id) { return weightRate[im][id]; }
     //int elementId(int im, int id) { return elementId[im][id]; }
 
 private:

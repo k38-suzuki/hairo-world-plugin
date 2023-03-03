@@ -141,7 +141,7 @@ void AreaItem::setRegionOffset(const Isometry3& T)
 {
     impl->regionOffset = T;
     impl->updateScenePosition();
-    if(impl->regionLocation){
+    if(impl->regionLocation) {
         impl->regionLocation->sigLocationChanged_();
     }
 }
@@ -257,7 +257,7 @@ bool AreaItemImpl::isCollided(const Vector3& position)
 
 LocationProxyPtr AreaItem::getLocationProxy()
 {
-    if(!impl->regionLocation){
+    if(!impl->regionLocation) {
         impl->regionLocation = new RegionLocation(impl);
     }
     return impl->regionLocation;
@@ -408,11 +408,11 @@ bool AreaItem::store(Archive& archive)
 
 bool AreaItemImpl::store(Archive& archive)
 {
-    if(!regionOffset.translation().isZero()){
+    if(!regionOffset.translation().isZero()) {
         write(archive, "translation", regionOffset.translation());
     }
     AngleAxis aa(regionOffset.linear());
-    if(aa.angle() != 0.0){
+    if(aa.angle() != 0.0) {
         writeDegreeAngleAxis(archive, "rotation", aa);
     }
     archive.write("type", type.selectedIndex());
@@ -439,16 +439,16 @@ bool AreaItemImpl::restore(const Archive& archive)
 
     }
     bool offsetUpdated = false;
-    if(read(archive, "translation", p)){
+    if(read(archive, "translation", p)) {
         regionOffset.translation() = p;
         offsetUpdated = true;
     }
     AngleAxis aa;
-    if(readDegreeAngleAxis(archive, "rotation", aa)){
+    if(readDegreeAngleAxis(archive, "rotation", aa)) {
         regionOffset.linear() = aa.toRotationMatrix();
         offsetUpdated = true;
     }
-    if(offsetUpdated){
+    if(offsetUpdated) {
         self->setRegionOffset(regionOffset);
     }
     type.selectIndex(archive.get("type", 0));

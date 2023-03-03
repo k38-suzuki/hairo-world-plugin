@@ -46,7 +46,7 @@ void PinholeCamera::copyStateFrom(const DeviceState& other)
 
 void PinholeCamera::copyPinholeCameraStateFrom(const PinholeCamera& other, bool doCopyCameraState, bool doCopyImage)
 {
-    if(doCopyCameraState){
+    if(doCopyCameraState) {
         Camera::copyCameraStateFrom(other, true, doCopyImage);
     }
 
@@ -158,7 +158,7 @@ struct PinholeCameraRegistration
         StdBodyLoader::registerNodeType("GammaCamera", readPinholeCamera);
         StdBodyWriter::registerDeviceWriter<PinholeCamera>(
             "PinholeCamera",
-            [](StdBodyWriter* /* writer */, Mapping* info, const PinholeCamera* camera){
+            [](StdBodyWriter* /* writer */, Mapping* info, const PinholeCamera* camera) {
                 return camera->writeSpecifications(info);
             });
     }

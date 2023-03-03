@@ -49,7 +49,7 @@ void ComptonCamera::copyStateFrom(const DeviceState& other)
 
 void ComptonCamera::copyComptonCameraStateFrom(const ComptonCamera& other, bool doCopyCameraState, bool doCopyImage)
 {
-    if(doCopyCameraState){
+    if(doCopyCameraState) {
         Camera::copyCameraStateFrom(other, true, doCopyImage);
     }
 
@@ -158,7 +158,7 @@ namespace {
 bool readComptonCamera(StdBodyLoader* loader, const Mapping* info)
 {
     ComptonCameraPtr camera = new ComptonCamera;
-    if(!camera->readSpecifications(info)){
+    if(!camera->readSpecifications(info)) {
         camera.reset();
     }
     bool result = false;
@@ -175,7 +175,7 @@ struct ComptonCameraRegistration
         StdBodyLoader::registerNodeType("ComptonCamera", readComptonCamera);
         StdBodyWriter::registerDeviceWriter<ComptonCamera>(
             "ComptonCamera",
-            [](StdBodyWriter* /* writer */, Mapping* info, const ComptonCamera* camera){
+            [](StdBodyWriter* /* writer */, Mapping* info, const ComptonCamera* camera) {
                 return camera->writeSpecifications(info);
             });
     }
