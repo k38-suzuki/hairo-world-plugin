@@ -4,30 +4,32 @@ if(UNIX AND NOT CNOID_SOURCE_SHARE_DIR STREQUAL CNOID_BINARY_SHARE_DIR)
   set(make_symlink true)
 endif()
 
-# "default" directory
-install(FILES default/elements.yaml DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
-install(FILES default/filters.yaml DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
-install(FILES default/nuclides.yaml DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
-install(FILES default/shields.yaml DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
-if(ENABLE_QAD)
-  install(FILES default/LIB/ATTEN.DAT DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
-  install(FILES default/LIB/BUF.DAT DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
-  install(FILES default/LIB/DOSECON2.DAT DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
-endif()
-if(make_symlink)
-#  file(MAKE_DIRECTORY ${CNOID_BINARY_SHARE_DIR}/default)
-  set(default_yaml_files
-    elements filters nuclides shields)
-  foreach(file ${default_yaml_files})
-    add_custom_target(
-      symlink_to_default_${file} ALL
-      COMMAND ${CMAKE_COMMAND} -E create_symlink
-      ${CMAKE_CURRENT_SOURCE_DIR}/default/${file}.yaml ${CNOID_BINARY_SHARE_DIR}/default/${file}.yaml)
-  endforeach()
+if(BUILD_PHITS_PLUGIN)
+  # "default" directory
+  install(FILES default/elements.yaml DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
+  install(FILES default/filters.yaml DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
+  install(FILES default/nuclides.yaml DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
+  install(FILES default/shields.yaml DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
+  if(ENABLE_QAD)
+    install(FILES default/LIB/ATTEN.DAT DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
+    install(FILES default/LIB/BUF.DAT DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
+    install(FILES default/LIB/DOSECON2.DAT DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
+  endif()
+  if(make_symlink)
+  #  file(MAKE_DIRECTORY ${CNOID_BINARY_SHARE_DIR}/default)
+    set(default_yaml_files
+      elements filters nuclides shields)
+    foreach(file ${default_yaml_files})
+      add_custom_target(
+        symlink_to_default_${file} ALL
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+        ${CMAKE_CURRENT_SOURCE_DIR}/default/${file}.yaml ${CNOID_BINARY_SHARE_DIR}/default/${file}.yaml)
+    endforeach()
+  endif()
 endif()
 
 # "model" directory
-install(DIRECTORY model DESTINATION ${CNOID_SHARE_SUBDIR})
+#install(DIRECTORY model DESTINATION ${CNOID_SHARE_SUBDIR})
 if(make_symlink)
 #  file(MAKE_DIRECTORY ${CNOID_BINARY_SHARE_DIR}/model)
   if(ENABLE_SAMPLES)
