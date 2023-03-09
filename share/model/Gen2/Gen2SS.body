@@ -2,13 +2,13 @@ format: ChoreonoidBody
 formatVersion: 1.0
 angleUnit: degree
 #name: j2s7s300
-name: JACO2
+name: Gen2
 rootLink: BASE
 
 links:
   -
     type: SubBody
-    uri: "JACO2.body"
+    uri: "Gen2.body"
     translation: [ 0, 0, 0 ]
     jointType: fixed
   -

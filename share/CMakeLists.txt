@@ -1,19 +1,10 @@
 set(make_symlink false)
-if(NOT CHOREONOID_SOURCE_SHARE_DIR STREQUAL CHOREONOID_BINARY_SHARE_DIR)
-  if(UNIX)
-    set(make_symlink true)
-  endif()
-  configure_file(default/elements.yaml ${CHOREONOID_BINARY_SHARE_DIR}/default/elements.yaml COPYONLY)
-  configure_file(default/filters.yaml ${CHOREONOID_BINARY_SHARE_DIR}/default/filters.yaml COPYONLY)
-  configure_file(default/nuclides.yaml ${CHOREONOID_BINARY_SHARE_DIR}/default/nuclides.yaml COPYONLY)
-  configure_file(default/shields.yaml ${CHOREONOID_BINARY_SHARE_DIR}/default/shields.yaml COPYONLY)
-  if(ENABLE_QAD)
-    configure_file(default/LIB/ATTEN.DAT ${CHOREONOID_BINARY_SHARE_DIR}/default/LIB/ATTEN.DAT COPYONLY)
-    configure_file(default/LIB/BUF.DAT ${CHOREONOID_BINARY_SHARE_DIR}/default/LIB/BUF.DAT COPYONLY)
-    configure_file(default/LIB/DOSECON2.DAT ${CHOREONOID_BINARY_SHARE_DIR}/default/LIB/DOSECON2.DAT COPYONLY)
-  endif()
+
+if(UNIX AND NOT CNOID_SOURCE_SHARE_DIR STREQUAL CNOID_BINARY_SHARE_DIR)
+  set(make_symlink true)
 endif()
 
+# "default" directory
 install(FILES default/elements.yaml DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
 install(FILES default/filters.yaml DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
 install(FILES default/nuclides.yaml DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
@@ -23,16 +14,35 @@ if(ENABLE_QAD)
   install(FILES default/LIB/BUF.DAT DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
   install(FILES default/LIB/DOSECON2.DAT DESTINATION ${CHOREONOID_SHARE_SUBDIR}/default)
 endif()
-
-if(ENABLE_SAMPLES)
-  set(symlink_directories model)
-  foreach(dir ${symlink_directories})
-  install(DIRECTORY ${dir} DESTINATION ${CNOID_SHARE_SUBDIR}/HAIROWorld)
-  if(make_symlink)
+if(make_symlink)
+#  file(MAKE_DIRECTORY ${CNOID_BINARY_SHARE_DIR}/default)
+  set(default_yaml_files
+    elements filters nuclides shields)
+  foreach(file ${default_yaml_files})
     add_custom_target(
-      symlink_to_HAIROWorld ALL
+      symlink_to_default_${file} ALL
       COMMAND ${CMAKE_COMMAND} -E create_symlink
-      ${CMAKE_CURRENT_SOURCE_DIR} ${CNOID_BINARY_SHARE_DIR}/HAIROWorld)
-    endif()
+      ${CMAKE_CURRENT_SOURCE_DIR}/default/${file}.yaml ${CNOID_BINARY_SHARE_DIR}/default/${file}.yaml)
   endforeach()
 endif()
+
+# "model" directory
+install(DIRECTORY model DESTINATION ${CNOID_SHARE_SUBDIR})
+if(make_symlink)
+#  file(MAKE_DIRECTORY ${CNOID_BINARY_SHARE_DIR}/model)
+  if(ENABLE_SAMPLES)
+    set(sample_model_dirs
+      Gen2 Husky Jackal MockupStairs RobotTestPool TestField TrainingStage)
+    foreach(dir ${sample_model_dirs})
+      add_custom_target(
+	symlink_to_model_${dir} ALL
+	COMMAND ${CMAKE_COMMAND} -E create_symlink
+	${CMAKE_CURRENT_SOURCE_DIR}/model/${dir} ${CNOID_BINARY_SHARE_DIR}/model/${dir})
+    endforeach()
+  endif()
+endif()
+
+# "project" directory
+#if(make_symlink)
+#  file(MAKE_DIRECTORY ${CNOID_BINARY_SHARE_DIR}/project)
+#endif()

@@ -1,7 +1,7 @@
 format: ChoreonoidBody
 formatVersion: 1.0
 angleUnit: degree
-name: HUSKY
+name: Husky
 
 WHEEL_COMMON: &WheelCommon
   parent: BASE

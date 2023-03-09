@@ -1,5 +1,5 @@
 /**
-   JACKAL Controller
+   Jackal Controller
    @author Kenta Suzuki
 */
 
@@ -9,7 +9,7 @@
 using namespace std;
 using namespace cnoid;
 
-class JACKALJoystickController : public SimpleController
+class JackalJoystickController : public SimpleController
 {
     Link* wheel[4];
 
@@ -81,4 +81,4 @@ public:
     }
 };
 
-CNOID_IMPLEMENT_SIMPLE_CONTROLLER_FACTORY(JACKALJoystickController)
+CNOID_IMPLEMENT_SIMPLE_CONTROLLER_FACTORY(JackalJoystickController)

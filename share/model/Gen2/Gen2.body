@@ -2,7 +2,7 @@ format: ChoreonoidBody
 formatVersion: 1.0
 angleUnit: degree
 #name: j2s7s300
-name: JACO2
+name: Gen2
 rootLink: BASE
 
 FINGER_PROXIMAL_COMMON: &FingerProximalCommon

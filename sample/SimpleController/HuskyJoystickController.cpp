@@ -1,5 +1,5 @@
 /**
-   HUSKY Controller
+   Husky Controller
    @author Kenta Suzuki
 */
 
@@ -9,7 +9,7 @@
 using namespace std;
 using namespace cnoid;
 
-class HUSKYJoystickController : public SimpleController
+class HuskyJoystickController : public SimpleController
 {
     Link* wheel[4];
 
@@ -81,4 +81,4 @@ public:
     }
 };
 
-CNOID_IMPLEMENT_SIMPLE_CONTROLLER_FACTORY(HUSKYJoystickController)
+CNOID_IMPLEMENT_SIMPLE_CONTROLLER_FACTORY(HuskyJoystickController)

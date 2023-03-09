@@ -1,5 +1,5 @@
 /**
-   JACO2 Controller
+   Gen2 Controller
    @author Kenta Suzuki
 */
 
@@ -19,7 +19,7 @@ const double joint_pose[] = {
 
 }
 
-class JACO2JoystickController : public SimpleController
+class Gen2JoystickController : public SimpleController
 {
     enum ControlID { TRANSLATION_MODE, WRIST_MODE, FINGER_MODE };
     enum JointID {
@@ -266,4 +266,4 @@ public:
     }
 };
 
-CNOID_IMPLEMENT_SIMPLE_CONTROLLER_FACTORY(JACO2JoystickController)
+CNOID_IMPLEMENT_SIMPLE_CONTROLLER_FACTORY(Gen2JoystickController)

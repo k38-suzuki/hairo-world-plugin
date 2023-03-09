@@ -1,7 +1,7 @@
 format: ChoreonoidBody
 formatVersion: 1.0
 angleUnit: degree
-name: JACKAL
+name: Jackal
 
 WHEEL_COMMON: &WheelCommon
   parent: CHASSIS

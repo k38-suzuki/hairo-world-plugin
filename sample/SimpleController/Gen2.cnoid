@@ -17,12 +17,12 @@ items:
       children: 
         - 
           id: 2
-          name: "JACO2"
+          name: "Gen2"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "${SHARE}/HAIROWorld/model/JACO2/JACO2.body"
+            file: "${SHARE}/model/Gen2/Gen2.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0 ]
             rootAttitude: [ 
@@ -56,7 +56,7 @@ items:
               data: 
                 isNoDelayMode: false
                 controllerOptions: ""
-                controller: "JACO2JoystickController"
+                controller: "Gen2JoystickController"
                 base_directory: "Controller directory"
                 reloading: false
                 export_symbols: false

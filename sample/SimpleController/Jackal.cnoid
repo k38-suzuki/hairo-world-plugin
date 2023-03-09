@@ -17,21 +17,21 @@ items:
       children: 
         - 
           id: 2
-          name: "HUSKY"
+          name: "Jackal"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "${SHARE}/HAIROWorld/model/HUSKY/HUSKY.body"
+            file: "${SHARE}/model/Jackal/Jackal.body"
             format: CHOREONOID-BODY
-            rootPosition: [ 0, 0, 0.13228 ]
+            rootPosition: [ 0, 0, 0.1 ]
             rootAttitude: [ 
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
             jointDisplacements: [ 0, 0, 0, 0 ]
             jointPositions: [ 0, 0, 0, 0 ]
-            initialRootPosition: [ 0, 0, 0.13228 ]
+            initialRootPosition: [ 0, 0, 0.1 ]
             initialRootAttitude: [ 
               1, 0, 0, 
               0, 1, 0, 
@@ -52,7 +52,7 @@ items:
               data: 
                 isNoDelayMode: false
                 controllerOptions: ""
-                controller: "HUSKYJoystickController"
+                controller: "JackalJoystickController"
                 base_directory: "Controller directory"
                 reloading: false
                 export_symbols: false
@@ -160,7 +160,7 @@ views:
           isCurrent: true
           eye: [ 3, 1.5, 1.2 ]
           direction: [ -0.880451, -0.440225, -0.17609 ]
-          up: [ -0.1575, -0.0787498, 0.984374 ]
+          up: [ -0.1575, -0.0787499, 0.984374 ]
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
@@ -265,7 +265,7 @@ toolbars:
 Body: 
   "BodySelectionManager": 
     current_body_item: 2
-    current_link: "BASE"
+    current_link: "CHASSIS"
   "KinematicFaultChecker": 
     checkJointPositions: true
     angleMargin: 0
