@@ -22,7 +22,7 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/aistcrawler.body"
+            file: "aistcrawler.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0.2 ]
             rootAttitude: [ 
