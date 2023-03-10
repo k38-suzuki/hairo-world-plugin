@@ -18,21 +18,20 @@ items:
       children: 
         - 
           id: 2
-          name: "HobbyDrone"
+          name: "HaiROV"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/HobbyDrone.body"
-            currentBaseLink: "CHASSIS"
+            file: "HaiROV.body"
             format: CHOREONOID-BODY
-            rootPosition: [ -2, -0.5, 0.3 ]
+            rootPosition: [ 0, 0, -0.5 ]
             rootAttitude: [ 
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
             jointPositions: [  ]
-            initialRootPosition: [ -2, -0.5, 0.3 ]
+            initialRootPosition: [ 0, 0, -0.5 ]
             initialRootAttitude: [ 
               1, 0, 0, 
               0, 1, 0, 
@@ -46,13 +45,13 @@ items:
           children: 
             - 
               id: 3
-              name: "HobbyDroneJoystickController"
+              name: "JoystickController"
               plugin: Body
               class: SimpleControllerItem
               data: 
                 isNoDelayMode: false
                 controllerOptions: ""
-                controller: "HobbyDroneJoystickController.so"
+                controller: "HaiROVJoystickController"
                 base_directory: "Controller directory"
                 reloading: false
                 export_symbols: false
@@ -66,7 +65,6 @@ items:
                   - 
                     class: VEImageVisualizerItem
                     name: FrontCamera
-                    is_checked: true
                     hue: 0
                     saturation: 0
                     value: 0
@@ -75,33 +73,48 @@ items:
                     blue: 0
                     coef_b: 0
                     coef_d: 1
-                    std_dev: 0.1
+                    std_dev: 0
+                    salt: 0
+                    pepper: 0
+                    flip: false
+                    filter: 0
+                  - 
+                    class: VEImageVisualizerItem
+                    name: BottomCamera
+                    is_checked: true
+                    hue: 0
+                    saturation: 0
+                    value: 0
+                    red: 0
+                    green: 0
+                    blue: 0
+                    coef_b: -0.3
+                    coef_d: 1.7
+                    std_dev: 0
                     salt: 0
                     pepper: 0
                     flip: false
                     filter: 0
         - 
           id: 5
-          name: "Labo1"
+          name: "FuelPool"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "${SHARE}/model/Labo1/Labo1.body"
+            file: "FuelPool.body"
             format: CHOREONOID-BODY
-            rootPosition: [ 0, 0, 0 ]
+            rootPosition: [ 0, 0, -4 ]
             rootAttitude: [ 
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            jointDisplacements: [ 0 ]
-            jointPositions: [ 0 ]
-            initialRootPosition: [ 0, 0, 0 ]
+            jointPositions: [  ]
+            initialRootPosition: [ 0, 0, -4 ]
             initialRootAttitude: [ 
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            initialJointPositions: [ 0 ]
             fix_root: true
             collisionDetection: true
             selfCollisionDetection: false
@@ -113,38 +126,21 @@ items:
           name: "FluidArea"
           plugin: CFD
           class: FluidAreaItem
+          is_checked: true
           data: 
+            translation: [ 0, 0, -2.5 ]
             type: 0
-            size: [ 20, 20, 20 ]
+            size: [ 5.4, 5.4, 5 ]
             radius: 1
             height: 1
-            diffuse_color: [ 1, 1, 1 ]
+            diffuse_color: [ 0, 0.5, 1 ]
             shininess: 0
             transparency: 0.7
-            density: 1.2
-            viscosity: 0.00002
+            density: 1000
+            viscosity: 0.001
             steady_flow: [ 0, 0, 0 ]
         - 
           id: 7
-          name: "FluidArea"
-          plugin: CFD
-          class: FluidAreaItem
-          is_checked: true
-          data: 
-            translation: [ 0, 0, 2 ]
-            rotation: [ 0, -0, -1, 90 ]
-            type: 1
-            size: [ 1, 1, 1 ]
-            radius: 1
-            height: 3
-            diffuse_color: [ 0, 1, 1 ]
-            shininess: 0
-            transparency: 0.8
-            density: 1.2
-            viscosity: 0.00002
-            steady_flow: [ 1, 0, 0 ]
-        - 
-          id: 8
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
@@ -177,7 +173,7 @@ items:
             oldAccelSensorMode: false
           children: 
             - 
-              id: 9
+              id: 8
               name: "GLVisionSimulator"
               plugin: Body
               class: GLVisionSimulatorItem
@@ -195,7 +191,7 @@ items:
                 enable_additional_lights: true
                 antialiasing: false
             - 
-              id: 10
+              id: 9
               name: "CFDSimulator"
               plugin: CFD
               class: CFDSimulatorItem
@@ -209,7 +205,7 @@ views:
     class: ImageView
     mounted: true
     state: 
-      imageable_item: [ 4, "FrontCamera" ]
+      imageable_item: [ 4, "BottomCamera" ]
   - 
     id: 1
     plugin: Base
@@ -221,7 +217,7 @@ views:
     class: ItemTreeView
     mounted: true
     state: 
-      expanded: [ 1, 2, 4, 8, 10 ]
+      expanded: [ 1, 2, 3, 4, 7, 9 ]
   - 
     id: 3
     plugin: Base
@@ -252,9 +248,9 @@ views:
         - 
           camera: [ System, Perspective ]
           isCurrent: true
-          eye: [ -5.07415, -4.02937, 4.23363 ]
-          direction: [ 0.70472, 0.505294, -0.498044 ]
-          up: [ 0.404752, 0.290213, 0.867152 ]
+          eye: [ -2.84516, -4.96345, 3.44473 ]
+          direction: [ 0.425937, 0.7126, -0.557475 ]
+          up: [ 0.286017, 0.478511, 0.830194 ]
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
@@ -368,8 +364,8 @@ toolbars:
     lazyCollisionDetectionMode: true
 Body: 
   "BodySelectionManager": 
-    current_body_item: 2
-    current_link: "CHASSIS"
+    current_body_item: 5
+    current_link: "Line0"
   "KinematicFaultChecker": 
     checkJointPositions: true
     angleMargin: 0
@@ -456,7 +452,7 @@ layoutOfToolBars:
     - 
       - { name: "BodyBar", x: 0, priority: 0 }
       - { name: "KinematicsBar", x: 276, priority: 0 }
-      - { name: "SceneBar", x: 695, priority: 1 }
+      - { name: "SceneBar", x: 671, priority: 1 }
       - { name: "GraphBar", x: 1054, priority: 2 }
       - { name: "CaptureBar", x: 1167, priority: 3 }
       - { name: "ImageViewBar", x: 1216, priority: 4 }
