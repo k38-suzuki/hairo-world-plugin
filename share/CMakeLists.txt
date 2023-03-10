@@ -29,7 +29,7 @@ if(BUILD_PHITS_PLUGIN)
 endif()
 
 # "model" directory
-#install(DIRECTORY model DESTINATION ${CNOID_SHARE_SUBDIR})
+install(DIRECTORY model DESTINATION ${CNOID_SHARE_SUBDIR})
 if(make_symlink)
 #  file(MAKE_DIRECTORY ${CNOID_BINARY_SHARE_DIR}/model)
   if(ENABLE_SAMPLES)
