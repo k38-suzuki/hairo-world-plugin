@@ -23,17 +23,17 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/Tank.body"
+            file: "Tank.body"
             currentBaseLink: "CHASSIS"
             format: CHOREONOID-BODY
             rootPosition: [ -1.5, 1, 0.105900008 ]
             rootAttitude: [ 
-              1, 2.52504586e-09, -9.5407579e-09, 
-              -2.52504586e-09, 1, -2.22622774e-10, 
-              9.5407579e-09, 2.22622798e-10, 1 ]
-            jointDisplacements: [ 1.14775e-10, -2.21112, 0, 0 ]
+              1, 2.52504311e-09, -9.5406405e-09, 
+              -2.52504312e-09, 1, -2.4638107e-10, 
+              9.5406405e-09, 2.46381094e-10, 1 ]
+            jointDisplacements: [ 1.19511e-10, -2.21112, 0, 0 ]
             initialJointDisplacements: [ 0, -1.64966, 0, 0 ]
-            jointPositions: [ 2.0032e-12, -0.0385913, 0, 0 ]
+            jointPositions: [ 2.08586e-12, -0.0385913, 0, 0 ]
             initialRootPosition: [ -1.5, 1, 0.1004 ]
             initialRootAttitude: [ 
               1, 0, 0, 
@@ -102,7 +102,7 @@ items:
                     name: ComptonCamera
                     is_checked: true
                     mode: 0
-                    min: 22012
+                    min: 22037
                     max: 0
                     filters: 
                       - 
@@ -183,7 +183,7 @@ items:
           plugin: Body
           class: BodyItem
           data: 
-            file: "../model/floor.body"
+            file: "floor.body"
             currentBaseLink: "Floor"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, -0.1 ]
@@ -210,13 +210,13 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/box1.body"
+            file: "box1.body"
             format: CHOREONOID-BODY
-            rootPosition: [ 1.00092506, 1.99978656, 1.49997979 ]
+            rootPosition: [ 1.00092508, 1.9997865, 1.49997981 ]
             rootAttitude: [ 
-              0.999999993, -6.80651625e-06, 0.000118637063, 
-              6.81047725e-06, 0.999999999, -3.33872113e-05, 
-              -0.000118636836, 3.3388019e-05, 0.999999992 ]
+              0.999999993, -6.78555542e-06, 0.000118645566, 
+              6.78952054e-06, 0.999999999, -3.3419528e-05, 
+              -0.000118645339, 3.34203334e-05, 0.999999992 ]
             jointPositions: [  ]
             initialRootPosition: [ 1, 2, 1.5 ]
             initialRootAttitude: [ 
@@ -236,19 +236,19 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/cylinder1.body"
+            file: "cylinder1.body"
             format: CHOREONOID-BODY
-            rootPosition: [ 1.99999604, 9.20292097e-07, 0.999900013 ]
+            rootPosition: [ 1.99999604, 9.20302809e-07, 0.999900013 ]
             rootAttitude: [ 
-              1, 2.1606048e-12, 1.07680747e-05, 
-              1.07680747e-05, -1.86153315e-11, -1, 
-              -2.16050506e-12, 1, -1.86153315e-11 ]
+              1, 2.55326979e-13, 1.07679913e-05, 
+              1.07679913e-05, -1.7950752e-11, -1, 
+              -2.55235964e-13, 1, -1.7950752e-11 ]
             jointPositions: [  ]
             initialRootPosition: [ 2, 0, 1 ]
             initialRootAttitude: [ 
               1, -6.71948619e-07, 9.44094883e-07, 
-              9.44091993e-07, -4.30114341e-06, -1, 
-              6.71952679e-07, 1, -4.30114277e-06 ]
+              9.44091993e-07, -4.30118108e-06, -1, 
+              6.71952679e-07, 1, -4.30118044e-06 ]
             staticModel: false
             collisionDetection: true
             selfCollisionDetection: false
@@ -262,9 +262,9 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/sphere1.body"
+            file: "sphere1.body"
             format: CHOREONOID-BODY
-            rootPosition: [ -1.84369109, 2.65078124, 0.975802729 ]
+            rootPosition: [ -1.84369109, 2.65078124, 0.975802711 ]
             rootAttitude: [ 
               0.985574247, -0.0939606476, 0.140765051, 
               0.0699220412, 0.983488743, 0.166915551, 
@@ -283,12 +283,12 @@ items:
             zmp: [ 0, 0, 0 ]
         - 
           id: 13
-          name: "Cs137_Co60_Cs134"
+          name: "Cs134_Cs137_Cs134_Co60"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/Cs137_Co60_Cs134.body"
+            file: "Cs134_Cs137_Cs134_Co60.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0 ]
             rootAttitude: [ 
@@ -315,11 +315,11 @@ items:
           is_checked: true
           data: 
             code: 0
-            maxcas: 10000
-            maxbch: 20
-            nx: 30
-            ny: 30
-            nz: 9
+            maxcas: 1000
+            maxbch: 2
+            nx: 10
+            ny: 10
+            nz: 3
             ne: 1
             xmin: -5
             ymin: -5
@@ -394,9 +394,9 @@ views:
         - 
           camera: [ System, Perspective ]
           isCurrent: true
-          eye: [ -7.51718, -4.60692, 4.51685 ]
-          direction: [ 0.722704, 0.590712, -0.358829 ]
-          up: [ 0.27783, 0.227088, 0.933403 ]
+          eye: [ -7.29438, -4.86414, 4.11897 ]
+          direction: [ 0.721881, 0.627084, -0.292666 ]
+          up: [ 0.220944, 0.19193, 0.956215 ]
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
@@ -459,11 +459,6 @@ views:
     state: 
       element_type: link
       listingMode: list
-      current_body_item: 2
-      body_items: 
-        - 
-          id: 2
-          selected_links: [ 0 ]
   - 
     id: 11
     plugin: Body
@@ -629,9 +624,9 @@ layoutOfToolBars:
       - { name: "ScriptBar", x: 49, priority: 1 }
       - { name: "SimulationBar", x: 98, priority: 2 }
       - { name: "TimeBar", x: 307, priority: 3 }
+      - { name: "SceneBar", x: 1951, priority: 0 }
     - 
-      - { name: "BodyBar", x: 0, priority: 0 }
-      - { name: "KinematicsBar", x: 273, priority: 1 }
-      - { name: "SceneBar", x: 520, priority: 2 }
-      - { name: "CaptureBar", x: 1055, priority: 3 }
-      - { name: "ImageViewBar", x: 1104, priority: 4 }
+      - { name: "BodyBar", x: 0, priority: 1 }
+      - { name: "KinematicsBar", x: 425, priority: 2 }
+      - { name: "CaptureBar", x: 411, priority: 0 }
+      - { name: "ImageViewBar", x: 568, priority: 3 }

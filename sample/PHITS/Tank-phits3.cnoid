@@ -23,17 +23,17 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/Tank.body"
+            file: "Tank.body"
             currentBaseLink: "CHASSIS"
             format: CHOREONOID-BODY
             rootPosition: [ -1.5, 1, 0.105900008 ]
             rootAttitude: [ 
-              1, 2.52504595e-09, -9.5407115e-09, 
-              -2.52504596e-09, 1, -2.29087761e-10, 
-              9.5407115e-09, 2.29087785e-10, 1 ]
-            jointDisplacements: [ 1.15637e-10, -2.21112, 0, 0 ]
+              1, 2.52504586e-09, -9.5407579e-09, 
+              -2.52504586e-09, 1, -2.22622774e-10, 
+              9.5407579e-09, 2.22622798e-10, 1 ]
+            jointDisplacements: [ 1.14775e-10, -2.21112, 0, 0 ]
             initialJointDisplacements: [ 0, -1.64966, 0, 0 ]
-            jointPositions: [ 2.01825e-12, -0.0385913, 0, 0 ]
+            jointPositions: [ 2.0032e-12, -0.0385913, 0, 0 ]
             initialRootPosition: [ -1.5, 1, 0.1004 ]
             initialRootAttitude: [ 
               1, 0, 0, 
@@ -102,8 +102,8 @@ items:
                     name: ComptonCamera
                     is_checked: true
                     mode: 0
-                    min: 22023
-                    max: 100000
+                    min: 22012
+                    max: 0
                     filters: 
                       - 
                         filter: false
@@ -183,7 +183,7 @@ items:
           plugin: Body
           class: BodyItem
           data: 
-            file: "../model/floor.body"
+            file: "floor.body"
             currentBaseLink: "Floor"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, -0.1 ]
@@ -210,13 +210,13 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/box1.body"
+            file: "box1.body"
             format: CHOREONOID-BODY
-            rootPosition: [ 1.00092508, 1.99978656, 1.49997979 ]
+            rootPosition: [ 1.00092506, 1.99978656, 1.49997979 ]
             rootAttitude: [ 
-              0.999999993, -6.80843512e-06, 0.0001186464, 
-              6.81239637e-06, 0.999999999, -3.33866841e-05, 
-              -0.000118646172, 3.33874921e-05, 0.999999992 ]
+              0.999999993, -6.80651625e-06, 0.000118637063, 
+              6.81047725e-06, 0.999999999, -3.33872113e-05, 
+              -0.000118636836, 3.3388019e-05, 0.999999992 ]
             jointPositions: [  ]
             initialRootPosition: [ 1, 2, 1.5 ]
             initialRootAttitude: [ 
@@ -236,19 +236,19 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/cylinder1.body"
+            file: "cylinder1.body"
             format: CHOREONOID-BODY
-            rootPosition: [ 1.99999604, 9.20266813e-07, 0.999900013 ]
+            rootPosition: [ 1.99999604, 9.20292097e-07, 0.999900013 ]
             rootAttitude: [ 
-              1, 9.66397127e-13, 1.0768042e-05, 
-              1.0768042e-05, -1.7547519e-11, -1, 
-              -9.66309311e-13, 1, -1.7547519e-11 ]
+              1, 2.1606048e-12, 1.07680747e-05, 
+              1.07680747e-05, -1.86153315e-11, -1, 
+              -2.16050506e-12, 1, -1.86153315e-11 ]
             jointPositions: [  ]
             initialRootPosition: [ 2, 0, 1 ]
             initialRootAttitude: [ 
-              1, -6.71948619e-07, 9.44094884e-07, 
-              9.44091993e-07, -4.30136943e-06, -1, 
-              6.7195268e-07, 1, -4.3013688e-06 ]
+              1, -6.71948619e-07, 9.44094883e-07, 
+              9.44091993e-07, -4.30114341e-06, -1, 
+              6.71952679e-07, 1, -4.30114277e-06 ]
             staticModel: false
             collisionDetection: true
             selfCollisionDetection: false
@@ -262,9 +262,9 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/sphere1.body"
+            file: "sphere1.body"
             format: CHOREONOID-BODY
-            rootPosition: [ -1.84369109, 2.65078124, 0.975802724 ]
+            rootPosition: [ -1.84369109, 2.65078124, 0.975802729 ]
             rootAttitude: [ 
               0.985574247, -0.0939606476, 0.140765051, 
               0.0699220412, 0.983488743, 0.166915551, 
@@ -283,25 +283,24 @@ items:
             zmp: [ 0, 0, 0 ]
         - 
           id: 13
-          name: "Cs137"
+          name: "Cs137_Co60_Cs134"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/Cs137.body"
-            currentBaseLink: "CS137"
+            file: "Cs137_Co60_Cs134.body"
             format: CHOREONOID-BODY
-            rootPosition: [ -0.5, 0.8, 0.5 ]
+            rootPosition: [ 0, 0, 0 ]
             rootAttitude: [ 
-              1, -6.71788679e-09, 4.74033465e-07, 
-              6.71591497e-09, 1, 4.15965644e-06, 
-              -4.74033493e-07, -4.15965643e-06, 1 ]
+              1, 0, 0, 
+              0, 1, 0, 
+              0, 0, 1 ]
             jointPositions: [  ]
-            initialRootPosition: [ -0.5, 0.8, 0.5 ]
+            initialRootPosition: [ 0, 0, 0 ]
             initialRootAttitude: [ 
-              1, -6.71788679e-09, 4.74033465e-07, 
-              6.71591497e-09, 1, 4.15965644e-06, 
-              -4.74033493e-07, -4.15965643e-06, 1 ]
+              1, 0, 0, 
+              0, 1, 0, 
+              0, 0, 1 ]
             staticModel: true
             collisionDetection: true
             selfCollisionDetection: false
@@ -316,11 +315,11 @@ items:
           is_checked: true
           data: 
             code: 0
-            maxcas: 1000
-            maxbch: 2
-            nx: 10
-            ny: 10
-            nz: 3
+            maxcas: 10000
+            maxbch: 20
+            nx: 30
+            ny: 30
+            nz: 9
             ne: 1
             xmin: -5
             ymin: -5
@@ -395,9 +394,9 @@ views:
         - 
           camera: [ System, Perspective ]
           isCurrent: true
-          eye: [ -5.81938, -3.10068, 4.23182 ]
-          direction: [ 0.702093, 0.585675, -0.405031 ]
-          up: [ 0.311023, 0.259451, 0.914303 ]
+          eye: [ -7.51718, -4.60692, 4.51685 ]
+          direction: [ 0.722704, 0.590712, -0.358829 ]
+          up: [ 0.27783, 0.227088, 0.933403 ]
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
@@ -460,6 +459,11 @@ views:
     state: 
       element_type: link
       listingMode: list
+      current_body_item: 2
+      body_items: 
+        - 
+          id: 2
+          selected_links: [ 0 ]
   - 
     id: 11
     plugin: Body
@@ -505,8 +509,8 @@ toolbars:
     lazyCollisionDetectionMode: true
 Body: 
   "BodySelectionManager": 
-    current_body_item: 13
-    current_link: "CS137"
+    current_body_item: 2
+    current_link: "CHASSIS"
   "EditableSceneBody": 
     editableSceneBodies: 
       - 
@@ -610,7 +614,7 @@ viewAreas:
             - 
               type: splitter
               orientation: horizontal
-              sizes: [ 762, 760 ]
+              sizes: [ 761, 761 ]
               children: 
                 - 
                   type: pane
