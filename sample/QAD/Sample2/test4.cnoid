@@ -16,23 +16,23 @@ items:
       children: 
         - 
           id: 2
-          name: "Co60"
+          name: "Co60_C"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/Co60.body"
+            file: "Co60_C.body"
             format: CHOREONOID-BODY
-            rootPosition: [ 1, 1, 0 ]
+            rootPosition: [ 0, 0, 0 ]
             rootAttitude: [ 
-              0.707106781, -0.707106781, 0, 
-              0.707106781, 0.707106781, -0, 
+              1, 0, 0, 
+              0, 1, 0, 
               0, 0, 1 ]
             jointPositions: [  ]
-            initialRootPosition: [ 1, 1, 0 ]
+            initialRootPosition: [ 0, 0, 0 ]
             initialRootAttitude: [ 
-              0.707106781, -0.707106781, 0, 
-              0.707106781, 0.707106781, 0, 
+              1, 0, 0, 
+              0, 1, 0, 
               0, 0, 1 ]
             staticModel: true
             collisionDetection: true
@@ -42,25 +42,25 @@ items:
             zmp: [ 0, 0, 0 ]
         - 
           id: 3
-          name: "box2"
+          name: "cylinder2"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/box2.body"
+            file: "cylinder2.body"
             format: CHOREONOID-BODY
-            rootPosition: [ 5.243, 5.234, 0 ]
+            rootPosition: [ 5.5, 0, 0 ]
             rootAttitude: [ 
-              0.707106781, -0.707106781, 0, 
-              0.707106781, 0.707106781, -0, 
+              1, 0, 0, 
+              0, 1, 0, 
               0, 0, 1 ]
             jointPositions: [  ]
-            initialRootPosition: [ 5.243, 5.234, 0 ]
+            initialRootPosition: [ 5.5, 0, 0 ]
             initialRootAttitude: [ 
-              0.707106781, -0.707106781, 0, 
-              0.707106781, 0.707106781, 0, 
+              1, 0, 0, 
+              0, 1, 0, 
               0, 0, 1 ]
-            staticModel: true
+            staticModel: false
             collisionDetection: true
             selfCollisionDetection: false
             location_editable: true
@@ -68,13 +68,13 @@ items:
             zmp: [ 0, 0, 0 ]
         - 
           id: 4
-          name: "test2"
+          name: "test4"
           plugin: PHITS
           class: CrossSectionItem
           is_checked: true
           data: 
-            input_file: "test2/test2.inp"
-            output_file: "test2/test2.out"
+            input_file: "test4/test4.inp"
+            output_file: "test4/test4.out"
             code: 1
             maxcas: 1000
             maxbch: 2
@@ -95,33 +95,7 @@ items:
             put_messages: true
             default_nuclide_table_file: "${SHARE}/default/nuclides.yaml"
             default_element_table_file: "${SHARE}/default/elements.yaml"
-            gamma_data_file: "test2/test2.gbin"
-        - 
-          id: 5
-          name: "origin"
-          plugin: Body
-          class: BodyItem
-          is_checked: true
-          data: 
-            file: "../model/origin.body"
-            format: CHOREONOID-BODY
-            rootPosition: [ 0, 0, 0 ]
-            rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
-              0, 0, 1 ]
-            jointPositions: [  ]
-            initialRootPosition: [ 0, 0, 0 ]
-            initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
-              0, 0, 1 ]
-            staticModel: false
-            collisionDetection: true
-            selfCollisionDetection: false
-            location_editable: true
-            scene_sensitive: true
-            zmp: [ 0, 0, 0 ]
+            gamma_data_file: "test4/test4.gbin"
 views: 
   - 
     id: 0
@@ -198,9 +172,9 @@ views:
           fieldOfView: 0.610865
           near: 0.04
           far: 200
-          eye: [ -7.07507, -12.7893, 9.95519 ]
-          direction: [ 0.49013, 0.693036, -0.528653 ]
-          up: [ 0.305251, 0.43162, 0.848838 ]
+          eye: [ -8.83495, -11.9026, 9.1437 ]
+          direction: [ 0.514203, 0.668657, -0.537115 ]
+          up: [ 0.327425, 0.425776, 0.843509 ]
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
@@ -232,13 +206,10 @@ views:
     state: 
       element_type: all
       listingMode: list
-      current_body_item: 5
+      current_body_item: 3
       body_items: 
         - 
-          id: 2
-          selected_links: [ 0 ]
-        - 
-          id: 5
+          id: 3
           selected_links: [ 0 ]
   - 
     id: 7
@@ -323,8 +294,8 @@ Body:
   "BodyMotionEngine": 
     updateJointVelocities: false
   "BodySelectionManager": 
-    current_body_item: 5
-    current_link: "ORIGIN"
+    current_body_item: 3
+    current_link: "CYLINDER"
   "EditableSceneBody": 
     editableSceneBodies: 
       - 
@@ -334,11 +305,6 @@ Body:
         show_zmp: false
       - 
         bodyItem: 3
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
-      - 
-        bodyItem: 5
         show_cm: false
         show_cm_projection: false
         show_zmp: false

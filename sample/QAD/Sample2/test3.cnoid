@@ -21,7 +21,7 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/Co60.body"
+            file: "Co60.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0 ]
             rootAttitude: [ 
@@ -42,23 +42,23 @@ items:
             zmp: [ 0, 0, 0 ]
         - 
           id: 3
-          name: "Co60_C"
+          name: "box2"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/Co60_C.body"
+            file: "box2.body"
             format: CHOREONOID-BODY
-            rootPosition: [ 2, 2, 0 ]
+            rootPosition: [ 5.5, 0, 0 ]
             rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+              0.707106781, -0.707106781, 0, 
+              0.707106781, 0.707106781, -0, 
               0, 0, 1 ]
             jointPositions: [  ]
-            initialRootPosition: [ 2, 2, 0 ]
+            initialRootPosition: [ 5.5, 0, 0 ]
             initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+              0.707106781, -0.707106781, 0, 
+              0.707106781, 0.707106781, 0, 
               0, 0, 1 ]
             staticModel: true
             collisionDetection: true
@@ -68,39 +68,13 @@ items:
             zmp: [ 0, 0, 0 ]
         - 
           id: 4
-          name: "box2"
-          plugin: Body
-          class: BodyItem
-          is_checked: true
-          data: 
-            file: "../model/box2.body"
-            format: CHOREONOID-BODY
-            rootPosition: [ 5.5, 0, 0 ]
-            rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
-              0, 0, 1 ]
-            jointPositions: [  ]
-            initialRootPosition: [ 5.5, 0, 0 ]
-            initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
-              0, 0, 1 ]
-            staticModel: true
-            collisionDetection: true
-            selfCollisionDetection: false
-            location_editable: true
-            scene_sensitive: true
-            zmp: [ 0, 0, 0 ]
-        - 
-          id: 5
-          name: "test7"
+          name: "test3"
           plugin: PHITS
           class: CrossSectionItem
           is_checked: true
           data: 
-            input_file: "test7/test7.inp"
-            output_file: "test7/test7.out"
+            input_file: "test3/test3.inp"
+            output_file: "test3/dose_xy.out"
             code: 1
             maxcas: 1000
             maxbch: 2
@@ -121,7 +95,7 @@ items:
             put_messages: true
             default_nuclide_table_file: "${SHARE}/default/nuclides.yaml"
             default_element_table_file: "${SHARE}/default/elements.yaml"
-            gamma_data_file: "test7/test7.gbin"
+            gamma_data_file: "test3/dose_xy.gbin"
 views: 
   - 
     id: 0
@@ -321,7 +295,7 @@ Body:
     updateJointVelocities: false
   "BodySelectionManager": 
     current_body_item: 3
-    current_link: "CO60_C"
+    current_link: "BOX"
   "EditableSceneBody": 
     editableSceneBodies: 
       - 
@@ -331,11 +305,6 @@ Body:
         show_zmp: false
       - 
         bodyItem: 3
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
-      - 
-        bodyItem: 4
         show_cm: false
         show_cm_projection: false
         show_zmp: false

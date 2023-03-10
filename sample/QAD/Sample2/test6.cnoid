@@ -21,7 +21,7 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/Co60_C.body"
+            file: "Co60_C.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0 ]
             rootAttitude: [ 
@@ -47,7 +47,7 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "../model/cylinder2.body"
+            file: "cylinder2.body"
             format: CHOREONOID-BODY
             rootPosition: [ 5.5, 0, 0 ]
             rootAttitude: [ 
