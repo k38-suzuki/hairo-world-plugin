@@ -1,6 +1,7 @@
 
 set(sources
     LayoutSwitcher.cpp
+    LayoutSwitcherBar.cpp
     LayoutSwitcherPlugin.cpp
     LayoutSwitcherView.cpp
 )
@@ -9,6 +10,7 @@ set(headers
     exportdecl.h
     gettext.h
     LayoutSwitcher.h
+    LayoutSwitcherBar.h
     LayoutSwitcherView.h
 )
 

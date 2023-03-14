@@ -5,6 +5,7 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
+#include "LayoutSwitcherBar.h"
 #include "LayoutSwitcherView.h"
 
 using namespace cnoid;
@@ -22,6 +23,7 @@ public:
 
     virtual bool initialize()
     {
+        LayoutSwitcherBar::initialize(this);
         LayoutSwitcherView::initializeClass(this);
         return true;
     }

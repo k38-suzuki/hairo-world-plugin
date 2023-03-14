@@ -37,3 +37,6 @@ msgstr "レイアウトスイッチャ"
 
 msgid "LayoutSwitcherView"
 msgstr "レイアウトスイッチャビュー"
+
+msgid "LayoutSwitcherBar"
+msgstr "レイアウトスイッチャバー"
