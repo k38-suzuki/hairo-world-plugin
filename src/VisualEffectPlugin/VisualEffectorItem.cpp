@@ -1,26 +1,30 @@
-/**
-   \file
-   \author Kenta Suzuki
+/*!
+  @file
+  @author Kenta Suzuki
 */
 
 #include "VisualEffectorItem.h"
 #include <cnoid/Action>
 #include <cnoid/Archive>
-#include <cnoid/Body>
 #include <cnoid/BodyItem>
 #include <cnoid/Button>
 #include <cnoid/CheckBox>
 #include <cnoid/ComboBox>
 #include <cnoid/ConnectionSet>
 #include <cnoid/Dialog>
-#include <cnoid/ImageableItem>
-#include <cnoid/ImageView>
+#include <cnoid/EigenArchive>
+#include <cnoid/EigenUtil>
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
-#include <cnoid/Menu>
-#include <cnoid/MenuManager>
+#include <cnoid/ImageView>
+#include <cnoid/ImageableItem>
+#include <cnoid/MeshGenerator>
 #include <cnoid/PutPropertyFunction>
+#include <cnoid/RenderableItem>
+#include <cnoid/BasicSensors>
 #include <cnoid/RangeCamera>
+#include <cnoid/SceneGraph>
+#include <cnoid/SceneDrawables>
 #include <cnoid/Separator>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
@@ -32,14 +36,13 @@
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <math.h>
 #include <mutex>
 #include "ImageGenerator.h"
 #include "VEAreaItem.h"
 #include "gettext.h"
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 namespace {
 
@@ -71,12 +74,12 @@ WidgetInfo labelInfo[] = {
     { 3, 0 }, { 3, 2 }, { 3, 4 }
 };
 
-class EffectConfigDialog : public Dialog
+class ConfigDialog : public Dialog
 {
 public:
-    EffectConfigDialog();
+    ConfigDialog();
 
-    DoubleSpinBox* dspins[NUM_DSPINS];
+    DoubleSpinBox* optionSpins[NUM_DSPINS];
     CheckBox* flipCheck;
     ComboBox* filterCombo;
 
@@ -85,13 +88,96 @@ public:
     void restoreState(const Archive& archive);
 };
 
-class VisualEffectorItemBase
+
+class ArrowMarker : public SgPosTransform
 {
 public:
-    Item* visualizerItem;
+    SgSwitchableGroupPtr sgroup;
+    SgPosTransformPtr cylinderPosition;
+    SgScaleTransformPtr cylinderScale;
+    SgPosTransformPtr conePosition;
+    SgMaterialPtr material;
+    bool isVisible;
+    
+    static SgMeshPtr cylinderMesh;
+    static SgMeshPtr coneMesh;
+    
+    ArrowMarker(SgMaterial* material)
+        : material(material)
+    {
+        sgroup = new SgSwitchableGroup;
+        
+        if(!cylinderMesh){
+            MeshGenerator meshGenerator;
+            cylinderMesh = meshGenerator.generateCylinder(0.01, 1.0);
+            coneMesh = meshGenerator.generateCone(0.03,  0.04);
+        }
+
+        auto cylinder = new SgShape;
+        cylinder->setMesh(cylinderMesh);
+        cylinder->setMaterial(material);
+        cylinderScale = new SgScaleTransform;
+        cylinderScale->addChild(cylinder);
+        cylinderPosition = new SgPosTransform;
+        cylinderPosition->addChild(cylinderScale);
+        sgroup->addChild(cylinderPosition);
+
+        auto cone = new SgShape;
+        cone->setMesh(coneMesh);
+        cone->setMaterial(material);
+        conePosition = new SgPosTransform;
+        conePosition->addChild(cone);
+        sgroup->addChild(conePosition);
+
+        addChild(sgroup);
+        isVisible = true;
+
+        setVector(Vector3::Zero(), 1.0, nullptr);
+    }
+
+    void setVector(const Vector3& v, double threshold, SgUpdateRef update)
+    {
+        double len = v.norm();
+
+        if(len < threshold){
+            if(isVisible){
+                sgroup->setTurnedOn(false, update);
+                isVisible = false;
+            }
+        } else {
+            if(!isVisible){
+                sgroup->setTurnedOn(true);
+                isVisible = true;
+            }
+            cylinderScale->setScale(Vector3(1.0, len, 1.0));
+            cylinderPosition->setTranslation(Vector3(0.0, len / 2.0, 0.0));
+            conePosition->setTranslation(Vector3(0.0, len, 0.0));
+
+            Vector3 axis = (Vector3::UnitY().cross(v)).normalized();
+            double angle = acos(Vector3::UnitY().dot(v) / len);
+            setRotation(AngleAxis(angle, axis));
+
+            if(update){
+                notifyUpdate(*update);
+            }
+        }
+    }
+};
+
+SgMeshPtr ArrowMarker::cylinderMesh;
+SgMeshPtr ArrowMarker::coneMesh;
+
+
+typedef ref_ptr<ArrowMarker> ArrowMarkerPtr;
+
+class SubVisualEffectorItem
+{
+public:
+    Item* item;
     BodyItem* bodyItem;
     ScopedConnection sigCheckToggledConnection;
-    VisualEffectorItemBase(Item* visualizerItem);
+    SgUpdate update;
+    SubVisualEffectorItem(Item* item);
     void setBodyItem(BodyItem* bodyItem);
     void updateVisualization();
 
@@ -99,10 +185,41 @@ public:
     virtual void doUpdateVisualization() = 0;
 };
 
-class VEImageVisualizerItem : public Item, public ImageableItem, public VisualEffectorItemBase
+
+class Vector3VisualEffectorItem : public Item, public SubVisualEffectorItem, public RenderableItem
+{
+public:
+    Vector3VisualEffectorItem();
+
+    virtual Item* doCloneItem(CloneMap* cloneMap) const override;
+    virtual SgNode* getScene() override;
+    virtual void enableVisualization(bool on) override;
+    virtual void doUpdateVisualization() override;
+    virtual void updateSensors() = 0;
+    void updateSensorMarkerPositions(bool doNotify);
+    void updateSensorMarkerVector(int index);
+    virtual Vector3 getSensorMarkerVector(Device* sensor) = 0;
+    virtual void doPutProperties(PutPropertyFunction& putProperty) override;
+    virtual bool store(Archive& archive) override;
+    virtual bool restore(const Archive& archive) override;
+
+    SgGroupPtr scene;
+    SgMaterialPtr material;
+    Vector3f color;
+    DeviceList<> sensors;
+    vector<ArrowMarkerPtr> markers;
+    Vector3 offset;
+    double threshold;
+    double visualRatio;
+    ScopedConnectionSet connections;
+};
+
+
+class VEImageVisualizerItem : public Item, public SubVisualEffectorItem, public ImageableItem
 {
 public:
     VEImageVisualizerItem();
+    virtual Item* doCloneItem(CloneMap* cloneMap) const override;
     virtual const Image* getImage() override;
     virtual SignalProxy<void()> sigImageUpdated() override;
     void setBodyItem(BodyItem* bodyItem, Camera* camera);
@@ -110,7 +227,7 @@ public:
     virtual void doUpdateVisualization() override;
 
     CameraPtr camera;
-    EffectConfigDialog* config;
+    ConfigDialog* configDialog;
     std::mutex mtx;
     SimulatorItem* simulatorItem;
     ImageGenerator generator;
@@ -139,7 +256,7 @@ void onShowConfigTriggered()
     if(imageableItem) {
         VEImageVisualizerItem* visualizerItem = dynamic_cast<VEImageVisualizerItem*>(imageableItem);
         if(visualizerItem) {
-            visualizerItem->config->show();
+            visualizerItem->configDialog->show();
         }
     }
 }
@@ -151,66 +268,48 @@ namespace cnoid {
 class VisualEffectorItemImpl
 {
 public:
-    VisualEffectorItemImpl(VisualEffectorItem* self);
-    VisualEffectorItemImpl(VisualEffectorItem* self, const VisualEffectorItemImpl& org);
-
     VisualEffectorItem* self;
     BodyItem* bodyItem;
-    vector<Item*> subItems;
-    vector<ItemPtr> restoredSubItems;
+    ScopedConnection bodyItemConnection;
+    ItemList<> existingSubItems;
+    ItemList<> subItemsToRestore;
+    SgUpdate update;
+    bool isRestoringSubItems;
 
-    void onPositionChanged();
+    VisualEffectorItemImpl(VisualEffectorItem* self);
+    template<class ItemType, class SensorType>
+    ref_ptr<ItemType> extractMatchedSubItem(ItemList<>& items, Device* deviceInstance);
+    template<class ItemType, class SensorType>
+    void addVisualEffectorItem(Body* body);
+    template<class ItemType, class SensorType>
+    void addVisionVisualEffectorItem(Body* body);
+    void updateSubVisualizerItems(bool forceUpdate);
 };
 
 }
 
 
-VisualEffectorItem::VisualEffectorItem()
-{
-    impl = new VisualEffectorItemImpl(this);
-}
-
-
-VisualEffectorItemImpl::VisualEffectorItemImpl(VisualEffectorItem* self)
-    : self(self)
-{
-
-}
-
-
-VisualEffectorItem::VisualEffectorItem(const VisualEffectorItem& org)
-    : Item(org),
-      impl(new VisualEffectorItemImpl(this, *org.impl))
-{
-
-}
-
-
-VisualEffectorItemImpl::VisualEffectorItemImpl(VisualEffectorItem* self, const VisualEffectorItemImpl& org)
-{
-
-}
-
-
-VisualEffectorItem::~VisualEffectorItem()
-{
-    delete impl;
-}
-
-
 void VisualEffectorItem::initializeClass(ExtensionManager* ext)
 {
-    ext->itemManager()
-            .registerClass<VisualEffectorItem>(N_("VisualEffectorItem"))
-            .addCreationPanel<VisualEffectorItem>()
+    ItemManager& im = ext->itemManager();
 
-            .registerClass<VEImageVisualizerItem>(N_("VEImageVisualizerItem"));
+    im.registerClass<VisualEffectorItem>(N_("VisualEffectorItem"));
+    im.registerClass<VEImageVisualizerItem>(N_("VEImageVisualizerItem"));
+
+    im.addCreationPanel<VisualEffectorItem>();
+
+    /**
+       Tha following item aliases are defined for reading old project files.
+       \todo Remove the aliases in newer versions.
+    */
+    im.addAlias<VisualEffectorItem>("SensorVisualizer", "Body");
+    im.addAlias<VEImageVisualizerItem>("VEImageVisualizer", "Body");
 
     ItemTreeView::instance()->customizeContextMenu<VEImageVisualizerItem>(
         [](VEImageVisualizerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
             menuManager.setPath("/");
             menuManager.addItem(_("Visual Effect"))->sigTriggered().connect(
-                        [item](){ item->config->show(); });
+                        [item](){ item->configDialog->show(); });
             menuManager.setPath("/");
             menuManager.addSeparator();
             menuFunction.dispatchAs<Item>(item);
@@ -224,70 +323,159 @@ void VisualEffectorItem::initializeClass(ExtensionManager* ext)
 }
 
 
-Item* VisualEffectorItem::doDuplicate() const
+VisualEffectorItem::VisualEffectorItem()
+{
+    impl = new VisualEffectorItemImpl(this);
+}
+
+
+VisualEffectorItem::VisualEffectorItem(const VisualEffectorItem& org)
+    : Item(org)
+{
+    impl = new VisualEffectorItemImpl(this);
+}
+
+
+VisualEffectorItemImpl::VisualEffectorItemImpl(VisualEffectorItem* self)
+    : self(self)
+{
+    bodyItem = nullptr;
+    isRestoringSubItems = false;
+}
+
+
+VisualEffectorItem::~VisualEffectorItem()
+{
+    delete impl;
+}
+
+
+Item* VisualEffectorItem::doCloneItem(CloneMap* /* cloneMap */) const
 {
     return new VisualEffectorItem(*this);
 }
 
 
-void VisualEffectorItem::onPositionChanged()
+void VisualEffectorItem::onTreePathChanged()
 {
     if(parentItem()) {
-        impl->onPositionChanged();
-    }
-}
-
-
-void VisualEffectorItemImpl::onPositionChanged()
-{
-    BodyItem* newBodyItem = self->findOwnerItem<BodyItem>();
-    if(newBodyItem != bodyItem) {
-        bodyItem = newBodyItem;
-        for(size_t i = 0; i < subItems.size(); i++) {
-            subItems[i]->removeFromParentItem();
-        }
-        subItems.clear();
-
-        int n = restoredSubItems.size();
-        int j = 0;
-
-        if(bodyItem) {
-            Body* body = bodyItem->body();
-
-            DeviceList<Camera> cameras = body->devices<Camera>();
-            for(size_t i = 0; i < cameras.size(); ++i) {
-                if(cameras[i]->imageType() != Camera::NO_IMAGE) {
-                    VEImageVisualizerItem* cameraImageVisualizerItem =
-                            j < n ? dynamic_cast<VEImageVisualizerItem*>(restoredSubItems[j++].get()) : new VEImageVisualizerItem;
-                    if(cameraImageVisualizerItem) {
-                        cameraImageVisualizerItem->setBodyItem(bodyItem, cameras[i]);
-                        self->addSubItem(cameraImageVisualizerItem);
-                        subItems.push_back(cameraImageVisualizerItem);
-                    }
-                }
-            }
-        }
-
-        restoredSubItems.clear();
+        impl->updateSubVisualizerItems(false);
     }
 }
 
 
 void VisualEffectorItem::onDisconnectedFromRoot()
 {
-    for(size_t i = 0; i < impl->subItems.size(); i++) {
-        impl->subItems[i]->removeFromParentItem();
+    auto subItems = childItems(
+        [](Item* item) -> bool { return dynamic_cast<SubVisualEffectorItem*>(item); });
+    for(auto& subItem : subItems) {
+        subItem->removeFromParentItem();
     }
-    impl->subItems.clear();
+}
+
+
+void VisualEffectorItemImpl::updateSubVisualizerItems(bool forceUpdate)
+{
+    auto newBodyItem = self->findOwnerItem<BodyItem>();
+    bool doUpdate = forceUpdate || newBodyItem != bodyItem;
+    bodyItem = newBodyItem;
+
+    if(doUpdate) {
+        existingSubItems = self->childItems(
+            [](Item* item) -> bool { return dynamic_cast<SubVisualEffectorItem*>(item); });
+
+        if(bodyItem) {
+            auto body = bodyItem->body();
+            int itemIndex = 0;
+            addVisionVisualEffectorItem<VEImageVisualizerItem, Camera>(body);
+
+            bodyItemConnection = bodyItem->sigModelUpdated().connect(
+                [this](int flags) {
+                    if(flags & BodyItem::DeviceSetUpdate) {
+                        updateSubVisualizerItems(true);
+                    }
+                });
+        }
+
+        for(auto& subItem : existingSubItems) {
+            subItem->removeFromParentItem();
+        }
+        existingSubItems.clear();
+    }
+}
+
+
+template<class ItemType, class SensorType>
+ref_ptr<ItemType> VisualEffectorItemImpl::extractMatchedSubItem(ItemList<>& items, Device* deviceInstance)
+{
+    ref_ptr<ItemType> matchedSubItem;
+    auto it = items.begin();
+    while(it != items.end()) {
+        if(auto item = dynamic_pointer_cast<ItemType>(*it)) {
+            if(!deviceInstance || item->name().find(deviceInstance->name()) == 0) {
+                matchedSubItem = item;
+                items.erase(it);
+                break;
+            }
+        }
+        ++it;
+    }
+    return matchedSubItem;
+}
+
+
+template<class ItemType, class SensorType>
+void VisualEffectorItemImpl::addVisualEffectorItem(Body* body)
+{
+    auto sensors = body->devices<SensorType>();
+    if(!sensors.empty()) {
+        auto item = extractMatchedSubItem<ItemType, SensorType>(existingSubItems, nullptr);
+        if(!item && isRestoringSubItems) {
+            item = extractMatchedSubItem<ItemType, SensorType>(subItemsToRestore, nullptr);
+        }
+        if(!item) {
+            item = new ItemType;
+        }
+        if(item->bodyItem != bodyItem) {
+            item->setBodyItem(bodyItem);
+            self->addSubItem(item);
+        }
+    }
+}
+
+
+template<class ItemType, class SensorType>
+void VisualEffectorItemImpl::addVisionVisualEffectorItem(Body* body)
+{
+    bool isCamera = typeid(SensorType) == typeid(Camera);
+    
+    for(auto& sensor : body->devices<SensorType>()) {
+        if(isCamera && reinterpret_cast<Camera*>(sensor.get())->imageType() == Camera::NO_IMAGE) {
+            continue;
+        }
+        auto item = extractMatchedSubItem<ItemType, SensorType>(existingSubItems, sensor);
+        if(!item && isRestoringSubItems) {
+            item = extractMatchedSubItem<ItemType, SensorType>(subItemsToRestore, nullptr);
+        }
+        if(!item) {
+            item = new ItemType;
+        }
+        if(item->bodyItem != bodyItem) {
+            item->setBodyItem(bodyItem, sensor);
+            self->addSubItem(item);
+        }
+    }
 }
 
 
 bool VisualEffectorItem::store(Archive& archive)
 {
-    ListingPtr subItems = new Listing;
+    ListingPtr subItemListing = new Listing;
 
-    for(size_t i = 0; i < impl->subItems.size(); ++i) {
-        Item* item = impl->subItems[i];
+    auto subItems = childItems(
+        [](Item* item) -> bool { return dynamic_cast<SubVisualEffectorItem*>(item); });
+    
+    for(auto& item : subItems) {
         string pluginName, className;
         ItemManager::getClassIdentifier(item, pluginName, className);
 
@@ -302,10 +490,10 @@ bool VisualEffectorItem::store(Archive& archive)
         }
         item->store(*subArchive);
 
-        subItems->append(subArchive);
+        subItemListing->append(subArchive);
     }
 
-    archive.insert("sub_items", subItems);
+    archive.insert("sub_items", subItemListing);
 
     return true;
 }
@@ -313,19 +501,16 @@ bool VisualEffectorItem::store(Archive& archive)
 
 bool VisualEffectorItem::restore(const Archive& archive)
 {
-    impl->restoredSubItems.clear();
-
-    ListingPtr subItems = archive.findListing("sub_items");
-    if(!subItems->isValid()) {
-        subItems = archive.findListing("subItems"); // Old
-    }
-    if(subItems->isValid()) {
-        for(int i = 0; i < subItems->size(); ++i) {
-            Archive* subArchive = dynamic_cast<Archive*>(subItems->at(i)->toMapping());
+    impl->subItemsToRestore.clear();
+    
+    ListingPtr subItemListing = archive.findListing({ "sub_items", "subItems" });
+    if(subItemListing->isValid()) {
+        for(int i=0; i < subItemListing->size(); ++i) {
+            auto subArchive = archive.subArchive(subItemListing->at(i)->toMapping());
             string className, itemName;
             subArchive->read("class", className);
             subArchive->read("name", itemName);
-            if(ItemPtr item = ItemManager::createItem("VisualEffect", className)) {
+            if(ItemPtr item = ItemManager::createItem("Body", className)) {
                 item->setName(itemName);
                 item->restore(*subArchive);
                 if(subArchive->get("is_selected", false)) {
@@ -334,46 +519,190 @@ bool VisualEffectorItem::restore(const Archive& archive)
                 if(subArchive->get("is_checked", false)) {
                     item->setChecked(true);
                 }
-                impl->restoredSubItems.push_back(item);
+                impl->subItemsToRestore.push_back(item);
             }
         }
+        impl->isRestoringSubItems = true;
+        archive.addPostProcess(
+            [this]() {
+                impl->subItemsToRestore.clear();
+                impl->isRestoringSubItems = false;
+            });
     }
     return true;
 }
 
 
-VisualEffectorItemBase::VisualEffectorItemBase(Item* visualizerItem)
-    : visualizerItem(visualizerItem),
+SubVisualEffectorItem::SubVisualEffectorItem(Item* item)
+    : item(item),
       bodyItem(nullptr)
 {
     sigCheckToggledConnection.reset(
-        visualizerItem->sigCheckToggled(Item::LogicalSumOfAllChecks).connect(
-            [&](bool on){ enableVisualization(on); }));
+        item->sigCheckToggled(Item::LogicalSumOfAllChecks).connect(
+            [&](bool on) { enableVisualization(on); }));
 }
 
 
-void VisualEffectorItemBase::setBodyItem(BodyItem* bodyItem)
+void SubVisualEffectorItem::setBodyItem(BodyItem* bodyItem)
 {
     this->bodyItem = bodyItem;
-    enableVisualization(visualizerItem->isChecked(Item::LogicalSumOfAllChecks));
+    enableVisualization(item->isChecked(Item::LogicalSumOfAllChecks));
 }
 
 
-void VisualEffectorItemBase::updateVisualization()
+void SubVisualEffectorItem::updateVisualization()
 {
-    if(visualizerItem->isChecked(Item::LogicalSumOfAllChecks)) {
+    if(item->isChecked(Item::LogicalSumOfAllChecks)) {
+        doUpdateVisualization();
+    }
+}
+    
+
+Vector3VisualEffectorItem::Vector3VisualEffectorItem()
+    : SubVisualEffectorItem(this)
+{
+
+}
+
+
+Item* Vector3VisualEffectorItem::doCloneItem(CloneMap* /* cloneMap */) const
+{
+    return nullptr;
+}
+
+
+SgNode* Vector3VisualEffectorItem::getScene()
+{
+    if(!scene) {
+        scene = new SgGroup;
+        scene->setAttribute(SgObject::MetaScene);
+    }
+    return scene;
+}
+
+
+void Vector3VisualEffectorItem::enableVisualization(bool on)
+{
+    getScene();
+    
+    connections.disconnect();
+    scene->clearChildren();
+    sensors.clear();
+    markers.clear();
+
+    if(bodyItem && on) {
+        if(!material) {
+            material = new SgMaterial;
+            material->setDiffuseColor(Vector3f::Zero());
+            material->setEmissiveColor(color);
+            material->setAmbientIntensity(0.0f);
+            material->setTransparency(0.5f);
+        }
+
+        updateSensors();
+
+        for(size_t i=0; i < sensors.size(); ++i) {
+            auto marker = new ArrowMarker(material);
+            markers.push_back(marker);
+            scene->addChild(marker);
+            connections.add(
+                sensors[i]->sigStateChanged().connect(
+                    [this, i]() { updateSensorMarkerVector(i); }));
+        }
+        if(!sensors.empty()) {
+            connections.add(
+                bodyItem->sigKinematicStateChanged().connect(
+                    [&]() { updateSensorMarkerPositions(true); }));
+        }
         doUpdateVisualization();
     }
 }
 
 
-VEImageVisualizerItem::VEImageVisualizerItem()
-    : VisualEffectorItemBase(this)
+void Vector3VisualEffectorItem::doUpdateVisualization()
 {
-    config = new EffectConfigDialog;
+    updateSensorMarkerPositions(false);
+    for(size_t i=0; i < sensors.size(); ++i) {
+        updateSensorMarkerVector(i);
+    }
+}
+
+    
+void Vector3VisualEffectorItem::updateSensorMarkerPositions(bool doNotify)
+{
+    for(size_t i=0; i < sensors.size(); ++i) {
+        auto sensor = sensors[i];
+        Vector3 p = sensor->link()->T() * sensor->localTranslation();
+        markers[i]->setTranslation(p);
+        if(doNotify) {
+            markers[i]->notifyUpdate(update.withAction(SgUpdate::Modified));
+        }
+    }
+}
+
+
+void Vector3VisualEffectorItem::updateSensorMarkerVector(int index)
+{
+    if(index < static_cast<int>(sensors.size())) {
+        auto sensor = sensors[index];
+        Vector3 v_local = getSensorMarkerVector(sensor) + offset;
+        Vector3 v_global = sensor->link()->R() * sensor->R_local() * v_local;
+        markers[index]->setVector(visualRatio * v_global, threshold, update);
+    }
+}
+
+
+void Vector3VisualEffectorItem::doPutProperties(PutPropertyFunction& putProperty)
+{
+    putProperty.decimals(4)(
+        _("Visual ratio"), visualRatio,
+        [&](double ratio) {
+            if(ratio > 0.0) {
+                visualRatio = ratio;
+                updateVisualization();
+                return true;
+            }
+            return false;
+        });
+    
+    putProperty.decimals(3)(_("Visual threshold"), threshold, changeProperty(threshold));
+    
+    putProperty.decimals(2)(
+        _("Offset"), str(offset), [&](const string& v) { return toVector3(v, offset); });
+}
+
+
+bool Vector3VisualEffectorItem::store(Archive& archive)
+{
+    archive.write("ratio", visualRatio);
+    archive.write("threshold", threshold);
+    write(archive, "offset", offset);
+    return true;
+}
+
+
+bool Vector3VisualEffectorItem::restore(const Archive& archive)
+{
+    archive.read({ "ratio", "visualRatio" }, visualRatio);
+    archive.read("threshold", threshold);
+    read(archive, "offset", offset);
+    return true;
+}
+
+
+VEImageVisualizerItem::VEImageVisualizerItem()
+    : SubVisualEffectorItem(this)
+{
+    configDialog = new ConfigDialog;
     simulatorItem = nullptr;
     SimulationBar::instance()->sigSimulationAboutToStart().connect(
                 [&](SimulatorItem* simulatorItem){ this->simulatorItem = simulatorItem; });
+}
+
+
+Item* VEImageVisualizerItem::doCloneItem(CloneMap* /* cloneMap */) const
+{
+    return nullptr;
 }
 
 
@@ -393,14 +722,15 @@ void VEImageVisualizerItem::setBodyItem(BodyItem* bodyItem, Camera* camera)
 {
     if(name().empty()) {
         string name = camera->name();
-        if(dynamic_cast<RangeCamera*>(camera))
-            name += "_Image";
+        if(dynamic_cast<RangeCamera*>(camera)) {
+            name += "-Image";
+        }
         setName(name);
     }
 
     this->camera = camera;
 
-    VisualEffectorItemBase::setBodyItem(bodyItem);
+    SubVisualEffectorItem::setBodyItem(bodyItem);
 }
 
 
@@ -422,19 +752,19 @@ void VEImageVisualizerItem::doUpdateVisualization()
 {
     if(camera) {
         std::lock_guard<std::mutex> lock(mtx);
-        double hue = config->dspins[HUE]->value();
-        double saturation = config->dspins[SATURATION]->value();
-        double value = config->dspins[VALUE]->value();
-        double red = config->dspins[RED]->value();
-        double green = config->dspins[GREEN]->value();
-        double blue = config->dspins[BLUE]->value();
-        bool flipped = config->flipCheck->isChecked();
-        double coefB = config->dspins[COEFB]->value();
-        double coefD = config->dspins[COEFD]->value();
-        double stdDev = config->dspins[STDDEV]->value();
-        double salt = config->dspins[SALT]->value();
-        double pepper = config->dspins[PEPPER]->value();
-        int filter = config->filterCombo->currentIndex();
+        double hue = configDialog->optionSpins[HUE]->value();
+        double saturation = configDialog->optionSpins[SATURATION]->value();
+        double value = configDialog->optionSpins[VALUE]->value();
+        double red = configDialog->optionSpins[RED]->value();
+        double green = configDialog->optionSpins[GREEN]->value();
+        double blue = configDialog->optionSpins[BLUE]->value();
+        bool flipped = configDialog->flipCheck->isChecked();
+        double coefB = configDialog->optionSpins[COEFB]->value();
+        double coefD = configDialog->optionSpins[COEFD]->value();
+        double stdDev = configDialog->optionSpins[STDDEV]->value();
+        double salt = configDialog->optionSpins[SALT]->value();
+        double pepper = configDialog->optionSpins[PEPPER]->value();
+        int filter = configDialog->filterCombo->currentIndex();
 
         if(simulatorItem) {
             WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
@@ -493,6 +823,7 @@ void VEImageVisualizerItem::doUpdateVisualization()
         }
 
         image = make_shared<Image>(orgImage);
+        // image = camera->sharedImage();
     } else {
         image.reset();
     }
@@ -502,19 +833,19 @@ void VEImageVisualizerItem::doUpdateVisualization()
 
 bool VEImageVisualizerItem::store(Archive& archive)
 {
-    config->storeState(archive);
+    configDialog->storeState(archive);
     return true;
 }
 
 
 bool VEImageVisualizerItem::restore(const Archive& archive)
 {
-    config->restoreState(archive);
+    configDialog->restoreState(archive);
     return true;
 }
 
 
-EffectConfigDialog::EffectConfigDialog()
+ConfigDialog::ConfigDialog()
 {
     setWindowTitle(_("Effect Config"));
 
@@ -534,8 +865,8 @@ EffectConfigDialog::EffectConfigDialog()
 
     QGridLayout* gbox = new QGridLayout;
     for(int i = 0; i < NUM_DSPINS; ++i) {
-        dspins[i] = new DoubleSpinBox;
-        DoubleSpinBox* dspin = dspins[i];
+        optionSpins[i] = new DoubleSpinBox;
+        DoubleSpinBox* dspin = optionSpins[i];
         WidgetInfo dinfo = dspinInfo[i];
         WidgetInfo linfo = labelInfo[i];
         dspin->setRange(ranges[i][0], ranges[i][1]);
@@ -543,7 +874,7 @@ EffectConfigDialog::EffectConfigDialog()
         gbox->addWidget(new QLabel(label[i]), linfo.row, linfo.column);
         gbox->addWidget(dspin, dinfo.row, dinfo.column);
     }
-    dspins[COEFD]->setValue(1.0);
+    optionSpins[COEFD]->setValue(1.0);
 
 
     flipCheck = new CheckBox;
@@ -579,48 +910,48 @@ EffectConfigDialog::EffectConfigDialog()
 }
 
 
-void EffectConfigDialog::onResetButtonClicked()
+void ConfigDialog::onResetButtonClicked()
 {
     for(int i = 0; i < NUM_DSPINS; ++i) {
-        dspins[i]->setValue(0.0);
+        optionSpins[i]->setValue(0.0);
     }
-    dspins[COEFD]->setValue(1.0);
+    optionSpins[COEFD]->setValue(1.0);
     flipCheck->setChecked(false);
     filterCombo->setCurrentIndex(0);
 }
 
 
-void EffectConfigDialog::storeState(Archive& archive)
+void ConfigDialog::storeState(Archive& archive)
 {
-    archive.write("hue", dspins[HUE]->value());
-    archive.write("saturation", dspins[SATURATION]->value());
-    archive.write("value", dspins[VALUE]->value());
-    archive.write("red", dspins[RED]->value());
-    archive.write("green", dspins[GREEN]->value());
-    archive.write("blue", dspins[BLUE]->value());
-    archive.write("coef_b", dspins[COEFB]->value());
-    archive.write("coef_d", dspins[COEFD]->value());
-    archive.write("std_dev", dspins[STDDEV]->value());
-    archive.write("salt", dspins[SALT]->value());
-    archive.write("pepper", dspins[PEPPER]->value());
+    archive.write("hue", optionSpins[HUE]->value());
+    archive.write("saturation", optionSpins[SATURATION]->value());
+    archive.write("value", optionSpins[VALUE]->value());
+    archive.write("red", optionSpins[RED]->value());
+    archive.write("green", optionSpins[GREEN]->value());
+    archive.write("blue", optionSpins[BLUE]->value());
+    archive.write("coef_b", optionSpins[COEFB]->value());
+    archive.write("coef_d", optionSpins[COEFD]->value());
+    archive.write("std_dev", optionSpins[STDDEV]->value());
+    archive.write("salt", optionSpins[SALT]->value());
+    archive.write("pepper", optionSpins[PEPPER]->value());
     archive.write("flip", flipCheck->isChecked());
     archive.write("filter", filterCombo->currentIndex());
 }
 
 
-void EffectConfigDialog::restoreState(const Archive& archive)
+void ConfigDialog::restoreState(const Archive& archive)
 {
-    dspins[HUE]->setValue(archive.get("hue", 0.0));
-    dspins[SATURATION]->setValue(archive.get("saturation", 0.0));
-    dspins[VALUE]->setValue(archive.get("value", 0.0));
-    dspins[RED]->setValue(archive.get("red", 0.0));
-    dspins[GREEN]->setValue(archive.get("green", 0.0));
-    dspins[BLUE]->setValue(archive.get("blue", 0.0));
-    dspins[COEFB]->setValue(archive.get("coef_b", 0.0));
-    dspins[COEFD]->setValue(archive.get("coef_d", 1.0));
-    dspins[STDDEV]->setValue(archive.get("std_dev", 0.0));
-    dspins[SALT]->setValue(archive.get("salt", 0.0));
-    dspins[PEPPER]->setValue(archive.get("pepper", 0.0));
+    optionSpins[HUE]->setValue(archive.get("hue", 0.0));
+    optionSpins[SATURATION]->setValue(archive.get("saturation", 0.0));
+    optionSpins[VALUE]->setValue(archive.get("value", 0.0));
+    optionSpins[RED]->setValue(archive.get("red", 0.0));
+    optionSpins[GREEN]->setValue(archive.get("green", 0.0));
+    optionSpins[BLUE]->setValue(archive.get("blue", 0.0));
+    optionSpins[COEFB]->setValue(archive.get("coef_b", 0.0));
+    optionSpins[COEFD]->setValue(archive.get("coef_d", 1.0));
+    optionSpins[STDDEV]->setValue(archive.get("std_dev", 0.0));
+    optionSpins[SALT]->setValue(archive.get("salt", 0.0));
+    optionSpins[PEPPER]->setValue(archive.get("pepper", 0.0));
     flipCheck->setChecked(archive.get("flip", false));
     filterCombo->setCurrentIndex(archive.get("filter", 0));
 }
