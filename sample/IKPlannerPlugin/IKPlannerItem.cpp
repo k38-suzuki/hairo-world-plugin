@@ -237,7 +237,7 @@ bool IKPlannerItemImpl::calcInverseKinematics(const Vector3& position)
     if(bodyItem && base && wrist) {
         if(base != wrist) {
             Body* body = bodyItem->body();
-            shared_ptr<JointPath> baseToWrist = JointPath::getCustomPath(body, base, wrist);
+            shared_ptr<JointPath> baseToWrist = JointPath::getCustomPath(base, wrist);
             Isometry3 T;
             T.linear() = wrist->R();
             T.translation() = position;
