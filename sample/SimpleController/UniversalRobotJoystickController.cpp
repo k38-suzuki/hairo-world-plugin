@@ -45,6 +45,7 @@ public:
         ioBody = io->body();
         isIKEnabled = true;
         isJointPoseSelected = false;
+        prevButtonState = false;
 
         ikBody = ioBody->clone();
         ikWrist = ikBody->link("WRIST3");

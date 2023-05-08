@@ -55,6 +55,9 @@ public:
         controlId = TRANSLATION_MODE;
         isIKEnabled = true;
         isJointPoseSelected = false;
+        for(int i = 0; i < 3; ++i) {
+            prevButtonState[i] = false;
+        }
 
         ikBody = ioBody->clone();
         ikWrist = ikBody->link("WRIST_ORIGIN");
