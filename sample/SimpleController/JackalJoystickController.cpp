@@ -63,9 +63,9 @@ public:
                 i == 0 ? Joystick::L_BUTTON : Joystick::R_BUTTON);
             if(buttonState) {
                 if(i == 0) {
-                    k = 1.0 / 0.098 / 2.0;
+                    k = 0.2 / 0.098 / 2.0;
                 } else if(i == 1) {
-                    k = 2.0 / 0.098 / 2.0;
+                    k = 1.0 / 0.098 / 2.0;
                 }
             }
         }
