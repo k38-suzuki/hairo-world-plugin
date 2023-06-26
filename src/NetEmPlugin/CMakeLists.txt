@@ -20,7 +20,7 @@ if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   set(target CnoidNetEmPlugin)
   make_gettext_mofiles(${target} mofiles)
   choreonoid_add_plugin(${target} ${sources} ${mofiles} HEADERS ${headers})
-  target_link_libraries(${target} CnoidBodyPlugin CnoidCFDPlugin)
+  target_link_libraries(${target} PUBLIC CnoidBodyPlugin CnoidCFDPlugin)
   apply_common_setting_for_plugin(${target})
 else()
   # Stand alone build

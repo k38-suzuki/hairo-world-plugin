@@ -7,7 +7,7 @@ if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
   set(target CnoidUnsteadyFlowPlugin)
   choreonoid_add_plugin(${target} UnsteadyFlowPlugin.cpp)
-  target_link_libraries(${target} CnoidBodyPlugin CnoidCFDPlugin)
+  target_link_libraries(${target} PUBLIC CnoidBodyPlugin CnoidCFDPlugin)
 else()
   # Stand alone build
   set(target CnoidUnsteadyFlowPlugin)

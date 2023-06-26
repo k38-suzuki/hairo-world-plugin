@@ -2,7 +2,7 @@ if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
   set(target CnoidHelloWorldPlugin)
   choreonoid_add_plugin(${target} HelloWorldPlugin.cpp)
-  target_link_libraries(${target} CnoidBase)
+  target_link_libraries(${target} PUBLIC CnoidBase)
 else()
   # Stand alone build
   cmake_minimum_required(VERSION 3.1.0)
