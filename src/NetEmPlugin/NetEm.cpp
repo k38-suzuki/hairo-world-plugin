@@ -4,6 +4,7 @@
 */
 
 #include "NetEm.h"
+#include <QProcess>
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <stdlib.h>
@@ -35,11 +36,13 @@ public:
     bool isUpdated;
     bool isFinalized;
 
-    void initialize();
-    void start(const string& program);
+    QProcess process;
+
+    void start();
+    void write(const string& program);
     void clear();
     void update();
-    void finalize();
+    void close();
 };
 
 }
@@ -85,6 +88,8 @@ NetEmImpl::NetEmImpl(NetEm* self)
     // registration of ifbdevices
     ifbdevices.push_back("ifb0");
     ifbdevices.push_back("ifb1");
+
+    process.start("bash");
 }
 
 
@@ -97,8 +102,9 @@ NetEm::~NetEm()
 NetEmImpl::~NetEmImpl()
 {
     if(!isFinalized) {
-        finalize();
+        close();
     }
+    process.close();
 }
 
 
@@ -112,18 +118,18 @@ void NetEm::start(const int& interfaceID, const int& ifbdeviceID)
 {
     impl->currentInterfaceID = interfaceID;
     impl->currentIfbdeviceID = ifbdeviceID;
-    impl->initialize();
+    impl->start();
 }
 
 
-void NetEmImpl::initialize()
+void NetEmImpl::start()
 {
     if(!isFinalized) {
-        finalize();
+        close();
     }
-    start("sudo modprobe ifb;");
-    start("sudo modprobe act_mirred;");
-    start(fmt::format("sudo ip link set dev {0} up;",
+    write("sudo modprobe ifb;");
+    write("sudo modprobe act_mirred;");
+    write(fmt::format("sudo ip link set dev {0} up;",
                       ifbdevices[currentIfbdeviceID]));
     isUpdated = false;
     isFinalized = false;
@@ -140,9 +146,9 @@ void NetEmImpl::update()
 {
     if(!isFinalized) {
         clear();
-        start(fmt::format("sudo tc qdisc add dev {0} ingress handle ffff:;",
+        write(fmt::format("sudo tc qdisc add dev {0} ingress handle ffff:;",
                           interfaces[currentInterfaceID]));
-        start(fmt::format("sudo tc filter add dev {0} parent ffff: protocol ip u32 match u32 0 0 action mirred egress redirect dev {1};",
+        write(fmt::format("sudo tc filter add dev {0} parent ffff: protocol ip u32 match u32 0 0 action mirred egress redirect dev {1};",
                           interfaces[currentInterfaceID], ifbdevices[currentIfbdeviceID]));
 
         string effects[2];
@@ -158,22 +164,22 @@ void NetEmImpl::update()
             }
         }
 
-        start(fmt::format("sudo tc qdisc add dev {0} root handle 1: prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;",
+        write(fmt::format("sudo tc qdisc add dev {0} root handle 1: prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;",
                           ifbdevices[currentIfbdeviceID]));
-        start(fmt::format("sudo tc qdisc add dev {0} parent 1:1 handle 10: netem limit 2000;",
+        write(fmt::format("sudo tc qdisc add dev {0} parent 1:1 handle 10: netem limit 2000;",
                           ifbdevices[currentIfbdeviceID]));
-        start(fmt::format("sudo tc qdisc add dev {0} parent 1:2 handle 20: netem limit 2000{1};",
+        write(fmt::format("sudo tc qdisc add dev {0} parent 1:2 handle 20: netem limit 2000{1};",
                           ifbdevices[currentIfbdeviceID], effects[0]));
-        start(fmt::format("sudo tc filter add dev {0} protocol ip parent 1: prio 2 u32 match ip src {1} match ip dst {2} flowid 1:2;",
+        write(fmt::format("sudo tc filter add dev {0} protocol ip parent 1: prio 2 u32 match ip src {1} match ip dst {2} flowid 1:2;",
                           ifbdevices[currentIfbdeviceID], destinationIP, sourceIP));
 
-        start(fmt::format("sudo tc qdisc add dev {0} root handle 1: prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;",
+        write(fmt::format("sudo tc qdisc add dev {0} root handle 1: prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;",
                           interfaces[currentInterfaceID]));
-        start(fmt::format("sudo tc qdisc add dev {0} parent 1:1 handle 10: netem limit 2000;",
+        write(fmt::format("sudo tc qdisc add dev {0} parent 1:1 handle 10: netem limit 2000;",
                           interfaces[currentInterfaceID]));
-        start(fmt::format("sudo tc qdisc add dev {0} parent 1:2 handle 20: netem limit 2000{1};",
+        write(fmt::format("sudo tc qdisc add dev {0} parent 1:2 handle 20: netem limit 2000{1};",
                           interfaces[currentInterfaceID], effects[1]));
-        start(fmt::format("sudo tc filter add dev {0} protocol ip parent 1: prio 2 u32 match ip src {1} match ip dst {2} flowid 1:2;",
+        write(fmt::format("sudo tc filter add dev {0} protocol ip parent 1: prio 2 u32 match ip src {1} match ip dst {2} flowid 1:2;",
                           interfaces[currentInterfaceID], sourceIP, destinationIP));
         isUpdated = true;
     }
@@ -182,31 +188,31 @@ void NetEmImpl::update()
 
 void NetEm::stop()
 {
-    impl->finalize();
+    impl->close();
 }
 
 
 void NetEmImpl::clear()
 {
     if(isUpdated) {
-        start(fmt::format("sudo tc qdisc del dev {0} ingress;",
+        write(fmt::format("sudo tc qdisc del dev {0} ingress;",
                           interfaces[currentInterfaceID]));
-        start(fmt::format("sudo tc qdisc del dev {0} root;",
+        write(fmt::format("sudo tc qdisc del dev {0} root;",
                           ifbdevices[currentIfbdeviceID]));
-        start(fmt::format("sudo tc qdisc del dev {0} root;",
+        write(fmt::format("sudo tc qdisc del dev {0} root;",
                           interfaces[currentInterfaceID]));
         isUpdated = false;
     }
 }
 
 
-void NetEmImpl::finalize()
+void NetEmImpl::close()
 {
     if(!isFinalized) {
         clear();
-        start(fmt::format("sudo ip link set dev {0} down;",
+        write(fmt::format("sudo ip link set dev {0} down;",
                           ifbdevices[currentIfbdeviceID]));
-        start("sudo rmmod ifb;");
+        write("sudo rmmod ifb;");
         isFinalized = true;
     }
 }
@@ -242,7 +248,7 @@ void NetEm::setDestinationIP(const string& destinationIP)
 }
 
 
-void NetEmImpl::start(const string& program)
+void NetEmImpl::write(const string& program)
 {
     int ret = system(program.c_str());
 }
