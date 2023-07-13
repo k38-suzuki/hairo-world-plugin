@@ -21,6 +21,8 @@ const double joint_pose[] = {
 
 class Gen3liteJoystickController : public SimpleController
 {
+    enum MapID { TWIST_LINEAR, TWIST_ANGULAR, JOINT };
+
     SimpleControllerIO* io;
     Body* ioBody;
     BodyPtr ikBody;
@@ -30,7 +32,12 @@ class Gen3liteJoystickController : public SimpleController
     double dt;
     bool isIKEnabled;
     bool isJointPoseSelected;
-    bool prevButtonState;
+    bool prevButtonState[3];
+    int controlMap;
+    int currentJoint;
+    int prevHAxis;
+    int prevVAxis;
+    double currentSpeed;
 
     SharedJoystickPtr joystick;
     int targetMode;
@@ -45,7 +52,14 @@ public:
         ioBody = io->body();
         isIKEnabled = true;
         isJointPoseSelected = false;
-        prevButtonState = false;
+        for(int i = 0; i < 3; ++i) {
+            prevButtonState[i] = false;
+        }
+        controlMap = JOINT;
+        currentJoint = 0;
+        prevHAxis = 0;
+        prevVAxis = 0;
+        currentSpeed = 1.0;
 
         ikBody = ioBody->clone();
         ikWrist = ikBody->link("GRIPPER_FRAME");
@@ -78,13 +92,78 @@ public:
     {
         joystick->updateState(targetMode);
 
-        bool buttonState = joystick->getButtonState(targetMode, Joystick::B_BUTTON);
-        if(buttonState && !prevButtonState) {
-            isJointPoseSelected = true;
+        static const char* texts[] = {
+            "twist-linear control has been set.", "twist-angular control has set.", "joint control has set."
+        };
+        static const int buttonID[] = { Joystick::B_BUTTON, Joystick::SELECT_BUTTON, Joystick::START_BUTTON };
+        for(int i = 0; i < 3; ++i) {
+            bool buttonState = joystick->getButtonState(targetMode, buttonID[i]);
+            if(buttonState && !prevButtonState[i]) {
+                if(i == 0) {
+                    isJointPoseSelected = true;
+                } else if(i == 1) {
+                    --controlMap;
+                    if(controlMap < 0) {
+                        controlMap += 3;
+                    }
+                    (*os) << texts[controlMap] << endl;
+                } else if(i == 2) {
+                    controlMap = ++controlMap % 3;
+                    (*os) << texts[controlMap] << endl;
+                }
+            }
+            prevButtonState[i] = buttonState;
         }
-        prevButtonState = buttonState;
 
         isIKEnabled = true;
+
+        // speed
+        {
+            double pos = joystick->getPosition(targetMode, Joystick::DIRECTIONAL_PAD_V_AXIS);
+            if(fabs(pos) < 0.15) {
+                pos = 0.0;
+            }
+            if((int)pos != 0 && prevVAxis == 0) {
+                if(pos == -1) {
+                    currentSpeed = 2.0;
+                } else if(pos == 1) {
+                    currentSpeed = 1.0;
+                }
+            }
+            prevVAxis = (int)pos;
+        }
+
+        if(controlMap == JOINT) {
+            // joint selection
+            {
+                double pos = joystick->getPosition(targetMode, Joystick::DIRECTIONAL_PAD_H_AXIS);
+                if(fabs(pos) < 0.15) {
+                    pos = 0.0;
+                }
+                if((int)pos != 0 && prevHAxis == 0) {
+                    if(pos == -1) {
+                        --currentJoint;
+                        if(currentJoint < 0) {
+                            currentJoint += 6;
+                        }
+                        (*os) << "joint " << currentJoint << " is selected." << endl;
+                    } else if(pos == 1) {
+                        currentJoint = ++currentJoint % 6;
+                        (*os) << "joint " << currentJoint << " is selected." << endl;
+                    }
+                }
+                prevHAxis = (int)pos;
+            }
+
+            isIKEnabled = false;
+            double pos = joystick->getPosition(targetMode, Joystick::L_STICK_H_AXIS);
+            if(fabs(pos) < 0.15) {
+                pos = 0.0;
+            }
+
+            controlFK(currentJoint, pos);
+        }
+
         // gripper
         {
             double pos[2] = { 0.0 };
@@ -113,27 +192,6 @@ public:
             if(fabs(pos[0]) > 0.0 || fabs(pos[1]) > 0.0) {
                 isIKEnabled = false;
             }            
-        }
-
-        // wrist
-        {
-            double pos[2];
-            for(int i = 0; i < 2; ++i) {
-                pos[i] = joystick->getPosition(targetMode,
-                            i == 0 ? Joystick::R_STICK_V_AXIS : Joystick::R_STICK_H_AXIS);
-                if(fabs(pos[i]) < 0.15) {
-                    pos[i] = 0.0;
-                }
-            }
-
-            static const int jointID[] = { 4, 5 };
-            for(int i = 0; i < 2; ++i) {
-                controlFK(jointID[i], pos[i]);
-            }
-
-            if(fabs(pos[0]) > 0.0 || fabs(pos[1]) > 0.0) {
-                isIKEnabled = false;
-            }
         }
 
         doJointPose();
@@ -175,7 +233,7 @@ public:
             pos = 0.0;
         }
 
-        joint->dq_target() = 1.06 * pos;
+        joint->dq_target() = currentSpeed * pos;
         qold[jointId] = q;
     }
 
@@ -184,8 +242,8 @@ public:
         VectorXd p(6);
 
         static const int axisID[] = {
-            Joystick::L_STICK_V_AXIS, Joystick::L_STICK_H_AXIS, Joystick::DIRECTIONAL_PAD_V_AXIS,
-            Joystick::R_STICK_H_AXIS, Joystick::R_STICK_V_AXIS, Joystick::DIRECTIONAL_PAD_H_AXIS
+            Joystick::L_STICK_V_AXIS, Joystick::L_STICK_H_AXIS, Joystick::R_STICK_V_AXIS,
+            Joystick::R_STICK_V_AXIS, Joystick::R_STICK_H_AXIS, Joystick::R_STICK_H_AXIS
         };
 
         double pos[6];
@@ -196,8 +254,11 @@ public:
             }
         }
 
-        p.head<3>() = Vector3(-pos[0], -pos[1], -pos[2]) * 0.3 * dt;
-        // p.tail<3>() = degree(Vector3(pos[3], -pos[4], -pos[5])) * 1.06 * dt;
+        if(controlMap == TWIST_LINEAR) {
+            p.head<3>() = Vector3(-pos[0], -pos[1], -pos[2]) * 0.3 * dt;
+        } else if(controlMap == TWIST_ANGULAR) {
+            p.tail<3>() = degree(Vector3(pos[3], -pos[4], -pos[5])) * 1.06 * dt;
+        }
 
         Isometry3 T;
         T.linear() = ikWrist->R() * rotFromRpy(radian(p.tail<3>()));
