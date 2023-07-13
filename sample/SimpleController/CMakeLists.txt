@@ -25,4 +25,8 @@ list(APPEND project_files Jackal.cnoid)
 choreonoid_add_simple_controller(UniversalRobotJoystickController UniversalRobotJoystickController.cpp)
 list(APPEND project_files UR3.cnoid UR5.cnoid UR10.cnoid)
 
+# Gen3lite
+choreonoid_add_simple_controller(Gen3liteJoystickController Gen3liteJoystickController.cpp)
+list(APPEND project_files Gen3lite.cnoid)
+
 install_project_files(${project_files})
