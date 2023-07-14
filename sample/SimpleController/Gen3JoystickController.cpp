@@ -1,5 +1,5 @@
 /**
-   Gen3 lite Controller
+   Gen3 Controller
    @author Kenta Suzuki
 */
 
@@ -14,12 +14,12 @@ using namespace std;
 namespace {
 
 const double joint_pose[] = {
-    0.0, -20.0, 90.0, 80.0, 60.0, 0.0, 20.0, 0.0, -20.0, 0.0
+    0.0, -30.0, 0.0, 130.0, 0.0, -10.0, 0.0
 };
 
 }
 
-class Gen3liteJoystickController : public SimpleController
+class Gen3JoystickController : public SimpleController
 {
     enum MapID { TWIST_LINEAR, TWIST_ANGULAR, JOINT };
 
@@ -151,12 +151,12 @@ public:
                     if(pos == -1) {
                         --currentJoint;
                         if(currentJoint < 0) {
-                            currentJoint = 5;
+                            currentJoint = 6;
                         }
                         (*os) << "joint " << currentJoint << " is selected." << endl;
                     } else if(pos == 1) {
                         ++currentJoint;
-                        if(currentJoint > 5) {
+                        if(currentJoint > 6) {
                             currentJoint = 0;
                         }
                         (*os) << "joint " << currentJoint << " is selected." << endl;
@@ -172,36 +172,6 @@ public:
             }
 
             controlFK(currentJoint, pos);
-        }
-
-        // gripper
-        {
-            double pos[2] = { 0.0 };
-            double pos1[2];
-            for(int i = 0; i < 2; ++i) {
-                pos1[i] = joystick->getPosition(targetMode,
-                            i == 0 ? Joystick::L_TRIGGER_AXIS : Joystick::R_TRIGGER_AXIS);
-                if(fabs(pos1[i]) < 0.15) {
-                    pos1[i] = 0.0;
-                }
-            }
-
-            if(fabs(pos1[1]) < 0.15) {
-                pos[0] = -pos1[0];
-                pos[1] = pos1[0];
-            } else {
-                pos[0] = pos1[1];
-                pos[1] = -pos1[1];
-            }
-
-            static const int jointID[] = { 6, 8 };
-            for(int i = 0; i < 2; ++i) {
-                controlFK(jointID[i], pos[i]);
-            }
-
-            if(fabs(pos[0]) > 0.0 || fabs(pos[1]) > 0.0) {
-                isIKEnabled = false;
-            }            
         }
 
         doJointPose();
@@ -244,7 +214,7 @@ public:
         }
 
         static const double speeds[] = {
-            1.0, 1.0, 1.0, 1.0, 1.0, 1.57, 1.0, 1.0, 1.0, 1.0
+            0.8727, 0.8727, 0.8727, 0.8727, 0.8727, 0.8727, 0.8727
         };
 
         joint->dq_target() = speeds[jointId] * (double)currentSpeed / 100.0 * pos;
@@ -272,7 +242,7 @@ public:
         if(controlMap == TWIST_LINEAR) {
             p.head<3>() = Vector3(-pos[0], -pos[1], -pos[2]) * 0.5 * rate * dt;
         } else if(controlMap == TWIST_ANGULAR) {
-            p.tail<3>() = degree(Vector3(pos[3], -pos[4], -pos[5])) * 1.0 * rate * dt;
+            p.tail<3>() = degree(Vector3(pos[3], -pos[4], -pos[5])) * 0.8727 * rate * dt;
         }
 
         Isometry3 T;
@@ -299,7 +269,7 @@ public:
 
     void doJointPose()
     {
-        double pos[10] = { 0.0 };
+        double pos[7] = { 0.0 };
         bool changed = true;
         if(isJointPoseSelected) {
             for(int i = 0; i < ioBody->numJoints(); ++i) {
@@ -336,4 +306,4 @@ public:
     }
 };
 
-CNOID_IMPLEMENT_SIMPLE_CONTROLLER_FACTORY(Gen3liteJoystickController)
+CNOID_IMPLEMENT_SIMPLE_CONTROLLER_FACTORY(Gen3JoystickController)

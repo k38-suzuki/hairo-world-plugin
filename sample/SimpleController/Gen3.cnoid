@@ -17,33 +17,33 @@ items:
       children: 
         - 
           id: 2
-          name: "GEN3-LITE"
+          name: "GEN3-7DOFWV"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "${SHARE}/model/Gen3lite/GEN3-LITE.body"
+            file: "${SHARE}/model/Gen3/GEN3-7DOFWV.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0 ]
             rootAttitude: [ 
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            jointDisplacements: [ 0, -20, 90, 80, 60, 0, 20, 0, -20, 0 ]
-            jointPositions: [ 0, -0.349066, 1.5708, 1.39626, 1.0472, 0, 0.349066, 0, -0.349066, 0 ]
+            jointDisplacements: [ 0, -30, 0, 130, 0, -10, 0 ]
+            jointPositions: [ 0, -0.523599, 0, 2.26893, 0, -0.174533, 0 ]
             initialRootPosition: [ 0, 0, 0 ]
             initialRootAttitude: [ 
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            initialJointPositions: [ 0, -0.349066, 1.5708, 1.39626, 1.0472, 0, 0.349066, 0, -0.349066, 0 ]
+            initialJointPositions: [ 0, -0.523599, 0, 2.26893, 0, -0.174533, 0 ]
             fix_root: true
             collisionDetection: true
             selfCollisionDetection: false
             lock_location: false
             scene_sensitive: true
             link_kinematics: 
-              "RIGHT_FINGER_DIST": 
+              "WRIST_ORIGIN": 
                 base_frame: 0
                 offset_frame: 0
             zmp: [ 0, 0, 0 ]
@@ -56,7 +56,7 @@ items:
               data: 
                 isNoDelayMode: false
                 controllerOptions: ""
-                controller: "Gen3liteJoystickController"
+                controller: "Gen3JoystickController"
                 base_directory: "Controller directory"
                 reloading: false
                 export_symbols: false
@@ -164,7 +164,7 @@ views:
           isCurrent: true
           eye: [ 3, 1.5, 1.2 ]
           direction: [ -0.880451, -0.440225, -0.17609 ]
-          up: [ -0.1575, -0.0787496, 0.984374 ]
+          up: [ -0.1575, -0.0787499, 0.984374 ]
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
@@ -269,7 +269,7 @@ toolbars:
 Body: 
   "BodySelectionManager": 
     current_body_item: 2
-    current_link: "BASE"
+    current_link: "WRIST_ORIGIN"
   "KinematicFaultChecker": 
     checkJointPositions: true
     angleMargin: 0

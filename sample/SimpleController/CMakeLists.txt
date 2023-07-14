@@ -29,4 +29,8 @@ list(APPEND project_files UR3.cnoid UR5.cnoid UR10.cnoid)
 choreonoid_add_simple_controller(Gen3liteJoystickController Gen3liteJoystickController.cpp)
 list(APPEND project_files Gen3lite.cnoid)
 
+# Gen3
+choreonoid_add_simple_controller(Gen3JoystickController Gen3JoystickController.cpp)
+list(APPEND project_files Gen3.cnoid)
+
 install_project_files(${project_files})
