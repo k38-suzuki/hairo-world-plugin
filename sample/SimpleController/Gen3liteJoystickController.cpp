@@ -55,14 +55,14 @@ public:
         for(int i = 0; i < 3; ++i) {
             prevButtonState[i] = false;
         }
-        controlMap = JOINT;
+        controlMap = TWIST_LINEAR;
         currentJoint = 0;
         prevHAxis = 0;
         prevVAxis = 0;
         currentSpeed = 1.0;
 
         ikBody = ioBody->clone();
-        ikWrist = ikBody->link("GRIPPER_FRAME");
+        ikWrist = ikBody->link("WRIST_ORIGIN");
         Link* base = ikBody->rootLink();
         baseToWrist = JointPath::getCustomPath(base, ikWrist);
         base->p().setZero();
@@ -93,7 +93,7 @@ public:
         joystick->updateState(targetMode);
 
         static const char* texts[] = {
-            "twist-linear control has been set.", "twist-angular control has set.", "joint control has set."
+            "twist-linear control has set.", "twist-angular control has set.", "joint control has set."
         };
         static const int buttonID[] = { Joystick::B_BUTTON, Joystick::SELECT_BUTTON, Joystick::START_BUTTON };
         for(int i = 0; i < 3; ++i) {
@@ -243,11 +243,11 @@ public:
 
         static const int axisID[] = {
             Joystick::L_STICK_V_AXIS, Joystick::L_STICK_H_AXIS, Joystick::R_STICK_V_AXIS,
-            Joystick::R_STICK_V_AXIS, Joystick::R_STICK_H_AXIS, Joystick::R_STICK_H_AXIS
+            Joystick::L_STICK_V_AXIS, Joystick::L_STICK_H_AXIS, Joystick::R_STICK_H_AXIS
         };
 
         double pos[6];
-        for(int i = 0; i < 3; ++i) {
+        for(int i = 0; i < 6; ++i) {
             pos[i] = joystick->getPosition(targetMode, axisID[i]);
             if(fabs(pos[i]) < 0.15) {
                 pos[i] = 0.0;
@@ -257,7 +257,7 @@ public:
         if(controlMap == TWIST_LINEAR) {
             p.head<3>() = Vector3(-pos[0], -pos[1], -pos[2]) * 0.3 * dt;
         } else if(controlMap == TWIST_ANGULAR) {
-            p.tail<3>() = degree(Vector3(pos[3], -pos[4], -pos[5])) * 1.06 * dt;
+            p.tail<3>() = degree(Vector3(pos[3], -pos[4], -pos[5])) * 0.1 * dt;
         }
 
         Isometry3 T;

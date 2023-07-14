@@ -351,3 +351,15 @@ links:
             type: Shape
             geometry: { type: Resource, uri: "parts/left_finger_dist_link.STL" }
             appearance: *FingerAppearance
+  -
+    name: WRIST_ORIGIN
+    parent: GRIPPER_FRAME
+    translation: [ 0.0, 0.0, 0.12 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.001
+    inertia: [ 4e-08, 0, 0, 0, 4e-08, 0, 0, 0, 4e-08 ]
+#    elements:
+#      Shape:
+#        geometry: { type: Sphere, radius: 0.01 }
+#        appearance: { material: { diffuseColor: [ 1.0, 0.0, 0.0 ], transparency: 0.8 } }
