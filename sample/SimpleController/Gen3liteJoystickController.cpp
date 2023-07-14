@@ -37,7 +37,7 @@ class Gen3liteJoystickController : public SimpleController
     int currentJoint;
     int prevHAxis;
     int prevVAxis;
-    double currentSpeed;
+    int currentSpeed;
 
     SharedJoystickPtr joystick;
     int targetMode;
@@ -59,7 +59,7 @@ public:
         currentJoint = 0;
         prevHAxis = 0;
         prevVAxis = 0;
-        currentSpeed = 1.0;
+        currentSpeed = 30;
 
         ikBody = ioBody->clone();
         ikWrist = ikBody->link("WRIST_ORIGIN");
@@ -125,10 +125,17 @@ public:
             }
             if((int)pos != 0 && prevVAxis == 0) {
                 if(pos == -1) {
-                    currentSpeed = 2.0;
+                    currentSpeed += 10;
+                    if(currentSpeed > 100) {
+                        currentSpeed = 100;
+                    }
                 } else if(pos == 1) {
-                    currentSpeed = 1.0;
+                    currentSpeed -= 10;
+                    if(currentSpeed < 0) {
+                        currentSpeed = 0;
+                    }
                 }
+                (*os) << "current speed is " << currentSpeed << "%." << endl;
             }
             prevVAxis = (int)pos;
         }
@@ -144,11 +151,14 @@ public:
                     if(pos == -1) {
                         --currentJoint;
                         if(currentJoint < 0) {
-                            currentJoint += 6;
+                            currentJoint = 5;
                         }
                         (*os) << "joint " << currentJoint << " is selected." << endl;
                     } else if(pos == 1) {
-                        currentJoint = ++currentJoint % 6;
+                        ++currentJoint;
+                        if(currentJoint > 5) {
+                            currentJoint = 0;
+                        }
                         (*os) << "joint " << currentJoint << " is selected." << endl;
                     }
                 }
@@ -233,7 +243,11 @@ public:
             pos = 0.0;
         }
 
-        joint->dq_target() = currentSpeed * pos;
+        static const double speeds[] = {
+            1.0, 1.0, 1.0, 1.0, 1.0, 1.57, 1.0, 1.0, 1.0, 1.0
+        };
+
+        joint->dq_target() = speeds[jointId] * (double)currentSpeed / 100.0 * pos;
         qold[jointId] = q;
     }
 
@@ -254,10 +268,11 @@ public:
             }
         }
 
+        double rate = (double)currentSpeed / 100.0;
         if(controlMap == TWIST_LINEAR) {
-            p.head<3>() = Vector3(-pos[0], -pos[1], -pos[2]) * 0.3 * dt;
+            p.head<3>() = Vector3(-pos[0], -pos[1], -pos[2]) * 0.5 * rate * dt;
         } else if(controlMap == TWIST_ANGULAR) {
-            p.tail<3>() = degree(Vector3(pos[3], -pos[4], -pos[5])) * 0.1 * dt;
+            p.tail<3>() = degree(Vector3(pos[3], -pos[4], -pos[5])) * 1.0 * rate * dt;
         }
 
         Isometry3 T;
