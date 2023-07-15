@@ -12,8 +12,8 @@ links:
     centerOfMass: [ -0.000648, -0.000166, 0.084487 ]
     mass: 1.697
     inertia: [
-      0.004622,   0.000009,   0.00006,
-      0,          0.004495,   0.000009,
+      0.004622,   9E-06,      6E-05,
+      0,          0.004495,   9E-06,
       0,          0,          0.002079
     ]
     elements:
@@ -41,10 +41,10 @@ links:
     rotation: [ 1, 0, 0, 3.1416 ]
     jointRange: unlimited
     jointVelocityRange: [ -0.8727, 0.8727 ]
-    centerOfMass: [ -0.000023, -0.010364, -0.07336 ]
+    centerOfMass: [ -2.3E-05, -0.010364, -0.07336 ]
     mass: 1.3773
     inertia: [
-      0.00457,    0.000001,   0.000002,
+      0.00457,    1E-06,      2E-06,
       0,          0.004831,   0.000448,
       0,          0,          0.001409
     ]
@@ -73,10 +73,10 @@ links:
     rotation: [ 1, 0, 0, 1.5708 ]
     jointRange: [ -2.24, 2.24 ]
     jointVelocityRange: [ -0.8727, 0.8727 ]
-    centerOfMass: [ -0.000044, -0.09958, -0.013278 ]
+    centerOfMass: [ -4.4E-05, -0.09958, -0.013278 ]
     mass: 1.1636
     inertia: [
-      0.011088,   0.000005,   0,
+      0.011088,   5E-06,   0,
       0,          0.001072,  -0.000691,
       0,          0,          0.011255
     ]
@@ -105,10 +105,10 @@ links:
     rotation: [ 1, 0, 0, -1.5708 ]
     jointRange: unlimited
     jointVelocityRange: [ -0.8727, 0.8727 ]
-    centerOfMass: [ -0.000044, -0.006641, -0.117892 ]
+    centerOfMass: [ -4.4E-05, -0.006641, -0.117892 ]
     mass: 1.1636
     inertia: [
-      0.010932,   0,         -0.000007,
+      0.010932,   0,         -7E-06,
       0,          0.011127,   0.000606,
       0,          0,          0.001043
     ]
@@ -137,10 +137,10 @@ links:
     rotation: [ 1, 0, 0, 1.5708 ]
     jointRange: [ -2.57, 2.57 ]
     jointVelocityRange: [ -0.8727, 0.8727 ]
-    centerOfMass: [ -0.000018, -0.075478, -0.015006 ]
+    centerOfMass: [ -1.8E-05, -0.075478, -0.015006 ]
     mass: 0.9302
     inertia: [
-      0.008147,  -0.000001,   0,
+      0.008147,  -1E-06,      0,
       0,          0.000631,  -0.0005,
       0,          0,          0.008316
     ]
@@ -169,7 +169,7 @@ links:
     rotation: [ 1, 0, 0, -1.5708 ]
     jointRange: unlimited
     jointVelocityRange: [ -0.8727, 0.8727 ]
-    centerOfMass: [ 0.000001, -0.009432, -0.063883 ]
+    centerOfMass: [ 1E-06, -0.009432, -0.063883 ]
     mass: 0.6781
     inertia: [
       0.001596,   0,          0,
@@ -201,7 +201,7 @@ links:
     rotation: [ 1, 0, 0, 1.5708 ]
     jointRange: [ -2.09, 2.09 ]
     jointVelocityRange: [ -0.8727, 0.8727 ]  
-    centerOfMass: [ 0.000001, -0.045483, -0.00965 ]
+    centerOfMass: [ 1E-06, -0.045483, -0.00965 ]
     mass: 0.6781
     inertia: [
       0.001641,   0,          0,
@@ -233,11 +233,11 @@ links:
     rotation: [ 1, 0, 0, -1.5708 ]
     jointRange: unlimited
     jointVelocityRange: [ -0.8727, 0.8727 ]  
-    centerOfMass: [ -0.000093, 0.000132, -0.022905 ]
+    centerOfMass: [ -9.3E-05, 0.000132, -0.022905 ]
     mass: 0.364
     inertia: [
-      0.000214,   0,          0.000001,
-      0,          0.000223,  -0.000002,
+      0.000214,   0,          1E-06,
+      0,          0.000223,  -2E-06,
       0,          0,          0.00024
     ]
     elements:
@@ -258,7 +258,8 @@ links:
   -
     name: WRIST_ORIGIN
     parent: J6
-    translation: [ 0.0, 0.0, -0.0615 ]
+    translation: [ 0.0, 0.0, -0.0615250000000001 ]
+    rotation: [ 1, 0, 0, 3.14159265358979 ]
     jointType: fixed
     centerOfMass: [ 0, 0, 0 ]
     mass: 0.001
