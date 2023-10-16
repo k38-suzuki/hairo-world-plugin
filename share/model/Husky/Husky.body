@@ -45,10 +45,15 @@ links:
             type: Shape
             geometry: { type: Resource, uri: "resource/top_chassis.stl" }
             appearance: { material: { diffuseColor: [ 0.8, 0.8, 0.0 ] } }
+#          -
+#            type: Shape
+#            translation: [ 0.272, 0, 0.245 ]
+#            geometry: { type: Resource, uri: "resource/user_rail.stl" }
+#            appearance: *black
           -
             type: Shape
-            translation: [ 0.272, 0, 0.245 ]
-            geometry: { type: Resource, uri: "resource/user_rail.stl" }
+            translation: [ 0.0, 0, 0.225 ]
+            geometry: { type: Resource, uri: "resource/large_top_plate_collision.stl" }
             appearance: *black
       -
         type: Collision
