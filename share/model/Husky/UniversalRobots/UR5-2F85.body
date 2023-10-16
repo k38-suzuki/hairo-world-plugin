@@ -1,0 +1,20 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: UR5-2F85
+rootLink: BASE
+
+links:
+  - # Main body
+    type: SubBody
+    uri: "UR5.body"
+    translation: [ 0, 0, 0.0 ]
+    jointType: fixed
+
+  - # Gripper
+    type: SubBody
+    uri: "../Robotiq/2F-85.body"
+    parent: FLANGE
+    rotation: [ [ 0, 0, 1, 90 ], [ 0, 1, 0, 180 ] ]
+    jointType: fixed
+    jointIdOffset: 6

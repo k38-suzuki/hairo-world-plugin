@@ -69,18 +69,22 @@ links:
   -
     name: FRONT_LEFT
     translation: [ 0.256, 0.2854, 0.03282 ]
+    jointId: 0
     <<: *WheelCommon
   -
     name: FRONT_RIGHT
     translation: [ 0.256, -0.2854, 0.03282 ]
+    jointId: 1
     <<: *WheelCommon
   -
     name: REAR_LEFT
     translation: [ -0.256, 0.2854, 0.03282 ]
+    jointId: 2
     <<: *WheelCommon
   -
     name: REAR_RIGHT
     translation: [ -0.256, -0.2854, 0.03282 ]
+    jointId: 3
     <<: *WheelCommon
   - 
     type: SubBody

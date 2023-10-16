@@ -1,0 +1,22 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: Husky-UR5-2F85
+rootLink: BASE
+
+links:
+  - # Main body
+    type: SubBody
+    uri: "Husky.body"
+    translation: [ 0, 0, 0.0 ]
+    jointType: fixed
+
+  - # Robot arm
+    type: SubBody
+    uri: "UniversalRobots/UR5-2F85.body"
+    prefix: UR5_
+    parent: BASE
+    translation: [ 0.3, 0, 0.235 ]
+#    rotation: [ [ 0, 0, 1, 90 ], [ 0, 1, 0, 180 ] ]
+    jointType: fixed
+    jointIdOffset: 4
