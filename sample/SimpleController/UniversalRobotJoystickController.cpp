@@ -48,7 +48,7 @@ public:
         prevButtonState = false;
 
         ikBody = ioBody->clone();
-        ikWrist = ikBody->link("WRIST3");
+        ikWrist = ikBody->link("Gripper_Base");
         Link* base = ikBody->rootLink();
         baseToWrist = JointPath::getCustomPath(base, ikWrist);
         base->p().setZero();
@@ -134,11 +134,12 @@ public:
         VectorXd p(6);
 
         static const int axisID[] = {
-            Joystick::L_STICK_V_AXIS, Joystick::L_STICK_H_AXIS, Joystick::DIRECTIONAL_PAD_V_AXIS
+            Joystick::L_STICK_V_AXIS, Joystick::L_STICK_H_AXIS, Joystick::DIRECTIONAL_PAD_V_AXIS,
+            Joystick::DIRECTIONAL_PAD_H_AXIS, Joystick::R_STICK_H_AXIS, Joystick::R_STICK_V_AXIS
         };
 
-        double pos[3];
-        for(int i = 0; i < 3; ++i) {
+        double pos[6];
+        for(int i = 0; i < 6; ++i) {
             pos[i] = joystick->getPosition(targetMode, axisID[i]);
             if(fabs(pos[i]) < 0.15) {
                 pos[i] = 0.0;
@@ -146,6 +147,7 @@ public:
         }
 
         p.head<3>() = Vector3(-pos[0], -pos[1], -pos[2]) * 0.5 * dt;
+        p.tail<3>() = degree(Vector3(pos[3], pos[4], pos[5])) * 1.0 * dt;
 
         Isometry3 T;
         T.linear() = ikWrist->R() * rotFromRpy(radian(p.tail<3>()));

@@ -17,12 +17,12 @@ items:
       children: 
         - 
           id: 2
-          name: "UR3"
+          name: "UR5-2F85"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "${SHARE}/model/UniversalRobots/UR3.body"
+            file: "${SHARE}/model/UniversalRobots/UR5-2F85.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0 ]
             rootAttitude: [ 
@@ -43,9 +43,10 @@ items:
             lock_location: false
             scene_sensitive: true
             link_kinematics: 
-              "WRIST3": 
+              "FLANGE": 
                 base_frame: 0
                 offset_frame: 0
+            enable_attachment: true
             zmp: [ 0, 0, 0 ]
           children: 
             - 
@@ -92,7 +93,7 @@ items:
           plugin: Body
           class: AISTSimulatorItem
           data: 
-            time_step: 0.001
+            time_step: 0.005
             realtime_sync_mode: compensatory
             recording: full
             time_range_mode: unlimited
@@ -231,7 +232,7 @@ views:
     class: LinkPositionView
     mounted: true
     state: 
-      coordinate_mode: base
+      coordinate_mode: world
       preferred_coordinate_mode: base
       show_rpy: true
       unique_rpy: false
@@ -273,8 +274,8 @@ toolbars:
     lazyCollisionDetectionMode: true
 Body: 
   "BodySelectionManager": 
-    current_body_item: 2
-    current_link: "WRIST3"
+    current_body_item: 4
+    current_link: "Floor"
   "KinematicFaultChecker": 
     checkJointPositions: true
     angleMargin: 0
