@@ -204,7 +204,7 @@ public:
             if(changed) {
                 isJointPoseSelected = false;
             }
-            for(int i = 0; i < ioBody->numJoints(); ++i) {
+            for(int i = 4; i < ioBody->numJoints(); ++i) {
                 controlFK(i, pos[i]);
             }
         }
