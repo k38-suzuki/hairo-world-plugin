@@ -52,7 +52,7 @@ links:
 #            appearance: *black
           -
             type: Shape
-            translation: [ 0.0, 0, 0.225 ]
+            translation: [ 0.0812, 0, 0.225 ]
             geometry: { type: Resource, uri: "resource/large_top_plate_collision.stl" }
             appearance: *black
       -
