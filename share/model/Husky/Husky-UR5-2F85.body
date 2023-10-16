@@ -9,7 +9,7 @@ links:
     type: SubBody
     uri: "Husky.body"
     translation: [ 0, 0, 0.0 ]
-    jointType: fixed
+    jointType: free
 
   - # Robot arm
     type: SubBody
