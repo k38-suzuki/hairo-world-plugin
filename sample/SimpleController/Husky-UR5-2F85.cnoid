@@ -30,10 +30,10 @@ items:
               0, 1, 0, 
               0, 0, 1 ]
             jointDisplacements: [ 
-              0, 0, 0, 0, 0, -120, 120, 190, -100, 0, 
+              0, 0, 0, 0, 0, -150, 120, -60, -90, 0, 
               0, 0, 0, 0, 0, 0 ]
             jointPositions: [ 
-              0, 0, 0, 0, 0, -2.0944, 2.0944, 3.31613, -1.74533, 0, 
+              0, 0, 0, 0, 0, -2.61799, 2.0944, -1.0472, -1.5708, 0, 
               0, 0, 0, 0, 0, 0 ]
             initialRootPosition: [ 0, 0, 0.15 ]
             initialRootAttitude: [ 
@@ -41,7 +41,7 @@ items:
               0, 1, 0, 
               0, 0, 1 ]
             initialJointPositions: [ 
-              0, 0, 0, 0, 0, -2.0944, 2.0944, 3.31613, -1.74533, 0, 
+              0, 0, 0, 0, 0, -2.61799, 2.0944, -1.0472, -1.5708, 0, 
               0, 0, 0, 0, 0, 0 ]
             fix_root: false
             collisionDetection: true
@@ -71,7 +71,7 @@ items:
                   data: 
                     isNoDelayMode: false
                     controllerOptions: ""
-                    controller: "UR5JoystickController"
+                    controller: "UniversalRobotJoystickController"
                     base_directory: "Controller directory"
                     reloading: false
                     export_symbols: false

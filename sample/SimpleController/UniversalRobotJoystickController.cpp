@@ -13,8 +13,9 @@ using namespace std;
 
 namespace {
 
-const double joint_pose[] = {
-    0.0, -150.0, 120.0, -60.0, -90.0, 0.0
+constexpr double joint_pose[] = {
+    0.0, 0.0, 0.0, 0.0, 0.0, -150.0, 120.0, -60.0,
+    -90.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 };
 
 }
@@ -31,6 +32,7 @@ class UniversalRobotJoystickController : public SimpleController
     bool isIKEnabled;
     bool isJointPoseSelected;
     bool prevButtonState;
+    bool isMounted;
 
     SharedJoystickPtr joystick;
     int targetMode;
@@ -46,9 +48,16 @@ public:
         isIKEnabled = true;
         isJointPoseSelected = false;
         prevButtonState = false;
+        isMounted = false;
 
         ikBody = ioBody->clone();
-        ikWrist = ikBody->link("Gripper_Base");
+        const string& bodyName = ioBody->name();
+        if(bodyName.find("Husky-UR5-2F85") != string::npos) {
+            ikWrist = ikBody->link("UR5_Gripper_Base");
+            isMounted = true;
+        } else {
+            ikWrist = ikBody->link("Gripper_Base");
+        }
         Link* base = ikBody->rootLink();
         baseToWrist = JointPath::getCustomPath(base, ikWrist);
         base->p().setZero();
@@ -86,12 +95,14 @@ public:
 
         isIKEnabled = true;
 
-        doJointPose();
-        
-        if(isIKEnabled) {
-            controlIK();
-        } else {
-            initializeIK();
+        if(joystick->mode() == targetMode) {
+            doJointPose();
+            
+            if(isIKEnabled) {
+                controlIK();
+            } else {
+                initializeIK();
+            }
         }
 
         return true;
@@ -173,8 +184,13 @@ public:
 
     void doJointPose()
     {
-        double pos[10] = { 0.0 };
+        double pos[16] = { 0.0 };
         bool changed = true;
+        int index = 0;
+        if(isMounted) {
+            index = 4;
+        }
+
         if(isJointPoseSelected) {
             for(int i = 0; i < ioBody->numJoints(); ++i) {
                 Link* joint = ioBody->joint(i);
@@ -203,7 +219,7 @@ public:
             if(changed) {
                 isJointPoseSelected = false;
             }
-            for(int i = 0; i < ioBody->numJoints(); ++i) {
+            for(int i = index; i < ioBody->numJoints(); ++i) {
                 controlFK(i, pos[i]);
             }
         }

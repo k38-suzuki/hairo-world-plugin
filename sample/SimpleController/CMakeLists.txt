@@ -15,7 +15,7 @@ list(APPEND project_files Gen2.cnoid)
 
 # Husky
 choreonoid_add_simple_controller(HuskyJoystickController HuskyJoystickController.cpp)
-list(APPEND project_files Husky.cnoid)
+list(APPEND project_files Husky.cnoid Husky-UR5-2F85.cnoid)
 
 # Jackal
 choreonoid_add_simple_controller(JackalJoystickController JackalJoystickController.cpp)
@@ -23,7 +23,6 @@ list(APPEND project_files Jackal.cnoid)
 
 # Universal Robots
 choreonoid_add_simple_controller(UniversalRobotJoystickController UniversalRobotJoystickController.cpp)
-choreonoid_add_simple_controller(UR5JoystickController UR5JoystickController.cpp)
 list(APPEND project_files UR3-2F85.cnoid UR5-2F85.cnoid UR10-2F85.cnoid)
 
 # Gen3lite
