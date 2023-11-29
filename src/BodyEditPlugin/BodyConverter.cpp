@@ -32,94 +32,94 @@ struct KeyInfo {
 
 KeyInfo keyInfo[] = {
     // for Header
-    { "formatVersion: 1.0", "format_version: 2.0"  },
-    { "angleUnit",          "angle_unit"           },
-    { "rootLink",           "root_link"            },
+    { "formatVersion: 1.0", "format_version: 2.0"    },
+    { "angleUnit:",          "angle_unit:"           },
+    { "rootLink:",           "root_link:"            },
 
     // for Link node
-    { "jointId",            "joint_id"             },
-    { "jointType",          "joint_type"           },
-    { "jointAxis",          "joint_axis"           },
-    { "jointAngle",         "joint_angle"          },
-    { "jointDisplacement",  "joint_displacement"   },
-    { "jointRange",         "joint_range"          },
-    { "maxJointVelocity",   "max_joint_velocity"   },
-    { "jointVelocityRange", "joint_velocity_range" },
-    { "rotorInertia",       "rotor_inertia"        },
-    { "gearRatio",          "gear_ratio"           },
-    { "centerOfMass",       "center_of_mass"       },
+    { "jointId:",            "joint_id:"             },
+    { "jointType:",          "joint_type:"           },
+    { "jointAxis:",          "joint_axis:"           },
+    { "jointAngle:",         "joint_angle:"          },
+    { "jointDisplacement:",  "joint_displacement:"   },
+    { "jointRange:",         "joint_range:"          },
+    { "maxJointVelocity:",   "max_joint_velocity:"   },
+    { "jointVelocityRange:", "joint_velocity_range:" },
+    { "rotorInertia:",       "rotor_inertia:"        },
+    { "gearRatio:",          "gear_ratio:"           },
+    { "centerOfMass:",       "center_of_mass:"       },
 
     // for Extruction node
-    { "crossSection",       "cross_section"        },
-    { "creaseAngle",        "crease_angle"         },
-    { "beginCap",           "begin_cap"            },
-    { "endCap",             "end_cap"              },
+    { "crossSection:",       "cross_section:"        },
+    { "creaseAngle:",        "crease_angle:"         },
+    { "beginCap:",           "begin_cap:"            },
+    { "endCap:",             "end_cap:"              },
 
     // for ElevationGrid node
-    { "xDimension",         "x_dimension"          },
-    { "zDimension",         "z_dimension"          },
-    { "xSpacing",           "x_spacing"            },
-    { "zSpacing",           "z_spacing"            },
-    { "creaseAngle",        "crease_angle"         },
+    { "xDimension:",         "x_dimension:"          },
+    { "zDimension:",         "z_dimension:"          },
+    { "xSpacing:",           "x_spacing:"            },
+    { "zSpacing:",           "z_spacing:"            },
+    { "creaseAngle:",        "crease_angle:"         },
 
     // for IndexedFaceSet node
-    { "texCoords",          "tex_coords"           },
-    { "texCoordIndices",    "tex_coord_indices"    },
-    { "creaseAngle",        "crease_angle"         },
+    { "texCoords:",          "tex_coords:"           },
+    { "texCoordIndices:",    "tex_coord_indices:"    },
+    { "creaseAngle:",        "crease_angle:"         },
 
     // for Appearance node
-    { "textureTransform",   "texture_transform"    },
+    { "textureTransform:",   "texture_transform:"    },
 
     // for Material node
-    { "ambientIntensity",   "ambient"              },
-    { "diffuseColor",       "diffuse"              },
-    { "emissiveColor",      "emissive"             }, 
-    { "specularColor",      "specular"             },
+    { "ambientIntensity:",   "ambient:"              },
+    { "diffuseColor:",       "diffuse:"              },
+    { "emissiveColor:",      "emissive:"             }, 
+    { "specularColor:",      "specular:"             },
 
     // for Texture node
-    { "repeatS",            "repeat_s"             },
-    { "repeatT",            "repeat_t"             },
+    { "repeatS:",            "repeat_s:"             },
+    { "repeatT:",            "repeat_t:"             },
 
     // for AccelerationSensor node
-    { "maxAcceleration",    "max_acceleration"     },
+    { "maxAcceleration:",    "max_acceleration:"     },
 
     // for RateGyroSensor node
-    { "maxAngularVelocity", "max_angular_velocity" },
+    { "maxAngularVelocity:", "max_angular_velocity:" },
 
     // for Imu node
-    { "maxAcceleration",    "max_acceleration"     },
-    { "maxAngularVelocity", "max_angular_velocity" },
+    { "maxAcceleration:",    "max_acceleration:"     },
+    { "maxAngularVelocity:", "max_angular_velocity:" },
 
     // for ForceSensor node
-    { "maxForce",           "max_force"            },
-    { "maxTorque",          "max_torque"           },
+    { "maxForce:",           "max_force:"            },
+    { "maxTorque:",          "max_torque:"           },
 
     // for Camera node
-    { "fieldOfView",        "field_of_view"        },
-    { "nearClipDistance",   "near_clip_distance"   },
-    { "farClipDistance",    "far_clip_distance"    },
-    { "frameRate",          "frame_rate"           },
+    { "fieldOfView:",        "field_of_view:"        },
+    { "nearClipDistance:",   "near_clip_distance:"   },
+    { "farClipDistance:",    "far_clip_distance:"    },
+    { "frameRate:",          "frame_rate:"           },
 
     // for RangeSensor node
-    { "yawRange",           "yaw_range"            },
-    { "yawStep",            "yaw_step"             },
-    { "pitchRange",         "pitch_range"          },
-    { "pitchStep",          "pitch_step"           },
-    { "scanRate",           "scan_rate"            },
-    { "minDistance",        "min_distance"         },
-    { "maxDistance",        "max_distance"         },
+    { "yawRange:",           "yaw_range:"            },
+    { "yawStep:",            "yaw_step:"             },
+    { "pitchRange:",         "pitch_range:"          },
+    { "pitchStep:",          "pitch_step:"           },
+    { "scanRate:",           "scan_rate:"            },
+    { "minDistance:",        "min_distance:"         },
+    { "maxDistance:",        "max_distance:"         },
 
     // for SpotLight node
-    { "beamWidth",          "beam_width"           },
-    { "cutOffAngle",        "cut_off_angle"        },
-    { "cutOffExponent",     "cut_off_exponent"     },
+    { "beamWidth:",          "beam_width:"           },
+    { "cutOffAngle:",        "cut_off_angle:"        },
+    { "cutOffExponent:",     "cut_off_exponent:"     },
 
     // for ExtraJoint node
-    { "link1Name",          "link1_name"           },
-    { "link2Name",          "link2_name"           },
-    { "link1LocalPos",      "link1_local_pos"      },
-    { "link2LocalPos",      "link2_local_pos"      },
-    { "jointType",          "joint_type"           }
+    { "link1Name:",          "link1_name:"           },
+    { "link2Name:",          "link2_name:"           },
+    { "link1LocalPos:",      "link1_local_pos:"      },
+    { "link2LocalPos:",      "link2_local_pos:"      },
+    { "jointType:",          "joint_type:"           }
 };
 
 }
