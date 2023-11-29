@@ -17,6 +17,30 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+msgid "Convert Body"
+msgstr "ボディの変換"
+
+msgid "&Convert"
+msgstr ""
+
+msgid "Body Converter"
+msgstr "ボディ変換"
+
+msgid "Open File"
+msgstr "ファイルを開く"
+
+msgid "{0} has been converted."
+msgstr "{0} の変換が完了しました．"
+
+msgid "Convert to"
+msgstr "変換先のフォーマット"
+
+msgid "1.0"
+msgstr ""
+
+msgid "2.0"
+msgstr ""
+
 msgid "Pipe"
 msgstr "パイプ"
 

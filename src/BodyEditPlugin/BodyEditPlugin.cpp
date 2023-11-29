@@ -5,6 +5,7 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
+#include "BodyConverter.h"
 #include "CrawlerGenerator.h"
 #include "GratingGenerator.h"
 #include "InertiaCalculator.h"
@@ -28,6 +29,7 @@ public:
 
     virtual bool initialize()
     {
+        BodyConverter::initializeClass(this);
         CrawlerGenerator::initializeClass(this);
         GratingGenerator::initializeClass(this);
         InertiaCalculator::initializeClass(this);

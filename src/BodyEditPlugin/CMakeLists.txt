@@ -1,5 +1,6 @@
 
 set(sources
+    BodyConverter.cpp
     CrawlerGenerator.cpp
     FileFormWidget.cpp
     GratingGenerator.cpp
@@ -12,6 +13,7 @@ set(sources
     )
 
 set(headers
+    BodyConverter.h
     CrawlerGenerator.h
     FileFormWidget.h
     GratingGenerator.h
