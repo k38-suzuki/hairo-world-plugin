@@ -26,8 +26,8 @@ msgstr ""
 msgid "Body Converter"
 msgstr "ボディ変換"
 
-msgid "Open File"
-msgstr "ファイルを開く"
+msgid "Open a Body file"
+msgstr "ボディファイルを開く"
 
 msgid "{0} has been converted."
 msgstr "{0} の変換が完了しました．"

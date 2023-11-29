@@ -4,8 +4,9 @@
 */
 
 #include "BodyConverter.h"
-#include <cnoid/Dialog>
 #include <cnoid/Buttons>
+#include <cnoid/Dialog>
+#include <cnoid/FileDialog>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/MessageView>
@@ -220,13 +221,22 @@ ConvertDialog::ConvertDialog(QWidget* parent)
 
 void ConvertDialog::open()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, _("Open File"),
-        "/home",
-        "Body Files (*.body);;All Files (*)");
-    
-    if(fileName.isEmpty()) {
-        return;
-    } else {
+    FileDialog dialog(MainWindow::instance());
+    dialog.setWindowTitle(_("Open a Body file"));
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setViewMode(QFileDialog::List);
+    dialog.setLabelText(QFileDialog::Accept, _("Open"));
+    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
+
+    QStringList filters;
+    filters << _("Body files (*.body)");
+    filters << _("Any files (*)");
+    dialog.setNameFilters(filters);
+
+    dialog.updatePresetDirectories();
+
+    if(dialog.exec()) {
+        QString fileName = dialog.selectedFiles().front();
         saveFile(fileName);
     }
 }
