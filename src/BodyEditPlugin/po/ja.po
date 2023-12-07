@@ -45,7 +45,7 @@ msgid "&File"
 msgstr "ファイル(&F)"
 
 msgid "E&xit"
-msgstr "終了(&E)"
+msgstr "終了(&x)"
 
 msgid "Pipe"
 msgstr "パイプ"
