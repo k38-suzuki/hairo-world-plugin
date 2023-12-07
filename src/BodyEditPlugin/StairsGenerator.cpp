@@ -198,8 +198,8 @@ MappingPtr StairsGeneratorImpl::writeBody(const string& filename)
     string name = path.stem().string();
 
     node->write("format", "ChoreonoidBody");
-    node->write("formatVersion", "1.0");
-    node->write("angleUnit", "degree");
+    node->write("format_version", "2.0");
+    node->write("angle_unit", "degree");
     node->write("name", name);
 
     ListingPtr linksNode = new Listing;
@@ -218,7 +218,7 @@ MappingPtr StairsGeneratorImpl::writeLink()
 
     node->write("name", "Root");
     write(node, "translation", Vector3(0.0, 0.0, 0.0));
-    node->write("jointType", "fixed");
+    node->write("joint_type", "fixed");
     node->write("material", "Ground");
     node->write("AMOR", true);
 
@@ -296,7 +296,7 @@ void StairsGeneratorImpl::writeStringerShape(Listing* elementsNode)
 
     MappingPtr geometryNode = new Mapping;
     geometryNode->write("type", "Extrusion");
-    Listing& crossSectionList = *geometryNode->createFlowStyleListing("crossSection");
+    Listing& crossSectionList = *geometryNode->createFlowStyleListing("cross_section");
 
     int n = 10;
     double depth = tread * steps;
@@ -322,7 +322,7 @@ void StairsGeneratorImpl::writeStringerShape(Listing* elementsNode)
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
     MappingPtr materialNode = new Mapping;
-    Listing& diffuseColorList = *materialNode->createFlowStyleListing("diffuseColor");
+    Listing& diffuseColorList = *materialNode->createFlowStyleListing("diffuse");
     QPalette palette = colorButton->palette();
     QColor color = palette.color(QPalette::Button);
     Vector3 c;
@@ -355,7 +355,7 @@ void StairsGeneratorImpl::writeStepShape(Listing* elementsNode)
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
     MappingPtr materialNode = new Mapping;
-    Listing& diffuseColorList = *materialNode->createFlowStyleListing("diffuseColor");
+    Listing& diffuseColorList = *materialNode->createFlowStyleListing("diffuse");
     QPalette palette = colorButton->palette();
     QColor color = palette.color(QPalette::Button);
     Vector3 c;

@@ -214,8 +214,8 @@ MappingPtr TerrainGeneratorImpl::writeBody(const string& filename)
     string name = path.stem().string();
 
     node->write("format", "ChoreonoidBody");
-    node->write("formatVersion", "1.0");
-    node->write("angleUnit", "degree");
+    node->write("format_version", "2.0");
+    node->write("angle_unit", "degree");
     node->write("name", name);
 
     ListingPtr linksNode = new Listing;
@@ -233,7 +233,7 @@ MappingPtr TerrainGeneratorImpl::writeLink()
     MappingPtr node = new Mapping;
 
     node->write("name", "Root");
-    node->write("jointType", "fixed");
+    node->write("joint_type", "fixed");
     node->write("material", "Ground");
     node->write("AMOR", true);
 
@@ -355,7 +355,7 @@ void TerrainGeneratorImpl::writeLinkShape(Listing* elementsNode)
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
     MappingPtr materialNode = new Mapping;
-    write(materialNode, "diffuseColor", Vector3(1.0, 1.0, 1.0));
+    write(materialNode, "diffuse", Vector3(1.0, 1.0, 1.0));
     appearanceNode->insert("material", materialNode);
 
     elementsNode->append(node);
@@ -369,7 +369,7 @@ void TerrainGeneratorImpl::writeLinkShape2(Listing* elementsNode)
     double unit = 0.1 * scale;
 
     MappingPtr materialNode = new Mapping;
-    write(materialNode, "diffuseColor", Vector3(1.0, 1.0, 1.0));
+    write(materialNode, "diffuse", Vector3(1.0, 1.0, 1.0));
 
     for(int j = 0; j < ysize; ++j) {
         for(int i = 0; i < xsize; ++i) {

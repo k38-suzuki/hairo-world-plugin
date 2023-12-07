@@ -237,8 +237,8 @@ MappingPtr PipeGeneratorImpl::writeBody(const string& filename)
     string name = path.stem().string();
 
     node->write("format", "ChoreonoidBody");
-    node->write("formatVersion", "1.0");
-    node->write("angleUnit", "degree");
+    node->write("format_version", "2.0");
+    node->write("angle_unit", "degree");
     node->write("name", name);
 
     ListingPtr linksNode = new Listing;
@@ -258,8 +258,8 @@ MappingPtr PipeGeneratorImpl::writeLink()
     double mass = dspins[MASS]->value();
 
     node->write("name", "Root");
-    node->write("jointType", "free");
-    write(node, "centerOfMass", Vector3(0.0, 0.0, 0.0));
+    node->write("joint_type", "free");
+    write(node, "center_of_mass", Vector3(0.0, 0.0, 0.0));
     node->write("mass", mass);
     write(node, "inertia", calcInertia());
 
@@ -287,7 +287,7 @@ void PipeGeneratorImpl::writeLinkShape(Listing* elementsNode)
 
     MappingPtr geometryNode = new Mapping;
     geometryNode->write("type", "Extrusion");
-    Listing& crossSectionList = *geometryNode->createFlowStyleListing("crossSection");
+    Listing& crossSectionList = *geometryNode->createFlowStyleListing("cross_section");
 
     int range = 360 - angle;
     int n = ((360 - angle) / step + 1) * 2 + 1;
@@ -320,7 +320,7 @@ void PipeGeneratorImpl::writeLinkShape(Listing* elementsNode)
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
     MappingPtr materialNode = new Mapping;
-    Listing& diffuseColorList = *materialNode->createFlowStyleListing("diffuseColor");
+    Listing& diffuseColorList = *materialNode->createFlowStyleListing("diffuse");
     QPalette palette = colorButton->palette();
     QColor color = palette.color(QPalette::Button);
     Vector3 c;

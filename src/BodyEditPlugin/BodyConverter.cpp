@@ -338,6 +338,7 @@ void ConvertDialog::createFormGroupBox()
 {
     formatCombo = new ComboBox;
     formatCombo->addItems(QStringList() << _("1.0") << _("2.0"));
+    formatCombo->setCurrentIndex(1);
 
     formGroupBox = new QGroupBox(_("Convert to"));
     QFormLayout* layout = new QFormLayout;
