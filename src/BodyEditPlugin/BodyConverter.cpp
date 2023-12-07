@@ -4,18 +4,20 @@
 */
 
 #include "BodyConverter.h"
-#include <cnoid/Buttons>
+#include <cnoid/ComboBox>
 #include <cnoid/Dialog>
 #include <cnoid/FileDialog>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
-#include <cnoid/MessageView>
-#include <fmt/format.h>
+#include <QAction>
 #include <QDialogButtonBox>
 #include <QFile>
 #include <QFileDialog>
+#include <QFormLayout>
 #include <QGroupBox>
-#include <QHBoxLayout>
+#include <QMenu>
+#include <QMenuBar>
+#include <QTextEdit>
 #include <QTextStream>
 #include <QVBoxLayout>
 #include "gettext.h"
@@ -134,13 +136,24 @@ public:
 
 private:
     void open();
+    void save();
+
     QString convert(const QString& line) const;
     void saveFile(const QString& fileName);
 
-    QGroupBox* createFirstExclusiveGroup();
+    void createMenu();
+    void createFormGroupBox();
 
-    RadioButton* radio1;
-    RadioButton* radio2;
+    QMenuBar* menuBar;
+    QGroupBox* formGroupBox;
+    ComboBox* formatCombo;
+    QTextEdit* bigEditor;
+    QString bodyFileName;
+
+    QMenu* fileMenu;
+    QAction* openAct;
+    QAction* saveAct;
+    QAction* exitAct;
 };
 
 
@@ -150,7 +163,7 @@ public:
     BodyConverterImpl(BodyConverter* self);
     BodyConverter* self;
 
-    void convert();
+    void show();
 };
 
 }
@@ -182,12 +195,12 @@ void BodyConverter::initializeClass(ExtensionManager* ext)
 
         MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
         mm.addItem(_("Convert Body"))->sigTriggered().connect(
-                    [&](){ instance_->impl->convert(); });
+                    [&](){ instance_->impl->show(); });
     }
 }
 
 
-void BodyConverterImpl::convert()
+void BodyConverterImpl::show()
 {
     ConvertDialog dialog(MainWindow::instance());
 
@@ -200,18 +213,20 @@ void BodyConverterImpl::convert()
 ConvertDialog::ConvertDialog(QWidget* parent)
     : Dialog(parent)
 {
-    PushButton* openButton = new PushButton(_("&Convert"));
-    connect(openButton, &PushButton::clicked, [&](){ open(); });
+    createMenu();
+    createFormGroupBox();
+
+    bigEditor = new QTextEdit;
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
 
     connect(buttonBox, &QDialogButtonBox::accepted, [&](){ accept(); });
     connect(buttonBox, &QDialogButtonBox::rejected, [&](){ reject(); });
 
-    buttonBox->addButton(openButton, QDialogButtonBox::ActionRole);
-
     QVBoxLayout* mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(createFirstExclusiveGroup());
+    mainLayout->setMenuBar(menuBar);
+    mainLayout->addWidget(formGroupBox);
+    mainLayout->addWidget(bigEditor);
     mainLayout->addWidget(buttonBox);
 
     setLayout(mainLayout);
@@ -237,7 +252,19 @@ void ConvertDialog::open()
 
     if(dialog.exec()) {
         QString fileName = dialog.selectedFiles().front();
-        saveFile(fileName);
+        bodyFileName = fileName;
+
+        QString status = QString("%1 has been loaded.")
+                        .arg(bodyFileName);
+        bigEditor->append(status);
+    }
+}
+
+
+void ConvertDialog::save()
+{
+    if(!bodyFileName.isEmpty()) {
+        saveFile(bodyFileName);
     }
 }
 
@@ -248,7 +275,7 @@ QString ConvertDialog::convert(const QString& line) const
 
     for(int i = 0; i < 58; ++i) {
         KeyInfo info = keyInfo[i];
-        if(radio1->isChecked()) {
+        if(formatCombo->currentIndex() == 0) {
             if(newLine.contains(info.newKey)) {
                 newLine.replace(info.newKey, info.oldKey);
             }
@@ -285,25 +312,35 @@ void ConvertDialog::saveFile(const QString& fileName)
         out << convert(line) << "\n";
     }
 
-    MessageView::instance()->putln(fmt::format(_("{0} has been converted."),
-                                    fileName.toStdString()));
+    QString status = QString("%1 has been generated.")
+                    .arg(fileName2);
+    bigEditor->append(status);
 }
 
 
-QGroupBox* ConvertDialog::createFirstExclusiveGroup()
+void ConvertDialog::createMenu()
 {
-    QGroupBox* groupBox = new QGroupBox(_("Convert to"));
+    menuBar = new QMenuBar;
 
-    radio1 = new RadioButton(_("1.0"));
-    radio2 = new RadioButton(_("2.0"));
+    fileMenu = new QMenu(_("&File"), this);
+    openAct = fileMenu->addAction(_("&Open"));
+    saveAct = fileMenu->addAction(_("&Save"));
+    exitAct = fileMenu->addAction(_("E&xit"));
+    menuBar->addMenu(fileMenu);
 
-    radio2->setChecked(true);
+    connect(openAct, &QAction::triggered, [&](){ open(); });
+    connect(saveAct, &QAction::triggered, [&](){ save(); });
+    connect(exitAct, &QAction::triggered, [&](){ accept(); });
+}
 
-    QHBoxLayout* hbox = new QHBoxLayout;
-    hbox->addWidget(radio1);
-    hbox->addWidget(radio2);
-    hbox->addStretch(1);
-    groupBox->setLayout(hbox);
 
-    return groupBox;
+void ConvertDialog::createFormGroupBox()
+{
+    formatCombo = new ComboBox;
+    formatCombo->addItems(QStringList() << _("1.0") << _("2.0"));
+
+    formGroupBox = new QGroupBox(_("Convert to"));
+    QFormLayout* layout = new QFormLayout;
+    layout->addRow(_("Format:"), formatCombo);
+    formGroupBox->setLayout(layout);
 }

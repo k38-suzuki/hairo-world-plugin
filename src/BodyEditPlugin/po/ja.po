@@ -20,26 +20,32 @@ msgstr ""
 msgid "Convert Body"
 msgstr "ボディの変換"
 
-msgid "&Convert"
-msgstr ""
-
 msgid "Body Converter"
 msgstr "ボディ変換"
 
 msgid "Open a Body file"
 msgstr "ボディファイルを開く"
 
-msgid "{0} has been converted."
-msgstr "{0} の変換が完了しました．"
-
 msgid "Convert to"
-msgstr "変換先のフォーマット"
+msgstr "変換先"
+
+msgid "Format:"
+msgstr "フォーマット"
 
 msgid "1.0"
 msgstr ""
 
 msgid "2.0"
 msgstr ""
+
+msgid "&Open"
+msgstr "開く(&O)"
+
+msgid "&File"
+msgstr "ファイル(&F)"
+
+msgid "E&xit"
+msgstr "終了(&E)"
 
 msgid "Pipe"
 msgstr "パイプ"
@@ -54,7 +60,7 @@ msgid "Stairs"
 msgstr "階段"
 
 msgid "Stairs Generator"
-msgstr "階段ジェネレータ"
+msgstr "階段生成"
 
 msgid "Tread [m]"
 msgstr "踏み面 [m]"
@@ -84,7 +90,7 @@ msgid "Make Body File"
 msgstr "Bodyファイルの生成"
 
 msgid "CrawlerRobot Generator"
-msgstr "クローラロボットジェネレータ"
+msgstr "クローラロボット生成"
 
 msgid "Front SubTrack"
 msgstr "サブトラック（前）"
@@ -216,7 +222,7 @@ msgid "Body files (*.body)"
 msgstr "ボディファイル (*.body)"
 
 msgid "Grating Generator"
-msgstr "グレーチングジェネレータ"
+msgstr "グレーチング生成"
 
 msgid "Mass [kg]"
 msgstr "質量 [kg]"
@@ -252,7 +258,7 @@ msgid "Size [m, m, m]"
 msgstr "大きさ [m, m, m]"
 
 msgid "Pipe Generator"
-msgstr "パイプジェネレータ"
+msgstr "パイプ生成"
 
 msgid "Length [m]"
 msgstr "長さ [m]"
@@ -270,13 +276,13 @@ msgid "Step angle [deg]"
 msgstr "きざみ角度 [deg]"
 
 msgid "Slope Generator"
-msgstr "スロープジェネレータ"
+msgstr "スロープ生成"
 
 msgid "Width [m]"
 msgstr "幅 [m]"
 
 msgid "BoxTerrain Generator"
-msgstr "ボックステレインジェネレータ"
+msgstr "ボックステレイン生成"
 
 msgid "&Load"
 msgstr "読み込み"
@@ -300,7 +306,7 @@ msgid "Setting 2"
 msgstr "設定2"
 
 msgid "InertiaCalculator"
-msgstr "慣性モーメント計算機"
+msgstr "慣性モーメント計算"
 
 msgid "Calculate Inertia"
 msgstr "慣性モーメントの計算"
