@@ -9,6 +9,7 @@
 #include <cnoid/FileDialog>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
+#include <cnoid/Separator>
 #include <QAction>
 #include <QDialogButtonBox>
 #include <QFile>
@@ -17,7 +18,7 @@
 #include <QGroupBox>
 #include <QMenu>
 #include <QMenuBar>
-#include <QTextEdit>
+#include <QMessageBox>
 #include <QTextStream>
 #include <QVBoxLayout>
 #include "gettext.h"
@@ -147,7 +148,6 @@ private:
     QMenuBar* menuBar;
     QGroupBox* formGroupBox;
     ComboBox* formatCombo;
-    QTextEdit* bigEditor;
     QString bodyFileName;
 
     QMenu* fileMenu;
@@ -216,8 +216,6 @@ ConvertDialog::ConvertDialog(QWidget* parent)
     createMenu();
     createFormGroupBox();
 
-    bigEditor = new QTextEdit;
-
     QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
 
     connect(buttonBox, &QDialogButtonBox::accepted, [&](){ accept(); });
@@ -226,7 +224,7 @@ ConvertDialog::ConvertDialog(QWidget* parent)
     QVBoxLayout* mainLayout = new QVBoxLayout;
     mainLayout->setMenuBar(menuBar);
     mainLayout->addWidget(formGroupBox);
-    mainLayout->addWidget(bigEditor);
+    mainLayout->addWidget(new HSeparator);
     mainLayout->addWidget(buttonBox);
 
     setLayout(mainLayout);
@@ -253,10 +251,6 @@ void ConvertDialog::open()
     if(dialog.exec()) {
         QString fileName = dialog.selectedFiles().front();
         bodyFileName = fileName;
-
-        QString status = QString("%1 has been loaded.")
-                        .arg(bodyFileName);
-        bigEditor->append(status);
     }
 }
 
@@ -314,7 +308,10 @@ void ConvertDialog::saveFile(const QString& fileName)
 
     QString status = QString("%1 has been generated.")
                     .arg(fileName2);
-    bigEditor->append(status);
+
+    QMessageBox msgBox;
+    msgBox.setText(status);
+    msgBox.exec();
 }
 
 
