@@ -196,7 +196,7 @@ bool PHITSWriter::searchLink(bool flagQAD)
                     // 共通ノードの読み込み
                     //
                     // ***** sourceShape *****
-                    ValueNode* sourceShapeNode = info->find("objectType");
+                    ValueNode* sourceShapeNode = info->find({ "object_type", "objectType" });
                     if(!sourceShapeNode->isValid()) {
                         return false;
                     } else {
@@ -252,7 +252,7 @@ bool PHITSWriter::searchLink(bool flagQAD)
                     if(flagQAD) {
                         // only used in QAD
                         // 線源分割数
-                        ValueNode* divisionNode = info->find("sourceDivision");
+                        ValueNode* divisionNode = info->find({ "source_division", "sourceDivision" });
                         if(!divisionNode->isValid()) {
                             cout << "sourceDivision node is not found." << endl;
                             return false;
@@ -265,7 +265,7 @@ bool PHITSWriter::searchLink(bool flagQAD)
                             MSO.push_back(list->get(2).toInt()); // Z(cyl.),  Z(cart.), θ(spher.)
                         }
 
-                        ValueNode* buildupNode = info->find("buildupFactor");
+                        ValueNode* buildupNode = info->find({ "buildup_factor", "buildupFactor" });
                         if(!buildupNode->isValid()) {
                             cout << "buildupFactor node is not found." << endl;
                             return false;
@@ -279,7 +279,7 @@ bool PHITSWriter::searchLink(bool flagQAD)
 
             // for obstacle
             {
-                ValueNode* obstacleShapeNode = info->find("objectType");
+                ValueNode* obstacleShapeNode = info->find({ "object_type", "objectType" });
                 if(obstacleShapeNode->isValid()) {
                     string obstacle = obstacleShapeNode->toString();
                     if(obstacle == "OBS_BOX" || obstacle == "OBS_CYLINDER" || obstacle == "OBS_SPHERE") {

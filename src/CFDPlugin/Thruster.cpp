@@ -208,8 +208,8 @@ double* Thruster::writeState(double* out_buf) const
 bool Thruster::readSpecifications(const Mapping* info)
 {
     info->read("on", on_);
-    info->read("forceOffset", forceOffset_);
-    info->read("torqueOffset", torqueOffset_);
+    info->read({ "force_offset", "forceOffset" }, forceOffset_);
+    info->read({ "torque_offset", "torqueOffset" }, torqueOffset_);
     info->read("symbol", symbol_);
 
     return true;
@@ -219,8 +219,8 @@ bool Thruster::readSpecifications(const Mapping* info)
 bool Thruster::writeSpecifications(Mapping* info) const
 {
     info->write("on", on_);
-    info->write("forceOffset", forceOffset_);
-    info->write("torqueOffset", torqueOffset_);
+    info->write("force_offset", forceOffset_);
+    info->write("torque_offset", torqueOffset_);
     info->write("symbol", symbol_);
 
     return true;

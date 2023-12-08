@@ -116,7 +116,7 @@ bool PinholeCamera::readSpecifications(const Mapping* info)
     }
 
     info->read("thickness", thickness_);
-    info->read("pinholeOpening", pinholeOpening_);
+    info->read({ "pinhole_opening", "pinholeOpening" }, pinholeOpening_);
 
     return true;
 }
@@ -129,7 +129,7 @@ bool PinholeCamera::writeSpecifications(Mapping* info) const
     }
 
     info->write("thickness", thickness_);
-    info->write("pinholeOpening", pinholeOpening_);
+    info->write("pinhole_opening", pinholeOpening_);
 
     return true;
 }

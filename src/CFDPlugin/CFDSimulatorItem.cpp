@@ -181,7 +181,7 @@ void CFDBody::createBody(CFDSimulatorItemImpl* simImpl)
 
         Mapping& node = *link->info();
         node.read("density", cfdLink->density);
-        if(!read(node, "centerOfBuoyancy", cfdLink->centerOfBuoyancy)) {
+        if(!read(node, { "center_of_buoyancy", "centerOfBuoyancy" }, cfdLink->centerOfBuoyancy)) {
             cfdLink->centerOfBuoyancy = link->centerOfMass();
         }
         node.read("cdw", cfdLink->cdw);

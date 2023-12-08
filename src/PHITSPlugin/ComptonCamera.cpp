@@ -127,9 +127,9 @@ bool ComptonCamera::readSpecifications(const Mapping* info)
         return false;
     }
 
-    info->read("elementWidth", elementWidth_);
-    info->read("scattererThickness", scattererThickness_);
-    info->read("absorberThickness", absorberThickness_);
+    info->read({ "element_width", "elementWidth" }, elementWidth_);
+    info->read({ "scatterer_thickness", "scattererThickness" }, scattererThickness_);
+    info->read({ "absorber_thickness", "absorberThickness" }, absorberThickness_);
     info->read("distance", distance_);
     info->read("arm", arm_);
 
@@ -143,9 +143,9 @@ bool ComptonCamera::writeSpecifications(Mapping* info) const
         return false;
     }
 
-    info->write("elementWidth", elementWidth_);
-    info->write("scattererThickness", scattererThickness_);
-    info->write("absorberThickness", absorberThickness_);
+    info->write("element_width", elementWidth_);
+    info->write("scatterer_thickness", scattererThickness_);
+    info->write("absorber_thickness", absorberThickness_);
     info->write("distance", distance_);
     info->write("arm", arm_);
 

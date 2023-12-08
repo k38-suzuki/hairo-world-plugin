@@ -228,7 +228,7 @@ bool DoseMeter::readSpecifications(const Mapping* info)
     read(info, "color", color_);
     info->read("material", material_);
     info->read("thickness", thickness_);
-    info->read("offsetDose", integralDose_[0]);
+    info->read({ "offset_dose", "offsetDose" }, integralDose_[0]);
     if(!material_.empty() && thickness_ > 0.0) {
         hasShield_ = true;
         isShield_ = true;
@@ -244,7 +244,7 @@ bool DoseMeter::writeSpecifications(Mapping* info) const
     write(info, "color", color_);
     info->write("material", material_);
     info->write("thickness", thickness_);
-    info->write("offsetDose", integralDose_[0]);
+    info->write("offset_dose", integralDose_[0]);
 
     return true;
 }
