@@ -2,10 +2,13 @@
 set(sources
     FileExplorer.cpp
     FileExplorerPlugin.cpp
+    Notepad.cpp
     )
 
 set(headers
     FileExplorer.h
+    Notepad.h
+    exportdecl.h
     gettext.h
     )
 
