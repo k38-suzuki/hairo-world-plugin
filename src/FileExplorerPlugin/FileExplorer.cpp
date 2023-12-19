@@ -5,13 +5,19 @@
 
 #include "FileExplorer.h"
 #include <cnoid/BodyItem>
+#include <cnoid/Dialog>
 #include <cnoid/ItemTreeView>
 #include <cnoid/MenuManager>
 #include <cnoid/Process>
 #include <cnoid/SceneItem>
+#include <cnoid/Separator>
+#include <QDialogButtonBox>
 #include <QFileInfo>
 #include <QFileSystemModel>
+#include <QListView>
+#include <QSplitter>
 #include <QTreeView>
+#include <QVBoxLayout>
 #include <vector>
 #include "Notepad.h"
 #include "gettext.h"
@@ -23,14 +29,28 @@ namespace cnoid {
 
 FileExplorer* explorerInstance = nullptr;
 
+class ExplorerDialog : public Dialog
+{
+public:
+    ExplorerDialog(QWidget* parent = nullptr);
+
+    void openDir(const QString& fileName);
+
+    void on_listView_doubleClicked(const QModelIndex& index);
+    void on_treeView_clicked(const QModelIndex& index);
+
+    QFileSystemModel* fileModel;
+    QFileSystemModel* dirModel;
+    QListView* listView;
+    QTreeView* treeView;
+};
+
 class FileExplorerImpl
 {
 public:
     FileExplorerImpl(FileExplorer* self);
     FileExplorer* self;
 
-    QFileSystemModel* model;
-    QTreeView* treeView;
     vector<Process*> processes;
 
     void execute(const Item* item, const int& id);
@@ -38,7 +58,6 @@ public:
     void kill();
     void openFile(const QString& fileName);
     void openDir(const QString& fileName);
-    void on_treeView_doubleClicked(const QModelIndex& index);
 };
 
 }
@@ -53,12 +72,6 @@ FileExplorer::FileExplorer()
 FileExplorerImpl::FileExplorerImpl(FileExplorer* self)
     : self(self)
 {
-    model = new QFileSystemModel;
-
-    treeView = new QTreeView;
-    QObject::connect(treeView, &QTreeView::doubleClicked,
-        [&](const QModelIndex& index){ on_treeView_doubleClicked(index); });
-
     processes.clear();
 }
 
@@ -79,14 +92,14 @@ void FileExplorer::initializeClass(ExtensionManager* ext)
     ItemTreeView::instance()->customizeContextMenu<BodyItem>(
         [&](BodyItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
             menuManager.setPath("/").setPath(_("Open"));
-            // menuManager.addItem(_("File"))->sigTriggered().connect(
-            //     [&, item](){ explorerInstance->impl->execute(item, 0); });
-            // menuManager.addItem(_("Directory"))->sigTriggered().connect(
-            //     [&, item](){ explorerInstance->impl->execute(item, 1); });
             menuManager.addItem(_("File"))->sigTriggered().connect(
-                [&, item](){ explorerInstance->impl->openFile(item->filePath().c_str()); });
+                [&, item](){ explorerInstance->impl->execute(item, 0); });
             menuManager.addItem(_("Directory"))->sigTriggered().connect(
-                [&, item](){ explorerInstance->impl->openDir(item->filePath().c_str()); });
+                [&, item](){ explorerInstance->impl->execute(item, 1); });
+            // menuManager.addItem(_("File"))->sigTriggered().connect(
+            //     [&, item](){ explorerInstance->impl->openFile(item->filePath().c_str()); });
+            // menuManager.addItem(_("Directory"))->sigTriggered().connect(
+            //     [&, item](){ explorerInstance->impl->openDir(item->filePath().c_str()); });
             menuManager.setPath("/");
             menuManager.addSeparator();
             menuFunction.dispatchAs<Item>(item);
@@ -95,14 +108,14 @@ void FileExplorer::initializeClass(ExtensionManager* ext)
     ItemTreeView::instance()->customizeContextMenu<SceneItem>(
         [&](SceneItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
             menuManager.setPath("/").setPath(_("Open"));
-            // menuManager.addItem(_("File"))->sigTriggered().connect(
-            //     [&, item](){ explorerInstance->impl->execute(item, 0); });
-            // menuManager.addItem(_("Directory"))->sigTriggered().connect(
-            //     [&, item](){ explorerInstance->impl->execute(item, 1); });
             menuManager.addItem(_("File"))->sigTriggered().connect(
-                [&, item](){ explorerInstance->impl->openFile(item->filePath().c_str()); });
+                [&, item](){ explorerInstance->impl->execute(item, 0); });
             menuManager.addItem(_("Directory"))->sigTriggered().connect(
-                [&, item](){ explorerInstance->impl->openDir(item->filePath().c_str()); });
+                [&, item](){ explorerInstance->impl->execute(item, 1); });
+            // menuManager.addItem(_("File"))->sigTriggered().connect(
+            //     [&, item](){ explorerInstance->impl->openFile(item->filePath().c_str()); });
+            // menuManager.addItem(_("Directory"))->sigTriggered().connect(
+            //     [&, item](){ explorerInstance->impl->openDir(item->filePath().c_str()); });
             menuManager.setPath("/");
             menuManager.addSeparator();
             menuFunction.dispatchAs<Item>(item);
@@ -147,30 +160,85 @@ void FileExplorerImpl::kill()
 
 void FileExplorerImpl::openFile(const QString& fileName)
 {
-        Notepad* notepad = new Notepad;
-        notepad->loadFile(fileName);
-        notepad->show();
+    Notepad* notepad = new Notepad;
+    notepad->loadFile(fileName);
+    notepad->show();
 }
 
 
 void FileExplorerImpl::openDir(const QString& fileName)
 {
-    QFileInfo info(fileName);
-    model->setRootPath(info.absolutePath());
-    treeView->setModel(model);
-    treeView->setRootIndex(model->index(info.absolutePath()));
-    treeView->setWindowTitle(info.absolutePath());
-    treeView->show();
+    ExplorerDialog* dialog = new ExplorerDialog;
+    dialog->openDir(fileName);
+    dialog->show();
 }
 
 
-void FileExplorerImpl::on_treeView_doubleClicked(const QModelIndex& index)
+ExplorerDialog::ExplorerDialog(QWidget* parent)
+    : Dialog(parent)
 {
-    if(!model->isDir(index)) {
-        QString filePath = model->filePath(index);
-        if(filePath.isEmpty()) {
+    fileModel = new QFileSystemModel;
+    fileModel->setFilter(QDir::NoDotAndDotDot | QDir::Files);
+    dirModel = new QFileSystemModel;
+    dirModel->setFilter(QDir::NoDotAndDotDot | QDir::AllDirs);
+
+    listView = new QListView;
+    listView->setModel(fileModel);
+    treeView = new QTreeView;
+    treeView->setModel(dirModel);
+
+    connect(listView, &QListView::doubleClicked,
+        [&](const QModelIndex& index){ on_listView_doubleClicked(index); });
+    connect(treeView, &QTreeView::clicked,
+        [&](const QModelIndex& index){ on_treeView_clicked(index); });
+
+    QSplitter* splitter = new QSplitter(Qt::Horizontal);
+    splitter->addWidget(treeView);
+    splitter->addWidget(listView);
+
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
+
+    connect(buttonBox, &QDialogButtonBox::accepted, [&](){ accept(); });
+    connect(buttonBox, &QDialogButtonBox::rejected, [&](){ reject(); });
+
+    QVBoxLayout* mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(splitter);
+    mainLayout->addWidget(new HSeparator);
+    mainLayout->addWidget(buttonBox);
+
+    setLayout(mainLayout);
+    setWindowTitle(_(""));
+}
+
+
+void ExplorerDialog::openDir(const QString& fileName)
+{
+    QFileInfo info(fileName);
+    QString filePath = info.absolutePath();
+    dirModel->setRootPath(filePath);
+    treeView->setRootIndex(dirModel->index(filePath));
+    on_treeView_clicked(dirModel->index(filePath));
+    setWindowTitle(filePath);
+}
+
+
+void ExplorerDialog::on_listView_doubleClicked(const QModelIndex& index)
+{
+    if(!fileModel->isDir(index)) {
+        QString fileName = fileModel->filePath(index);
+        if(fileName.isEmpty()) {
             return;
         }
-        openFile(filePath);
+
+        Notepad* notepad = new Notepad;
+        notepad->loadFile(fileName);
+        notepad->show();
     }
+}
+
+
+void ExplorerDialog::on_treeView_clicked(const QModelIndex& index)
+{
+    QString filePath = dirModel->fileInfo(index).absoluteFilePath();
+    listView->setRootIndex(fileModel->setRootPath(filePath));
 }
