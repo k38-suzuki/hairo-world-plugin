@@ -17,6 +17,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+msgid "Open a file"
+msgstr "ファイルを開く"
+
 msgid "Open"
 msgstr "開く"
 
