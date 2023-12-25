@@ -22,6 +22,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QSplitter>
+#include <QTabWidget>
 #include <QTreeView>
 #include <QVBoxLayout>
 #include <vector>
@@ -45,8 +46,10 @@ public:
     void execute(const int argc, const char* argv[]);
     void kill();
     void openFile(const QString& fileName);
+    void exit();
     void cascade();
     void tile();
+    void remove(const int& index);
 
 private:
     void on_listView_doubleClicked(const QModelIndex& index);
@@ -56,13 +59,16 @@ private:
 
     QMenuBar* menuBar;
     QMdiArea* mdiArea;
+    QTabWidget* tabWidget;
     QFileSystemModel* fileModel;
     QFileSystemModel* dirModel;
     QListView* listView;
     QTreeView* treeView;
     QString fileName;
 
+    QMenu* fileMenu;
     QMenu* viewMenu;
+    QAction* exitAct;
     QAction* cascadeAct;
     QAction* tileAct;
 
@@ -84,6 +90,11 @@ FileExplorerImpl::FileExplorerImpl(FileExplorer* self)
     createMenu();
 
     mdiArea = new QMdiArea;
+    tabWidget = new QTabWidget;
+    tabWidget->setMovable(true);
+    tabWidget->setTabsClosable(true);
+
+    connect(tabWidget, &QTabWidget::tabCloseRequested, [&](int index){ remove(index); });
 
     fileModel = new QFileSystemModel;
     fileModel->setFilter(QDir::NoDotAndDotDot | QDir::Files);
@@ -103,7 +114,8 @@ FileExplorerImpl::FileExplorerImpl(FileExplorer* self)
     QSplitter* splitter = new QSplitter(Qt::Horizontal);
     splitter->addWidget(treeView);
     splitter->addWidget(listView);
-    splitter->addWidget(mdiArea);
+    // splitter->addWidget(mdiArea);
+    splitter->addWidget(tabWidget);
 
     fileName.clear();
     processes.clear();
@@ -114,7 +126,7 @@ FileExplorerImpl::FileExplorerImpl(FileExplorer* self)
     connect(buttonBox, &QDialogButtonBox::rejected, [&](){ reject(); });
 
     QVBoxLayout* mainLayout = new QVBoxLayout;
-    mainLayout->setMenuBar(menuBar);
+    // mainLayout->setMenuBar(menuBar);
     mainLayout->addWidget(splitter);
     mainLayout->addWidget(new HSeparator);
     mainLayout->addWidget(buttonBox);
@@ -232,14 +244,16 @@ void FileExplorerImpl::on_listView_doubleClicked(const QModelIndex& index)
             return;
         }
 
-        if(!this->isHidden()) {
-            this->hide();
-        }
+        QFileInfo info(fileName);
 
-        Notepad* notepad = new Notepad;
+        Notepad* notepad = new Notepad(this);
         notepad->loadFile(fileName);
-        mdiArea->addSubWindow(notepad);
-        show();
+        // mdiArea->addSubWindow(notepad);
+        tabWidget->addTab(notepad, info.fileName());
+        tabWidget->setCurrentWidget(notepad);
+
+        this->show();
+        notepad->show();
     }
 }
 
@@ -257,6 +271,13 @@ void FileExplorerImpl::on_treeView_clicked(const QModelIndex& index)
 }
 
 
+void FileExplorerImpl::exit()
+{
+    mdiArea->closeAllSubWindows();
+    accept();
+}
+
+
 void FileExplorerImpl::cascade()
 {
     mdiArea->cascadeSubWindows();
@@ -269,15 +290,28 @@ void FileExplorerImpl::tile()
 }
 
 
+void FileExplorerImpl::remove(const int& index)
+{
+    tabWidget->removeTab(index);
+}
+
+
 void FileExplorerImpl::createMenu()
 {
     menuBar = new QMenuBar;
 
-    viewMenu = new QMenu(_("&View")), this;
+    fileMenu = new QMenu(_("&File"), this);
+    fileMenu->addSeparator();
+    exitAct = fileMenu->addAction(_("E&xit"));
+    menuBar->addMenu(fileMenu);
+
+    viewMenu = new QMenu(_("&View"), this);
     cascadeAct = viewMenu->addAction(_("&Cascade"));
     tileAct = viewMenu->addAction(_("&Tile"));
+    viewMenu->addSeparator();
     menuBar->addMenu(viewMenu);
 
+    connect(exitAct, &QAction::triggered, [&](){ exit(); });
     connect(cascadeAct, &QAction::triggered, [&](){ cascade(); });
     connect(tileAct, &QAction::triggered, [&](){ tile(); });
 }
