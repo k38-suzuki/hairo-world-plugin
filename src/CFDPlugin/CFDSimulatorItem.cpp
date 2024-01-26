@@ -43,7 +43,7 @@ public:
     double cda;
     double cv;
     double cw;
-    vector<Vector3> ns;
+    vector<Vector3> sn;
     vector<Vector3> g;
 
     void calcGeometry(CFDBody* cfdBody);
@@ -106,7 +106,7 @@ CFDLink::CFDLink(CFDSimulatorItemImpl* simImpl, CFDBody* cfdBody, Link* link)
     cda = 0.0;
     cv = 0.0;
     cw = 0.0;
-    ns.clear();
+    sn.clear();
     g.clear();
 }
 
@@ -152,7 +152,7 @@ void CFDLink::calcMesh(MeshExtractor* extractor, CFDBody* cfdBody)
         const Vector3 v1 = b - c;
         double s = 0.5 * sqrt(v0.norm() * v0.norm() * v1.norm() * v1.norm() - v0.dot(v1) * v0.dot(v1));
         Vector3 n = v0.cross(v1).normalized();
-        ns.push_back(n * s);
+        sn.push_back(n * s);
         g.push_back((a + b + c) / 3.0);
     }
 }
@@ -365,12 +365,16 @@ void CFDSimulatorItemImpl::onPreDynamicsFunction()
             Vector3 w = link->w();
             Vector3 v = link->v() + w.cross(a);
 
-            for(int k = 0; k < cfdLink->ns.size(); ++k) {
-                Vector3 ns = link->R() * cfdLink->ns[k];
-                Vector3 vn = v.normalized();
-                double vnns = vn.dot(ns);
-                if(vnns < 0.0) {
-                    Vector3 f = 0.5 * cd * density * vn * vnns * v.dot(v);
+            double v_norm = v.dot(v);
+            double v2 = v_norm * v_norm;
+            // Vector3 v_local = link->R().inverse() * v;
+            Vector3 n = v.normalized();
+
+            for(int k = 0; k < cfdLink->sn.size(); ++k) {
+                Vector3 sn = link->R() * cfdLink->sn[k];
+                double s = n.dot(sn);
+                if(s > 0.0) {
+                    Vector3 f = 0.5 * cd * density * v2 * s * n * -1.0;
                     link->f_ext() += f;
                     link->tau_ext() += c.cross(f);
                     Vector3 g = T * cfdLink->g[k];
