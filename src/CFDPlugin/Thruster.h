@@ -7,10 +7,12 @@
 #define CNOID_CFD_PLUGIN_THRUSTER_H
 
 #include <cnoid/Device>
-#include <cnoid/ValueTree>
+#include <memory>
 #include "exportdecl.h"
 
 namespace cnoid {
+
+class Mapping;
 
 class CNOID_EXPORT Thruster : public Device
 {
@@ -54,6 +56,11 @@ private:
     double forceOffset_;
     double torqueOffset_;
     bool symbol_;
+
+    struct Spec {
+
+    };
+    std::unique_ptr<Spec> spec;
 
     void copyThrusterStateFrom(const Thruster& other);
 };

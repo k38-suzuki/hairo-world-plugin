@@ -1,0 +1,73 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: SimpleROV
+
+links:
+  -
+    name: CHASSIS
+    jointType: free
+    translation: [ 0, 0, 0.06 ]
+    mass: 2.0
+    inertia: [ 0.0033, 0, 0, 0, 0.0433, 0, 0, 0, 0.0433 ]
+    density: 1000.0
+    centerOfBuoyancy: [ 0.0, 0.0, 0.0 ]
+    cdw: 1.0
+    cw: 0.2
+    elements:
+      -
+        type: Shape
+        geometry: { type: Box, size: [ 0.5, 0.1, 0.1 ] }
+        appearance: { material: { diffuseColor: [ 0.0, 0.0, 1.0 ] } }
+  -
+    name: WING_L
+    parent: CHASSIS
+    translation: [ 0, 0.2, 0 ]
+    jointType: revolute
+    jointAxis: -Y
+    jointRange: [ -45, 45 ]
+    maxJointVelocity: 90
+    jointId: 0
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.5
+    inertia: [ 0.0037, 0, 0, 0, 0.0004, 0, 0, 0, 0.004 ]
+    density: 1000.0
+    centerOfBuoyancy: [ 0.0, 0.0, 0.0 ]
+    cdw: 1.0
+    cw: 0.2
+    elements:
+      -
+        type: Shape
+        geometry: { type: Box, size: [ 0.1, 0.3, 0.02 ] }
+        appearance: { material: { diffuseColor: [ 0.0, 1.0, 0.0 ] } }
+      -
+        type: WingDevice
+        name: LeftWing
+        on: true
+        symbol: true
+  -
+    name: WING_R
+    parent: CHASSIS
+    translation: [ 0, -0.2, 0 ]
+    jointType: revolute
+    jointAxis: -Y
+    jointRange: [ -45, 45 ]
+    maxJointVelocity: 90
+    jointId: 1
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.5
+    inertia: [ 0.0037, 0, 0, 0, 0.0004, 0, 0, 0, 0.004 ]
+    density: 1000.0
+    centerOfBuoyancy: [ 0.0, 0.0, 0.0 ]
+    cdw: 1.0
+    cw: 0.2
+    elements:
+      -
+        type: Shape
+        geometry: { type: Box, size: [ 0.1, 0.3, 0.02 ] }
+        appearance: { material: { diffuseColor: [ 0.0, 1.0, 0.0 ] } }
+      -
+        type: WingDevice
+        name: RightWing
+        on: true
+        symbol: true

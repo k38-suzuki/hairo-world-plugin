@@ -6,6 +6,7 @@ set(sources
     CFDSimulatorItem.cpp
     Rotor.cpp
     Thruster.cpp
+    WingDevice.cpp
     )
 
 set(headers
@@ -14,6 +15,7 @@ set(headers
     CFDSimulatorItem.h
     Rotor.h
     Thruster.h
+    WingDevice.h
     exportdecl.h
     gettext.h
     )
@@ -22,6 +24,7 @@ choreonoid_make_header_public(AreaItem.h)
 choreonoid_make_header_public(FluidAreaItem.h)
 choreonoid_make_header_public(Rotor.h)
 choreonoid_make_header_public(Thruster.h)
+choreonoid_make_header_public(WingDevice.h)
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project

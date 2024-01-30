@@ -77,6 +77,7 @@ SceneDevice* createSceneRotor(Device* device)
 
 
 Rotor::Rotor()
+    : spec(new Spec)
 {
     setDirection(Vector3(0.0, 0.0, 1.0));
     k_ = 22.0;
@@ -92,6 +93,15 @@ Rotor::Rotor(const Rotor& org, bool copyStateOnly)
     : Thruster(org, copyStateOnly)
 {
     copyRotorStateFrom(org);
+
+    if(!copyStateOnly) {
+        spec.reset(new Spec);
+        if(org.spec) {
+
+        } else {
+
+        }
+    }
 }
 
 

@@ -77,6 +77,7 @@ SceneDevice* createSceneThruster(Device* device)
 
 
 Thruster::Thruster()
+    : spec(new Spec)
 {
     on_ = true;
     force_ = 0.0;
@@ -92,6 +93,15 @@ Thruster::Thruster(const Thruster& org, bool copyStateOnly)
     : Device(org, copyStateOnly)
 {
     copyThrusterStateFrom(org);
+
+    if(!copyStateOnly) {
+        spec.reset(new Spec);
+        if(org.spec) {
+
+        } else {
+
+        }
+    }
 }
 
 

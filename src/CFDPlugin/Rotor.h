@@ -6,11 +6,12 @@
 #ifndef CNOID_CFD_PLUGIN_ROTOR_H
 #define CNOID_CFD_PLUGIN_ROTOR_H
 
-#include <cnoid/ValueTree>
 #include "Thruster.h"
 #include "exportdecl.h"
 
 namespace cnoid {
+
+class Mapping;
 
 class CNOID_EXPORT Rotor : public Thruster
 {
@@ -52,6 +53,11 @@ private:
     double pitch_;
     double voltage_;
     bool reverse_;
+
+    struct Spec {
+
+    };
+    std::unique_ptr<Spec> spec;
 
     void copyRotorStateFrom(const Rotor& other);
 };
