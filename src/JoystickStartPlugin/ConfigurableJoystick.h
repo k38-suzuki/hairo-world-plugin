@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_JOYSTICK_START_PLUGIN_CONFIGURABLE_JOYSTICK_H
@@ -57,4 +56,4 @@ private:
 
 }
 
-#endif // CNOID_JOYSTICK_START_PLUGIN_CONFIGURABLE_JOYSTICK_H
+#endif

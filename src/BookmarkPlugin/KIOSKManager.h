@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_BOOKMARK_PLUGIN_KIOSK_MANAGER_H
@@ -28,4 +27,4 @@ private:
 
 }
 
-#endif // CNOID_BOOKMARK_PLUGIN_KIOSK_MANAGER_H
+#endif

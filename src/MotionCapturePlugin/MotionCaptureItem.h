@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_MOTION_CAPTURE_PLUGIN_MOTION_CAPTURE_ITEM_H
@@ -37,4 +36,4 @@ private:
 
 }
 
-#endif // CNOID_MOTION_CAPTURE_PLUGIN_MOTION_CAPTURE_ITEM_H
+#endif

@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_OMPL_PLUGIN_SIMPLE_SETUP_ITEM_H
@@ -50,4 +49,4 @@ typedef ref_ptr<SimpleSetupItem> SimpleSetupItemPtr;
 
 }
 
-#endif // CNOID_OMPL_PLUGIN_SIMPLE_SETUP_ITEM_H
+#endif

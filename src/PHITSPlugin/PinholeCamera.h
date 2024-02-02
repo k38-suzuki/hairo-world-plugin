@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_PHITS_PLUGIN_PINHOLE_CAMERA_H
@@ -46,4 +45,4 @@ typedef ref_ptr<PinholeCamera> PinholeCameraPtr;
 
 }
 
-#endif // CNOID_PHITS_PLUGIN_PINHOLE_CAMERA_H
+#endif

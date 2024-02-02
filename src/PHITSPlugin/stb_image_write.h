@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 /* stb_image_write - v1.14 - public domain - http://nothings.org/stb

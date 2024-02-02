@@ -9,7 +9,6 @@ set(headers
     CollisionVisualizerItem.h
     CollisionSensor.h
     exportdecl.h
-    gettext.h
     )
 
 choreonoid_make_header_public(CollisionSensor.h)

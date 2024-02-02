@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_PHITS_PLUGIN_BOX_H
@@ -157,4 +156,4 @@ using  Boxd = Box<double>;
 
 }
 
-#endif // CNOID_PHITS_PLUGIN_BOX_H
+#endif

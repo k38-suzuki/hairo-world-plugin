@@ -1,6 +1,5 @@
 ﻿/**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_PHITS_PLUGIN_QAD_WRITER_H
@@ -21,4 +20,4 @@ public:
 
 }
 
-#endif // CNOID_PHITS_PLUGIN_QAD_WRITER_H
+#endif

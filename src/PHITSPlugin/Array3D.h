@@ -1,8 +1,6 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
-
 #ifndef CNOID_PHITS_PLUGIN_ARRAY_3D_H
 #define CNOID_PHITS_PLUGIN_ARRAY_3D_H
 
@@ -55,4 +53,4 @@ typedef Array3D<double> array3d;
 
 }
 
-#endif // CNOID_PHITS_PLUGIN_ARRAY_3D_H
+#endif

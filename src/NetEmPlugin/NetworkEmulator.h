@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_NETEM_PLUGIN_NETWORK_EMULATOR_H
@@ -27,4 +26,4 @@ private:
 
 }
 
-#endif // CNOID_NETEM_PLUGIN_NETWORK_EMULATOR_H
+#endif

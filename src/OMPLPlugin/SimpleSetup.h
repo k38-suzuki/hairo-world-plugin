@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_OMPL_PLUGIN_SIMPLE_SETUP_H
@@ -56,4 +55,4 @@ private:
 
 }
 
-#endif // CNOID_OMPL_PLUGIN_SIMPLE_SETUP_H
+#endif

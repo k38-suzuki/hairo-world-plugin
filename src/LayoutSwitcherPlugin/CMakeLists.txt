@@ -7,11 +7,10 @@ set(sources
 )
 
 set(headers
-    exportdecl.h
-    gettext.h
     LayoutSwitcher.h
     LayoutSwitcherBar.h
     LayoutSwitcherView.h
+    exportdecl.h
 )
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")

@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_SYSTEM_TRAY_PLUGIN_SYSTEM_TRAY_MANAGER_H
@@ -32,4 +31,4 @@ private:
 
 }
 
-#endif // CNOID_SYSTEM_TRAY_PLUGIN_SYSTEM_TRAY_MANAGER_H
+#endif

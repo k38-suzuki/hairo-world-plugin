@@ -16,18 +16,17 @@ set(headers
     DoseMeter.h
     DoseSimulatorItem.h
     EnergyFilter.h
-    exportdecl.h
     GammaCamera.h
     GammaData.h
     GammaImageGenerator.h
     GammaImagerItem.h
-    gettext.h
     OrthoNodeData.h
     PHITSRunner.h
     PHITSWriter.h
     PinholeCamera.h
     QADWriter.h
     stb_image_write.h
+    exportdecl.h
     )
 
 choreonoid_make_header_public(ComptonCamera.h)

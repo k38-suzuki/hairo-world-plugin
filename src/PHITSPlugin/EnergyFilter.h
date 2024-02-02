@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_PHITS_PLUGIN_ENERGY_FILTER_H
@@ -53,4 +52,4 @@ private:
 
 }
 
-#endif // CNOID_PHITS_PLUGIN_ENERGY_FILTER_H
+#endif

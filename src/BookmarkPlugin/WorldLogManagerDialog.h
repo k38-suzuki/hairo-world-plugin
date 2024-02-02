@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_DIALOG_H
@@ -27,4 +26,4 @@ private:
 
 }
 
-#endif // CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_DIALOG_H
+#endif

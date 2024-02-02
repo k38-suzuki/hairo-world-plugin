@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_MARKER_DETECT_PLUGIN_MARKER_DETECTOR_ITEM_H
@@ -38,4 +37,4 @@ typedef ref_ptr<MarkerDetectorItem> MarkerDetectorItemPtr;
 
 }
 
-#endif // CNOID_MARKER_DETECT_PLUGIN_MARKER_DETECTOR_ITEM_H
+#endif

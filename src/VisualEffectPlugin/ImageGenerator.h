@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_VISUAL_EFFECT_PLUGIN_IMAGE_GENERATOR_H
@@ -41,4 +40,4 @@ private:
 
 }
 
-#endif // CNOID_VISUAL_EFFECT_PLUGIN_IMAGE_GENERATOR_H
+#endif

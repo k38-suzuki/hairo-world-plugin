@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_FILE_EXPLORER_PLUGIN_NOTEPAD_H
@@ -28,4 +27,4 @@ private:
 
 }
 
-#endif // CNOID_FILE_EXPLORER_PLUGIN_NOTEPAD_H
+#endif

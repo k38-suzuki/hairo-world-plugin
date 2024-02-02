@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_NETEM_PLUGIN_NETWORK_EMULATOR_ITEM_H
@@ -38,4 +37,4 @@ typedef ref_ptr<NetworkEmulatorItem> NetworkEmulatorItemPtr;
 
 }
 
-#endif // CNOID_NETEM_PLUGIN_NETWORK_EMULATOR_ITEM_H
+#endif

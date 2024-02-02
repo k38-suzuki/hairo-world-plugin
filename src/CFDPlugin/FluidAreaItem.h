@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_CFD_PLUGIN_FLUID_AREA_ITEM_H
@@ -44,4 +43,4 @@ typedef ref_ptr<FluidAreaItem> FluidAreaItemPtr;
 
 }
 
-#endif // CNOID_CFD_PLUGIN_FLUID_AREA_ITEM_H
+#endif

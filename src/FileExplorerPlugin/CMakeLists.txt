@@ -9,7 +9,6 @@ set(headers
     FileExplorer.h
     Notepad.h
     exportdecl.h
-    gettext.h
     )
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")

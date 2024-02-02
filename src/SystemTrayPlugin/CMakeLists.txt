@@ -6,10 +6,9 @@ set(sources
     )
 
 set(headers
-    exportdecl.h
-    gettext.h
     SystemTrayIcon.h
     SystemTrayManager.h
+    exportdecl.h
     )
 
 choreonoid_make_header_public(SystemTrayIcon.h)

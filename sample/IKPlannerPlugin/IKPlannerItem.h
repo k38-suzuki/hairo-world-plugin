@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_IK_PLANNER_PLUGIN_IK_PLANNER_ITEM_H
@@ -41,4 +40,4 @@ typedef ref_ptr<IKPlannerItem> IKPlannerItemPtr;
 
 }
 
-#endif // CNOID_IK_PLANNER_PLUGIN_IK_PLANNER_ITEM_H
+#endif

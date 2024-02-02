@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_PHITS_PLUGIN_ORTHO_GRID_NODE_DATA_H
@@ -71,4 +70,4 @@ typedef ref_ptr<OrthoNodeData> OrthoNodeDataPtr;
 
 }
 
-#endif // CNOID_PHITS_PLUGIN_ORTHO_GRID_NODE_DATA_H
+#endif

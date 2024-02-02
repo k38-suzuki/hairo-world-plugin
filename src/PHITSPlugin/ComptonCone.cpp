@@ -1,6 +1,5 @@
 ﻿/**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION

@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_PHITS_PLUGIN_COMPTON_CAMERA_H
@@ -55,4 +54,4 @@ typedef ref_ptr<ComptonCamera> ComptonCameraPtr;
 
 }
 
-#endif // CNOID_PHITS_PLUGIN_COMPTON_CAMERA_H
+#endif

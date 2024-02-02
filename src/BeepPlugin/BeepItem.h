@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_BEEP_PLUGIN_BEEP_ITEM_H
@@ -37,4 +36,4 @@ typedef ref_ptr<BeepItem> BeepItemPtr;
 
 }
 
-#endif // CNOID_BEEP_PLUGIN_BEEP_ITEM_H
+#endif

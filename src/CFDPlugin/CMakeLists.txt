@@ -17,7 +17,6 @@ set(headers
     Thruster.h
     WingDevice.h
     exportdecl.h
-    gettext.h
     )
 
 choreonoid_make_header_public(AreaItem.h)

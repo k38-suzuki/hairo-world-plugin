@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_PHITS_PLUGIN_COLOR_SCALE_H
@@ -29,4 +28,4 @@ private:
 
 }
 
-#endif // CNOID_PHITS_PLUGIN_COLOR_SCALE_H
+#endif

@@ -1,6 +1,5 @@
 ﻿/**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_PHITS_PLUGIN_CONFIG_TABLE_H
@@ -63,4 +62,4 @@ private:
 
 }
 
-#endif // CNOID_PHITS_PLUGIN_CONFIG_TABLE_H
+#endif

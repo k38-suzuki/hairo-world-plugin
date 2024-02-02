@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_BODY_EDIT_PLUGIN_FILE_FORM_WIDGET_H
@@ -28,4 +27,4 @@ private:
 
 }
 
-#endif // CNOID_BODY_EDIT_PLUGIN_FILE_FORM_WIDGET_H
+#endif

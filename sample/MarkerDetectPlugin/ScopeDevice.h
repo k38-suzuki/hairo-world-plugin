@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_MARKER_DETECT_PLUGIN_SCOPE_DEVICE_H
@@ -64,4 +63,4 @@ typedef ref_ptr<ScopeDevice> ScopeDevicePtr;
 
 }
 
-#endif // CNOID_MARKER_DETECT_PLUGIN_SCOPE_DEVICE_H
+#endif

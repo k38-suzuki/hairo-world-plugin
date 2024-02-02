@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_CFD_PLUGIN_AREA_ITEM_H
@@ -49,4 +48,4 @@ typedef ref_ptr<AreaItem> AreaItemPtr;
 
 }
 
-#endif // CNOID_CFD_PLUGIN_AREA_ITEM_H
+#endif

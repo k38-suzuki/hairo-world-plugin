@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_COLLISION_SEQ_PLUGIN_COLLISION_SENSOR_H
@@ -51,4 +50,4 @@ typedef ref_ptr<CollisionSensor> CollisionSensorPtr;
 
 }
 
-#endif // CNOID_COLLISION_SEQ_PLUGIN_COLLISION_SENSOR_H
+#endif

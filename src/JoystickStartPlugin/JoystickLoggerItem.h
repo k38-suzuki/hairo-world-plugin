@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_JOYSTICK_START_PLUGIN_JOYSTICK_LOGGER_ITEM_H
@@ -37,4 +36,4 @@ typedef ref_ptr<JoystickLoggerItem> JoystickLoggerItemPtr;
 
 }
 
-#endif // CNOID_JOYSTICK_START_PLUGIN_JOYSTICK_LOGGER_ITEM_H
+#endif

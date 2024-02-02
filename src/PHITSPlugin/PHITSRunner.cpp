@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #include "PHITSRunner.h"
@@ -178,4 +177,3 @@ void PHITSRunner::putMessages(const bool& on)
 {
     putMessages_ = on;
 }
-

@@ -16,8 +16,6 @@ set(headers
     AxisWidget.h
     ConfigurableJoystick.h
     OnScreenJoystickWidget.h
-    exportdecl.h
-    gettext.h
     JoystickLoggerItem.h
     OnScreenJoystickView.h
     JoystickTester.h
@@ -25,6 +23,7 @@ set(headers
     JoystickStarter.h
     SimpleSimulationView.h
     SimpleTimeWidget.h
+    exportdecl.h
     )
 
 choreonoid_make_header_public(ConfigurableJoystick.h)

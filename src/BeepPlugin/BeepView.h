@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_BEEP_PLUGIN_BEEP_VIEW_H
@@ -35,4 +34,4 @@ private:
 
 }
 
-#endif // CNOID_BEEP_PLUGIN_BEEP_VIEW_H
+#endif

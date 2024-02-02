@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_PHITS_PLUGIN_DOSE_METER_H
@@ -65,4 +64,4 @@ typedef ref_ptr<DoseMeter> DoseMeterPtr;
 
 }
 
-#endif // CNOID_PHITS_PLUGIN_DOSE_METER_H
+#endif

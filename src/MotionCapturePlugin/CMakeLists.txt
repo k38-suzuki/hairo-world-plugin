@@ -6,10 +6,9 @@ set(sources
    )
 
 set(headers
-    exportdecl.h
-    gettext.h
     MotionCaptureItem.h
     PassiveMarker.h
+    exportdecl.h
     )
 
 choreonoid_make_header_public(PassiveMarker.h)

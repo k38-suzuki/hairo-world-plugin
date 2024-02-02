@@ -16,10 +16,9 @@ set(sources
     )
 
 set(headers
-    exportdecl.h
-    gettext.h
     SimpleSetup.h
     SimpleSetupItem.h
+    exportdecl.h
     )
 
 choreonoid_make_header_public(SimpleSetup.h)

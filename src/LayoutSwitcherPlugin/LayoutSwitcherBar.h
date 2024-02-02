@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_LAYOUT_SWITCHER_PLUGIN_LAYOUT_SWITCHER_BAR_H
@@ -34,4 +33,4 @@ private:
 
 }
 
-#endif // CNOID_LAYOUT_SWITCHER_PLUGIN_LAYOUT_SWITCHER_BAR_H
+#endif

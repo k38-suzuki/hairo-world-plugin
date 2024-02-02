@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_PHITS_PLUGIN_GAMMA_IMAGER_ITEM_H
@@ -42,4 +41,4 @@ typedef ref_ptr<GammaImagerItem> GammaImagerItemPtr;
 
 }
 
-#endif // CNOID_PHITS_PLUGIN_GAMMA_IMAGER_ITEM_H
+#endif

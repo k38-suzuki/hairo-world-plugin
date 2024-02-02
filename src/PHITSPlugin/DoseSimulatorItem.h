@@ -1,6 +1,5 @@
-/*!
-  @file
-  @author Kenta Suzuki
+/**
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_PHITS_PLUGIN_DOSE_SIMULATOR_ITEM_H
@@ -37,4 +36,4 @@ typedef ref_ptr<DoseSimulatorItem> DoseSimulatorItemPtr;
 
 }
 
-#endif // CNOID_PHITS_PLUGIN_DOSE_SIMULATOR_ITEM_H
+#endif

@@ -11,10 +11,9 @@ set(sources
    )
 
 set(headers
-    exportdecl.h
-    gettext.h
     ScopeDevice.h
     MarkerDetectorItem.h
+    exportdecl.h
     )
 
 choreonoid_make_header_public(ScopeDevice.h)

@@ -10,7 +10,6 @@ set(sources
     )
 
 set(headers
-    gettext.h
     IKPlannerItem.h
     )
 

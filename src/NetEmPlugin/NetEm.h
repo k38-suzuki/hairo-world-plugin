@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_NETEM_PLUGIN_NETEM_H
@@ -40,4 +39,4 @@ typedef ref_ptr<NetEm> NetEmPtr;
 
 }
 
-#endif // CNOID_NETEM_PLUGIN_NETEM_H
+#endif

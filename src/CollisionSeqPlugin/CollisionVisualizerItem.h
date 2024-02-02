@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_COLLISION_SEQ_PLUGIN_COLLISION_VISUALIZER_ITEM_H
@@ -37,4 +36,4 @@ typedef ref_ptr<CollisionVisualizerItem> CollisionVisualizerItemPtr;
 
 }
 
-#endif // CNOID_COLLISION_SEQ_PLUGIN_COLLISION_VISUALIZER_ITEM_H
+#endif

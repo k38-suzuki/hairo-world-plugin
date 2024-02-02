@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_CFD_PLUGIN_CFD_SIMULATOR_ITEM_H
@@ -37,4 +36,4 @@ typedef ref_ptr<CFDSimulatorItem> CFDSimulatorItemPtr;
 
 }
 
-#endif // CNOID_CFD_PLUGIN_CFD_SIMULATOR_ITEM_H
+#endif

@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_PHITS_PLUGIN_GAMMA_DATA_H
@@ -116,4 +115,4 @@ private:
 
 }
 
-#endif // CNOID_PHITS_PLUGIN_GAMMA_DATA_H
+#endif

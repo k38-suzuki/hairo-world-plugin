@@ -1,6 +1,5 @@
 ﻿/**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 //#pragma execution_character_set("utf-8")

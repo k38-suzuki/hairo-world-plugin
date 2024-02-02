@@ -8,7 +8,6 @@ set(sources
     )
 
 set(headers
-    gettext.h
     NetEm.h
     NetworkEmulator.h
     NetworkEmulatorItem.h

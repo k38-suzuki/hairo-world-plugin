@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_INERTIA_CALCULATOR_PLUGIN_INERTIA_CALCULATOR_H
@@ -27,4 +26,4 @@ private:
 
 }
 
-#endif // CNOID_INERTIA_CALCULATOR_PLUGIN_INERTIA_CALCULATOR_H
+#endif

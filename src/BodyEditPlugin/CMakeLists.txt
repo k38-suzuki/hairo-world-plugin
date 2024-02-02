@@ -22,7 +22,6 @@ set(headers
     SlopeGenerator.h
     StairsGenerator.h
     TerrainGenerator.h
-    gettext.h
     )
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")

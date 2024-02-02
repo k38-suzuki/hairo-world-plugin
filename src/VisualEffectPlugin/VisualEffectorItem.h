@@ -1,6 +1,5 @@
-/*!
-  @file
-  @author Kenta Suzuki
+/**
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_VISUAL_EFFECT_PLUGIN_VISUAL_EFFECTOR_ITEM_H

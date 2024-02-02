@@ -16,7 +16,6 @@ set(headers
     BeepView.h
     BeepWidget.h
     exportdecl.h
-    gettext.h
     )
 
 choreonoid_make_header_public(BeepView.h)

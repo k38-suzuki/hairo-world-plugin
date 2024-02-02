@@ -11,7 +11,6 @@ set(headers
     VEAreaItem.h
     VisualEffectorItem.h
     exportdecl.h
-    gettext.h
     )
 
 choreonoid_make_header_public(ImageGenerator.h)

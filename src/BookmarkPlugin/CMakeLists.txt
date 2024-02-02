@@ -12,7 +12,6 @@ set(sources
 set(headers
     BookmarkBar.h
     BookmarkManagerDialog.h
-    gettext.h
     HistoryManager.h
     JoyKey.h
     KIOSKManager.h

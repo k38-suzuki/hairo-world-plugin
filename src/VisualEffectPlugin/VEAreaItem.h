@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_VISUAL_EFFECT_PLUGIN_VE_AREA_ITEM_H
@@ -51,4 +50,4 @@ private:
 
 }
 
-#endif // CNOID_VISUAL_EFFECT_PLUGIN_VE_AREA_ITEM_H
+#endif

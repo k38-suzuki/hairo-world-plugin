@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_PHITS_PLUGIN_GAMMA_CAMERA_H
@@ -54,4 +53,4 @@ typedef ref_ptr<GammaCamera> GammaCameraPtr;
 
 }
 
-#endif // CNOID_PHITS_PLUGIN_GAMMA_CAMERA_H
+#endif

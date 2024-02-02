@@ -1,6 +1,5 @@
 ﻿/**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #include "ConfigTable.h"

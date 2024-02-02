@@ -1,6 +1,5 @@
 ﻿/**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_PHITS_PLUGIN_PHITS_WRITER_H
@@ -119,4 +118,4 @@ protected:
 
 }
 
-#endif // CNOID_PHITS_PLUGIN_PHITS_WRITER_H
+#endif

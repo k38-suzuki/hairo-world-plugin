@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_MOTION_CAPTURE_PLUGIN_PASSIVE_MARKER_H
@@ -57,4 +56,4 @@ typedef ref_ptr<PassiveMarker> PassiveMarkerPtr;
 
 }
 
-#endif // CNOID_MOTION_CAPTURE_PLUGIN_PASSIVE_MARKER_H
+#endif

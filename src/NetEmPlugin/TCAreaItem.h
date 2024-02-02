@@ -1,6 +1,5 @@
 /**
-   \file
-   \author Kenta Suzuki
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_NETEM_PLUGIN_TC_AREA_ITEM_H
@@ -50,4 +49,4 @@ typedef ref_ptr<TCAreaItem> TCAreaItemPtr;
 
 }
 
-#endif // CNOID_NETEM_PLUGIN_TC_AREA_ITEM_H
+#endif

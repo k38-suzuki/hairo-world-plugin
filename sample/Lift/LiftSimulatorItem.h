@@ -1,6 +1,5 @@
-/*!
-  @file
-  @author Kenta Suzuki
+/**
+   @author Kenta Suzuki
 */
 
 #ifndef CNOID_SAMPLE_LIFT_SIMULATOR_ITEM_H

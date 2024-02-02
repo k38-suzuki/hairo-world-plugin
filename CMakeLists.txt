@@ -38,14 +38,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_subdirectory(src)
-add_subdirectory(include)
 
 if(ENABLE_SAMPLES)
   add_subdirectory(sample)
-endif()
-
-if(ENABLE_EXT)
-  add_subdirectory(ext)
 endif()
 
 if(UNIX AND BUILD_PHITS_PLUGIN)
