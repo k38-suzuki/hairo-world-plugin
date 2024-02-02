@@ -21,7 +21,7 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "Co60.body"
+            file: "${SHARE}/QAD/model/Test2/Co60.body"
             format: CHOREONOID-BODY
             rootPosition: [ 1, 1, 0 ]
             rootAttitude: [ 
@@ -47,7 +47,7 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "box2.body"
+            file: "${SHARE}/QAD/model/Test2/box2.body"
             format: CHOREONOID-BODY
             rootPosition: [ 5.243, 5.234, 0 ]
             rootAttitude: [ 
@@ -103,7 +103,7 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "origin.body"
+            file: "${SHARE}/QAD/model/Test2/origin.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0 ]
             rootAttitude: [ 

@@ -16,12 +16,12 @@ items:
       children: 
         - 
           id: 2
-          name: "Co60_C"
+          name: "Co60"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "Co60_C.body"
+            file: "${SHARE}/QAD/model/Test2/Co60.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0 ]
             rootAttitude: [ 
@@ -42,12 +42,38 @@ items:
             zmp: [ 0, 0, 0 ]
         - 
           id: 3
-          name: "cylinder2"
+          name: "Co60_C"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "cylinder2.body"
+            file: "${SHARE}/QAD/model/Test2/Co60_C.body"
+            format: CHOREONOID-BODY
+            rootPosition: [ 2, 2, 0 ]
+            rootAttitude: [ 
+              1, 0, 0, 
+              0, 1, 0, 
+              0, 0, 1 ]
+            jointPositions: [  ]
+            initialRootPosition: [ 2, 2, 0 ]
+            initialRootAttitude: [ 
+              1, 0, 0, 
+              0, 1, 0, 
+              0, 0, 1 ]
+            staticModel: true
+            collisionDetection: true
+            selfCollisionDetection: false
+            location_editable: true
+            scene_sensitive: true
+            zmp: [ 0, 0, 0 ]
+        - 
+          id: 4
+          name: "box2"
+          plugin: Body
+          class: BodyItem
+          is_checked: true
+          data: 
+            file: "${SHARE}/QAD/model/Test2/box2.body"
             format: CHOREONOID-BODY
             rootPosition: [ 5.5, 0, 0 ]
             rootAttitude: [ 
@@ -60,21 +86,21 @@ items:
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            staticModel: false
+            staticModel: true
             collisionDetection: true
             selfCollisionDetection: false
             location_editable: true
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
         - 
-          id: 4
-          name: "test4"
+          id: 5
+          name: "test7"
           plugin: PHITS
           class: CrossSectionItem
           is_checked: true
           data: 
-            input_file: "test4/test4.inp"
-            output_file: "test4/test4.out"
+            input_file: "test7/test7.inp"
+            output_file: "test7/test7.out"
             code: 1
             maxcas: 1000
             maxbch: 2
@@ -95,7 +121,7 @@ items:
             put_messages: true
             default_nuclide_table_file: "${SHARE}/default/nuclides.yaml"
             default_element_table_file: "${SHARE}/default/elements.yaml"
-            gamma_data_file: "test4/test4.gbin"
+            gamma_data_file: "test7/test7.gbin"
 views: 
   - 
     id: 0
@@ -172,9 +198,9 @@ views:
           fieldOfView: 0.610865
           near: 0.04
           far: 200
-          eye: [ -8.83495, -11.9026, 9.1437 ]
-          direction: [ 0.514203, 0.668657, -0.537115 ]
-          up: [ 0.327425, 0.425776, 0.843509 ]
+          eye: [ -7.07507, -12.7893, 9.95519 ]
+          direction: [ 0.49013, 0.693036, -0.528653 ]
+          up: [ 0.305251, 0.43162, 0.848838 ]
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
@@ -295,7 +321,7 @@ Body:
     updateJointVelocities: false
   "BodySelectionManager": 
     current_body_item: 3
-    current_link: "CYLINDER"
+    current_link: "CO60_C"
   "EditableSceneBody": 
     editableSceneBodies: 
       - 
@@ -305,6 +331,11 @@ Body:
         show_zmp: false
       - 
         bodyItem: 3
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
+      - 
+        bodyItem: 4
         show_cm: false
         show_cm_projection: false
         show_zmp: false

@@ -16,23 +16,23 @@ items:
       children: 
         - 
           id: 2
-          name: "Cs137"
+          name: "Co60_C"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "Cs137.body"
+            file: "${SHARE}/QAD/model/Test2/Co60_C.body"
             format: CHOREONOID-BODY
-            rootPosition: [ 0, 0.5, 0.5 ]
+            rootPosition: [ 1, 1, 0 ]
             rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+              0.707106781, -0.707106781, 0, 
+              0.707106781, 0.707106781, -0, 
               0, 0, 1 ]
             jointPositions: [  ]
-            initialRootPosition: [ 0, 0.5, 0.5 ]
+            initialRootPosition: [ 1, 1, 0 ]
             initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+              0.707106781, -0.707106781, 0, 
+              0.707106781, 0.707106781, 0, 
               0, 0, 1 ]
             staticModel: true
             collisionDetection: true
@@ -42,24 +42,25 @@ items:
             zmp: [ 0, 0, 0 ]
         - 
           id: 3
-          name: "Cs134"
+          name: "cylinder2"
           plugin: Body
           class: BodyItem
+          is_checked: true
           data: 
-            file: "Cs134.body"
+            file: "${SHARE}/QAD/model/Test2/cylinder2.body"
             format: CHOREONOID-BODY
-            rootPosition: [ 0, 1.5, 0.5 ]
+            rootPosition: [ 5.243, 5.243, 0 ]
             rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+              0.707106781, -0.707106781, 0, 
+              0.707106781, 0.707106781, -0, 
               0, 0, 1 ]
             jointPositions: [  ]
-            initialRootPosition: [ 0, 1.5, 0.5 ]
+            initialRootPosition: [ 5.243, 5.243, 0 ]
             initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+              0.707106781, -0.707106781, 0, 
+              0.707106781, 0.707106781, 0, 
               0, 0, 1 ]
-            staticModel: true
+            staticModel: false
             collisionDetection: true
             selfCollisionDetection: false
             location_editable: true
@@ -67,85 +68,60 @@ items:
             zmp: [ 0, 0, 0 ]
         - 
           id: 4
-          name: "Co60"
-          plugin: Body
-          class: BodyItem
-          data: 
-            file: "Co60.body"
-            format: CHOREONOID-BODY
-            rootPosition: [ 0, 0.5, 1.5 ]
-            rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
-              0, 0, 1 ]
-            jointPositions: [  ]
-            initialRootPosition: [ 0, 0.5, 1.5 ]
-            initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
-              0, 0, 1 ]
-            staticModel: true
-            collisionDetection: true
-            selfCollisionDetection: false
-            location_editable: true
-            scene_sensitive: true
-            zmp: [ 0, 0, 0 ]
-        - 
-          id: 5
-          name: "Floor"
-          plugin: Body
-          class: BodyItem
-          is_checked: true
-          data: 
-            file: "floor.body"
-            format: CHOREONOID-BODY
-            rootPosition: [ 0, 0, -0.1 ]
-            rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
-              0, 0, 1 ]
-            jointPositions: [  ]
-            initialRootPosition: [ 0, 0, -0.1 ]
-            initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
-              0, 0, 1 ]
-            staticModel: true
-            collisionDetection: true
-            selfCollisionDetection: false
-            location_editable: true
-            scene_sensitive: true
-            zmp: [ 0, 0, 0 ]
-        - 
-          id: 6
-          name: "test1"
+          name: "test5"
           plugin: PHITS
           class: CrossSectionItem
           is_checked: true
           data: 
-            input_file: "test1/test1.inp"
-            output_file: "test1/dose_xy.out"
+            input_file: "test5/test5.inp"
+            output_file: "test5/test5.out"
             code: 1
             maxcas: 1000
             maxbch: 2
             nx: 20
-            xmin: -5
-            xmax: 5
+            xmin: -10
+            xmax: 10
             ny: 20
-            ymin: -5
-            ymax: 5
+            ymin: -10
+            ymax: 10
             nz: 6
             zmin: 0
-            zmax: 3
+            zmax: 6
             ne: 1
             emin: 0
             emax: 2
-            z: 0.48
+            z: 0
             plain: 0
             put_messages: true
             default_nuclide_table_file: "${SHARE}/default/nuclides.yaml"
             default_element_table_file: "${SHARE}/default/elements.yaml"
-            gamma_data_file: "test1/dose_xy.gbin"
+            gamma_data_file: "test5/test5.gbin"
+        - 
+          id: 5
+          name: "origin"
+          plugin: Body
+          class: BodyItem
+          is_checked: true
+          data: 
+            file: "${SHARE}/QAD/model/Test2/origin.body"
+            format: CHOREONOID-BODY
+            rootPosition: [ 0, 0, 0 ]
+            rootAttitude: [ 
+              1, 0, 0, 
+              0, 1, 0, 
+              0, 0, 1 ]
+            jointPositions: [  ]
+            initialRootPosition: [ 0, 0, 0 ]
+            initialRootAttitude: [ 
+              1, 0, 0, 
+              0, 1, 0, 
+              0, 0, 1 ]
+            staticModel: false
+            collisionDetection: true
+            selfCollisionDetection: false
+            location_editable: true
+            scene_sensitive: true
+            zmp: [ 0, 0, 0 ]
 views: 
   - 
     id: 0
@@ -222,9 +198,9 @@ views:
           fieldOfView: 0.610865
           near: 0.04
           far: 200
-          eye: [ -5.60902, -4.5228, 2.75092 ]
-          direction: [ 0.774475, 0.607603, -0.17609 ]
-          up: [ 0.138542, 0.108691, 0.984374 ]
+          eye: [ -8.83495, -11.9026, 9.1437 ]
+          direction: [ 0.514203, 0.668657, -0.537115 ]
+          up: [ 0.327425, 0.425776, 0.843509 ]
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
@@ -258,6 +234,9 @@ views:
       listingMode: list
       current_body_item: 5
       body_items: 
+        - 
+          id: 3
+          selected_links: [ 0 ]
         - 
           id: 5
           selected_links: [ 0 ]
@@ -345,7 +324,7 @@ Body:
     updateJointVelocities: false
   "BodySelectionManager": 
     current_body_item: 5
-    current_link: "Floor"
+    current_link: "ORIGIN"
   "EditableSceneBody": 
     editableSceneBodies: 
       - 
@@ -355,11 +334,6 @@ Body:
         show_zmp: false
       - 
         bodyItem: 3
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
-      - 
-        bodyItem: 4
         show_cm: false
         show_cm_projection: false
         show_zmp: false
@@ -389,12 +363,12 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 1403, 446 ]
+      sizes: [ 1404, 445 ]
       children: 
         - 
           type: splitter
           orientation: horizontal
-          sizes: [ 363, 1036 ]
+          sizes: [ 363, 1037 ]
           children: 
             - 
               type: splitter
