@@ -1,5 +1,6 @@
-add_subdirectory(HaiROV)
-add_subdirectory(HobbyDrone)
+add_subdirectory(hai-rov)
+add_subdirectory(hobby-drone)
+add_subdirectory(crawler)
 add_subdirectory(IKPlannerPlugin)
 add_subdirectory(Lift)
 add_subdirectory(MarkerDetectPlugin)

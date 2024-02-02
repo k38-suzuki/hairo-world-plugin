@@ -52,7 +52,7 @@ public:
 
         joystick = new Joystick(device.c_str());
 
-        static const char* trackn_ame[] = {
+        static const char* track_name[] = {
             "TRACK_L", "TRACK_R", "TRACK_LF",
             "TRACK_RF", "TRACK_LR", "TRACK_RR",
         };
@@ -63,15 +63,14 @@ public:
         };
 
         for(int i = 0; i < NUM_TRACKS; ++i) {
-            Link* track = body->link(track_name[i]);
+            track[i] = body->link(track_name[i]);
             if(!usePseudoContinousTrackMode) {
-                track = body->link(agxtrack_name[i]);
+                track[i] = body->link(agxtrack_name[i]);
             }
-            track[i] = track;
-            if(!track) {
+            if(!track[i]) {
                 os << "Track" << i << " is not found." << endl;
             } else {
-                io->enableOutput(track, JointVelocity);
+                io->enableOutput(track[i], JointVelocity);
             }
         }
 

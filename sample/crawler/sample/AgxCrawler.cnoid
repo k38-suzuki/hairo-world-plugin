@@ -13,31 +13,40 @@ items:
       data: 
         collision_detection: false
         collision_detector: AISTCollisionDetector
-        default_material_table_file: "${SHARE}/default/materials.yaml"
+        default_material_table_file: "materials.yaml"
       children: 
         - 
           id: 2
-          name: "aistcrawler"
+          name: "agxcrawler"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "aistcrawler.body"
+            file: "${SHARE}/Crawler/model/agxcrawler.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0.2 ]
             rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+              -1, -1.2246468e-16, 0, 
+              1.2246468e-16, -1, 0, 
               0, 0, 1 ]
-            jointDisplacements: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-            jointPositions: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+            jointDisplacements: [ 
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+              0, 0 ]
+            jointPositions: [ 
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+              0, 0 ]
             initialRootPosition: [ 0, 0, 0.2 ]
             initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+              -1, -1.2246468e-16, 0, 
+              1.2246468e-16, -1, 0, 
               0, 0, 1 ]
-            initialJointPositions: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-            fix_root: false
+            initialJointPositions: [ 
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+              0, 0 ]
+            staticModel: false
             collisionDetection: true
             selfCollisionDetection: false
             location_editable: true
@@ -51,7 +60,7 @@ items:
               class: SimpleControllerItem
               data: 
                 isNoDelayMode: false
-                controllerOptions: ""
+                controllerOptions: "wheels"
                 controller: "CrawlerJoystickController"
                 base_directory: "Controller directory"
                 reloading: false
@@ -76,7 +85,7 @@ items:
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            fix_root: true
+            staticModel: true
             collisionDetection: true
             selfCollisionDetection: false
             location_editable: true
@@ -84,36 +93,31 @@ items:
             zmp: [ 0, 0, 0 ]
         - 
           id: 5
-          name: "AISTSimulator"
-          plugin: Body
-          class: AISTSimulatorItem
+          name: "AGXSimulator"
+          plugin: AGXDynamics
+          class: AGXSimulatorItem
           data: 
-            time_step: 0.001
-            realtime_sync_mode: compensatory
-            recording: full
-            time_range_mode: unlimited
-            time_length: 180
-            is_active_control_time_range_mode: false
-            output_all_link_positions: false
-            output_device_states: true
-            use_controller_threads: true
-            record_collision_data: false
-            controller_options: ""
-            block_scene_view_edit_mode: false
-            dynamicsMode: "Forward dynamics"
-            integrationMode: "Runge Kutta"
-            gravity: [ 0, 0, -9.80665 ]
-            min_friction_coefficient: 0
-            max_friction_coefficient: 100
-            cullingThresh: 0.005
-            contactCullingDepth: 0.05
-            errorCriterion: 0.001
-            maxNumIterations: 25
-            contactCorrectionDepth: 0.00025
-            contactCorrectionVelocityRatio: 5
-            kinematicWalking: false
-            2Dmode: false
-            oldAccelSensorMode: false
+            timeStep: 0.005
+            realtimeSync: true
+            recording: "full"
+            timeRangeMode: "Unlimited"
+            timeLength: 180
+            active_control_time_range_mode: false
+            allLinkPositionOutputMode: true
+            deviceStateOutput: true
+            controllerThreads: true
+            recordCollisionData: false
+            controllerOptions: ""
+            scene_view_edit_mode_blocking: false
+            Gravity: [ 0, 0, -9.80665 ]
+            NumThreads: 1
+            ContactReduction: true
+            ContactReductionBinResolution: 3
+            ContactReductionThreshhold: 12
+            ContactWarmstarting: false
+            AutoSleep: false
+            SaveToAGXFileOnStart: false
+            DebugMessageOnConsole: 2
 views: 
   - 
     id: 0
@@ -164,22 +168,17 @@ views:
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
-      lighting_mode: normal
-      culling_mode: enabled
-      shading_mode: smooth
-      world_light: true
-      world_light_intensity: 0.5
-      ambient_light: true
-      ambient_light_intensity: 0.5
-      head_light: true
-      head_light_intensity: 0.5
+      lightingMode: normal
+      cullingMode: enabled
+      worldLight: true
+      worldLightIntensity: 0.5
+      worldLightAmbient: 0.5
+      defaultHeadLight: true
+      defaultHeadLightIntensity: 0.5
       world_light_shadow: true
-      shadow_lights: 
-        - { index: 0, enabled: false }
-        - { index: 1, enabled: false }
-      background_color: [ 0.1, 0.1, 0.3 ]
-      line_width: 1
-      point_size: 1
+      backgroundColor: [ 0.1, 0.1, 0.3 ]
+      lineWidth: 1
+      pointSize: 1
       field_of_view: 35
       clip_distances: [ 0.04, 200 ]
       floorGrid: true
@@ -215,7 +214,7 @@ views:
     mounted: true
     state: 
       element_type: all
-      listing_mode: list
+      listingMode: list
   - 
     id: 7
     plugin: Body
@@ -299,17 +298,17 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 1399, 445 ]
+      sizes: [ 1287, 409 ]
       children: 
         - 
           type: splitter
           orientation: horizontal
-          sizes: [ 362, 1033 ]
+          sizes: [ 333, 950 ]
           children: 
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 505, 503 ]
+              sizes: [ 430, 429 ]
               children: 
                 - 
                   type: pane
@@ -321,7 +320,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 756, 252 ]
+              sizes: [ 644, 215 ]
               children: 
                 - 
                   type: pane
@@ -333,7 +332,7 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 232, 776 ]
+          sizes: [ 198, 661 ]
           children: 
             - 
               type: pane
@@ -341,7 +340,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 336, 436 ]
+              sizes: [ 286, 371 ]
               children: 
                 - 
                   type: pane
