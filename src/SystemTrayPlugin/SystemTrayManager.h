@@ -11,8 +11,6 @@
 
 namespace cnoid {
 
-class SystemTrayManagerImpl;
-
 class CNOID_EXPORT SystemTrayManager
 {
 public:
@@ -25,8 +23,8 @@ public:
     static SystemTrayIcon* addIcon(const QIcon& icon);
 
 private:
-    SystemTrayManagerImpl* impl;
-    friend class SystemTrayManagerImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

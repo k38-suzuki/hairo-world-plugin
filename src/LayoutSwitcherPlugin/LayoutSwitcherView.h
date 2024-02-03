@@ -10,8 +10,6 @@
 
 namespace cnoid {
 
-class LayoutSwitcherViewImpl;
-
 class CNOID_EXPORT LayoutSwitcherView : public View
 {
 public:
@@ -25,8 +23,8 @@ public:
     virtual bool restoreState(const Archive& archive) override;
 
 private:
-    LayoutSwitcherViewImpl* impl;
-    friend class LayoutSwitcherViewImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

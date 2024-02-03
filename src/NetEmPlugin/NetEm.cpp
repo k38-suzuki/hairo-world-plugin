@@ -16,12 +16,13 @@ using namespace std;
 
 namespace cnoid {
 
-class NetEmImpl
+class NetEm::Impl
 {
 public:
-    NetEmImpl(NetEm* self);
-    virtual ~NetEmImpl();
     NetEm* self;
+
+    Impl(NetEm* self);
+    virtual ~Impl();
 
     vector<string> interfaces;
     vector<string> ifbdevices;
@@ -49,11 +50,11 @@ public:
 
 NetEm::NetEm()
 {
-    impl = new NetEmImpl(this);
+    impl = new Impl(this);
 }
 
 
-NetEmImpl::NetEmImpl(NetEm* self)
+NetEm::Impl::Impl(NetEm* self)
     : self(self)
 {
     interfaces.clear();
@@ -98,7 +99,7 @@ NetEm::~NetEm()
 }
 
 
-NetEmImpl::~NetEmImpl()
+NetEm::Impl::~Impl()
 {
     if(!isFinalized) {
         close();
@@ -121,7 +122,7 @@ void NetEm::start(const int& interfaceID, const int& ifbdeviceID)
 }
 
 
-void NetEmImpl::start()
+void NetEm::Impl::start()
 {
     if(!isFinalized) {
         close();
@@ -141,7 +142,7 @@ void NetEm::update()
 }
 
 
-void NetEmImpl::update()
+void NetEm::Impl::update()
 {
     if(!isFinalized) {
         clear();
@@ -191,7 +192,7 @@ void NetEm::stop()
 }
 
 
-void NetEmImpl::clear()
+void NetEm::Impl::clear()
 {
     if(isUpdated) {
         write(fmt::format("sudo tc qdisc del dev {0} ingress;",
@@ -205,7 +206,7 @@ void NetEmImpl::clear()
 }
 
 
-void NetEmImpl::close()
+void NetEm::Impl::close()
 {
     if(!isFinalized) {
         clear();
@@ -247,7 +248,7 @@ void NetEm::setDestinationIP(const string& destinationIP)
 }
 
 
-void NetEmImpl::write(const string& program)
+void NetEm::Impl::write(const string& program)
 {
     int ret = system(program.c_str());
 }

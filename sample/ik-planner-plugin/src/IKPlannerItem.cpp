@@ -50,12 +50,13 @@ void updatePointSet(PointSetItem* pointSetItem, const vector<Vector3>& src, cons
 
 namespace cnoid {
 
-class IKPlannerItemImpl
+class IKPlannerItem::Impl
 {
 public:
-    IKPlannerItemImpl(IKPlannerItem* self);
-    IKPlannerItemImpl(IKPlannerItem* self, const IKPlannerItemImpl& org);
     IKPlannerItem* self;
+
+    Impl(IKPlannerItem* self);
+    Impl(IKPlannerItem* self, const Impl& org);
 
     typedef shared_ptr<CollisionLinkPair> CollisionLinkPairPtr;
 
@@ -90,11 +91,11 @@ public:
 
 IKPlannerItem::IKPlannerItem()
 {
-    impl = new IKPlannerItemImpl(this);
+    impl = new Impl(this);
 }
 
 
-IKPlannerItemImpl::IKPlannerItemImpl(IKPlannerItem* self)
+IKPlannerItem::Impl::Impl(IKPlannerItem* self)
     : self(self)
 {
     bodyItem = nullptr;
@@ -115,13 +116,13 @@ IKPlannerItemImpl::IKPlannerItemImpl(IKPlannerItem* self)
 
 IKPlannerItem::IKPlannerItem(const IKPlannerItem& org)
     : SimpleSetupItem(org),
-      impl(new IKPlannerItemImpl(this, *org.impl))
+      impl(new Impl(this, *org.impl))
 {
 
 }
 
 
-IKPlannerItemImpl::IKPlannerItemImpl(IKPlannerItem* self, const IKPlannerItemImpl& org)
+IKPlannerItem::Impl::Impl(IKPlannerItem* self, const Impl& org)
     : self(self)
 {
     baseName = org.baseName;
@@ -158,7 +159,7 @@ void IKPlannerItem::initializeClass(ExtensionManager* ext)
 }
 
 
-void IKPlannerItemImpl::updateTargetLinks()
+void IKPlannerItem::Impl::updateTargetLinks()
 {
     if(bodyItem) {
         Body* body = bodyItem->body();
@@ -168,7 +169,7 @@ void IKPlannerItemImpl::updateTargetLinks()
 }
 
 
-void IKPlannerItemImpl::onStartTriggered()
+void IKPlannerItem::Impl::onStartTriggered()
 {
     updateTargetLinks();
     if(wrist) {
@@ -177,7 +178,7 @@ void IKPlannerItemImpl::onStartTriggered()
 }
 
 
-void IKPlannerItemImpl::onGoalTriggered()
+void IKPlannerItem::Impl::onGoalTriggered()
 {
     updateTargetLinks();
     if(wrist) {
@@ -186,7 +187,7 @@ void IKPlannerItemImpl::onGoalTriggered()
 }
 
 
-void IKPlannerItemImpl::onGenerateTriggered()
+void IKPlannerItem::Impl::onGenerateTriggered()
 {
     updateTargetLinks();
     if(bodyItem) {
@@ -196,7 +197,7 @@ void IKPlannerItemImpl::onGenerateTriggered()
 }
 
 
-void IKPlannerItemImpl::onPlaybackStarted(const double& time)
+void IKPlannerItem::Impl::onPlaybackStarted(const double& time)
 {
     if(self->isSolved()) {
         if(bodyItem) {
@@ -214,7 +215,7 @@ void IKPlannerItemImpl::onPlaybackStarted(const double& time)
 }
 
 
-bool IKPlannerItemImpl::onTimeChanged(const double& time)
+bool IKPlannerItem::Impl::onTimeChanged(const double& time)
 {
     if(self->isSolved()) {
         TimeBar* timeBar = TimeBar::instance();
@@ -231,7 +232,7 @@ bool IKPlannerItemImpl::onTimeChanged(const double& time)
 }
 
 
-bool IKPlannerItemImpl::calcInverseKinematics(const Vector3& position)
+bool IKPlannerItem::Impl::calcInverseKinematics(const Vector3& position)
 {
     if(bodyItem && base && wrist) {
         if(base != wrist) {
@@ -256,7 +257,7 @@ void IKPlannerItem::prePlannerFunction()
 }
 
 
-void IKPlannerItemImpl::prePlannerFunction()
+void IKPlannerItem::Impl::prePlannerFunction()
 {
     self->clearChildren();
     states.clear();
@@ -270,7 +271,7 @@ bool IKPlannerItem::midPlannerFunction(const ob::State* state)
 }
 
 
-bool IKPlannerItemImpl::midPlannerFunction(const ob::State* state)
+bool IKPlannerItem::Impl::midPlannerFunction(const ob::State* state)
 {
     float x = state->as<ob::SE3StateSpace::StateType>()->getX();
     float y = state->as<ob::SE3StateSpace::StateType>()->getY();
@@ -308,7 +309,7 @@ void IKPlannerItem::postPlannerFunction(og::PathGeometric& pathes)
 }
 
 
-void IKPlannerItemImpl::postPlannerFunction(og::PathGeometric& pathes)
+void IKPlannerItem::Impl::postPlannerFunction(og::PathGeometric& pathes)
 {
     for(size_t i = 0; i < pathes.getStateCount(); ++i) {
         ob::State* state = pathes.getState(i);
@@ -349,7 +350,7 @@ void IKPlannerItem::onTreePathChanged()
 }
 
 
-void IKPlannerItemImpl::onTreePathChanged()
+void IKPlannerItem::Impl::onTreePathChanged()
 {
     BodyItem* newBodyItem = self->findOwnerItem<BodyItem>();
     if(newBodyItem != bodyItem) {
@@ -366,7 +367,7 @@ void IKPlannerItem::doPutProperties(PutPropertyFunction& putProperty)
 }
 
 
-void IKPlannerItemImpl::doPutProperties(PutPropertyFunction& putProperty)
+void IKPlannerItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
 {
     putProperty(_("Base link"), baseName, changeProperty(baseName));
     putProperty(_("End link"), wristName, changeProperty(wristName));
@@ -381,7 +382,7 @@ bool IKPlannerItem::store(Archive& archive)
 }
 
 
-bool IKPlannerItemImpl::store(Archive& archive)
+bool IKPlannerItem::Impl::store(Archive& archive)
 {
     archive.write("base_name", baseName);
     archive.write("wrist_name", wristName);
@@ -397,7 +398,7 @@ bool IKPlannerItem::restore(const Archive& archive)
 }
 
 
-bool IKPlannerItemImpl::restore(const Archive& archive)
+bool IKPlannerItem::Impl::restore(const Archive& archive)
 {
     archive.read("base_name", baseName);
     archive.read("wrist_name", wristName);

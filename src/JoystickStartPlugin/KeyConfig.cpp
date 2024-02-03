@@ -55,11 +55,12 @@ ItemInfo buttonInfo[] = {
 
 namespace cnoid {
 
-class KeyConfigImpl : public Dialog
+class KeyConfig::Impl : public Dialog
 {
 public:
-    KeyConfigImpl(KeyConfig* self);
     KeyConfig* self;
+
+    Impl(KeyConfig* self);
 
     ComboBox* axisCombos[Joystick::NUM_STD_AXES];
     ComboBox* buttonCombos[Joystick::NUM_STD_BUTTONS];
@@ -70,11 +71,11 @@ public:
 
 KeyConfig::KeyConfig()
 {
-    impl = new KeyConfigImpl(this);
+    impl = new Impl(this);
 }
 
 
-KeyConfigImpl::KeyConfigImpl(KeyConfig* self)
+KeyConfig::Impl::Impl(KeyConfig* self)
     : self(self)
 {
     setWindowTitle(_("KeyConfig"));

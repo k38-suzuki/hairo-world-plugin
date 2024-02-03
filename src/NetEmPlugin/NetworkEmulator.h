@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class NetworkEmulatorImpl;
-
 class NetworkEmulator
 {
 public:
@@ -20,8 +18,8 @@ public:
     static void initializeClass(ExtensionManager* ext);
 
 private:
-    NetworkEmulatorImpl* impl;
-    friend class NetworkEmulatorImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class CrawlerGeneratorImpl;
-
 class CrawlerGenerator
 {
 public:
@@ -20,8 +18,8 @@ public:
     static void initializeClass(ExtensionManager* ext);
 
 private:
-    CrawlerGeneratorImpl* impl;
-    friend class CrawlerGeneratorImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

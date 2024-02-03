@@ -35,11 +35,12 @@ namespace cnoid {
 
 FileExplorer* explorerInstance = nullptr;
 
-class FileExplorerImpl : public Dialog
+class FileExplorer::Impl : public Dialog
 {
 public:
-    FileExplorerImpl(FileExplorer* self);
     FileExplorer* self;
+
+    Impl(FileExplorer* self);
 
     void execute(const Item* item, const int& id);
     void execute(const int argc, const char* argv[]);
@@ -79,11 +80,11 @@ private:
 
 FileExplorer::FileExplorer()
 {
-    impl = new FileExplorerImpl(this);
+    impl = new Impl(this);
 }
 
 
-FileExplorerImpl::FileExplorerImpl(FileExplorer* self)
+FileExplorer::Impl::Impl(FileExplorer* self)
     : self(self)
 {
     createMenu();
@@ -180,7 +181,7 @@ void FileExplorer::initializeClass(ExtensionManager* ext)
 }
 
 
-void FileExplorerImpl::execute(const Item* item, const int& id)
+void FileExplorer::Impl::execute(const Item* item, const int& id)
 {
     static const string program[] = { "gedit", "nautilus" };
     const int argc = 2;
@@ -189,7 +190,7 @@ void FileExplorerImpl::execute(const Item* item, const int& id)
 }
 
 
-void FileExplorerImpl::execute(const int argc, const char* argv[])
+void FileExplorer::Impl::execute(const int argc, const char* argv[])
 {
     string actualCommand = argv[0];
     QStringList arguments = { argv[1] };
@@ -201,7 +202,7 @@ void FileExplorerImpl::execute(const int argc, const char* argv[])
 }
 
 
-void FileExplorerImpl::kill()
+void FileExplorer::Impl::kill()
 {
     for(size_t i = 0; i < processes.size(); ++i) {
         Process* process = processes[i];
@@ -215,7 +216,7 @@ void FileExplorerImpl::kill()
 }
 
 
-void FileExplorerImpl::openFile(const QString& fileName)
+void FileExplorer::Impl::openFile(const QString& fileName)
 {
     this->fileName = fileName;
     QFileInfo info(fileName);
@@ -235,7 +236,7 @@ void FileExplorerImpl::openFile(const QString& fileName)
 }
 
 
-void FileExplorerImpl::on_listView_doubleClicked(const QModelIndex& index)
+void FileExplorer::Impl::on_listView_doubleClicked(const QModelIndex& index)
 {
     if(!fileModel->isDir(index)) {
         QString fileName = fileModel->filePath(index);
@@ -257,7 +258,7 @@ void FileExplorerImpl::on_listView_doubleClicked(const QModelIndex& index)
 }
 
 
-void FileExplorerImpl::on_treeView_clicked(const QModelIndex& index)
+void FileExplorer::Impl::on_treeView_clicked(const QModelIndex& index)
 {
     QString filePath = dirModel->fileInfo(index).absoluteFilePath();
     listView->setRootIndex(fileModel->setRootPath(filePath));
@@ -270,32 +271,32 @@ void FileExplorerImpl::on_treeView_clicked(const QModelIndex& index)
 }
 
 
-void FileExplorerImpl::exit()
+void FileExplorer::Impl::exit()
 {
     mdiArea->closeAllSubWindows();
     accept();
 }
 
 
-void FileExplorerImpl::cascade()
+void FileExplorer::Impl::cascade()
 {
     mdiArea->cascadeSubWindows();
 }
 
 
-void FileExplorerImpl::tile()
+void FileExplorer::Impl::tile()
 {
     mdiArea->tileSubWindows();
 }
 
 
-void FileExplorerImpl::remove(const int& index)
+void FileExplorer::Impl::remove(const int& index)
 {
     tabWidget->removeTab(index);
 }
 
 
-void FileExplorerImpl::createMenu()
+void FileExplorer::Impl::createMenu()
 {
     menuBar = new QMenuBar;
 

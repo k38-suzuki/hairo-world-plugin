@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class StairsGeneratorImpl;
-
 class StairsGenerator
 {
 public:
@@ -20,8 +18,8 @@ public:
     static void initializeClass(ExtensionManager* ext);
 
 private:
-    StairsGeneratorImpl* impl;
-    friend class StairsGeneratorImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

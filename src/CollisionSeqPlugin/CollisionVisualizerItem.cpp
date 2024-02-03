@@ -55,12 +55,13 @@ bool updateNames(const string& nameListString, string& out_newNameListString, ve
 
 namespace cnoid {
 
-class CollisionVisualizerItemImpl
+class CollisionVisualizerItem::Impl
 {
 public:
-    CollisionVisualizerItemImpl(CollisionVisualizerItem* self);
-    CollisionVisualizerItemImpl(CollisionVisualizerItem* self, const CollisionVisualizerItemImpl& org);
     CollisionVisualizerItem* self;
+
+    Impl(CollisionVisualizerItem* self);
+    Impl(CollisionVisualizerItem* self, const Impl& org);
 
     vector<Body*> bodies;
     vector<string> bodyNames;
@@ -83,11 +84,11 @@ public:
 
 CollisionVisualizerItem::CollisionVisualizerItem()
 {
-    impl = new CollisionVisualizerItemImpl(this);
+    impl = new Impl(this);
 }
 
 
-CollisionVisualizerItemImpl::CollisionVisualizerItemImpl(CollisionVisualizerItem* self)
+CollisionVisualizerItem::Impl::Impl(CollisionVisualizerItem* self)
     : self(self)
 {
     bodies.clear();
@@ -100,13 +101,13 @@ CollisionVisualizerItemImpl::CollisionVisualizerItemImpl(CollisionVisualizerItem
 
 CollisionVisualizerItem::CollisionVisualizerItem(const CollisionVisualizerItem& org)
     : SubSimulatorItem(org),
-      impl(new CollisionVisualizerItemImpl(this, *org.impl))
+      impl(new Impl(this, *org.impl))
 {
 
 }
 
 
-CollisionVisualizerItemImpl::CollisionVisualizerItemImpl(CollisionVisualizerItem* self, const CollisionVisualizerItemImpl& org)
+CollisionVisualizerItem::Impl::Impl(CollisionVisualizerItem* self, const Impl& org)
     : self(self),
       bodyNames(org.bodyNames)
 {
@@ -136,7 +137,7 @@ bool CollisionVisualizerItem::initializeSimulation(SimulatorItem* simulatorItem)
 }
 
 
-bool CollisionVisualizerItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
+bool CollisionVisualizerItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     bodies.clear();
     this->simulatorItem = simulatorItem;
@@ -192,7 +193,7 @@ bool CollisionVisualizerItemImpl::initializeSimulation(SimulatorItem* simulatorI
 }
 
 
-void CollisionVisualizerItemImpl::onPostDynamicsFunction()
+void CollisionVisualizerItem::Impl::onPostDynamicsFunction()
 {
     int currentFrame = simulatorItem->currentFrame();
     for(size_t i = 0; i < bodies.size(); ++i) {
@@ -230,7 +231,7 @@ void CollisionVisualizerItem::doPutProperties(PutPropertyFunction& putProperty)
 }
 
 
-void CollisionVisualizerItemImpl::doPutProperties(PutPropertyFunction& putProperty)
+void CollisionVisualizerItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
 {
     putProperty(_("Target bodies"), bodyNameListString,
                 [&](const string& names){ return updateNames(names, bodyNameListString, bodyNames); });
@@ -244,7 +245,7 @@ bool CollisionVisualizerItem::store(Archive& archive)
 }
 
 
-bool CollisionVisualizerItemImpl::store(Archive& archive)
+bool CollisionVisualizerItem::Impl::store(Archive& archive)
 {
     writeElements(archive, "target_bodies", bodyNames, true);
     return true;
@@ -258,7 +259,7 @@ bool CollisionVisualizerItem::restore(const Archive& archive)
 }
 
 
-bool CollisionVisualizerItemImpl::restore(const Archive& archive)
+bool CollisionVisualizerItem::Impl::restore(const Archive& archive)
 {
     readElements(archive, "target_bodies", bodyNames);
     bodyNameListString = getNameListString(bodyNames);

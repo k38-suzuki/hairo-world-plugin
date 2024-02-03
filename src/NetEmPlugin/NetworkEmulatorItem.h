@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class NetworkEmulatorItemImpl;
-
 class NetworkEmulatorItem : public SubSimulatorItem
 {
 public:
@@ -29,8 +27,8 @@ protected:
     virtual bool restore(const Archive& archive) override;
 
 private:
-    NetworkEmulatorItemImpl* impl;
-    friend class NetworkEmulatorItemImpl;
+    class Impl;
+    Impl* impl;
 };
 
 typedef ref_ptr<NetworkEmulatorItem> NetworkEmulatorItemPtr;

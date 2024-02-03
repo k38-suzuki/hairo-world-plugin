@@ -12,8 +12,6 @@
 
 namespace cnoid {
 
-class ConfigurableJoystickImpl;
-
 class CNOID_EXPORT ConfigurableJoystick : public Referenced
 {
 public:

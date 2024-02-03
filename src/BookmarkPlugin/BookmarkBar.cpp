@@ -13,11 +13,12 @@ using namespace std;
 
 namespace cnoid {
 
-class BookmarkBarImpl
+class BookmarkBar::Impl
 {
 public:
-    BookmarkBarImpl(BookmarkBar* self);
     BookmarkBar* self;
+
+    Impl(BookmarkBar* self);
 };
 
 }
@@ -26,11 +27,11 @@ public:
 BookmarkBar::BookmarkBar()
     : ToolBar(N_("BookmarkBar"))
 {
-    impl = new BookmarkBarImpl(this);
+    impl = new Impl(this);
 }
 
 
-BookmarkBarImpl::BookmarkBarImpl(BookmarkBar* self)
+BookmarkBar::Impl::Impl(BookmarkBar* self)
     : self(self)
 {
     auto button1 = self->addButton(QIcon::fromTheme("list-add"));

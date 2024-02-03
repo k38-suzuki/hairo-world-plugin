@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class BookmarkManagerDialogImpl;
-
 class BookmarkManagerDialog : public Dialog
 {
 public:
@@ -22,8 +20,8 @@ public:
     void addProjectFile(const std::string& filename);
 
 private:
-    BookmarkManagerDialogImpl* impl;
-    friend class BookmarkManagerDialogImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

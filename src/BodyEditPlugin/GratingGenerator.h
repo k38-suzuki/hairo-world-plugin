@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class GratingGeneratorImpl;
-
 class GratingGenerator
 {
 public:
@@ -20,8 +18,8 @@ public:
     static void initializeClass(ExtensionManager* ext);
 
 private:
-    GratingGeneratorImpl* impl;
-    friend class GratingGeneratorImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

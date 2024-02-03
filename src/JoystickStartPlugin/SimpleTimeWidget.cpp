@@ -16,11 +16,12 @@ using namespace cnoid;
 
 namespace cnoid {
 
-class SimpleTimeWidgetImpl
+class SimpleTimeWidget::Impl
 {
 public:
-    SimpleTimeWidgetImpl(SimpleTimeWidget* self);
     SimpleTimeWidget* self;
+
+    Impl(SimpleTimeWidget* self);
 
     DoubleSpinBox* timeDSpin;
     Slider* timeSlider;
@@ -39,11 +40,11 @@ public:
 
 SimpleTimeWidget::SimpleTimeWidget()
 {
-    impl = new SimpleTimeWidgetImpl(this);
+    impl = new Impl(this);
 }
 
 
-SimpleTimeWidgetImpl::SimpleTimeWidgetImpl(SimpleTimeWidget* self)
+SimpleTimeWidget::Impl::Impl(SimpleTimeWidget* self)
     : self(self),
       tb(TimeBar::instance())
 {
@@ -80,7 +81,7 @@ SimpleTimeWidget::~SimpleTimeWidget()
 }
 
 
-void SimpleTimeWidgetImpl::onTimeChanged(const double& time)
+void SimpleTimeWidget::Impl::onTimeChanged(const double& time)
 {
     const double timeStep = 1.0 / tb->frameRate();
     decimals = static_cast<int>(ceil(log10(tb->frameRate())));
@@ -102,7 +103,7 @@ void SimpleTimeWidgetImpl::onTimeChanged(const double& time)
 }
 
 
-void SimpleTimeWidgetImpl::onValueChanged(const double& value)
+void SimpleTimeWidget::Impl::onValueChanged(const double& value)
 {
     if(tb->isDoingPlayback()) {
         tb->stopPlayback(true);
@@ -111,7 +112,7 @@ void SimpleTimeWidgetImpl::onValueChanged(const double& value)
 }
 
 
-void SimpleTimeWidgetImpl::onValueChanged(const int& value)
+void SimpleTimeWidget::Impl::onValueChanged(const int& value)
 {
     if(tb->isDoingPlayback()) {
         tb->stopPlayback(true);

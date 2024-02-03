@@ -12,8 +12,6 @@
 
 namespace cnoid {
 
-class AxisWidgetImpl;
-
 class AxisWidget : public Widget
 {
 public:
@@ -31,8 +29,8 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent* event) override;
 
 private:
-    AxisWidgetImpl* impl;
-    friend class AxisWidgetImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

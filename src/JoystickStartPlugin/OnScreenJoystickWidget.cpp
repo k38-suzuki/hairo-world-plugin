@@ -39,11 +39,12 @@ AxisInfo axisInfo[] = {
 
 namespace cnoid {
 
-class OnScreenJoystickWidgetImpl : public ExtJoystick
+class OnScreenJoystickWidget::Impl : public ExtJoystick
 {
 public:
-    OnScreenJoystickWidgetImpl(OnScreenJoystickWidget* self);
     OnScreenJoystickWidget* self;
+
+    Impl(OnScreenJoystickWidget* self);
 
     enum AxisID {
         L_STICK,
@@ -85,11 +86,11 @@ public:
 
 OnScreenJoystickWidget::OnScreenJoystickWidget()
 {
-    impl = new OnScreenJoystickWidgetImpl(this);
+    impl = new Impl(this);
 }
 
 
-OnScreenJoystickWidgetImpl::OnScreenJoystickWidgetImpl(OnScreenJoystickWidget* self)
+OnScreenJoystickWidget::Impl::Impl(OnScreenJoystickWidget* self)
     : self(self)
 {
     axisPositions.resize(Joystick::NUM_STD_AXES, 0.0);
@@ -142,7 +143,7 @@ OnScreenJoystickWidget::~OnScreenJoystickWidget()
 }
 
 
-void OnScreenJoystickWidgetImpl::onAxis(const int& id, const double& position)
+void OnScreenJoystickWidget::Impl::onAxis(const int& id, const double& position)
 {
     AxisInfo info = axisInfo[id];
     axes[info.index]->setValue(info.id, position);
@@ -150,7 +151,7 @@ void OnScreenJoystickWidgetImpl::onAxis(const int& id, const double& position)
 }
 
 
-void OnScreenJoystickWidgetImpl::onButton(const int& id, const bool& isPressed)
+void OnScreenJoystickWidget::Impl::onButton(const int& id, const bool& isPressed)
 {
     if(isPressed) {
         onButtonPressed(id);
@@ -160,7 +161,7 @@ void OnScreenJoystickWidgetImpl::onButton(const int& id, const bool& isPressed)
 }
 
 
-void OnScreenJoystickWidgetImpl::onAxis(const int& index, const double& h_position, const double& v_position)
+void OnScreenJoystickWidget::Impl::onAxis(const int& index, const double& h_position, const double& v_position)
 {
     std::lock_guard<std::mutex> lock(mutex);
     if(index == L_STICK) {
@@ -184,7 +185,7 @@ void OnScreenJoystickWidgetImpl::onAxis(const int& index, const double& h_positi
 }
 
 
-void OnScreenJoystickWidgetImpl::onButtonPressed(const int& index)
+void OnScreenJoystickWidget::Impl::onButtonPressed(const int& index)
 {
     std::lock_guard<std::mutex> lock(mutex);
     buttonStates[index] = true;
@@ -195,7 +196,7 @@ void OnScreenJoystickWidgetImpl::onButtonPressed(const int& index)
 }
 
 
-void OnScreenJoystickWidgetImpl::onButtonReleased(const int& index)
+void OnScreenJoystickWidget::Impl::onButtonReleased(const int& index)
 {
     std::lock_guard<std::mutex> lock(mutex);
     buttonStates[index] = false;
@@ -205,25 +206,25 @@ void OnScreenJoystickWidgetImpl::onButtonReleased(const int& index)
 }
 
 
-int OnScreenJoystickWidgetImpl::numAxes() const
+int OnScreenJoystickWidget::Impl::numAxes() const
 {
     return axisPositions.size();
 }
 
 
-int OnScreenJoystickWidgetImpl::numButtons() const
+int OnScreenJoystickWidget::Impl::numButtons() const
 {
     return buttonStates.size();
 }
 
 
-bool OnScreenJoystickWidgetImpl::readCurrentState()
+bool OnScreenJoystickWidget::Impl::readCurrentState()
 {
     return true;
 }
 
 
-double OnScreenJoystickWidgetImpl::getPosition(int axis) const
+double OnScreenJoystickWidget::Impl::getPosition(int axis) const
 {
     if(axis >= 0 && axis < (int)axisPositions.size()) {
         return axisPositions[axis];
@@ -232,7 +233,7 @@ double OnScreenJoystickWidgetImpl::getPosition(int axis) const
 }
 
 
-bool OnScreenJoystickWidgetImpl::getButtonState(int button) const
+bool OnScreenJoystickWidget::Impl::getButtonState(int button) const
 {
     if(button >= 0 && button < (int)buttonStates.size()) {
         return buttonStates[button];
@@ -241,7 +242,7 @@ bool OnScreenJoystickWidgetImpl::getButtonState(int button) const
 }
 
 
-bool OnScreenJoystickWidgetImpl::isActive() const
+bool OnScreenJoystickWidget::Impl::isActive() const
 {
     for(size_t i = 0; i < axisPositions.size(); ++i) {
         if(axisPositions[i] != 0.0) {
@@ -257,13 +258,13 @@ bool OnScreenJoystickWidgetImpl::isActive() const
 }
 
 
-SignalProxy<void(int id, double position)> OnScreenJoystickWidgetImpl::sigAxis()
+SignalProxy<void(int id, double position)> OnScreenJoystickWidget::Impl::sigAxis()
 {
     return sigAxis_;
 }
 
 
-SignalProxy<void(int id, bool isPressed)> OnScreenJoystickWidgetImpl::sigButton()
+SignalProxy<void(int id, bool isPressed)> OnScreenJoystickWidget::Impl::sigButton()
 {
     return sigButton_;
 }

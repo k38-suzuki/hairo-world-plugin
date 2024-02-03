@@ -127,17 +127,19 @@ protected:
 
 namespace cnoid {
 
-class GammaImagerItemImpl
+class GammaImagerItem::Impl
 {
 public:
     GammaImagerItem* self;
+
+    Impl(GammaImagerItem* self);
+    Impl(GammaImagerItem* self, const Impl& org);
+
     BodyItem* bodyItem;
     vector<Item*> subItems;
     vector<ItemPtr> restoredSubItems;
     string defaultEnergyFilterFile;
 
-    GammaImagerItemImpl(GammaImagerItem* self);
-    GammaImagerItemImpl(GammaImagerItem* self, const GammaImagerItemImpl& org);
     void onPositionChanged();
 };
 
@@ -193,11 +195,11 @@ string GammaImagerItem::defaultEnergyFilterFile() const
 
 GammaImagerItem::GammaImagerItem()
 {
-    impl = new GammaImagerItemImpl(this);
+    impl = new Impl(this);
 }
 
 
-GammaImagerItemImpl::GammaImagerItemImpl(GammaImagerItem* self)
+GammaImagerItem::Impl::Impl(GammaImagerItem* self)
     : self(self)
 {
     defaultEnergyFilterFile = toUTF8((shareDirPath() / "default" / "filters.yaml").string());
@@ -207,11 +209,11 @@ GammaImagerItemImpl::GammaImagerItemImpl(GammaImagerItem* self)
 GammaImagerItem::GammaImagerItem(const GammaImagerItem& org)
     : Item(org)
 {
-    impl = new GammaImagerItemImpl(this);
+    impl = new Impl(this);
 }
 
 
-GammaImagerItemImpl::GammaImagerItemImpl(GammaImagerItem* self, const GammaImagerItemImpl& org)
+GammaImagerItem::Impl::Impl(GammaImagerItem* self, const Impl& org)
     : self(self),
       defaultEnergyFilterFile(org.defaultEnergyFilterFile)
 {
@@ -248,7 +250,7 @@ void GammaImagerItem::onPositionChanged()
 }
 
 
-void GammaImagerItemImpl::onPositionChanged()
+void GammaImagerItem::Impl::onPositionChanged()
 {
     BodyItem* newBodyItem = self->findOwnerItem<BodyItem>();
     if(newBodyItem != bodyItem) {

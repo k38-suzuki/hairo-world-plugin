@@ -11,8 +11,6 @@
 
 namespace cnoid {
 
-class EnergyFilterImpl;
-
 class EnergyFilter
 {
 public:
@@ -46,8 +44,8 @@ public:
     void restoreState(const Archive& archive);
 
 private:
-    EnergyFilterImpl* impl;
-    friend class EnergyFilterImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

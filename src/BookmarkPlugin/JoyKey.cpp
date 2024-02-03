@@ -55,11 +55,12 @@ const int defaultKey[] = {
 
 namespace cnoid {
 
-class JoyKeyImpl
+class JoyKey::Impl
 {
 public:
-    JoyKeyImpl(JoyKey* self, bool useDefaultKey);
     JoyKey* self;
+
+    Impl(JoyKey* self, bool useDefaultKey);
 
     JoystickCapture joystick;
     int count;
@@ -78,11 +79,11 @@ public:
 
 JoyKey::JoyKey(bool useDefaultKey)
 {
-    impl = new JoyKeyImpl(this, useDefaultKey);
+    impl = new Impl(this, useDefaultKey);
 }
 
 
-JoyKeyImpl::JoyKeyImpl(JoyKey* self, bool useDefaultKey)
+JoyKey::Impl::Impl(JoyKey* self, bool useDefaultKey)
     : self(self)
 {
     count = 0;
@@ -133,7 +134,7 @@ SignalProxy<void()> JoyKey::sigUnlocked()
 }
 
 
-void JoyKeyImpl::onAxis(const int& id, const double& position)
+void JoyKey::Impl::onAxis(const int& id, const double& position)
 {
     if(fabs(position) > 0.0) {
         JoystickInfo info = key[count];
@@ -152,7 +153,7 @@ void JoyKeyImpl::onAxis(const int& id, const double& position)
 }
 
 
-void JoyKeyImpl::onButton(const int& id, const bool& isPressed)
+void JoyKey::Impl::onButton(const int& id, const bool& isPressed)
 {
     if(isPressed) {
         JoystickInfo info = key[count];
@@ -169,7 +170,7 @@ void JoyKeyImpl::onButton(const int& id, const bool& isPressed)
 }
 
 
-void JoyKeyImpl::tryToUnlock()
+void JoyKey::Impl::tryToUnlock()
 {
     if(count == key.size()) {
         count = 0;

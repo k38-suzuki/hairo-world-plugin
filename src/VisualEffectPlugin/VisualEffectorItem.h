@@ -10,8 +10,6 @@
 
 namespace cnoid {
 
-class VisualEffectorItemImpl;
-
 class CNOID_EXPORT VisualEffectorItem : public Item
 {
 public:
@@ -29,8 +27,8 @@ protected:
     virtual bool restore(const Archive& archive) override;
 
 private:
-    VisualEffectorItemImpl* impl;
-    friend class VisualEffectorItemImpl;
+    class Impl;
+    Impl* impl;
 };
         
 typedef ref_ptr<VisualEffectorItem> VisualEffectorItemPtr;

@@ -62,11 +62,12 @@ ButtonInfo buttonInfo[] = {
 
 namespace cnoid {
 
-class SimpleSimulationViewImpl
+class SimpleSimulationView::Impl
 {
 public:
-    SimpleSimulationViewImpl(SimpleSimulationView* self);
     SimpleSimulationView* self;
+
+    Impl(SimpleSimulationView* self);
 
     enum ButtonID {
         START, RESTART, PAUSE, STOP,
@@ -103,11 +104,11 @@ public:
 
 SimpleSimulationView::SimpleSimulationView()
 {
-    impl = new SimpleSimulationViewImpl(this);
+    impl = new Impl(this);
 }
 
 
-SimpleSimulationViewImpl::SimpleSimulationViewImpl(SimpleSimulationView* self)
+SimpleSimulationView::Impl::Impl(SimpleSimulationView* self)
     : self(self),
       sb(SimulationBar::instance()),
       tb(TimeBar::instance()),
@@ -225,14 +226,14 @@ SimpleSimulationView* SimpleSimulationView::instance()
 }
 
 
-void SimpleSimulationViewImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
+void SimpleSimulationView::Impl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
     this->simulatorItem = simulatorItem;
     updateButtonStates(START);
 }
 
 
-void SimpleSimulationViewImpl::onButtonClicked(const int& id)
+void SimpleSimulationView::Impl::onButtonClicked(const int& id)
 {
     double timestep = 0.0;
 
@@ -288,7 +289,7 @@ void SimpleSimulationViewImpl::onButtonClicked(const int& id)
 }
 
 
-void SimpleSimulationViewImpl::onSimulationButtonToggled(const bool& checked)
+void SimpleSimulationView::Impl::onSimulationButtonToggled(const bool& checked)
 {
     const static QStringList tips = {
         _("Start simulation from the beginning"), _("Start simulation from the current state"),
@@ -309,7 +310,7 @@ void SimpleSimulationViewImpl::onSimulationButtonToggled(const bool& checked)
 }
 
 
-void SimpleSimulationViewImpl::onPlaybackStarted(const double& time)
+void SimpleSimulationView::Impl::onPlaybackStarted(const double& time)
 {
     if(simulationRadio.isChecked()) {
 
@@ -323,7 +324,7 @@ void SimpleSimulationViewImpl::onPlaybackStarted(const double& time)
 }
 
 
-void SimpleSimulationViewImpl::onPlaybackStopped(const double& time, const bool& isStoppedManually)
+void SimpleSimulationView::Impl::onPlaybackStopped(const double& time, const bool& isStoppedManually)
 {
     if(simulationRadio.isChecked()) {
 
@@ -339,7 +340,7 @@ void SimpleSimulationViewImpl::onPlaybackStopped(const double& time, const bool&
 }
 
 
-void SimpleSimulationViewImpl::updateButtonStates(const int& state)
+void SimpleSimulationView::Impl::updateButtonStates(const int& state)
 {
     if(simulationRadio.isChecked()) {
         ButtonState buttonState = buttonStates[state];

@@ -25,11 +25,12 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace cnoid {
 
-class FileFormWidgetImpl
+class FileFormWidget::Impl
 {
 public:
-    FileFormWidgetImpl(FileFormWidget* self);
     FileFormWidget* self;
+
+    Impl(FileFormWidget* self);
 
     LineEdit* fileLine;
 
@@ -48,11 +49,11 @@ public:
 
 FileFormWidget::FileFormWidget()
 {
-    impl = new FileFormWidgetImpl(this);
+    impl = new Impl(this);
 }
 
 
-FileFormWidgetImpl::FileFormWidgetImpl(FileFormWidget* self)
+FileFormWidget::Impl::Impl(FileFormWidget* self)
     : self(self)
 {
     fileLine = new LineEdit;
@@ -82,7 +83,7 @@ SignalProxy<void(string)> FileFormWidget::sigClicked()
 }
 
 
-void FileFormWidgetImpl::openSaveDialog()
+void FileFormWidget::Impl::openSaveDialog()
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Save a Body file"));
@@ -115,7 +116,7 @@ void FileFormWidgetImpl::openSaveDialog()
 }
 
 
-void FileFormWidgetImpl::onSaveButtonClicked()
+void FileFormWidget::Impl::onSaveButtonClicked()
 {
     string filename = fileLine->text().toStdString();
 
@@ -138,7 +139,7 @@ void FileFormWidgetImpl::onSaveButtonClicked()
 }
 
 
-void FileFormWidgetImpl::onReloadButtonClicked()
+void FileFormWidget::Impl::onReloadButtonClicked()
 {
     RootItem* rootItem = RootItem::instance();
     ItemList<BodyItem> bodyItems = rootItem->checkedItems<BodyItem>();

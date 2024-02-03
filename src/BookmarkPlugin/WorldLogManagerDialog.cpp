@@ -40,12 +40,13 @@ WorldLogManagerDialog* instance_ = nullptr;
 
 namespace cnoid {
 
-class WorldLogManagerDialogImpl
+class WorldLogManagerDialog::Impl
 {
 public:
-    WorldLogManagerDialogImpl(WorldLogManagerDialog* self);
-    virtual ~WorldLogManagerDialogImpl();
     WorldLogManagerDialog* self;
+
+    Impl(WorldLogManagerDialog* self);
+    virtual ~Impl();
 
     TreeWidget* treeWidget;
     CheckBox* saveCheck;
@@ -68,11 +69,11 @@ public:
 
 WorldLogManagerDialog::WorldLogManagerDialog()
 {
-    impl = new WorldLogManagerDialogImpl(this);
+    impl = new Impl(this);
 }
 
 
-WorldLogManagerDialogImpl::WorldLogManagerDialogImpl(WorldLogManagerDialog* self)
+WorldLogManagerDialog::Impl::Impl(WorldLogManagerDialog* self)
     : self(self)
 {
     self->setWindowTitle(_("WorldLogManager"));
@@ -151,7 +152,7 @@ WorldLogManagerDialog::~WorldLogManagerDialog()
 }
 
 
-WorldLogManagerDialogImpl::~WorldLogManagerDialogImpl()
+WorldLogManagerDialog::Impl::~Impl()
 {
     store(AppConfig::archive()->openMapping("world_log_manager"));
 }
@@ -167,7 +168,7 @@ WorldLogManagerDialog* WorldLogManagerDialog::instance()
 }
 
 
-void WorldLogManagerDialogImpl::addItem(const string& filename)
+void WorldLogManagerDialog::Impl::addItem(const string& filename)
 {
     QTreeWidgetItem* item = new QTreeWidgetItem(treeWidget);
     item->setText(0, filename.c_str());
@@ -175,7 +176,7 @@ void WorldLogManagerDialogImpl::addItem(const string& filename)
 }
 
 
-void WorldLogManagerDialogImpl::removeItem()
+void WorldLogManagerDialog::Impl::removeItem()
 {
     QTreeWidgetItem* item = treeWidget->currentItem();
     if(item) {
@@ -185,7 +186,7 @@ void WorldLogManagerDialogImpl::removeItem()
 }
 
 
-void WorldLogManagerDialogImpl::onStartButtonClicked()
+void WorldLogManagerDialog::Impl::onStartButtonClicked()
 {
     QTreeWidgetItem* item = treeWidget->currentItem();
     if(item) {
@@ -209,13 +210,13 @@ void WorldLogManagerDialogImpl::onStartButtonClicked()
 }
 
 
-void WorldLogManagerDialogImpl::onCustomContextMenuRequested(const QPoint& pos)
+void WorldLogManagerDialog::Impl::onCustomContextMenuRequested(const QPoint& pos)
 {
     // contextMenu.exec(treeWidget->mapToGlobal(pos));
 }
 
 
-void WorldLogManagerDialogImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
+void WorldLogManagerDialog::Impl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
     isSimulationStarted = true;
     if(saveCheck->isChecked()) {
@@ -251,7 +252,7 @@ void WorldLogManagerDialogImpl::onSimulationAboutToStart(SimulatorItem* simulato
 }
 
 
-void WorldLogManagerDialogImpl::onPlaybackStopped(double time, bool isStoppedManually)
+void WorldLogManagerDialog::Impl::onPlaybackStopped(double time, bool isStoppedManually)
 {
     if(isSimulationStarted) {
         ProjectManager::instance()->saveProject(projectFileName);
@@ -261,7 +262,7 @@ void WorldLogManagerDialogImpl::onPlaybackStopped(double time, bool isStoppedMan
 }
 
 
-void WorldLogManagerDialogImpl::store(Mapping* archive)
+void WorldLogManagerDialog::Impl::store(Mapping* archive)
 {
     archive->write("save_world_log_file", saveCheck->isChecked());
 
@@ -280,7 +281,7 @@ void WorldLogManagerDialogImpl::store(Mapping* archive)
 }
 
 
-void WorldLogManagerDialogImpl::restore(const Mapping* archive)
+void WorldLogManagerDialog::Impl::restore(const Mapping* archive)
 {
     saveCheck->setChecked(archive->get("save_world_log_file", false));
 

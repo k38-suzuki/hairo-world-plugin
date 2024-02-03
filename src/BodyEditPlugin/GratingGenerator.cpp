@@ -66,11 +66,12 @@ SpinInfo spinInfo[] = {
 
 namespace cnoid {
 
-class GratingGeneratorImpl : public Dialog
+class GratingGenerator::Impl : public Dialog
 {
 public:
-    GratingGeneratorImpl(GratingGenerator* self);
     GratingGenerator* self;
+
+    Impl(GratingGenerator* self);
 
     enum DoubleSpinId {
         MASS, HEIGHT, FRAME_WDT,
@@ -101,11 +102,11 @@ public:
 
 GratingGenerator::GratingGenerator()
 {
-    impl = new GratingGeneratorImpl(this);
+    impl = new Impl(this);
 }
 
 
-GratingGeneratorImpl::GratingGeneratorImpl(GratingGenerator* self)
+GratingGenerator::Impl::Impl(GratingGenerator* self)
     : self(self)
 {
     setWindowTitle(_("Grating Generator"));
@@ -200,7 +201,7 @@ void GratingGenerator::initializeClass(ExtensionManager* ext)
 }
 
 
-bool GratingGeneratorImpl::save(const string& filename)
+bool GratingGenerator::Impl::save(const string& filename)
 {
     if(!filename.empty()) {
         auto topNode = writeBody(filename);
@@ -214,7 +215,7 @@ bool GratingGeneratorImpl::save(const string& filename)
 }
 
 
-void GratingGeneratorImpl::onColorButtonClicked()
+void GratingGenerator::Impl::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -234,7 +235,7 @@ void GratingGeneratorImpl::onColorButtonClicked()
 }
 
 
-void GratingGeneratorImpl::onValueChanged()
+void GratingGenerator::Impl::onValueChanged()
 {
     double frameWidth = dspins[FRAME_WDT]->value();
     double frameHeight = dspins[FRAME_HGT]->value();
@@ -254,7 +255,7 @@ void GratingGeneratorImpl::onValueChanged()
 }
 
 
-MappingPtr GratingGeneratorImpl::writeBody(const string& filename)
+MappingPtr GratingGenerator::Impl::writeBody(const string& filename)
 {
     MappingPtr node = new Mapping;
 
@@ -276,7 +277,7 @@ MappingPtr GratingGeneratorImpl::writeBody(const string& filename)
 }
 
 
-MappingPtr GratingGeneratorImpl::writeLink()
+MappingPtr GratingGenerator::Impl::writeLink()
 {
     MappingPtr node = new Mapping;
 
@@ -298,7 +299,7 @@ MappingPtr GratingGeneratorImpl::writeLink()
 }
 
 
-void GratingGeneratorImpl::writeLinkShape(Listing* elementsNode)
+void GratingGenerator::Impl::writeLinkShape(Listing* elementsNode)
 {
     double frameWidth = dspins[FRAME_WDT]->value();
     double frameHeight = dspins[FRAME_HGT]->value();
@@ -454,7 +455,7 @@ void GratingGeneratorImpl::writeLinkShape(Listing* elementsNode)
 }
 
 
-VectorXd GratingGeneratorImpl::calcInertia()
+VectorXd GratingGenerator::Impl::calcInertia()
 {
     VectorXd inertia;
     inertia.resize(9);

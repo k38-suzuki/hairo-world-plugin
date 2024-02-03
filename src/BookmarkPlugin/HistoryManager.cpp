@@ -17,12 +17,13 @@ using namespace std;
 
 namespace cnoid {
 
-class HistoryManagerImpl
+class HistoryManager::Impl
 {
 public:
-    HistoryManagerImpl(HistoryManager* self, ExtensionManager* ext);
-    virtual ~HistoryManagerImpl();
     HistoryManager* self;
+
+    Impl(HistoryManager* self, ExtensionManager* ext);
+    virtual ~Impl();
 
     Menu* currentMenu;
     Menu* contextMenu;
@@ -44,11 +45,11 @@ public:
 
 HistoryManager::HistoryManager(ExtensionManager* ext)
 {
-    impl = new HistoryManagerImpl(this, ext);
+    impl = new Impl(this, ext);
 }
 
 
-HistoryManagerImpl::HistoryManagerImpl(HistoryManager* self, ExtensionManager* ext)
+HistoryManager::Impl::Impl(HistoryManager* self, ExtensionManager* ext)
     : self(self),
       pm(ProjectManager::instance())
 {
@@ -86,7 +87,7 @@ HistoryManager::~HistoryManager()
 }
 
 
-HistoryManagerImpl::~HistoryManagerImpl()
+HistoryManager::Impl::~Impl()
 {
     store(AppConfig::archive()->openMapping("history_manager"));
 }
@@ -98,7 +99,7 @@ void HistoryManager::initializeClass(ExtensionManager* ext)
 }
 
 
-void HistoryManagerImpl::onClearProjectTriggered()
+void HistoryManager::Impl::onClearProjectTriggered()
 {
     int numHistories = currentMenu->actions().size() - 2;
     for(int i = 0; i < numHistories; ++i) {
@@ -107,13 +108,13 @@ void HistoryManagerImpl::onClearProjectTriggered()
 }
 
 
-void HistoryManagerImpl::onRemoveProjectTriggered()
+void HistoryManager::Impl::onRemoveProjectTriggered()
 {
     currentMenu->removeAction(currentMenu->actionAt(pos));
 }
 
 
-void HistoryManagerImpl::onCurrentMenuTriggered(QAction* action)
+void HistoryManager::Impl::onCurrentMenuTriggered(QAction* action)
 {
     Action* triggeredProject = dynamic_cast<Action*>(action);
     if(triggeredProject != clearProject) {
@@ -127,7 +128,7 @@ void HistoryManagerImpl::onCurrentMenuTriggered(QAction* action)
 }
 
 
-void HistoryManagerImpl::onCustomContextMenuRequested(const QPoint& pos)
+void HistoryManager::Impl::onCustomContextMenuRequested(const QPoint& pos)
 {
     this->pos = pos;
     if(currentMenu->actionAt(this->pos) != clearProject) {
@@ -136,7 +137,7 @@ void HistoryManagerImpl::onCustomContextMenuRequested(const QPoint& pos)
 }
 
 
-void HistoryManagerImpl::onProjectLoaded()
+void HistoryManager::Impl::onProjectLoaded()
 {
     string filename = pm->currentProjectFile();
 
@@ -154,7 +155,7 @@ void HistoryManagerImpl::onProjectLoaded()
 }
 
 
-void HistoryManagerImpl::store(Mapping* archive)
+void HistoryManager::Impl::store(Mapping* archive)
 {
     int numHistories = currentMenu->actions().size() - 2;
 
@@ -171,7 +172,7 @@ void HistoryManagerImpl::store(Mapping* archive)
 }
 
 
-void HistoryManagerImpl::restore(const Mapping* archive)
+void HistoryManager::Impl::restore(const Mapping* archive)
 {
     auto& itemListing = *archive->findListing("histories");
     if(itemListing.isValid() && !itemListing.empty()) {

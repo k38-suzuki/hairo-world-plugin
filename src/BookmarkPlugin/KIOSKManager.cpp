@@ -72,11 +72,12 @@ void onHideToolBarToggled(const bool& on)
 
 namespace cnoid {
 
-class KIOSKManagerImpl
+class KIOSKManager::Impl
 {
 public:
-    KIOSKManagerImpl(KIOSKManager* self);
     KIOSKManager* self;
+
+    Impl(KIOSKManager* self);
 
     JoystickCapture joystick;
     SimulatorItem* simulatorItem;
@@ -92,11 +93,11 @@ public:
 
 KIOSKManager::KIOSKManager(ExtensionManager* ext)
 {
-    impl = new KIOSKManagerImpl(this);
+    impl = new Impl(this);
 }
 
 
-KIOSKManagerImpl::KIOSKManagerImpl(KIOSKManager* self)
+KIOSKManager::Impl::Impl(KIOSKManager* self)
     : self(self)
 {
     joystick.setDevice("/dev/input/js0");
@@ -135,13 +136,13 @@ void KIOSKManager::initializeClass(ExtensionManager* ext)
 }
 
 
-void KIOSKManagerImpl::onHideMenuBarToggled(const bool& on)
+void KIOSKManager::Impl::onHideMenuBarToggled(const bool& on)
 {
     MainWindow::instance()->menuBar()->setVisible(!on);
 }
 
 
-void KIOSKManagerImpl::onButton(const int& id, const bool& isPressed)
+void KIOSKManager::Impl::onButton(const int& id, const bool& isPressed)
 {
     if(id == Joystick::LOGO_BUTTON && isPressed) {
         if(kioskCheck->isChecked()) {
@@ -162,7 +163,7 @@ void KIOSKManagerImpl::onButton(const int& id, const bool& isPressed)
 }
 
 
-void KIOSKManagerImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
+void KIOSKManager::Impl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
     this->simulatorItem = simulatorItem;
     if(kioskCheck->isChecked()) {

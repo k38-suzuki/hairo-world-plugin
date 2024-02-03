@@ -18,12 +18,13 @@ using namespace std;
 
 namespace cnoid {
 
-class JoystickLoggerItemImpl
+class JoystickLoggerItem::Impl
 {
 public:
-    JoystickLoggerItemImpl(JoystickLoggerItem* self);
-    JoystickLoggerItemImpl(JoystickLoggerItem* self, const JoystickLoggerItemImpl& org);
     JoystickLoggerItem* self;
+
+    Impl(JoystickLoggerItem* self);
+    Impl(JoystickLoggerItem* self, const Impl& org);
 
     string device;
     Joystick* joystick;
@@ -42,11 +43,11 @@ public:
 
 JoystickLoggerItem::JoystickLoggerItem()
 {
-    impl = new JoystickLoggerItemImpl(this);
+    impl = new Impl(this);
 }
 
 
-JoystickLoggerItemImpl::JoystickLoggerItemImpl(JoystickLoggerItem* self)
+JoystickLoggerItem::Impl::Impl(JoystickLoggerItem* self)
     : self(self)
 {
     device = "/dev/input/js0";
@@ -57,13 +58,13 @@ JoystickLoggerItemImpl::JoystickLoggerItemImpl(JoystickLoggerItem* self)
 
 JoystickLoggerItem::JoystickLoggerItem(const JoystickLoggerItem& org)
     : SubSimulatorItem(org),
-      impl(new JoystickLoggerItemImpl(this, *org.impl))
+      impl(new Impl(this, *org.impl))
 {
 
 }
 
 
-JoystickLoggerItemImpl::JoystickLoggerItemImpl(JoystickLoggerItem* self, const JoystickLoggerItemImpl& org)
+JoystickLoggerItem::Impl::Impl(JoystickLoggerItem* self, const Impl& org)
     : self(self)
 {
     device = org.device;
@@ -90,7 +91,7 @@ bool JoystickLoggerItem::initializeSimulation(SimulatorItem* simulatorItem)
 }
 
 
-bool JoystickLoggerItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
+bool JoystickLoggerItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     this->simulatorItem = simulatorItem;
     joystick = new Joystick(device.c_str());
@@ -115,7 +116,7 @@ bool JoystickLoggerItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 }
 
 
-void JoystickLoggerItemImpl::onPostDynamicsFunction()
+void JoystickLoggerItem::Impl::onPostDynamicsFunction()
 {
     int currentFrame = simulatorItem->currentFrame();
     joystick->readCurrentState();
@@ -144,7 +145,7 @@ void JoystickLoggerItem::doPutProperties(PutPropertyFunction& putProperty)
 }
 
 
-void JoystickLoggerItemImpl::doPutProperties(PutPropertyFunction& putProperty)
+void JoystickLoggerItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
 {
     putProperty(_("Device"), device, changeProperty(device));
 }
@@ -157,7 +158,7 @@ bool JoystickLoggerItem::store(Archive& archive)
 }
 
 
-bool JoystickLoggerItemImpl::store(Archive& archive)
+bool JoystickLoggerItem::Impl::store(Archive& archive)
 {
     archive.write("device", device);
     return true;
@@ -171,7 +172,7 @@ bool JoystickLoggerItem::restore(const Archive& archive)
 }
 
 
-bool JoystickLoggerItemImpl::restore(const Archive& archive)
+bool JoystickLoggerItem::Impl::restore(const Archive& archive)
 {
     archive.read("device", device);
     return true;

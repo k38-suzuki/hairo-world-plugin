@@ -11,11 +11,12 @@ using namespace std;
 
 namespace cnoid {
 
-class LayoutSwitcherBarImpl
+class LayoutSwitcherBar::Impl
 {
 public:
-    LayoutSwitcherBarImpl(LayoutSwitcherBar* self);
     LayoutSwitcherBar* self;
+
+    Impl(LayoutSwitcherBar* self);
 
     LayoutSwitcher* layoutSwitcher;
 
@@ -29,11 +30,11 @@ public:
 LayoutSwitcherBar::LayoutSwitcherBar()
     : ToolBar(N_("LayoutSwitcherBar"))
 {
-    impl = new LayoutSwitcherBarImpl(this);
+    impl = new Impl(this);
 }
 
 
-LayoutSwitcherBarImpl::LayoutSwitcherBarImpl(LayoutSwitcherBar* self)
+LayoutSwitcherBar::Impl::Impl(LayoutSwitcherBar* self)
     : self(self)
 {
     layoutSwitcher = new LayoutSwitcher;
@@ -70,7 +71,7 @@ bool LayoutSwitcherBar::storeState(Archive& archive)
 }
 
 
-bool LayoutSwitcherBarImpl::storeState(Archive& archive)
+bool LayoutSwitcherBar::Impl::storeState(Archive& archive)
 {
     layoutSwitcher->storeState(archive);
     return true;
@@ -83,7 +84,7 @@ bool LayoutSwitcherBar::restoreState(const Archive& archive)
 }
 
 
-bool LayoutSwitcherBarImpl::restoreState(const Archive& archive)
+bool LayoutSwitcherBar::Impl::restoreState(const Archive& archive)
 {
     layoutSwitcher->restoreState(archive);
     return true;

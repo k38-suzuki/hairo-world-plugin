@@ -10,8 +10,6 @@
 
 namespace cnoid {
 
-class NetEmImpl;
-
 class NetEm : public Referenced
 {
 public:
@@ -31,8 +29,8 @@ public:
     void setDestinationIP(const std::string& destinationIP);
 
 private:
-    NetEmImpl* impl;
-    friend class NetEmImpl;
+    class Impl;
+    Impl* impl;
 };
 
 typedef ref_ptr<NetEm> NetEmPtr;

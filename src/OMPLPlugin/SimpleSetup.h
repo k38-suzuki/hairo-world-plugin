@@ -12,8 +12,6 @@
 
 namespace cnoid {
 
-class SimpleSetupImpl;
-
 class CNOID_EXPORT SimpleSetup
 {
 public:
@@ -49,8 +47,8 @@ protected:
     virtual void postPlannerFunction(ompl::geometric::PathGeometric& pathes) = 0;
 
 private:
-    SimpleSetupImpl* impl;
-    friend class SimpleSetupImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

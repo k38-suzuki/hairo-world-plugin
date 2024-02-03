@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class OnScreenJoystickWidgetImpl;
-
 class OnScreenJoystickWidget : public Widget
 {
 public:
@@ -18,8 +16,8 @@ public:
     virtual ~OnScreenJoystickWidget();
 
 private:
-    OnScreenJoystickWidgetImpl* impl;
-    friend class OnScreenJoystickWidgetImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

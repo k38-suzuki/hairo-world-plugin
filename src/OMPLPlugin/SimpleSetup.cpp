@@ -22,12 +22,13 @@ namespace og = ompl::geometric;
 
 namespace cnoid {
 
-class SimpleSetupImpl
+class SimpleSetup::Impl
 {
 public:
-    SimpleSetupImpl(SimpleSetup* self);
-    SimpleSetupImpl(SimpleSetup* self, const SimpleSetupImpl& org);
     SimpleSetup* self;
+
+    Impl(SimpleSetup* self);
+    Impl(SimpleSetup* self, const Impl& org);
 
     int planner;
     BoundingBox bb;
@@ -46,11 +47,11 @@ public:
 
 SimpleSetup::SimpleSetup()
 {
-    impl = new SimpleSetupImpl(this);
+    impl = new Impl(this);
 }
 
 
-SimpleSetupImpl::SimpleSetupImpl(SimpleSetup* self)
+SimpleSetup::Impl::Impl(SimpleSetup* self)
     : self(self),
       mv(MessageView::instance())
 {
@@ -66,13 +67,13 @@ SimpleSetupImpl::SimpleSetupImpl(SimpleSetup* self)
 
 
 SimpleSetup::SimpleSetup(const SimpleSetup& org)
-    : impl(new SimpleSetupImpl(this, *org.impl))
+    : impl(new Impl(this, *org.impl))
 {
 
 }
 
 
-SimpleSetupImpl::SimpleSetupImpl(SimpleSetup* self, const SimpleSetupImpl& org)
+SimpleSetup::Impl::Impl(SimpleSetup* self, const Impl& org)
     : self(self),
       mv(MessageView::instance())
 {
@@ -158,7 +159,7 @@ void SimpleSetup::planWithSimpleSetup()
 }
 
 
-void SimpleSetupImpl::planWithSimpleSetup()
+void SimpleSetup::Impl::planWithSimpleSetup()
 {
     self->prePlannerFunction();
     isSolved = false;
@@ -248,7 +249,7 @@ bool SimpleSetup::isSolved() const
 }
 
 
-bool SimpleSetupImpl::isStateValid(const ob::State* state)
+bool SimpleSetup::Impl::isStateValid(const ob::State* state)
 {
     const auto *se3state = state->as<ob::SE3StateSpace::StateType>();
     const auto *pos = se3state->as<ob::RealVectorStateSpace::StateType>(0);

@@ -30,12 +30,13 @@ struct PairInfo {
 
 namespace cnoid {
 
-class BeepItemImpl
+class BeepItem::Impl
 {
 public:
-    BeepItemImpl(BeepItem* self);
-    BeepItemImpl(BeepItem* self, const BeepItemImpl& org);
     BeepItem* self;
+
+    Impl(BeepItem* self);
+    Impl(BeepItem* self, const Impl& org);
 
     typedef shared_ptr<CollisionLinkPair> CollisionLinkPairPtr;
 
@@ -57,11 +58,11 @@ public:
 
 BeepItem::BeepItem()
 {
-    impl = new BeepItemImpl(this);
+    impl = new Impl(this);
 }
 
 
-BeepItemImpl::BeepItemImpl(BeepItem* self)
+BeepItem::Impl::Impl(BeepItem* self)
     : self(self)
 {
     simulatorItem = nullptr;
@@ -75,11 +76,11 @@ BeepItemImpl::BeepItemImpl(BeepItem* self)
 BeepItem::BeepItem(const BeepItem& org)
     : SubSimulatorItem(org)
 {
-    impl = new BeepItemImpl(this, *org.impl);
+    impl = new Impl(this, *org.impl);
 }
 
 
-BeepItemImpl::BeepItemImpl(BeepItem* self, const BeepItemImpl& org)
+BeepItem::Impl::Impl(BeepItem* self, const Impl& org)
     : self(self)
 {
 
@@ -106,7 +107,7 @@ bool BeepItem::initializeSimulation(SimulatorItem* simulatorItem)
 }
 
 
-bool BeepItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
+bool BeepItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     this->simulatorItem = simulatorItem;
     worldItem = this->simulatorItem->findOwnerItem<WorldItem>();
@@ -134,7 +135,7 @@ bool BeepItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 }
 
 
-void BeepItemImpl::onPostDynamicsFunction()
+void BeepItem::Impl::onPostDynamicsFunction()
 {
     double currentTime = simulatorItem->currentTime();
     static double startTime = 0.0;
@@ -194,7 +195,7 @@ void BeepItem::doPutProperties(PutPropertyFunction& putProperty)
 }
 
 
-void BeepItemImpl::doPutProperties(PutPropertyFunction& putProperty)
+void BeepItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
 {
 
 }
@@ -207,7 +208,7 @@ bool BeepItem::store(Archive& archive)
 }
 
 
-bool BeepItemImpl::store(Archive& archive)
+bool BeepItem::Impl::store(Archive& archive)
 {
     return true;
 }
@@ -220,7 +221,7 @@ bool BeepItem::restore(const Archive& archive)
 }
 
 
-bool BeepItemImpl::restore(const Archive& archive)
+bool BeepItem::Impl::restore(const Archive& archive)
 {
     return true;
 }

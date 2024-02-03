@@ -163,12 +163,13 @@ public:
 };
 
 
-class CrossSectionItemImpl
+class CrossSectionItem::Impl
 {
 public:
-    CrossSectionItemImpl(CrossSectionItem* self);
-    CrossSectionItemImpl(CrossSectionItem* self, const CrossSectionItemImpl& org);
     CrossSectionItem* self;
+
+    Impl(CrossSectionItem* self);
+    Impl(CrossSectionItem* self, const Impl& org);
 
     enum PlainID { XY, YZ, ZX, NUM_PLAINS };
 
@@ -203,11 +204,11 @@ public:
 
 CrossSectionItem::CrossSectionItem()
 {
-    impl = new CrossSectionItemImpl(this);
+    impl = new Impl(this);
 }
 
 
-CrossSectionItemImpl::CrossSectionItemImpl(CrossSectionItem* self)
+CrossSectionItem::Impl::Impl(CrossSectionItem* self)
     : self(self),
       config(new DoseConfigDialog)
 {
@@ -222,13 +223,13 @@ CrossSectionItemImpl::CrossSectionItemImpl(CrossSectionItem* self)
 
 CrossSectionItem::CrossSectionItem(const CrossSectionItem& org)
     : Item(org),
-      impl(new CrossSectionItemImpl(this, *org.impl))
+      impl(new Impl(this, *org.impl))
 {
 
 }
 
 
-CrossSectionItemImpl::CrossSectionItemImpl(CrossSectionItem* self, const CrossSectionItemImpl& org)
+CrossSectionItem::Impl::Impl(CrossSectionItem* self, const Impl& org)
     : self(self),
       config(new DoseConfigDialog)
 {
@@ -283,7 +284,7 @@ SgNode* CrossSectionItem::getScene()
 }
 
 
-void CrossSectionItemImpl::initialize()
+void CrossSectionItem::Impl::initialize()
 {
     config->sigValueChanged().connect([&](double value){ onValueChanged(); });
     config->plainCombo->sigCurrentIndexChanged().connect([&](int index){ onValueChanged(); });
@@ -291,7 +292,7 @@ void CrossSectionItemImpl::initialize()
 }
 
 
-void CrossSectionItemImpl::createScene()
+void CrossSectionItem::Impl::createScene()
 {
     if(!scene) {
         scene = new SgPosTransform;
@@ -384,7 +385,7 @@ void CrossSectionItemImpl::createScene()
 }
 
 
-void CrossSectionItemImpl::updateScenePosition()
+void CrossSectionItem::Impl::updateScenePosition()
 {
     if(scene) {
         int index = config->plainCombo->currentIndex();
@@ -403,7 +404,7 @@ void CrossSectionItemImpl::updateScenePosition()
 }
 
 
-void CrossSectionItemImpl::onValueChanged()
+void CrossSectionItem::Impl::onValueChanged()
 {
     if(scene) {
         createScene();
@@ -431,7 +432,7 @@ SignalProxy<void()> CrossSectionItem::sigGammaDataLoaded() const
 }
 
 
-void CrossSectionItemImpl::onReadPHITSData(const string& filename)
+void CrossSectionItem::Impl::onReadPHITSData(const string& filename)
 {
     this->gammaDataFile = filename;
     if(!this->gammaDataFile.empty()) {
@@ -442,7 +443,7 @@ void CrossSectionItemImpl::onReadPHITSData(const string& filename)
 }
 
 
-bool CrossSectionItemImpl::load(const string& filename)
+bool CrossSectionItem::Impl::load(const string& filename)
 {
     if(!filename.empty()) {
         if(gammaData.read(filename)) {
@@ -456,19 +457,19 @@ bool CrossSectionItemImpl::load(const string& filename)
 }
 
 
-void CrossSectionItemImpl::setDefaultNuclideTableFile(const string& filename)
+void CrossSectionItem::Impl::setDefaultNuclideTableFile(const string& filename)
 {
     config->defaultNuclideTableFile = filename;
 }
 
 
-void CrossSectionItemImpl::setDefaultElementTableFile(const string& filename)
+void CrossSectionItem::Impl::setDefaultElementTableFile(const string& filename)
 {
     config->defaultElementTableFile = filename;
 }
 
 
-bool CrossSectionItemImpl::onColorScalePropertyChanged(const int& index)
+bool CrossSectionItem::Impl::onColorScalePropertyChanged(const int& index)
 {
     colorScale.selectIndex(index);
     createScene();
@@ -489,7 +490,7 @@ void CrossSectionItem::doPutProperties(PutPropertyFunction& putProperty)
 }
 
 
-void CrossSectionItemImpl::doPutProperties(PutPropertyFunction& putProperty)
+void CrossSectionItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
 {
     putProperty(_("ColorScale"), colorScale,
                 [&](int index){ return onColorScalePropertyChanged(index); });
@@ -510,7 +511,7 @@ bool CrossSectionItem::store(Archive& archive)
 }
 
 
-bool CrossSectionItemImpl::store(Archive& archive)
+bool CrossSectionItem::Impl::store(Archive& archive)
 {
     config->storeState(archive);
     archive.writeRelocatablePath("gamma_data_file", gammaDataFile);
@@ -525,7 +526,7 @@ bool CrossSectionItem::restore(const Archive& archive)
 }
 
 
-bool CrossSectionItemImpl::restore(const Archive& archive)
+bool CrossSectionItem::Impl::restore(const Archive& archive)
 {
     config->restoreState(archive);
     archive.readRelocatablePath("gamma_data_file", gammaDataFile);

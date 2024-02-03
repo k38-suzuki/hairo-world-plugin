@@ -10,8 +10,6 @@
 
 namespace cnoid {
 
-class FileFormWidgetImpl;
-
 class FileFormWidget : public Widget
 {
 public:
@@ -21,8 +19,8 @@ public:
     SignalProxy<void(std::string)> sigClicked();
 
 private:
-    FileFormWidgetImpl* impl;
-    friend class FileFormWidgetImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

@@ -20,11 +20,12 @@ using namespace std;
 
 namespace cnoid {
 
-class NotepadImpl
+class Notepad::Impl
 {
 public:
-    NotepadImpl(Notepad* self);
     Notepad* self;
+
+    Impl(Notepad* self);
 
     void newFile();
     void open();
@@ -44,11 +45,11 @@ public:
 Notepad::Notepad(QWidget* parent)
     : QMainWindow(parent)
 {
-    impl = new NotepadImpl(this);
+    impl = new Impl(this);
 }
 
 
-NotepadImpl::NotepadImpl(Notepad* self)
+Notepad::Impl::Impl(Notepad* self)
     : self(self)
 {
     QWidget* widget = new QWidget;
@@ -91,7 +92,7 @@ void Notepad::loadFile(const QString& fileName)
 }
 
 
-void NotepadImpl::newFile()
+void Notepad::Impl::newFile()
 {
     currentFile.clear();
     textEdit->setText(QString());
@@ -99,7 +100,7 @@ void NotepadImpl::newFile()
 }
 
 
-void NotepadImpl::open()
+void Notepad::Impl::open()
 {
     QString fileName = QFileDialog::getOpenFileName(self, "Open the file");
     if(fileName.isEmpty()) {
@@ -119,7 +120,7 @@ void NotepadImpl::open()
 }
 
 
-void NotepadImpl::save()
+void Notepad::Impl::save()
 {
     QString fileName;
     if(currentFile.isEmpty()) {
@@ -145,7 +146,7 @@ void NotepadImpl::save()
 }
 
 
-void NotepadImpl::saveAs()
+void Notepad::Impl::saveAs()
 {
     QString fileName = QFileDialog::getSaveFileName(self, "Save as");
     if(fileName.isEmpty()) {
@@ -165,7 +166,7 @@ void NotepadImpl::saveAs()
 }
 
 
-void NotepadImpl::about()
+void Notepad::Impl::about()
 {
     QMessageBox::about(self, _("About Notepad"),
                     _("The <b>Notepad</b> example demonstrates now to code a basic "
@@ -173,7 +174,7 @@ void NotepadImpl::about()
 }
 
 
-void NotepadImpl::createActions()
+void Notepad::Impl::createActions()
 {
     QMenu* fileMenu = self->menuBar()->addMenu(_("&File"));
     QToolBar* fileToolBar = self->addToolBar(_("File"));

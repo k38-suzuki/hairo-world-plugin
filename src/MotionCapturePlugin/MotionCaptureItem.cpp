@@ -25,12 +25,13 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace cnoid {
 
-class MotionCaptureItemImpl
+class MotionCaptureItem::Impl
 {
 public:
-    MotionCaptureItemImpl(MotionCaptureItem* self);
-    MotionCaptureItemImpl(MotionCaptureItem* self, const MotionCaptureItemImpl& org);
     MotionCaptureItem* self;
+
+    Impl(MotionCaptureItem* self);
+    Impl(MotionCaptureItem* self, const Impl& org);
 
     DeviceList<PassiveMarker> markers;
     vector<PointSetItem*> pointSetItems;
@@ -52,11 +53,11 @@ public:
 
 MotionCaptureItem::MotionCaptureItem()
 {
-    impl = new MotionCaptureItemImpl(this);
+    impl = new Impl(this);
 }
 
 
-MotionCaptureItemImpl::MotionCaptureItemImpl(MotionCaptureItem* self)
+MotionCaptureItem::Impl::Impl(MotionCaptureItem* self)
     : self(self)
 {
     markers.clear();
@@ -70,13 +71,13 @@ MotionCaptureItemImpl::MotionCaptureItemImpl(MotionCaptureItem* self)
 
 MotionCaptureItem::MotionCaptureItem(const MotionCaptureItem& org)
     : SubSimulatorItem(org),
-      impl(new MotionCaptureItemImpl(this, *org.impl))
+      impl(new Impl(this, *org.impl))
 {
 
 }
 
 
-MotionCaptureItemImpl::MotionCaptureItemImpl(MotionCaptureItem *self, const MotionCaptureItemImpl& org)
+MotionCaptureItem::Impl::Impl(MotionCaptureItem *self, const Impl& org)
     : self(self)
 {
     isMotionDataRecordingEnabled = org.isMotionDataRecordingEnabled;
@@ -103,7 +104,7 @@ bool MotionCaptureItem::initializeSimulation(SimulatorItem* simulatorItem)
 }
 
 
-bool MotionCaptureItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
+bool MotionCaptureItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     this->simulatorItem = simulatorItem;
     markers.clear();
@@ -158,7 +159,7 @@ void MotionCaptureItem::finalizeSimulation()
 }
 
 
-void MotionCaptureItemImpl::finalizeSimulation()
+void MotionCaptureItem::Impl::finalizeSimulation()
 {
     if(multiPointSetItem && isMotionDataRecordingEnabled) {
         QDateTime recordingStartTime = QDateTime::currentDateTime();
@@ -206,7 +207,7 @@ void MotionCaptureItemImpl::finalizeSimulation()
 }
 
 
-void MotionCaptureItemImpl::onPreDynamicsFunction()
+void MotionCaptureItem::Impl::onPreDynamicsFunction()
 {
     int currentFrame = simulatorItem->currentFrame();
     shared_ptr<MultiSE3Seq> motionSeq = motionSeqItem->seq();
@@ -239,7 +240,7 @@ void MotionCaptureItem::doPutProperties(PutPropertyFunction& putProperty)
 }
 
 
-void MotionCaptureItemImpl::doPutProperties(PutPropertyFunction& putProperty)
+void MotionCaptureItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
 {
     putProperty(_("Record motion data"), isMotionDataRecordingEnabled, changeProperty(isMotionDataRecordingEnabled));
 }
@@ -252,7 +253,7 @@ bool MotionCaptureItem::store(Archive& archive)
 }
 
 
-bool MotionCaptureItemImpl::store(Archive& archive)
+bool MotionCaptureItem::Impl::store(Archive& archive)
 {
     return true;
 }
@@ -265,7 +266,7 @@ bool MotionCaptureItem::restore(const Archive& archive)
 }
 
 
-bool MotionCaptureItemImpl::restore(const Archive& archive)
+bool MotionCaptureItem::Impl::restore(const Archive& archive)
 {
     return true;
 }

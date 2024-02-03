@@ -19,11 +19,12 @@ BeepView* instance_ = nullptr;
 
 namespace cnoid {
 
-class BeepViewImpl
+class BeepView::Impl
 {
 public:
-    BeepViewImpl(BeepView* self);
     BeepView* self;
+
+    Impl(BeepView* self);
 
     QScrollArea scrollArea;
 
@@ -38,11 +39,11 @@ public:
 
 BeepView::BeepView()
 {
-    impl = new BeepViewImpl(this);
+    impl = new Impl(this);
 }
 
 
-BeepViewImpl::BeepViewImpl(BeepView* self)
+BeepView::Impl::Impl(BeepView* self)
     : self(self)
 {
     self->setDefaultLayoutArea(View::TopCenterArea);
@@ -103,7 +104,7 @@ bool BeepView::storeState(Archive& archive)
 }
 
 
-bool BeepViewImpl::storeState(Archive& archive)
+bool BeepView::Impl::storeState(Archive& archive)
 {
     beepWidget->storeState(archive);
     return true;
@@ -116,7 +117,7 @@ bool BeepView::restoreState(const Archive& archive)
 }
 
 
-bool BeepViewImpl::restoreState(const Archive& archive)
+bool BeepView::Impl::restoreState(const Archive& archive)
 {
     beepWidget->restoreState(archive);
     return true;

@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class InertiaCalculatorImpl;
-
 class InertiaCalculator
 {
 public:
@@ -20,8 +18,8 @@ public:
     static void initializeClass(ExtensionManager* ext);
 
 private:
-    InertiaCalculatorImpl* impl;
-    friend class InertiaCalculatorImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

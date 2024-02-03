@@ -24,11 +24,12 @@ Action* startCheck = nullptr;
 
 namespace cnoid {
 
-class JoystickStarterImpl
+class JoystickStarter::Impl
 {
 public:
-  JoystickStarterImpl(JoystickStarter* self);
   JoystickStarter* self;
+
+  Impl(JoystickStarter* self);
 
   bool startState;
   bool pauseState;
@@ -45,11 +46,11 @@ public:
 
 JoystickStarter::JoystickStarter()
 {
-    impl = new JoystickStarterImpl(this);
+    impl = new Impl(this);
 }
 
 
-JoystickStarterImpl::JoystickStarterImpl(JoystickStarter* self)
+JoystickStarter::Impl::Impl(JoystickStarter* self)
     : self(self),
       sb(SimulationBar::instance())
 {
@@ -88,7 +89,7 @@ void JoystickStarter::initializeClass(ExtensionManager* ext)
 }
 
 
-void JoystickStarterImpl::onButton(const int& id, const bool& isPressed)
+void JoystickStarter::Impl::onButton(const int& id, const bool& isPressed)
 {
     if(isPressed) {
         if(startCheck->isChecked()) {
@@ -121,7 +122,7 @@ void JoystickStarterImpl::onButton(const int& id, const bool& isPressed)
 }
 
 
-void JoystickStarterImpl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
+void JoystickStarter::Impl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
     this->simulatoritem = simulatorItem;
     startState = true;

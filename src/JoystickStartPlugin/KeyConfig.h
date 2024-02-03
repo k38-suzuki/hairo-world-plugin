@@ -7,8 +7,6 @@
 
 namespace cnoid {
 
-class KeyConfigImpl;
-
 class KeyConfig
 {
 public:
@@ -21,8 +19,8 @@ public:
     void showConfig();
 
 private:
-    KeyConfigImpl* impl;
-    friend class KeyConfigImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

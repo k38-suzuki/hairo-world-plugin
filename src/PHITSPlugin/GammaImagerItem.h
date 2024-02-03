@@ -10,8 +10,6 @@
 
 namespace cnoid {
 
-class GammaImagerItemImpl;
-
 class CNOID_EXPORT GammaImagerItem : public Item
 {
 public:
@@ -34,7 +32,8 @@ protected:
 
 
 private:
-    GammaImagerItemImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 typedef ref_ptr<GammaImagerItem> GammaImagerItemPtr;

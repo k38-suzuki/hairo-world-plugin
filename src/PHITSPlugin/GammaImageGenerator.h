@@ -10,8 +10,6 @@
 
 namespace cnoid {
 
-class GammaImageGeneratorImpl;
-
 class GammaImageGenerator
 {
 public:
@@ -21,8 +19,8 @@ public:
     void generateImage(Camera* camera, std::shared_ptr<Image>& image);
 
 private:
-    GammaImageGeneratorImpl* impl;
-    friend class GammaImageGeneratorImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

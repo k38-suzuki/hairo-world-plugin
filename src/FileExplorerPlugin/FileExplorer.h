@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class FileExplorerImpl;
-
 class FileExplorer
 {
 public:
@@ -20,8 +18,8 @@ public:
     static void initializeClass(ExtensionManager* ext);
 
 private:
-    FileExplorerImpl* impl;
-    friend class FileExplorerImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

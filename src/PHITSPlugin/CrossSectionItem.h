@@ -13,8 +13,6 @@
 
 namespace cnoid {
 
-class CrossSectionItemImpl;
-
 class CrossSectionItem : public Item, public RenderableItem
 {
 public:
@@ -37,8 +35,8 @@ protected:
     virtual bool restore(const Archive& archive) override;
 
 private:
-    CrossSectionItemImpl* impl;
-    friend class CrossSectionItemImpl;
+    class Impl;
+    Impl* impl;
 };
 
 typedef ref_ptr<CrossSectionItem> CrossSectionItemPtr;

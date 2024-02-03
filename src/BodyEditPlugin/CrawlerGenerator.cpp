@@ -205,11 +205,12 @@ struct AGXVehicleContinuousTrackDeviceInfo {
 
 namespace cnoid {
 
-class CrawlerGeneratorImpl : public Dialog
+class CrawlerGenerator::Impl : public Dialog
 {
 public:
-    CrawlerGeneratorImpl(CrawlerGenerator* self);
     CrawlerGenerator* self;
+
+    Impl(CrawlerGenerator* self);
 
     enum DoubleSpinId {
         CHS_MAS, CHS_XSZ, CHS_YSZ, CHS_ZSZ,
@@ -306,11 +307,11 @@ public:
 
 CrawlerGenerator::CrawlerGenerator()
 {
-    impl = new CrawlerGeneratorImpl(this);
+    impl = new Impl(this);
 }
 
 
-CrawlerGeneratorImpl::CrawlerGeneratorImpl(CrawlerGenerator* self)
+CrawlerGenerator::Impl::Impl(CrawlerGenerator* self)
     : self(self)
 {
     setWindowTitle(_("CrawlerRobot Generator"));
@@ -497,7 +498,7 @@ void CrawlerGenerator::initializeClass(ExtensionManager* ext)
 }
 
 
-bool CrawlerGeneratorImpl::save(const string& filename)
+bool CrawlerGenerator::Impl::save(const string& filename)
 {
     if(!filename.empty()) {
         auto topNode = writeBody(filename);
@@ -511,7 +512,7 @@ bool CrawlerGeneratorImpl::save(const string& filename)
 }
 
 
-bool CrawlerGeneratorImpl::save2(const string& filename)
+bool CrawlerGenerator::Impl::save2(const string& filename)
 {
     if(!filename.empty()) {
         auto topNode = writeConfig(filename);
@@ -525,7 +526,7 @@ bool CrawlerGeneratorImpl::save2(const string& filename)
 }
 
 
-void CrawlerGeneratorImpl::initialize()
+void CrawlerGenerator::Impl::initialize()
 {
     for(int i = 0; i < NUM_DSPINS; ++i) {
         DoubleSpinInfo info = doubleSpinInfo[i];
@@ -566,13 +567,13 @@ void CrawlerGeneratorImpl::initialize()
 }
 
 
-void CrawlerGeneratorImpl::onResetButtonClicked()
+void CrawlerGenerator::Impl::onResetButtonClicked()
 {
     initialize();
 }
 
 
-void CrawlerGeneratorImpl::onImportButtonClicked()
+void CrawlerGenerator::Impl::onImportButtonClicked()
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Open a configuration file"));
@@ -604,7 +605,7 @@ void CrawlerGeneratorImpl::onImportButtonClicked()
 }
 
 
-bool CrawlerGeneratorImpl::load2(const string& filename,std::ostream& os )
+bool CrawlerGenerator::Impl::load2(const string& filename,std::ostream& os )
 {
     try {
         YAMLReader reader;
@@ -664,7 +665,7 @@ bool CrawlerGeneratorImpl::load2(const string& filename,std::ostream& os )
 }
 
 
-void CrawlerGeneratorImpl::onExportButtonClicked()
+void CrawlerGenerator::Impl::onExportButtonClicked()
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Save a configuration file"));
@@ -702,7 +703,7 @@ void CrawlerGeneratorImpl::onExportButtonClicked()
 }
 
 
-void CrawlerGeneratorImpl::onEnableAGXCheckToggled(const bool& on)
+void CrawlerGenerator::Impl::onEnableAGXCheckToggled(const bool& on)
 {
     agxdspins[TRK_BNT]->setEnabled(on);
     agxdspins[TRK_BNW]->setEnabled(on);
@@ -742,7 +743,7 @@ void CrawlerGeneratorImpl::onEnableAGXCheckToggled(const bool& on)
 }
 
 
-void CrawlerGeneratorImpl::onColorChanged(PushButton* pushbutton)
+void CrawlerGenerator::Impl::onColorChanged(PushButton* pushbutton)
 {
     QColor selectedColor;
     QColor currentColor = pushbutton->palette().color(QPalette::Button);
@@ -762,7 +763,7 @@ void CrawlerGeneratorImpl::onColorChanged(PushButton* pushbutton)
 }
 
 
-void CrawlerGeneratorImpl::onButtonToggled(const int& id, const bool& checked)
+void CrawlerGenerator::Impl::onButtonToggled(const int& id, const bool& checked)
 {
     if(checked) {
         topWidget->setCurrentIndex(id);
@@ -770,7 +771,7 @@ void CrawlerGeneratorImpl::onButtonToggled(const int& id, const bool& checked)
 }
 
 
-void CrawlerGeneratorImpl::setColor(PushButton* pushbutton, const Vector3& color)
+void CrawlerGenerator::Impl::setColor(PushButton* pushbutton, const Vector3& color)
 {
     QColor selectedColor;
     selectedColor.setRed(color[0] * 255.0);
@@ -782,14 +783,14 @@ void CrawlerGeneratorImpl::setColor(PushButton* pushbutton, const Vector3& color
 }
 
 
-Vector3 CrawlerGeneratorImpl::extractColor(PushButton* colorButton)
+Vector3 CrawlerGenerator::Impl::extractColor(PushButton* colorButton)
 {
     QColor selectedColor = colorButton->palette().color(QPalette::Button);
     return Vector3(selectedColor.red() / 255.0, selectedColor.green() / 255.0, selectedColor.blue() / 255.0);
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeBody(const string& filename)
+MappingPtr CrawlerGenerator::Impl::writeBody(const string& filename)
 {
     MappingPtr node = new Mapping;
 
@@ -819,7 +820,7 @@ MappingPtr CrawlerGeneratorImpl::writeBody(const string& filename)
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeConfig(const string& filename)
+MappingPtr CrawlerGenerator::Impl::writeConfig(const string& filename)
 {
     MappingPtr node = new Mapping;
 
@@ -873,7 +874,7 @@ MappingPtr CrawlerGeneratorImpl::writeConfig(const string& filename)
 }
 
 
-void CrawlerGeneratorImpl::writeBody(Listing* linksNode)
+void CrawlerGenerator::Impl::writeBody(Listing* linksNode)
 {
     int jointID = 0;
 
@@ -979,7 +980,7 @@ void CrawlerGeneratorImpl::writeBody(Listing* linksNode)
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeChassis()
+MappingPtr CrawlerGenerator::Impl::writeChassis()
 {
     MappingPtr chassisNode = new Mapping;
 
@@ -1013,7 +1014,7 @@ MappingPtr CrawlerGeneratorImpl::writeChassis()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeSpacer()
+MappingPtr CrawlerGenerator::Impl::writeSpacer()
 {
     MappingPtr node = new Mapping;
 
@@ -1035,7 +1036,7 @@ MappingPtr CrawlerGeneratorImpl::writeSpacer()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeTrack()
+MappingPtr CrawlerGenerator::Impl::writeTrack()
 {
     MappingPtr trackNode = new Mapping;
     trackNode->write("parent", "CHASSIS");
@@ -1091,7 +1092,7 @@ MappingPtr CrawlerGeneratorImpl::writeTrack()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeFrontTrack()
+MappingPtr CrawlerGenerator::Impl::writeFrontTrack()
 {
     MappingPtr trackNode = new Mapping;
 
@@ -1148,7 +1149,7 @@ MappingPtr CrawlerGeneratorImpl::writeFrontTrack()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeRearTrack()
+MappingPtr CrawlerGenerator::Impl::writeRearTrack()
 {
     MappingPtr trackNode = new Mapping;
 
@@ -1205,7 +1206,7 @@ MappingPtr CrawlerGeneratorImpl::writeRearTrack()
 }
 
 
-void CrawlerGeneratorImpl::writeAGXBody(Listing* linksNode)
+void CrawlerGenerator::Impl::writeAGXBody(Listing* linksNode)
 {
     int jointID = 0;
 
@@ -1530,7 +1531,7 @@ void CrawlerGeneratorImpl::writeAGXBody(Listing* linksNode)
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXTrack()
+MappingPtr CrawlerGenerator::Impl::writeAGXTrack()
 {
     MappingPtr node = new Mapping;
 
@@ -1544,7 +1545,7 @@ MappingPtr CrawlerGeneratorImpl::writeAGXTrack()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXTrackBelt()
+MappingPtr CrawlerGenerator::Impl::writeAGXTrackBelt()
 {
     MappingPtr node = new Mapping;
 
@@ -1567,7 +1568,7 @@ MappingPtr CrawlerGeneratorImpl::writeAGXTrackBelt()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXSprocket()
+MappingPtr CrawlerGenerator::Impl::writeAGXSprocket()
 {
     MappingPtr node = new Mapping;
 
@@ -1587,19 +1588,19 @@ MappingPtr CrawlerGeneratorImpl::writeAGXSprocket()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXRoller()
+MappingPtr CrawlerGenerator::Impl::writeAGXRoller()
 {
     return writeAGXSprocket();
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXIdler()
+MappingPtr CrawlerGenerator::Impl::writeAGXIdler()
 {
     return writeAGXSprocket();
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXFrontTrack()
+MappingPtr CrawlerGenerator::Impl::writeAGXFrontTrack()
 {
     MappingPtr node = new Mapping;
 
@@ -1612,7 +1613,7 @@ MappingPtr CrawlerGeneratorImpl::writeAGXFrontTrack()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXRearTrack()
+MappingPtr CrawlerGenerator::Impl::writeAGXRearTrack()
 {
     MappingPtr node = new Mapping;
 
@@ -1625,7 +1626,7 @@ MappingPtr CrawlerGeneratorImpl::writeAGXRearTrack()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXSubTrackBelt()
+MappingPtr CrawlerGenerator::Impl::writeAGXSubTrackBelt()
 {
     MappingPtr node = new Mapping;
 
@@ -1648,7 +1649,7 @@ MappingPtr CrawlerGeneratorImpl::writeAGXSubTrackBelt()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXFrontSprocket()
+MappingPtr CrawlerGenerator::Impl::writeAGXFrontSprocket()
 {
     MappingPtr node = new Mapping;
 
@@ -1673,7 +1674,7 @@ MappingPtr CrawlerGeneratorImpl::writeAGXFrontSprocket()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXFrontRoller()
+MappingPtr CrawlerGenerator::Impl::writeAGXFrontRoller()
 {
     MappingPtr node = new Mapping;
 
@@ -1698,7 +1699,7 @@ MappingPtr CrawlerGeneratorImpl::writeAGXFrontRoller()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXFrontIdler()
+MappingPtr CrawlerGenerator::Impl::writeAGXFrontIdler()
 {
     MappingPtr node = new Mapping;
 
@@ -1723,7 +1724,7 @@ MappingPtr CrawlerGeneratorImpl::writeAGXFrontIdler()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXRearSprocket()
+MappingPtr CrawlerGenerator::Impl::writeAGXRearSprocket()
 {
     MappingPtr node = new Mapping;
 
@@ -1748,7 +1749,7 @@ MappingPtr CrawlerGeneratorImpl::writeAGXRearSprocket()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXRearRoller()
+MappingPtr CrawlerGenerator::Impl::writeAGXRearRoller()
 {
     MappingPtr node = new Mapping;
 
@@ -1773,7 +1774,7 @@ MappingPtr CrawlerGeneratorImpl::writeAGXRearRoller()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXRearIdler()
+MappingPtr CrawlerGenerator::Impl::writeAGXRearIdler()
 {
     MappingPtr node = new Mapping;
 
@@ -1798,7 +1799,7 @@ MappingPtr CrawlerGeneratorImpl::writeAGXRearIdler()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXWheel()
+MappingPtr CrawlerGenerator::Impl::writeAGXWheel()
 {
     MappingPtr node = new Mapping;
 
@@ -1811,7 +1812,7 @@ MappingPtr CrawlerGeneratorImpl::writeAGXWheel()
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeCylinderShape(const double& radius, const double& height, const Vector3& color)
+MappingPtr CrawlerGenerator::Impl::writeCylinderShape(const double& radius, const double& height, const Vector3& color)
 {
     MappingPtr node = new Mapping;
 
@@ -1831,7 +1832,7 @@ MappingPtr CrawlerGeneratorImpl::writeCylinderShape(const double& radius, const 
 }
 
 
-MappingPtr CrawlerGeneratorImpl::writeAGXVehicleContinuousTrackDevice(const char* name, const char* sprocketName, const char* rollerName, const char* idlerName, const bool isSubTrack)
+MappingPtr CrawlerGenerator::Impl::writeAGXVehicleContinuousTrackDevice(const char* name, const char* sprocketName, const char* rollerName, const char* idlerName, const bool isSubTrack)
 {
     MappingPtr node = new Mapping;
 

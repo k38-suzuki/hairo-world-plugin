@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class WorldLogManagerDialogImpl;
-
 class WorldLogManagerDialog : public Dialog
 {
 public:
@@ -20,8 +18,8 @@ public:
     static WorldLogManagerDialog* instance();
 
 private:
-    WorldLogManagerDialogImpl* impl;
-    friend class WorldLogManagerDialogImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

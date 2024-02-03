@@ -10,8 +10,6 @@
 
 namespace cnoid {
 
-class OnScreenJoystickViewImpl;
-
 class CNOID_EXPORT OnScreenJoystickView : public View
 {
 public:
@@ -28,8 +26,8 @@ protected:
     virtual bool restoreState(const Archive& archive) override;
     
 private:
-    OnScreenJoystickViewImpl* impl;
-    friend class OnScreenJoystickViewImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

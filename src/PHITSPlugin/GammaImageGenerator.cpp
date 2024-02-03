@@ -396,11 +396,12 @@ vector<DirClippingInfo> getDirectionsClipping(
 
 namespace cnoid {
 
-class GammaImageGeneratorImpl
+class GammaImageGenerator::Impl
 {
 public:
-    GammaImageGeneratorImpl(GammaImageGenerator* self);
     GammaImageGenerator* self;
+
+    Impl(GammaImageGenerator* self);
 
     QImage g_qimage;
     Image g_image;
@@ -424,11 +425,11 @@ public:
 
 GammaImageGenerator::GammaImageGenerator()
 {
-    impl = new GammaImageGeneratorImpl(this);
+    impl = new Impl(this);
 }
 
 
-GammaImageGeneratorImpl::GammaImageGeneratorImpl(GammaImageGenerator* self)
+GammaImageGenerator::Impl::Impl(GammaImageGenerator* self)
     : self(self)
 {
     effectiveDist = 1.0;
@@ -447,7 +448,7 @@ void GammaImageGenerator::generateImage(Camera* camera, std::shared_ptr<Image>& 
 }
 
 
-void GammaImageGeneratorImpl::generateImage(Camera* camera, std::shared_ptr<Image>& image)
+void GammaImageGenerator::Impl::generateImage(Camera* camera, std::shared_ptr<Image>& image)
 {
     if(!image || !camera) {
         return;
@@ -469,7 +470,7 @@ void GammaImageGeneratorImpl::generateImage(Camera* camera, std::shared_ptr<Imag
 }
 
 
-void GammaImageGeneratorImpl::onGenerateGammaImage(Image& image)
+void GammaImageGenerator::Impl::onGenerateGammaImage(Image& image)
 {
     const auto lclUpVec = Vector3d(0.0, 1.0, 0.0);
     const auto lclEye = Vector3d(0.0, 0.0, -1.0);
@@ -542,7 +543,7 @@ void GammaImageGeneratorImpl::onGenerateGammaImage(Image& image)
 }
 
 
-bool GammaImageGeneratorImpl::setGammaDataInfo(GammaData& gammaData, Vector3d position1)
+bool GammaImageGenerator::Impl::setGammaDataInfo(GammaData& gammaData, Vector3d position1)
 {
     int pointNumber = gammaData.getCalculatingPointNumber();
     int number = -1;
@@ -570,7 +571,7 @@ bool GammaImageGeneratorImpl::setGammaDataInfo(GammaData& gammaData, Vector3d po
 }
 
 
-bool GammaImageGeneratorImpl::calc(GammaCamera* camera, const uint32_t width,
+bool GammaImageGenerator::Impl::calc(GammaCamera* camera, const uint32_t width,
                            const uint32_t height, GammaDataInfo& dataInfo, EnergyFilter& filter)
 {
     GammaData& gammaData = camera->gammaData();
@@ -694,7 +695,7 @@ bool GammaImageGeneratorImpl::calc(GammaCamera* camera, const uint32_t width,
 }
 
 
-bool GammaImageGeneratorImpl::calcPinhole(PinholeCamera* camera, const uint32_t width,
+bool GammaImageGenerator::Impl::calcPinhole(PinholeCamera* camera, const uint32_t width,
                                   const uint32_t height, GammaDataInfo& dataInfo)
 {
     GammaData& gammaData = camera->gammaData();
@@ -751,7 +752,7 @@ bool GammaImageGeneratorImpl::calcPinhole(PinholeCamera* camera, const uint32_t 
 }
 
 
-bool GammaImageGeneratorImpl::calcCompton(ComptonCamera* camera, const uint32_t width,
+bool GammaImageGenerator::Impl::calcCompton(ComptonCamera* camera, const uint32_t width,
                                   const uint32_t height, GammaDataInfo& dataInfo)
 {
     GammaData& gammaData = camera->gammaData();

@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class HistoryManagerImpl;
-
 class HistoryManager
 {
 public:
@@ -20,8 +18,8 @@ public:
     static void initializeClass(ExtensionManager* ext);
 
 private:
-    HistoryManagerImpl* impl;
-    friend class HistoryManagerImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

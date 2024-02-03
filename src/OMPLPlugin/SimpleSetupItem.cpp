@@ -42,9 +42,10 @@ namespace cnoid {
 class SimpleSetupItemImpl
 {
 public:
+    SimpleSetupItem* self;
+
     SimpleSetupItemImpl(SimpleSetupItem* self);
     SimpleSetupItemImpl(SimpleSetupItem* self, const SimpleSetupItemImpl& org);
-    SimpleSetupItem* self;
 
     Vector3 boxRegionSize;
     Isometry3 regionOffset;

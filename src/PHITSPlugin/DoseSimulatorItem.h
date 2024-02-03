@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class DoseSimulatorItemImpl;
-
 class DoseSimulatorItem : public SubSimulatorItem
 {
 public:
@@ -29,7 +27,8 @@ protected:
     virtual bool restore(const Archive& archive);
 
 private:
-    DoseSimulatorItemImpl* impl;
+    class Impl;
+    Impl* impl;
 };
 
 typedef ref_ptr<DoseSimulatorItem> DoseSimulatorItemPtr;

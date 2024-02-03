@@ -75,9 +75,10 @@ namespace cnoid {
 class CFDSimulatorItemImpl
 {
 public:
+    CFDSimulatorItem* self;
+
     CFDSimulatorItemImpl(CFDSimulatorItem* self);
     CFDSimulatorItemImpl(CFDSimulatorItem* self, const CFDSimulatorItemImpl& org);
-    CFDSimulatorItem* self;
 
     vector<CFDBody*> cfdBodies;
     DeviceList<Thruster> thrusters;

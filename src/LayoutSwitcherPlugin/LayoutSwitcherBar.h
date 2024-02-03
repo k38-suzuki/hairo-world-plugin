@@ -11,8 +11,6 @@
 
 namespace cnoid {
 
-class LayoutSwitcherBarImpl;
-
 class CNOID_EXPORT LayoutSwitcherBar : public ToolBar
 {
 public:
@@ -27,8 +25,8 @@ protected:
     virtual bool restoreState(const Archive& archive);
 
 private:
-    LayoutSwitcherBarImpl* impl;
-    friend class LayoutSwitcherBarImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

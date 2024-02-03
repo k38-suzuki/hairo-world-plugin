@@ -156,11 +156,12 @@ private:
 };
 
 
-class BodyConverterImpl
+class BodyConverter::Impl
 {
 public:
-    BodyConverterImpl(BodyConverter* self);
     BodyConverter* self;
+
+    Impl(BodyConverter* self);
 
     void show();
 };
@@ -170,11 +171,11 @@ public:
 
 BodyConverter::BodyConverter()
 {
-    impl = new BodyConverterImpl(this);
+    impl = new Impl(this);
 }
 
 
-BodyConverterImpl::BodyConverterImpl(BodyConverter* self)
+BodyConverter::Impl::Impl(BodyConverter* self)
     : self(self)
 {
 
@@ -199,7 +200,7 @@ void BodyConverter::initializeClass(ExtensionManager* ext)
 }
 
 
-void BodyConverterImpl::show()
+void BodyConverter::Impl::show()
 {
     ConvertDialog dialog(MainWindow::instance());
 

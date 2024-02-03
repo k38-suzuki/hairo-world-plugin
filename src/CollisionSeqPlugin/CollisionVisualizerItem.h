@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class CollisionVisualizerItemImpl;
-
 class CollisionVisualizerItem : public SubSimulatorItem
 {
 public:
@@ -28,8 +26,8 @@ protected:
     virtual bool restore(const Archive& archive) override;
 
 private:
-    CollisionVisualizerItemImpl* impl;
-    friend class CollisionVisualizerItemImpl;
+    class Impl;
+    Impl* impl;
 };
 
 typedef ref_ptr<CollisionVisualizerItem> CollisionVisualizerItemPtr;

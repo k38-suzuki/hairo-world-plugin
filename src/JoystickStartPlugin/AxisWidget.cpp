@@ -27,11 +27,12 @@ void onMouseMoved(double& value)
 
 namespace cnoid {
 
-class AxisWidgetImpl
+class AxisWidget::Impl
 {
 public:
-    AxisWidgetImpl(AxisWidget* self);
     AxisWidget* self;
+
+    Impl(AxisWidget* self);
 
     bool isLeftButtonPressed;
     QPoint pos;
@@ -52,11 +53,11 @@ public:
 
 AxisWidget::AxisWidget()
 {
-    impl = new AxisWidgetImpl(this);
+    impl = new Impl(this);
 }
 
 
-AxisWidgetImpl::AxisWidgetImpl(AxisWidget *self)
+AxisWidget::Impl::Impl(AxisWidget *self)
     : self(self)
 {
     joy[0] = joy[1] = 0.0;
@@ -109,7 +110,7 @@ void AxisWidget::paintEvent(QPaintEvent* event)
 }
 
 
-void AxisWidgetImpl::paintEvent(QPaintEvent* event)
+void AxisWidget::Impl::paintEvent(QPaintEvent* event)
 {
     QPainter painter(self);
     painter.setPen(Qt::black);
@@ -124,7 +125,7 @@ void AxisWidget::mousePressEvent(QMouseEvent* event)
 }
 
 
-void AxisWidgetImpl::mousePressEvent(QMouseEvent* event)
+void AxisWidget::Impl::mousePressEvent(QMouseEvent* event)
 {
     if(event->button() == Qt::LeftButton) {
         isLeftButtonPressed = true;
@@ -141,7 +142,7 @@ void AxisWidget::mouseReleaseEvent(QMouseEvent* event)
 }
 
 
-void AxisWidgetImpl::mouseReleaseEvent(QMouseEvent* event)
+void AxisWidget::Impl::mouseReleaseEvent(QMouseEvent* event)
 {
     if(event->button() == Qt::LeftButton) {
         isLeftButtonPressed = false;
@@ -158,7 +159,7 @@ void AxisWidget::mouseMoveEvent(QMouseEvent* event)
 }
 
 
-void AxisWidgetImpl::mouseMoveEvent(QMouseEvent* event)
+void AxisWidget::Impl::mouseMoveEvent(QMouseEvent* event)
 {
     if(isLeftButtonPressed) {
         int w = self->width();

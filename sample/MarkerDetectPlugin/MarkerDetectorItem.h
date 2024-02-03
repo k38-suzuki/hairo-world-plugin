@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class MarkerDetectorItemImpl;
-
 class MarkerDetectorItem : public SubSimulatorItem
 {
 public:
@@ -29,8 +27,8 @@ protected:
     virtual bool restore(const Archive& archive) override;
 
 private:
-    MarkerDetectorItemImpl* impl;
-    friend class MarkerDetectorItemImpl;
+    class Impl;
+    Impl* impl;
 };
 
 typedef ref_ptr<MarkerDetectorItem> MarkerDetectorItemPtr;

@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class JoystickTesterImpl;
-
 class JoystickTester
 {
 public:
@@ -20,8 +18,8 @@ public:
     static void initializeClass(ExtensionManager* ext);
 
 private:
-    JoystickTesterImpl* impl;
-    friend class JoystickTesterImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

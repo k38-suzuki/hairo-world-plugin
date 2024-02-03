@@ -12,8 +12,6 @@
 
 namespace cnoid {
 
-class BeepWidgetImpl;
-
 class CNOID_EXPORT BeepWidget : public Widget
 {
 public:
@@ -28,8 +26,8 @@ public:
     bool restoreState(const Archive& archive);
 
 private:
-    BeepWidgetImpl* impl;
-    friend class BeepWidgetImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

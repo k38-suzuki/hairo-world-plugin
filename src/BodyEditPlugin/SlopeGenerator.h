@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class SlopeGeneratorImpl;
-
 class SlopeGenerator
 {
 public:
@@ -20,8 +18,8 @@ public:
     static void initializeClass(ExtensionManager* ext);
 
 private:
-    SlopeGeneratorImpl* impl;
-    friend class SlopeGeneratorImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

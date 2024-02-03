@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class BodyConverterImpl;
-
 class BodyConverter
 {
 public:
@@ -20,8 +18,8 @@ public:
     static void initializeClass(ExtensionManager* ext);
 
 private:
-    BodyConverterImpl* impl;
-    friend class BodyConverterImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

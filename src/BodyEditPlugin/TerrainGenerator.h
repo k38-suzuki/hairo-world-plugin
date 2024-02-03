@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class TerrainGeneratorImpl;
-
 class TerrainGenerator
 {
 public:
@@ -20,8 +18,8 @@ public:
     static void initializeClass(ExtensionManager* ext);
 
 private:
-    TerrainGeneratorImpl* impl;
-    friend class TerrainGeneratorImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

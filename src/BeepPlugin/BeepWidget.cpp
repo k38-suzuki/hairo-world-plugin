@@ -16,11 +16,12 @@ using namespace std;
 
 namespace cnoid {
 
-class BeepWidgetImpl
+class BeepWidget::Impl
 {
 public:
-    BeepWidgetImpl(BeepWidget* self);
     BeepWidget* self;
+
+    Impl(BeepWidget* self);
 
     enum ButtonID { ADD_BUTTON, REMOVE_BUTTON, PLAY_BUTTON, NUM_BUTTONS };
     enum ColumnID { NO, LINK0, LINK1, FREQUENCY, NUM_COLUMNS };
@@ -44,11 +45,11 @@ public:
 
 BeepWidget::BeepWidget()
 {
-    impl = new BeepWidgetImpl(this);
+    impl = new Impl(this);
 }
 
 
-BeepWidgetImpl::BeepWidgetImpl(BeepWidget* self)
+BeepWidget::Impl::Impl(BeepWidget* self)
     : self(self)
 {
     const QStringList label0 = { _("No"), _("Link0"), _("Link1"), _("Frequency") };
@@ -87,7 +88,7 @@ TreeWidget* BeepWidget::treeWidget()
 }
 
 
-void BeepWidgetImpl::addItem(const string& link0, const string& link1, const int& frequency)
+void BeepWidget::Impl::addItem(const string& link0, const string& link1, const int& frequency)
 {
     QTreeWidgetItem* item = new QTreeWidgetItem(treeWidget);
     item->setFlags(item->flags() | Qt::ItemIsEditable);
@@ -101,7 +102,7 @@ void BeepWidgetImpl::addItem(const string& link0, const string& link1, const int
 }
 
 
-void BeepWidgetImpl::removeCurrentItem()
+void BeepWidget::Impl::removeCurrentItem()
 {
     QTreeWidgetItem* item = treeWidget->currentItem();
     if(item) {
@@ -111,7 +112,7 @@ void BeepWidgetImpl::removeCurrentItem()
 }
 
 
-void BeepWidgetImpl::clearItems()
+void BeepWidget::Impl::clearItems()
 {
     int numChildren = treeWidget->topLevelItemCount();
     for(int i = 0; i < numChildren; ++i) {
@@ -124,7 +125,7 @@ void BeepWidgetImpl::clearItems()
 }
 
 
-void BeepWidgetImpl::onButtonClicked(const int& id)
+void BeepWidget::Impl::onButtonClicked(const int& id)
 {
     if(id == ADD_BUTTON) {
         addItem("", "", 440);
@@ -136,7 +137,7 @@ void BeepWidgetImpl::onButtonClicked(const int& id)
 }
 
 
-void BeepWidgetImpl::onPlayButtonClicked()
+void BeepWidget::Impl::onPlayButtonClicked()
 {
     QTreeWidgetItem* item = treeWidget->currentItem();
     play(item);
@@ -156,7 +157,7 @@ void BeepWidget::play(const int& index)
 }
 
 
-void BeepWidgetImpl::play(QTreeWidgetItem* item)
+void BeepWidget::Impl::play(QTreeWidgetItem* item)
 {
     if(item) {
         int frequency = item->text(FREQUENCY).toInt();
@@ -192,7 +193,7 @@ bool BeepWidget::storeState(Archive& archive)
 }
 
 
-bool BeepWidgetImpl::storeState(Archive& archive)
+bool BeepWidget::Impl::storeState(Archive& archive)
 {
     ListingPtr itemListing = new Listing;
 
@@ -220,7 +221,7 @@ bool BeepWidget::restoreState(const Archive& archive)
 }
 
 
-bool BeepWidgetImpl::restoreState(const Archive& archive)
+bool BeepWidget::Impl::restoreState(const Archive& archive)
 {
     clearItems();
 

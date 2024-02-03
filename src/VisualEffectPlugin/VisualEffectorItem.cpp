@@ -264,7 +264,7 @@ void onShowConfigTriggered()
 
 namespace cnoid {
 
-class VisualEffectorItemImpl
+class VisualEffectorItem::Impl
 {
 public:
     VisualEffectorItem* self;
@@ -275,7 +275,7 @@ public:
     SgUpdate update;
     bool isRestoringSubItems;
 
-    VisualEffectorItemImpl(VisualEffectorItem* self);
+    Impl(VisualEffectorItem* self);
     template<class ItemType, class SensorType>
     ref_ptr<ItemType> extractMatchedSubItem(ItemList<>& items, Device* deviceInstance);
     template<class ItemType, class SensorType>
@@ -324,18 +324,18 @@ void VisualEffectorItem::initializeClass(ExtensionManager* ext)
 
 VisualEffectorItem::VisualEffectorItem()
 {
-    impl = new VisualEffectorItemImpl(this);
+    impl = new Impl(this);
 }
 
 
 VisualEffectorItem::VisualEffectorItem(const VisualEffectorItem& org)
     : Item(org)
 {
-    impl = new VisualEffectorItemImpl(this);
+    impl = new Impl(this);
 }
 
 
-VisualEffectorItemImpl::VisualEffectorItemImpl(VisualEffectorItem* self)
+VisualEffectorItem::Impl::Impl(VisualEffectorItem* self)
     : self(self)
 {
     bodyItem = nullptr;
@@ -373,7 +373,7 @@ void VisualEffectorItem::onDisconnectedFromRoot()
 }
 
 
-void VisualEffectorItemImpl::updateSubVisualizerItems(bool forceUpdate)
+void VisualEffectorItem::Impl::updateSubVisualizerItems(bool forceUpdate)
 {
     auto newBodyItem = self->findOwnerItem<BodyItem>();
     bool doUpdate = forceUpdate || newBodyItem != bodyItem;
@@ -405,7 +405,7 @@ void VisualEffectorItemImpl::updateSubVisualizerItems(bool forceUpdate)
 
 
 template<class ItemType, class SensorType>
-ref_ptr<ItemType> VisualEffectorItemImpl::extractMatchedSubItem(ItemList<>& items, Device* deviceInstance)
+ref_ptr<ItemType> VisualEffectorItem::Impl::extractMatchedSubItem(ItemList<>& items, Device* deviceInstance)
 {
     ref_ptr<ItemType> matchedSubItem;
     auto it = items.begin();
@@ -424,7 +424,7 @@ ref_ptr<ItemType> VisualEffectorItemImpl::extractMatchedSubItem(ItemList<>& item
 
 
 template<class ItemType, class SensorType>
-void VisualEffectorItemImpl::addVisualEffectorItem(Body* body)
+void VisualEffectorItem::Impl::addVisualEffectorItem(Body* body)
 {
     auto sensors = body->devices<SensorType>();
     if(!sensors.empty()) {
@@ -444,7 +444,7 @@ void VisualEffectorItemImpl::addVisualEffectorItem(Body* body)
 
 
 template<class ItemType, class SensorType>
-void VisualEffectorItemImpl::addVisionVisualEffectorItem(Body* body)
+void VisualEffectorItem::Impl::addVisionVisualEffectorItem(Body* body)
 {
     bool isCamera = typeid(SensorType) == typeid(Camera);
     

@@ -11,8 +11,6 @@
 
 namespace cnoid {
 
-class BeepViewImpl;
-
 class CNOID_EXPORT BeepView : public View
 {
 public:
@@ -28,8 +26,8 @@ public:
     virtual bool restoreState(const Archive& archive) override;
 
 private:
-    BeepViewImpl* impl;
-    friend class BeepViewImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

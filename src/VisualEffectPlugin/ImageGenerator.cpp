@@ -34,11 +34,12 @@ const double prewitt3[2][9] = { { -1.0, 0.0, 1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0
 
 namespace cnoid {
 
-class ImageGeneratorImpl
+class ImageGenerator::Impl
 {
 public:
-    ImageGeneratorImpl(ImageGenerator* self);
     ImageGenerator* self;
+
+    Impl(ImageGenerator* self);
 
     random_device seed_gen;
     default_random_engine engine;
@@ -52,11 +53,11 @@ public:
 
 ImageGenerator::ImageGenerator()
 {
-    impl = new ImageGeneratorImpl(this);
+    impl = new Impl(this);
 }
 
 
-ImageGeneratorImpl::ImageGeneratorImpl(ImageGenerator* self)
+ImageGenerator::Impl::Impl(ImageGenerator* self)
     : self(self)
 {
     std::default_random_engine engineImpl(seed_gen());
@@ -413,7 +414,7 @@ void ImageGenerator::prewittFilter(Image& image)
 }
 
 
-void ImageGeneratorImpl::differentialFilter(Image& image, const double kernel[2][9])
+void ImageGenerator::Impl::differentialFilter(Image& image, const double kernel[2][9])
 {
     Image cloneImage;
     int width = image.width();

@@ -51,11 +51,12 @@ DoubleSpinInfo doubleSpinInfo[] = {
 
 namespace cnoid {
 
-class SlopeGeneratorImpl : public Dialog
+class SlopeGenerator::Impl : public Dialog
 {
 public:
-    SlopeGeneratorImpl(SlopeGenerator* self);
     SlopeGenerator* self;
+
+    Impl(SlopeGenerator* self);
 
     enum DoubleSpinId {
         MASS, WIDTH, HEIGHT,
@@ -80,11 +81,11 @@ public:
 
 SlopeGenerator::SlopeGenerator()
 {
-    impl = new SlopeGeneratorImpl(this);
+    impl = new Impl(this);
 }
 
 
-SlopeGeneratorImpl::SlopeGeneratorImpl(SlopeGenerator* self)
+SlopeGenerator::Impl::Impl(SlopeGenerator* self)
     : self(self)
 {
     setWindowTitle(_("Slope Generator"));
@@ -144,7 +145,7 @@ void SlopeGenerator::initializeClass(ExtensionManager* ext)
 }
 
 
-bool SlopeGeneratorImpl::save(const string& filename)
+bool SlopeGenerator::Impl::save(const string& filename)
 {
     if(!filename.empty()) {
         auto topNode = writeBody(filename);
@@ -158,7 +159,7 @@ bool SlopeGeneratorImpl::save(const string& filename)
 }
 
 
-void SlopeGeneratorImpl::onColorButtonClicked()
+void SlopeGenerator::Impl::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -178,7 +179,7 @@ void SlopeGeneratorImpl::onColorButtonClicked()
 }
 
 
-MappingPtr SlopeGeneratorImpl::writeBody(const string& filename)
+MappingPtr SlopeGenerator::Impl::writeBody(const string& filename)
 {
     MappingPtr node = new Mapping;
 
@@ -200,7 +201,7 @@ MappingPtr SlopeGeneratorImpl::writeBody(const string& filename)
 }
 
 
-MappingPtr SlopeGeneratorImpl::writeLink()
+MappingPtr SlopeGenerator::Impl::writeLink()
 {
     MappingPtr node = new Mapping;
 
@@ -222,7 +223,7 @@ MappingPtr SlopeGeneratorImpl::writeLink()
 }
 
 
-void SlopeGeneratorImpl::writeLinkShape(Listing* elementsNode)
+void SlopeGenerator::Impl::writeLinkShape(Listing* elementsNode)
 {
     MappingPtr node = new Mapping;
 
@@ -273,7 +274,7 @@ void SlopeGeneratorImpl::writeLinkShape(Listing* elementsNode)
 }
 
 
-VectorXd SlopeGeneratorImpl::calcInertia()
+VectorXd SlopeGenerator::Impl::calcInertia()
 {
     VectorXd inertia;
     inertia.resize(9);

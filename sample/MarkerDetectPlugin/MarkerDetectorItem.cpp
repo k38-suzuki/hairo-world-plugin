@@ -3,6 +3,7 @@
 */
 
 #include "MarkerDetectorItem.h"
+#include <cnoid/Body>
 #include <cnoid/DeviceList>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
@@ -17,12 +18,13 @@ using namespace std;
 
 namespace cnoid {
 
-class MarkerDetectorItemImpl
+class MarkerDetectorItem::Impl
 {
 public:
-    MarkerDetectorItemImpl(MarkerDetectorItem* self);
-    MarkerDetectorItemImpl(MarkerDetectorItem* self, const MarkerDetectorItemImpl& org);
     MarkerDetectorItem* self;
+
+    Impl(MarkerDetectorItem* self);
+    Impl(MarkerDetectorItem* self, const Impl& org);
 
     DeviceList<PassiveMarker> markers;
     DeviceList<ScopeDevice> scopes;
@@ -39,11 +41,11 @@ public:
 
 MarkerDetectorItem::MarkerDetectorItem()
 {
-    impl = new MarkerDetectorItemImpl(this);
+    impl = new Impl(this);
 }
 
 
-MarkerDetectorItemImpl::MarkerDetectorItemImpl(MarkerDetectorItem* self)
+MarkerDetectorItem::Impl::Impl(MarkerDetectorItem* self)
     : self(self)
 {
     markers.clear();
@@ -53,14 +55,14 @@ MarkerDetectorItemImpl::MarkerDetectorItemImpl(MarkerDetectorItem* self)
 
 MarkerDetectorItem::MarkerDetectorItem(const MarkerDetectorItem& org)
     : SubSimulatorItem(org),
-      impl(new MarkerDetectorItemImpl(this, *org.impl))
+      impl(new Impl(this, *org.impl))
 
 {
 
 }
 
 
-MarkerDetectorItemImpl::MarkerDetectorItemImpl(MarkerDetectorItem* self, const MarkerDetectorItemImpl& org)
+MarkerDetectorItem::Impl::Impl(MarkerDetectorItem* self, const Impl& org)
     : self(self)
 {
 
@@ -86,7 +88,7 @@ bool MarkerDetectorItem::initializeSimulation(SimulatorItem* simulatorItem)
 }
 
 
-bool MarkerDetectorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
+bool MarkerDetectorItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     markers.clear();
     scopes.clear();
@@ -105,7 +107,7 @@ bool MarkerDetectorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 }
 
 
-void MarkerDetectorItemImpl::onPreDynamicsFunction()
+void MarkerDetectorItem::Impl::onPreDynamicsFunction()
 {
     DeviceList<PassiveMarker> capturedMarkers;
     for(size_t i = 0; i < scopes.size(); ++i) {
@@ -181,7 +183,7 @@ void MarkerDetectorItem::doPutProperties(PutPropertyFunction& putProperty)
 }
 
 
-void MarkerDetectorItemImpl::doPutProperties(PutPropertyFunction& putProperty)
+void MarkerDetectorItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
 {
 
 }
@@ -194,7 +196,7 @@ bool MarkerDetectorItem::store(Archive& archive)
 }
 
 
-bool MarkerDetectorItemImpl::store(Archive& archive)
+bool MarkerDetectorItem::Impl::store(Archive& archive)
 {
     return true;
 }
@@ -207,7 +209,7 @@ bool MarkerDetectorItem::restore(const Archive& archive)
 }
 
 
-bool MarkerDetectorItemImpl::restore(const Archive& archive)
+bool MarkerDetectorItem::Impl::restore(const Archive& archive)
 {
     return true;
 }

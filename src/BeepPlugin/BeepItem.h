@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class BeepItemImpl;
-
 class BeepItem : public SubSimulatorItem
 {
 public:
@@ -28,8 +26,8 @@ protected:
     virtual bool restore(const Archive& archive) override;
 
 private:
-    BeepItemImpl* impl;
-    friend class BeepItemImpl;
+    class Impl;
+    Impl* impl;
 };
 
 typedef ref_ptr<BeepItem> BeepItemPtr;

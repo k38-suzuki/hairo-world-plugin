@@ -10,8 +10,6 @@
 
 namespace cnoid {
 
-class KIOSKManagerImpl;
-
 class KIOSKManager
 {
 public:
@@ -21,8 +19,8 @@ public:
     static void initializeClass(ExtensionManager* ext);
 
 private:
-    KIOSKManagerImpl* impl;
-    friend class KIOSKManagerImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

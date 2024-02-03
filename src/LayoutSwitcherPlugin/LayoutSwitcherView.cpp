@@ -20,11 +20,12 @@ LayoutSwitcherView* instance_ = nullptr;
 
 namespace cnoid {
 
-class LayoutSwitcherViewImpl
+class LayoutSwitcherView::Impl
 {
 public:
-    LayoutSwitcherViewImpl(LayoutSwitcherView* self);
     LayoutSwitcherView* self;
+
+    Impl(LayoutSwitcherView* self);
 
     QScrollArea scrollArea;
 
@@ -39,11 +40,11 @@ public:
 
 LayoutSwitcherView::LayoutSwitcherView()
 {
-    impl = new LayoutSwitcherViewImpl(this);
+    impl = new Impl(this);
 }
 
 
-LayoutSwitcherViewImpl::LayoutSwitcherViewImpl(LayoutSwitcherView* self)
+LayoutSwitcherView::Impl::Impl(LayoutSwitcherView* self)
     : self(self)
 {
     self->setDefaultLayoutArea(View::BottomCenterArea);
@@ -98,7 +99,7 @@ bool LayoutSwitcherView::storeState(Archive& archive)
 }
 
 
-bool LayoutSwitcherViewImpl::storeState(Archive& archive)
+bool LayoutSwitcherView::Impl::storeState(Archive& archive)
 {
     layoutSwicher->storeState(archive);
     return true;
@@ -111,7 +112,7 @@ bool LayoutSwitcherView::restoreState(const Archive& archive)
 }
 
 
-bool LayoutSwitcherViewImpl::restoreState(const Archive& archive)
+bool LayoutSwitcherView::Impl::restoreState(const Archive& archive)
 {
     layoutSwicher->restoreState(archive);
     return true;

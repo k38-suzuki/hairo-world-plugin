@@ -52,11 +52,12 @@ DoubleSpinInfo doubleSpinInfo[] = {
 
 namespace cnoid {
 
-class StairsGeneratorImpl : public Dialog
+class StairsGenerator::Impl : public Dialog
 {
 public:
-    StairsGeneratorImpl(StairsGenerator* self);
     StairsGenerator* self;
+
+    Impl(StairsGenerator* self);
 
     enum DoubleSpinId {
         TREAD, WIDTH, RISER,
@@ -84,11 +85,11 @@ public:
 
 StairsGenerator::StairsGenerator()
 {
-    impl = new StairsGeneratorImpl(this);
+    impl = new Impl(this);
 }
 
 
-StairsGeneratorImpl::StairsGeneratorImpl(StairsGenerator* self)
+StairsGenerator::Impl::Impl(StairsGenerator* self)
     : self(self)
 {
     setWindowTitle(_("Stairs Generator"));
@@ -155,7 +156,7 @@ void StairsGenerator::initializeClass(ExtensionManager* ext)
 }
 
 
-bool StairsGeneratorImpl::save(const string& filename)
+bool StairsGenerator::Impl::save(const string& filename)
 {
     if(!filename.empty()) {
         auto topNode = writeBody(filename);
@@ -169,7 +170,7 @@ bool StairsGeneratorImpl::save(const string& filename)
 }
 
 
-void StairsGeneratorImpl::onColorButtonClicked()
+void StairsGenerator::Impl::onColorButtonClicked()
 {
     QColor selectedColor;
     QColor currentColor = colorButton->palette().color(QPalette::Button);
@@ -189,7 +190,7 @@ void StairsGeneratorImpl::onColorButtonClicked()
 }
 
 
-MappingPtr StairsGeneratorImpl::writeBody(const string& filename)
+MappingPtr StairsGenerator::Impl::writeBody(const string& filename)
 {
     MappingPtr node = new Mapping;
 
@@ -211,7 +212,7 @@ MappingPtr StairsGeneratorImpl::writeBody(const string& filename)
 }
 
 
-MappingPtr StairsGeneratorImpl::writeLink()
+MappingPtr StairsGenerator::Impl::writeLink()
 {
     MappingPtr node = new Mapping;
 
@@ -231,7 +232,7 @@ MappingPtr StairsGeneratorImpl::writeLink()
 }
 
 
-void StairsGeneratorImpl::writeLinkShape(Listing* elementsNode)
+void StairsGenerator::Impl::writeLinkShape(Listing* elementsNode)
 {
     double tread = dspins[TREAD]->value();
     double width = dspins[WIDTH]->value();
@@ -282,7 +283,7 @@ void StairsGeneratorImpl::writeLinkShape(Listing* elementsNode)
 }
 
 
-void StairsGeneratorImpl::writeStringerShape(Listing* elementsNode)
+void StairsGenerator::Impl::writeStringerShape(Listing* elementsNode)
 {
     MappingPtr node = new Mapping;
 
@@ -337,7 +338,7 @@ void StairsGeneratorImpl::writeStringerShape(Listing* elementsNode)
 }
 
 
-void StairsGeneratorImpl::writeStepShape(Listing* elementsNode)
+void StairsGenerator::Impl::writeStepShape(Listing* elementsNode)
 {
     MappingPtr node = new Mapping;
 

@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class SimpleTimeWidgetImpl;
-
 class SimpleTimeWidget : public Widget
 {
 public:
@@ -18,8 +16,8 @@ public:
     virtual ~SimpleTimeWidget();
 
 private:
-    SimpleTimeWidgetImpl* impl;
-    friend class SimpleTimeWidgetImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class SimpleSimulationViewImpl;
-
 class SimpleSimulationView : public View
 {
 public:
@@ -21,8 +19,8 @@ public:
     static SimpleSimulationView* instance();
 
 private:
-    SimpleSimulationViewImpl* impl;
-    friend class SimpleSimulationViewImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

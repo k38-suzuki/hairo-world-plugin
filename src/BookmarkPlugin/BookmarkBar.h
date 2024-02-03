@@ -10,8 +10,6 @@
 
 namespace cnoid {
 
-class BookmarkBarImpl;
-
 class BookmarkBar : public ToolBar
 {
 public:
@@ -22,8 +20,8 @@ public:
     static BookmarkBar* instance();
 
 private:
-    BookmarkBarImpl* impl;
-    friend class BookmarkBarImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

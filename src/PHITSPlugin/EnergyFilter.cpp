@@ -50,11 +50,12 @@ public:
 
 namespace cnoid {
 
-class EnergyFilterImpl
+class EnergyFilter::Impl
 {
 public:
-    EnergyFilterImpl(EnergyFilter* self);
     EnergyFilter* self;
+
+    Impl(EnergyFilter* self);
 
     EnergyFilterDialog* config;
 };
@@ -64,11 +65,11 @@ public:
 
 EnergyFilter::EnergyFilter()
 {
-    impl = new EnergyFilterImpl(this);
+    impl = new Impl(this);
 }
 
 
-EnergyFilterImpl::EnergyFilterImpl(EnergyFilter* self)
+EnergyFilter::Impl::Impl(EnergyFilter* self)
     : self(self),
       config(new EnergyFilterDialog())
 {

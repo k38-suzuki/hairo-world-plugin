@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class JoystickLoggerItemImpl;
-
 class JoystickLoggerItem : public SubSimulatorItem
 {
 public:
@@ -28,8 +26,8 @@ protected:
     virtual bool restore(const Archive& archive) override;
 
 private:
-    JoystickLoggerItemImpl* impl;
-    friend class JoystickLoggerItemImpl;
+    class Impl;
+    Impl* impl;
 };
 
 typedef ref_ptr<JoystickLoggerItem> JoystickLoggerItemPtr;

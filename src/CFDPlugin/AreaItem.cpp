@@ -40,9 +40,10 @@ namespace cnoid {
 class AreaItemImpl
 {
 public:
+    AreaItem* self;
+
     AreaItemImpl(AreaItem* self);
     AreaItemImpl(AreaItem* self, const AreaItemImpl& org);
-    AreaItem* self;
 
     Isometry3 regionOffset;
     Selection type;

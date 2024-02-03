@@ -26,11 +26,12 @@ NetworkEmulator* emulatorInstance = nullptr;
 
 namespace cnoid {
 
-class NetworkEmulatorImpl : public Dialog
+class NetworkEmulator::Impl : public Dialog
 {
 public:
-    NetworkEmulatorImpl(NetworkEmulator* self);
     NetworkEmulator* self;
+
+    Impl(NetworkEmulator* self);
 
     NetEmPtr emulator;
     ComboBox* interfaceCombo;
@@ -48,11 +49,11 @@ public:
 
 NetworkEmulator::NetworkEmulator()
 {
-    impl = new NetworkEmulatorImpl(this);
+    impl = new Impl(this);
 }
 
 
-NetworkEmulatorImpl::NetworkEmulatorImpl(NetworkEmulator* self)
+NetworkEmulator::Impl::Impl(NetworkEmulator* self)
     : self(self)
 {
     setWindowTitle(_("Network Emulator"));
@@ -129,7 +130,7 @@ void NetworkEmulator::initializeClass(ExtensionManager* ext)
 }
 
 
-void NetworkEmulatorImpl::onStartButtonToggled(const bool& on)
+void NetworkEmulator::Impl::onStartButtonToggled(const bool& on)
 {
     if(on) {
         startButton->setText(_("&Stop"));

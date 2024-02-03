@@ -10,8 +10,6 @@
 
 namespace cnoid {
 
-class NotepadImpl;
-
 class CNOID_EXPORT Notepad : public QMainWindow
 {
 public:
@@ -21,8 +19,8 @@ public:
     void loadFile(const QString& fileName);
 
 private:
-    NotepadImpl* impl;
-    friend class NotepadImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

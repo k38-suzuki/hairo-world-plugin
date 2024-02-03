@@ -10,8 +10,6 @@
 
 namespace cnoid {
 
-class ImageGeneratorImpl;
-
 class CNOID_EXPORT ImageGenerator
 {
 public:
@@ -34,8 +32,8 @@ public:
     QImage toQImage(const Image& image);
 
 private:
-    ImageGeneratorImpl* impl;
-    friend class ImageGeneratorImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

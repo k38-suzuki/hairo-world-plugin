@@ -64,11 +64,12 @@ private:
 };
 
 
-class TerrainGeneratorImpl : public Dialog
+class TerrainGenerator::Impl : public Dialog
 {
 public:
-    TerrainGeneratorImpl(TerrainGenerator* self);
     TerrainGenerator* self;
+
+    Impl(TerrainGenerator* self);
 
     LineEdit* inputFileLine;
     TerrainData* data;
@@ -89,12 +90,12 @@ public:
 
 TerrainGenerator::TerrainGenerator()
 {
-    impl = new TerrainGeneratorImpl(this);
+    impl = new Impl(this);
 
 }
 
 
-TerrainGeneratorImpl::TerrainGeneratorImpl(TerrainGenerator* self)
+TerrainGenerator::Impl::Impl(TerrainGenerator* self)
     : self(self)
 {
     setWindowTitle(_("BoxTerrain Generator"));
@@ -158,7 +159,7 @@ void TerrainGenerator::initializeClass(ExtensionManager* ext)
 }
 
 
-bool TerrainGeneratorImpl::save(const string& filename)
+bool TerrainGenerator::Impl::save(const string& filename)
 {
     string inputFile = inputFileLine->text().toStdString();
     if(inputFile.empty()) {
@@ -182,7 +183,7 @@ bool TerrainGeneratorImpl::save(const string& filename)
 }
 
 
-void TerrainGeneratorImpl::onLoadButtonClicked()
+void TerrainGenerator::Impl::onLoadButtonClicked()
 {
     FileDialog dialog(MainWindow::instance());
     dialog.setWindowTitle(_("Open a CSV file"));
@@ -205,7 +206,7 @@ void TerrainGeneratorImpl::onLoadButtonClicked()
 }
 
 
-MappingPtr TerrainGeneratorImpl::writeBody(const string& filename)
+MappingPtr TerrainGenerator::Impl::writeBody(const string& filename)
 {
     MappingPtr node = new Mapping;
 
@@ -227,7 +228,7 @@ MappingPtr TerrainGeneratorImpl::writeBody(const string& filename)
 }
 
 
-MappingPtr TerrainGeneratorImpl::writeLink()
+MappingPtr TerrainGenerator::Impl::writeLink()
 {
     MappingPtr node = new Mapping;
 
@@ -247,7 +248,7 @@ MappingPtr TerrainGeneratorImpl::writeLink()
 }
 
 
-void TerrainGeneratorImpl::writeLinkShape(Listing* elementsNode)
+void TerrainGenerator::Impl::writeLinkShape(Listing* elementsNode)
 {
     MappingPtr node = new Mapping;
 
@@ -361,7 +362,7 @@ void TerrainGeneratorImpl::writeLinkShape(Listing* elementsNode)
 }
 
 
-void TerrainGeneratorImpl::writeLinkShape2(Listing* elementsNode)
+void TerrainGenerator::Impl::writeLinkShape2(Listing* elementsNode)
 {
     int xsize = data->xsize();
     int ysize = data->ysize();

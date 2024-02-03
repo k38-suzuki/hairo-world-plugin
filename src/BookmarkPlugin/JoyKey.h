@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class JoyKeyImpl;
-
 class JoyKey
 {
 public:
@@ -45,8 +43,8 @@ public:
     SignalProxy<void()> sigUnlocked();
 
 private:
-    JoyKeyImpl* impl;
-    friend class JoyKeyImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

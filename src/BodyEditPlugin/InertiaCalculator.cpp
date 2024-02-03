@@ -55,11 +55,12 @@ LabelInfo labelInfo[] = {
 
 namespace cnoid {
 
-class InertiaCalculatorImpl : public Dialog
+class InertiaCalculator::Impl : public Dialog
 {
 public:
-    InertiaCalculatorImpl(InertiaCalculator* self);
     InertiaCalculator* self;
+
+    Impl(InertiaCalculator* self);
 
     enum DoubleSpinID {
         BOX_MAS, BOX_X, BOX_Y, BOX_Z,
@@ -90,11 +91,11 @@ public:
 
 InertiaCalculator::InertiaCalculator()
 {
-    impl = new InertiaCalculatorImpl(this);
+    impl = new Impl(this);
 }
 
 
-InertiaCalculatorImpl::InertiaCalculatorImpl(InertiaCalculator* self)
+InertiaCalculator::Impl::Impl(InertiaCalculator* self)
     : self(self),
       mv(new MessageView)
 {
@@ -190,7 +191,7 @@ void InertiaCalculator::initializeClass(ExtensionManager* ext)
 }
 
 
-void InertiaCalculatorImpl::onCalcButtonClicked()
+void InertiaCalculator::Impl::onCalcButtonClicked()
 {
     int index = combos[SHAPE]->currentIndex();
     if(index == BOX) {
@@ -205,7 +206,7 @@ void InertiaCalculatorImpl::onCalcButtonClicked()
 }
 
 
-void InertiaCalculatorImpl::calcBoxInertia()
+void InertiaCalculator::Impl::calcBoxInertia()
 {
     double m = dspins[BOX_MAS]->value();
     double x = dspins[BOX_X]->value();
@@ -221,7 +222,7 @@ void InertiaCalculatorImpl::calcBoxInertia()
 }
 
 
-void InertiaCalculatorImpl::calcSphereInertia()
+void InertiaCalculator::Impl::calcSphereInertia()
 {
     double m = dspins[SPR_MAS]->value();
     double r = dspins[SPR_RAD]->value();
@@ -234,7 +235,7 @@ void InertiaCalculatorImpl::calcSphereInertia()
 }
 
 
-void InertiaCalculatorImpl::calcCylinderInertia()
+void InertiaCalculator::Impl::calcCylinderInertia()
 {
     double m = dspins[CLD_MAS]->value();
     double r = dspins[CLD_RAD]->value();
@@ -261,7 +262,7 @@ void InertiaCalculatorImpl::calcCylinderInertia()
 }
 
 
-void InertiaCalculatorImpl::calcConeInertia()
+void InertiaCalculator::Impl::calcConeInertia()
 {
     double m = dspins[CON_MAS]->value();
     double r = dspins[CON_RAD]->value();
@@ -288,7 +289,7 @@ void InertiaCalculatorImpl::calcConeInertia()
 }
 
 
-void InertiaCalculatorImpl::printIntertia(const Vector3& inertia)
+void InertiaCalculator::Impl::printIntertia(const Vector3& inertia)
 {
     mv->putln(fmt::format(_("inertia: [ {0}, 0, 0, 0, {1}, 0, 0, 0, {2} ]\n"),
                           inertia[0], inertia[1], inertia[2]));

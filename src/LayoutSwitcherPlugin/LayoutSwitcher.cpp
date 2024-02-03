@@ -63,8 +63,9 @@ namespace cnoid {
 class LayoutSwitcherImpl
 {
 public:
-    LayoutSwitcherImpl(LayoutSwitcher* self);
     LayoutSwitcher* self;
+
+    LayoutSwitcherImpl(LayoutSwitcher* self);
 
     vector<LayoutInfoPtr> layoutInfos;
     MenuManager menuManager;

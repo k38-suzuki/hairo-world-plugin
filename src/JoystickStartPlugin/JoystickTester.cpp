@@ -31,11 +31,12 @@ JoystickTester* instance_ = nullptr;
 
 namespace cnoid {
 
-class JoystickTesterImpl : public Dialog
+class JoystickTester::Impl : public Dialog
 {
 public:
-    JoystickTesterImpl(JoystickTester* self);
     JoystickTester* self;
+
+    Impl(JoystickTester* self);
 
     vector<QProgressBar*> bars;
     vector<PushButton*> buttons;
@@ -51,11 +52,11 @@ public:
 
 JoystickTester::JoystickTester()
 {
-    impl = new JoystickTesterImpl(this);
+    impl = new Impl(this);
 }
 
 
-JoystickTesterImpl::JoystickTesterImpl(JoystickTester* self)
+JoystickTester::Impl::Impl(JoystickTester* self)
     : self(self)
 {
     setWindowTitle(_("JoystickTester"));
@@ -131,7 +132,7 @@ void JoystickTester::initializeClass(ExtensionManager* ext)
 }
 
 
-void JoystickTesterImpl::onAxis(const int& id, const double& position)
+void JoystickTester::Impl::onAxis(const int& id, const double& position)
 {
     QProgressBar* bar = bars[id];
     double value = 100.0 * position;
@@ -140,7 +141,7 @@ void JoystickTesterImpl::onAxis(const int& id, const double& position)
 }
 
 
-void JoystickTesterImpl::onButton(const int& id, const bool& isPressed)
+void JoystickTester::Impl::onButton(const int& id, const bool& isPressed)
 {
     PushButton* button = buttons[id];
     QPalette palette;

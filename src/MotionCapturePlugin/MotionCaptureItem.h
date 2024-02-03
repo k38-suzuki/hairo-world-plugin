@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class MotionCaptureItemImpl;
-
 class MotionCaptureItem : public SubSimulatorItem
 {
 public:
@@ -30,8 +28,8 @@ protected:
     virtual bool restore(const Archive& archive) override;
 
 private:
-    MotionCaptureItemImpl* impl;
-    friend class MotionCaptureItemImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

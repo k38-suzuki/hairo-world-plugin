@@ -10,8 +10,6 @@
 
 namespace cnoid {
 
-class IKPlannerItemImpl;
-
 class IKPlannerItem : public SimpleSetupItem
 {
 public:
@@ -32,8 +30,8 @@ protected:
     virtual bool restore(const Archive& archive) override;
 
 private:
-    IKPlannerItemImpl* impl;
-    friend class IKPlannerItemImpl;
+    class Impl;
+    Impl* impl;
 };
 
 typedef ref_ptr<IKPlannerItem> IKPlannerItemPtr;

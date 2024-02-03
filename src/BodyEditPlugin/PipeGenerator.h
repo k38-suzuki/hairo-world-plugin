@@ -9,8 +9,6 @@
 
 namespace cnoid {
 
-class PipeGeneratorImpl;
-
 class PipeGenerator
 {
 public:
@@ -20,8 +18,8 @@ public:
     static void initializeClass(ExtensionManager* ext);
 
 private:
-    PipeGeneratorImpl* impl;
-    friend class PipeGeneratorImpl;
+    class Impl;
+    Impl* impl;
 };
 
 }

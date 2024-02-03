@@ -58,12 +58,13 @@ bool checkIP(const string& address)
 
 namespace cnoid {
 
-class NetworkEmulatorItemImpl
+class NetworkEmulatorItem::Impl
 {
 public:
-    NetworkEmulatorItemImpl(NetworkEmulatorItem* self);
-    NetworkEmulatorItemImpl(NetworkEmulatorItem* self, const NetworkEmulatorItemImpl& org);
     NetworkEmulatorItem* self;
+
+    Impl(NetworkEmulatorItem* self);
+    Impl(NetworkEmulatorItem* self, const Impl& org);
 
     NetEmPtr netem;
     vector<Body*> bodies;
@@ -85,11 +86,11 @@ public:
 
 NetworkEmulatorItem::NetworkEmulatorItem()
 {
-    impl = new NetworkEmulatorItemImpl(this);
+    impl = new Impl(this);
 }
 
 
-NetworkEmulatorItemImpl::NetworkEmulatorItemImpl(NetworkEmulatorItem* self)
+NetworkEmulatorItem::Impl::Impl(NetworkEmulatorItem* self)
     : self(self)
 {
     netem = new NetEm;
@@ -110,13 +111,13 @@ NetworkEmulatorItemImpl::NetworkEmulatorItemImpl(NetworkEmulatorItem* self)
 
 NetworkEmulatorItem::NetworkEmulatorItem(const NetworkEmulatorItem &org)
     : SubSimulatorItem(org),
-      impl(new NetworkEmulatorItemImpl(this, *org.impl))
+      impl(new Impl(this, *org.impl))
 {
 
 }
 
 
-NetworkEmulatorItemImpl::NetworkEmulatorItemImpl(NetworkEmulatorItem* self, const NetworkEmulatorItemImpl& org)
+NetworkEmulatorItem::Impl::Impl(NetworkEmulatorItem* self, const Impl& org)
     : self(self)
 {
     interface = org.interface;
@@ -144,7 +145,7 @@ bool NetworkEmulatorItem::initializeSimulation(SimulatorItem* simulatorItem)
 }
 
 
-bool NetworkEmulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
+bool NetworkEmulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     bodies.clear();
     prevItemID = INT_MAX;
@@ -168,13 +169,13 @@ void NetworkEmulatorItem::finalizeSimulation()
 }
 
 
-void NetworkEmulatorItemImpl::finalizeSimulation()
+void NetworkEmulatorItem::Impl::finalizeSimulation()
 {
     netem->stop();
 }
 
 
-void NetworkEmulatorItemImpl::onPreDynamicsFunction()
+void NetworkEmulatorItem::Impl::onPreDynamicsFunction()
 {
     ItemList<TCAreaItem> areaItems;
     WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
@@ -241,7 +242,7 @@ void NetworkEmulatorItem::doPutProperties(PutPropertyFunction& putProperty)
 }
 
 
-void NetworkEmulatorItemImpl::doPutProperties(PutPropertyFunction& putProperty)
+void NetworkEmulatorItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
 {
     putProperty(_("Interface"), interface,
                 [&](int index){ return interface.select(index); });
@@ -257,7 +258,7 @@ bool NetworkEmulatorItem::store(Archive& archive)
 }
 
 
-bool NetworkEmulatorItemImpl::store(Archive& archive)
+bool NetworkEmulatorItem::Impl::store(Archive& archive)
 {
     archive.write("interface", interface.selectedSymbol(), DOUBLE_QUOTED);
     archive.write("ifb_device", ifbDevice.selectedSymbol(), DOUBLE_QUOTED);
@@ -272,7 +273,7 @@ bool NetworkEmulatorItem::restore(const Archive& archive)
 }
 
 
-bool NetworkEmulatorItemImpl::restore(const Archive& archive)
+bool NetworkEmulatorItem::Impl::restore(const Archive& archive)
 {
     interface.select(archive.get("interface", ""));
     ifbDevice.select(archive.get("ifb_device", ""));

@@ -29,12 +29,13 @@ using namespace std;
 
 namespace cnoid {
 
-class DoseSimulatorItemImpl
+class DoseSimulatorItem::Impl
 {
 public:
-    DoseSimulatorItemImpl(DoseSimulatorItem* self);
-    DoseSimulatorItemImpl(DoseSimulatorItem* self, const DoseSimulatorItemImpl& org);
     DoseSimulatorItem* self;
+
+    Impl(DoseSimulatorItem* self);
+    Impl(DoseSimulatorItem* self, const Impl& org);
 
     DeviceList<DoseMeter> doseMeters;
     double worldTimeStep;
@@ -71,11 +72,11 @@ void DoseSimulatorItem::initializeClass(ExtensionManager* ext)
 
 DoseSimulatorItem::DoseSimulatorItem()
 {
-    impl = new DoseSimulatorItemImpl(this);
+    impl = new Impl(this);
 }
 
 
-DoseSimulatorItemImpl::DoseSimulatorItemImpl(DoseSimulatorItem* self)
+DoseSimulatorItem::Impl::Impl(DoseSimulatorItem* self)
     : self(self)
 {
     doseMeters.clear();
@@ -93,11 +94,11 @@ DoseSimulatorItemImpl::DoseSimulatorItemImpl(DoseSimulatorItem* self)
 DoseSimulatorItem::DoseSimulatorItem(const DoseSimulatorItem& org)
     : SubSimulatorItem(org)
 {
-    impl = new DoseSimulatorItemImpl(this, *org.impl);
+    impl = new Impl(this, *org.impl);
 }
 
 
-DoseSimulatorItemImpl::DoseSimulatorItemImpl(DoseSimulatorItem* self, const DoseSimulatorItemImpl& org)
+DoseSimulatorItem::Impl::Impl(DoseSimulatorItem* self, const Impl& org)
     : self(self),
       defaultShieldTableFile(org.defaultShieldTableFile)
 {
@@ -118,7 +119,7 @@ bool DoseSimulatorItem::initializeSimulation(SimulatorItem* simulatorItem)
 }
 
 
-bool DoseSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
+bool DoseSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     worldTimeStep = simulatorItem->worldTimeStep();
     doseMeters.clear();
@@ -160,7 +161,7 @@ bool DoseSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 }
 
 
-void DoseSimulatorItemImpl::onMidDynamicsFunction()
+void DoseSimulatorItem::Impl::onMidDynamicsFunction()
 {
     if(!nodeData) {
         return;
@@ -197,7 +198,7 @@ void DoseSimulatorItemImpl::onMidDynamicsFunction()
 }
 
 
-void DoseSimulatorItemImpl::onPostDynamicsFunction()
+void DoseSimulatorItem::Impl::onPostDynamicsFunction()
 {
     if(doseMeters.size()) {
         vector<double> integralDoses;
@@ -229,13 +230,13 @@ void DoseSimulatorItemImpl::onPostDynamicsFunction()
 }
 
 
-void DoseSimulatorItemImpl::setDefaultShieldFile(const string& filename)
+void DoseSimulatorItem::Impl::setDefaultShieldFile(const string& filename)
 {
     defaultShieldTableFile = filename;
 }
 
 
-void DoseSimulatorItemImpl::onGammaDataLoaded()
+void DoseSimulatorItem::Impl::onGammaDataLoaded()
 {
     isLoaded = false;
     nodeData = nullptr;
@@ -247,7 +248,7 @@ void DoseSimulatorItemImpl::onGammaDataLoaded()
 }
 
 
-bool DoseSimulatorItemImpl::onColorScalePropertyChanged(const int& index)
+bool DoseSimulatorItem::Impl::onColorScalePropertyChanged(const int& index)
 {
     colorScale.selectIndex(index);
     return true;
@@ -267,7 +268,7 @@ void DoseSimulatorItem::doPutProperties(PutPropertyFunction& putProperty)
 }
 
 
-void DoseSimulatorItemImpl::doPutProperties(PutPropertyFunction& putProperty)
+void DoseSimulatorItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
 {
     putProperty(_("ColorScale"), colorScale,
                 [&](int index){ return onColorScalePropertyChanged(index); });
@@ -285,7 +286,7 @@ bool DoseSimulatorItem::store(Archive& archive)
 }
 
 
-bool DoseSimulatorItemImpl::store(Archive& archive)
+bool DoseSimulatorItem::Impl::store(Archive& archive)
 {
     archive.write("color_scale", colorScale.selectedIndex());
     archive.writeRelocatablePath("default_shield_table_file", defaultShieldTableFile);
@@ -300,7 +301,7 @@ bool DoseSimulatorItem::restore(const Archive& archive)
 }
 
 
-bool DoseSimulatorItemImpl::restore(const Archive& archive)
+bool DoseSimulatorItem::Impl::restore(const Archive& archive)
 {
     colorScale.selectIndex(archive.get("color_scale", 0));
     archive.readRelocatablePath("default_shield_table_file", defaultShieldTableFile);

@@ -25,11 +25,12 @@ SystemTrayIcon* createTrayIcon()
 
 namespace cnoid {
 
-class SystemTrayManagerImpl
+class SystemTrayManager::Impl
 {
 public:
-    SystemTrayManagerImpl(SystemTrayManager* self);
     SystemTrayManager* self;
+
+    Impl(SystemTrayManager* self);
 };
 
 }
@@ -37,11 +38,11 @@ public:
 
 SystemTrayManager::SystemTrayManager()
 {
-    impl = new SystemTrayManagerImpl(this);
+    impl = new Impl(this);
 }
 
 
-SystemTrayManagerImpl::SystemTrayManagerImpl(SystemTrayManager* self)
+SystemTrayManager::Impl::Impl(SystemTrayManager* self)
     : self(self)
 {
 
