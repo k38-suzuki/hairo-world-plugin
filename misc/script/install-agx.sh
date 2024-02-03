@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/sh
+
 cd `dirname $0`
 sudo dpkg -i agx-2.30.4.0-amd64-ubuntu_18.04.deb
 ls -al /opt/Algoryx/AGX-2.30.4.0

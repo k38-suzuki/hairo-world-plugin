@@ -1,7 +1,6 @@
 #!/bin/sh
 
 sudo apt-get -y install \
-gedit \
 beep
 
 LOGNAME=$(logname)
