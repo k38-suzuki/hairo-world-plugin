@@ -5,13 +5,13 @@ if(NOT BUILD_IKPLANNER_PLUGIN OR NOT BUILD_OMPL_PLUGIN)
 endif()
 
 set(sources
-  IKPlannerItem.cpp
-  IKPlannerPlugin.cpp
-)
+    IKPlannerItem.cpp
+    IKPlannerPlugin.cpp
+    )
 
 set(headers
-  IKPlannerItem.h
-)
+    IKPlannerItem.h
+    )
 
 set(target CnoidIKPlannerPlugin)
 make_gettext_mofiles(${target} mofiles)

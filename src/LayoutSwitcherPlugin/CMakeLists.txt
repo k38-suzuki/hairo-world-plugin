@@ -4,14 +4,14 @@ set(sources
     LayoutSwitcherBar.cpp
     LayoutSwitcherPlugin.cpp
     LayoutSwitcherView.cpp
-)
+    )
 
 set(headers
     LayoutSwitcher.h
     LayoutSwitcherBar.h
     LayoutSwitcherView.h
     exportdecl.h
-)
+    )
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project

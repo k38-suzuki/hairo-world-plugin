@@ -3,7 +3,7 @@ set(sources
     MotionCaptureItem.cpp
     MotionCapturePlugin.cpp
     PassiveMarker.cpp
-   )
+    )
 
 set(headers
     MotionCaptureItem.h

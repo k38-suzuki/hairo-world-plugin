@@ -8,7 +8,7 @@ set(sources
     ScopeDevice.cpp
     MarkerDetectorItem.cpp
     MarkerDetectPlugin.cpp
-   )
+    )
 
 set(headers
     ScopeDevice.h

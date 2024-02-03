@@ -8,9 +8,9 @@ if(NOT BUILD_LIFT_SAMPLE)
 endif()
 
 set(sources
-  LiftSamplePlugin.cpp
-  LiftSimulatorItem.cpp
-)
+    LiftSamplePlugin.cpp
+    LiftSimulatorItem.cpp
+    )
 
 set(target CnoidLiftSamplePlugin)
 choreonoid_add_plugin(${target} ${sources})
