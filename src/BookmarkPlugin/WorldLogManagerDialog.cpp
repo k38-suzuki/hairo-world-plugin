@@ -46,7 +46,7 @@ public:
     WorldLogManagerDialog* self;
 
     Impl(WorldLogManagerDialog* self);
-    virtual ~Impl();
+    ~Impl();
 
     TreeWidget* treeWidget;
     CheckBox* saveCheck;

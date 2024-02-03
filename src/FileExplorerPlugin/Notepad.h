@@ -14,7 +14,7 @@ class CNOID_EXPORT Notepad : public QMainWindow
 {
 public:
     Notepad(QWidget* parent = nullptr);
-    ~Notepad();
+    virtual ~Notepad();
 
     void loadFile(const QString& fileName);
 

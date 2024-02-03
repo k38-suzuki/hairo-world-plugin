@@ -23,7 +23,7 @@ public:
     HistoryManager* self;
 
     Impl(HistoryManager* self, ExtensionManager* ext);
-    virtual ~Impl();
+    ~Impl();
 
     Menu* currentMenu;
     Menu* contextMenu;

@@ -34,7 +34,7 @@ public:
     BookmarkManagerDialog* self;
 
     Impl(BookmarkManagerDialog* self);
-    virtual ~Impl();
+    ~Impl();
 
     TreeWidget* treeWidget;
     Menu contextMenu;

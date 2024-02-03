@@ -42,7 +42,7 @@ class OrthoCellData
 {
 public:
     OrthoCellData();
-    virtual ~OrthoCellData();
+    ~OrthoCellData();
 
     virtual bool isValid() const { return isValid_; }
     virtual size_t size(const int axis) const { return coordinates_[axis].size() - 1; }
@@ -72,7 +72,7 @@ class ShieldTable
 {
 public:
     ShieldTable();
-    virtual ~ShieldTable();
+    ~ShieldTable();
 
     bool load(const std::string& filename, std::ostream& os = nullout());
     void clear();

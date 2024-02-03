@@ -22,7 +22,7 @@ public:
     NetEm* self;
 
     Impl(NetEm* self);
-    virtual ~Impl();
+    ~Impl();
 
     vector<string> interfaces;
     vector<string> ifbdevices;
