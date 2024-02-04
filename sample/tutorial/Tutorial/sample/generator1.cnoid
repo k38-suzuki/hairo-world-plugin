@@ -1,8 +1,9 @@
 items: 
   id: 0
-  name: "Root"
+  name: "RootItem"
   plugin: Base
   class: RootItem
+  is_builtin_item: true
   children: 
     - 
       id: 1
@@ -10,78 +11,106 @@ items:
       plugin: Body
       class: WorldItem
       data: 
-        collisionDetection: false
-        collisionDetector: AISTCollisionDetector
-        materialTableFile: "${SHARE}/default/materials.yaml"
+        collision_detection: false
+        collision_detector: AISTCollisionDetector
+        default_material_table_file: "${SHARE}/default/materials.yaml"
       children: 
         - 
           id: 2
-          name: "BoxROV"
+          name: "crawler"
           plugin: Body
           class: BodyItem
           is_checked: true
           data: 
-            file: "BoxROV.body"
+            file: "${SHARE}/Tutorial/model/crawler1.body"
             format: CHOREONOID-BODY
-            rootPosition: [ 0, 0, 0 ]
+            rootPosition: [ 0, 0, 0.2 ]
             rootAttitude: [ 
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            jointPositions: [  ]
-            initialRootPosition: [ 0, 0, 0 ]
+            jointDisplacements: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+            jointPositions: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+            initialRootPosition: [ 0, 0, 0.2 ]
             initialRootAttitude: [ 
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            staticModel: false
+            initialJointPositions: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+            fix_root: false
             collisionDetection: true
             selfCollisionDetection: false
-            location_editable: false
+            location_editable: true
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
           children: 
             - 
               id: 3
-              name: "BoxROVJoystickController"
+              name: "JoystickController"
               plugin: Body
               class: SimpleControllerItem
               data: 
                 isNoDelayMode: false
                 controllerOptions: ""
-                controller: "BoxROVJoystickController"
-                baseDirectory: "Controller directory"
+                controller: "CrawlerJoystickController"
+                base_directory: "Controller directory"
                 reloading: false
-                exportSymbols: false
-                isOldTargetVariableMode: false
+                export_symbols: false
         - 
           id: 4
+          name: "Floor"
+          plugin: Body
+          class: BodyItem
+          is_checked: true
+          data: 
+            file: "${SHARE}/model/misc/floor.body"
+            format: CHOREONOID-BODY
+            rootPosition: [ 0, 0, -0.1 ]
+            rootAttitude: [ 
+              1, 0, 0, 
+              0, 1, 0, 
+              0, 0, 1 ]
+            jointPositions: [  ]
+            initialRootPosition: [ 0, 0, -0.1 ]
+            initialRootAttitude: [ 
+              1, 0, 0, 
+              0, 1, 0, 
+              0, 0, 1 ]
+            fix_root: true
+            collisionDetection: true
+            selfCollisionDetection: false
+            location_editable: true
+            scene_sensitive: true
+            zmp: [ 0, 0, 0 ]
+        - 
+          id: 5
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
-          is_selected: true
           data: 
-            timeStep: 0.001
-            realtimeSync: true
-            recording: "full"
-            timeRangeMode: "Unlimited"
-            timeLength: 180
-            allLinkPositionOutputMode: false
-            deviceStateOutput: true
-            controllerThreads: true
-            recordCollisionData: false
-            controllerOptions: ""
+            time_step: 0.001
+            realtime_sync_mode: compensatory
+            recording: full
+            time_range_mode: unlimited
+            time_length: 180
+            is_active_control_time_range_mode: false
+            output_all_link_positions: false
+            output_device_states: true
+            use_controller_threads: true
+            record_collision_data: false
+            controller_options: ""
+            block_scene_view_edit_mode: false
             dynamicsMode: "Forward dynamics"
-            integrationMode: "Euler"
+            integrationMode: "Runge Kutta"
             gravity: [ 0, 0, -9.80665 ]
-            staticFriction: 1
-            dynamicFriction: 1
+            min_friction_coefficient: 0
+            max_friction_coefficient: 100
             cullingThresh: 0.005
             contactCullingDepth: 0.05
             errorCriterion: 0.001
-            maxNumIterations: 1000
-            contactCorrectionDepth: 0.0001
-            contactCorrectionVelocityRatio: 1
+            maxNumIterations: 25
+            contactCorrectionDepth: 0.00025
+            contactCorrectionVelocityRatio: 5
             kinematicWalking: false
             2Dmode: false
             oldAccelSensorMode: false
@@ -97,17 +126,16 @@ views:
     class: ItemTreeView
     mounted: true
     state: 
-      expanded: [ 1, 2, 4 ]
+      expanded: [ 1, 2 ]
   - 
     id: 2
-    name: "Location"
     plugin: Base
     class: LocationView
     mounted: true
     state: 
       show_rpy: true
       unique_rpy: false
-      show_quoternion: false
+      show_quaternion: false
       show_rotation_matrix: false
       coordinate: world
   - 
@@ -122,70 +150,52 @@ views:
     mounted: true
     state: 
       editMode: false
-      viewpointControlMode: thirdPerson
+      viewpointOperationMode: thirdPerson
+      visible_polygon_elements: [ face ]
+      highlighting: false
       collisionLines: false
-      restrictCameraRoll: true
-      verticalAxis: Z
-      lightingMode: normal
-      cullingMode: enabled
-      defaultHeadLight: true
-      defaultHeadLightIntensity: 0.75
-      headLightLightingFromBack: false
-      worldLight: true
-      worldLightIntensity: 0.5
-      worldLightAmbient: 0.25
-      additionalLights: true
-      fog: true
-      floorGrid: true
-      floorGridSpan: 10
-      floorGridInterval: 0.5
-      xzGridSpan: 10
-      xzGridInterval: 0.5
-      xzGrid: false
-      yzGridSpan: 10
-      yzGridInterval: 0.5
-      texture: true
-      lineWidth: 1
-      pointSize: 1
-      normalVisualization: false
-      normalLength: 0.01
-      lightweightViewChange: false
-      coordinateAxes: true
-      fpsTestIteration: 1
-      upsideDown: false
       cameras: 
         - 
           camera: [ System, Perspective ]
           isCurrent: true
-          fieldOfView: 0.610865
-          near: 0.04
-          far: 200
-          eye: [ 3.62509, 1.75524, 1.05289 ]
+          eye: [ 3, 1.5, 1.2 ]
           direction: [ -0.880451, -0.440225, -0.17609 ]
-          up: [ -0.1575, -0.0787495, 0.984374 ]
+          up: [ -0.1575, -0.0787498, 0.984374 ]
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
-          near: 0.04
-          far: 200
-      backgroundColor: [ 0.1, 0.1, 0.3 ]
-      gridColor: [ 0.9, 0.9, 0.9, 1 ]
-      xzgridColor: [ 0.9, 0.9, 0.9, 1 ]
-      yzgridColor: [ 0.9, 0.9, 0.9, 1 ]
-      isDedicatedItemCheckEnabled: false
+      lighting_mode: normal
+      culling_mode: enabled
+      shading_mode: smooth
+      world_light: true
+      world_light_intensity: 0.5
+      ambient_light: true
+      ambient_light_intensity: 0.5
+      head_light: true
+      head_light_intensity: 0.5
+      world_light_shadow: true
+      shadow_lights: 
+        - { index: 0, enabled: false }
+        - { index: 1, enabled: false }
+      background_color: [ 0.1, 0.1, 0.3 ]
+      line_width: 1
+      point_size: 1
+      field_of_view: 35
+      clip_distances: [ 0.04, 200 ]
+      floorGrid: true
+      floorGridSpan: 10
+      floorGridInterval: 0.5
+      xzGrid: false
+      xzGridSpan: 10
+      xzGridInterval: 0.5
+      yzGrid: false
+      yzGridSpan: 10
+      yzGridInterval: 0.5
+      xy_grid_color: [ 0.9, 0.9, 0.9 ]
+      xz_grid_color: [ 0.9, 0.9, 0.9 ]
+      yz_grid_color: [ 0.9, 0.9, 0.9 ]
   - 
     id: 5
-    name: "Virtual Joystick"
-    plugin: Base
-    class: VirtualJoystickView
-  - 
-    id: 6
-    plugin: Body
-    class: BodyLinkView
-    state: 
-      showRotationMatrix: false
-  - 
-    id: 7
     plugin: Body
     class: JointDisplacementView
     mounted: true
@@ -197,18 +207,17 @@ views:
       show_sliders: true
       show_dials: false
       show_phases: true
+      limit_ranges: false
   - 
-    id: 8
-    name: "Links / Devices"
+    id: 6
     plugin: Body
     class: LinkDeviceListView
     mounted: true
     state: 
-      mode: list
-      element_type: link
+      element_type: all
+      listing_mode: list
   - 
-    id: 9
-    name: "Link Position"
+    id: 7
     plugin: Body
     class: LinkPositionView
     mounted: true
@@ -217,31 +226,32 @@ views:
       preferred_coordinate_mode: base
       show_rpy: true
       unique_rpy: false
-      show_quoternion: false
+      show_quaternion: false
       show_rotation_matrix: false
       target_link_type: ik_link
   - 
-    id: 10
-    name: "Link Properties"
+    id: 8
     plugin: Body
     class: LinkPropertyView
     mounted: true
   - 
-    id: 11
+    id: 9
     plugin: Python
     class: PythonConsoleView
     mounted: true
 toolbars: 
   "TimeBar": 
-    minTime: 0
-    maxTime: 30
-    frameRate: 1000
-    playbackFrameRate: 60
-    idleLoopDrivenMode: false
-    currentTime: 0
-    speedScale: 1
-    syncToOngoingUpdates: true
-    autoExpansion: true
+    current_time: 0
+    min_time: 0
+    max_time: 30
+    frame_rate: 1000
+    playback_frame_rate: 60
+    idle_loop_driven_mode: false
+    playback_speed_ratio: 1
+    sync_to_ongoing_updates: true
+    auto_expansion: true
+  "LeggedBodyBar": 
+    stanceWidth: 0.15
   "KinematicsBar": 
     forward_kinematics: true
     inverse_kinematics: true
@@ -252,54 +262,22 @@ toolbars:
     snapDistance: 0.025
     penetrationBlockDepth: 0.0005
     lazyCollisionDetectionMode: true
-  "BodyMotionGenerationBar": 
-    autoGenerationForNewBody: true
-    balancer: false
-    autoGeneration: false
-    timeScaleRatio: 1
-    preInitialDuration: 1
-    postFinalDuration: 1
-    onlyTimeBarRange: false
-    makeNewBodyItem: true
-    stealthyStepMode: true
-    stealthyHeightRatioThresh: 2
-    flatLiftingHeight: 0.005
-    flatLandingHeight: 0.005
-    impactReductionHeight: 0.005
-    impactReductionTime: 0.04
-    autoZmp: true
-    minZmpTransitionTime: 0.1
-    zmpCenteringTimeThresh: 0.03
-    zmpTimeMarginBeforeLiftingSpin: 0
-    zmpMaxDistanceFromCenter: 0.02
-    allLinkPositions: false
-    lipSyncMix: false
-    timeToStartBalancer: 0
-    balancerIterations: 2
-    plainBalancerMode: false
-    boundaryConditionType: position
-    boundarySmootherType: quintic
-    boundarySmootherTime: 0.5
-    boundaryCmAdjustment: false
-    boundaryCmAdjustmentTime: 1
-    waistHeightRelaxation: false
-    gravity: 9.8
-    dynamicsTimeRatio: 1
-  "LeggedBodyBar": 
-    stanceWidth: 0.15
 Body: 
-  "BodyMotionEngine": 
-    updateJointVelocities: false
   "BodySelectionManager": 
-    currentBodyItem: 2
-    currentLink: "CHASSIS"
+    current_body_item: 2
+    current_link: "CHASSIS"
   "EditableSceneBody": 
     editableSceneBodies: 
       - 
         bodyItem: 2
-        showCenterOfMass: false
-        showPpcom: false
-        showZmp: false
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
+      - 
+        bodyItem: 4
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
   "KinematicFaultChecker": 
     checkJointPositions: true
     angleMargin: 0
@@ -321,41 +299,41 @@ viewAreas:
     contents: 
       type: splitter
       orientation: horizontal
-      sizes: [ 1403, 446 ]
+      sizes: [ 1399, 445 ]
       children: 
         - 
           type: splitter
           orientation: horizontal
-          sizes: [ 363, 1036 ]
+          sizes: [ 362, 1033 ]
           children: 
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 449, 448 ]
+              sizes: [ 505, 503 ]
               children: 
                 - 
                   type: pane
                   views: [ 1 ]
                 - 
                   type: pane
-                  views: [ 0, 10 ]
+                  views: [ 0, 8 ]
                   current: 0
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 673, 224 ]
+              sizes: [ 756, 252 ]
               children: 
                 - 
                   type: pane
                   views: [ 4 ]
                 - 
                   type: pane
-                  views: [ 3, 11 ]
+                  views: [ 3, 9 ]
                   current: 3
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 163, 734 ]
+          sizes: [ 232, 776 ]
           children: 
             - 
               type: pane
@@ -363,15 +341,15 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 286, 444 ]
+              sizes: [ 336, 436 ]
               children: 
                 - 
                   type: pane
-                  views: [ 9 ]
+                  views: [ 7 ]
                 - 
                   type: pane
-                  views: [ 8, 7 ]
-                  current: 7
+                  views: [ 6, 5 ]
+                  current: 5
 layoutOfToolBars: 
   rows: 
     - 

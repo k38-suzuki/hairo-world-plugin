@@ -8,12 +8,12 @@ materials:
     roughness: 1.0
     viscosity: 1.0
   -
-    name: agxcrawlerTracks
+    name: robotTracks
     youngs_modulus: 1e10
     roughness: 1.0
     viscosity: 1.0
   -
-    name: agxcrawlerWheel
+    name: robotWheel
     youngs_modulus: 1e10
     roughness: 1.0
     viscosity: 1.0
@@ -29,7 +29,7 @@ contact_materials:
     restitution: 0.4
 
   -
-    materials: [ Ground, agxcrawlerTracks ]
+    materials: [ Ground, robotTracks ]
     youngs_modulus: 1e10
     friction: 1.0
     secondary_friction: 0.5
@@ -42,7 +42,7 @@ contact_materials:
     reference_body: agxcrawler
     reference_link: CHASSIS
   -
-    materials: [ agxcrawlerWheel, agxcrawlerTracks ]
+    materials: [ robotWheel, robotTracks ]
     youngs_modulus: 1e10
     friction: 1.0
     restitution: 0.0

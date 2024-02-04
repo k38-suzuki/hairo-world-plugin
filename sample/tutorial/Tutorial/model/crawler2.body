@@ -1,7 +1,7 @@
 format: ChoreonoidBody
 formatVersion: 1.0
 angleUnit: degree
-name: agxcrawler
+name: crawler
 links: 
   - 
     name: CHASSIS
@@ -35,7 +35,7 @@ links:
         nodeWidth: 0.1
         nodeThickerThickness: 0.02
         useThickerNodeEvery: 3
-        material: agxcrawlerTracks
+        material: robotTracks
         nodeDistanceTension: 0.0009
         stabilizingHingeFrictionParameter: 4e-07
         minStabilizingHingeNormalForce: 100
@@ -64,7 +64,7 @@ links:
         nodeWidth: 0.1
         nodeThickerThickness: 0.02
         useThickerNodeEvery: 3
-        material: agxcrawlerTracks
+        material: robotTracks
         nodeDistanceTension: 0.0009
         stabilizingHingeFrictionParameter: 4e-07
         minStabilizingHingeNormalForce: 100
@@ -80,7 +80,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.222222
     inertia: [ 0.00243333, 0, 0, 0, 0.0032, 0, 0, 0, 0.00243333 ]
     elements: 
@@ -95,7 +95,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.222222
     inertia: [ 0.00243333, 0, 0, 0, 0.0032, 0, 0, 0, 0.00243333 ]
     elements: 
@@ -110,7 +110,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.222222
     inertia: [ 0.00243333, 0, 0, 0, 0.0032, 0, 0, 0, 0.00243333 ]
     elements: 
@@ -125,7 +125,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.222222
     inertia: [ 0.00243333, 0, 0, 0, 0.0032, 0, 0, 0, 0.00243333 ]
     elements: 
@@ -140,7 +140,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.222222
     inertia: [ 0.00243333, 0, 0, 0, 0.0032, 0, 0, 0, 0.00243333 ]
     elements: 
@@ -155,7 +155,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.222222
     inertia: [ 0.00243333, 0, 0, 0, 0.0032, 0, 0, 0, 0.00243333 ]
     elements: 
@@ -211,7 +211,7 @@ links:
         nodeWidth: 0.08
         nodeThickerThickness: 0.02
         useThickerNodeEvery: 3
-        material: agxcrawlerTracks
+        material: robotTracks
         nodeDistanceTension: 0.0009
         stabilizingHingeFrictionParameter: 4e-07
         minStabilizingHingeNormalForce: 100
@@ -240,7 +240,7 @@ links:
         nodeWidth: 0.08
         nodeThickerThickness: 0.02
         useThickerNodeEvery: 3
-        material: agxcrawlerTracks
+        material: robotTracks
         nodeDistanceTension: 0.0009
         stabilizingHingeFrictionParameter: 4e-07
         minStabilizingHingeNormalForce: 100
@@ -256,7 +256,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.000533333
     inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
     elements: 
@@ -271,7 +271,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.000533333
     inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
     elements: 
@@ -286,7 +286,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.000533333
     inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
     elements: 
@@ -301,7 +301,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.000533333
     inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
     elements: 
@@ -316,7 +316,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.000533333
     inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
     elements: 
@@ -331,7 +331,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.000533333
     inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
     elements: 
@@ -387,7 +387,7 @@ links:
         nodeWidth: 0.08
         nodeThickerThickness: 0.02
         useThickerNodeEvery: 3
-        material: agxcrawlerTracks
+        material: robotTracks
         nodeDistanceTension: 0.0009
         stabilizingHingeFrictionParameter: 4e-07
         minStabilizingHingeNormalForce: 100
@@ -416,7 +416,7 @@ links:
         nodeWidth: 0.08
         nodeThickerThickness: 0.02
         useThickerNodeEvery: 3
-        material: agxcrawlerTracks
+        material: robotTracks
         nodeDistanceTension: 0.0009
         stabilizingHingeFrictionParameter: 4e-07
         minStabilizingHingeNormalForce: 100
@@ -432,7 +432,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.000533333
     inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
     elements: 
@@ -447,7 +447,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.000533333
     inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
     elements: 
@@ -462,7 +462,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.000533333
     inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
     elements: 
@@ -477,7 +477,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.000533333
     inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
     elements: 
@@ -492,7 +492,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.000533333
     inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
     elements: 
@@ -507,7 +507,7 @@ links:
     jointType: revolute
     jointAxis: Y
     centerOfMass: [ 0, 0, 0 ]
-    material: agxcrawlerWheel
+    material: robotWheel
     mass: 0.000533333
     inertia: [ 1.13778e-06, 0, 0, 0, 1.70667e-06, 0, 0, 0, 1.13778e-06 ]
     elements: 

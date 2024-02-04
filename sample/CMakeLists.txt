@@ -1,4 +1,3 @@
-add_subdirectory(generator)
 add_subdirectory(hai-rov)
 add_subdirectory(hobby-drone)
 add_subdirectory(ik-planner-plugin)
