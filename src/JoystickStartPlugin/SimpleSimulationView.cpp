@@ -102,6 +102,20 @@ public:
 }
 
 
+void SimpleSimulationView::initializeClass(ExtensionManager* ext)
+{
+    ext->viewManager().registerClass<SimpleSimulationView>(
+                N_("SimpleSimulationView"), N_("SimpleSimulation"), ViewManager::SINGLE_OPTIONAL);
+}
+
+
+SimpleSimulationView* SimpleSimulationView::instance()
+{
+    static SimpleSimulationView* instance_ = ViewManager::findView<SimpleSimulationView>();
+    return instance_;
+}
+
+
 SimpleSimulationView::SimpleSimulationView()
 {
     impl = new Impl(this);
@@ -209,20 +223,6 @@ SimpleSimulationView::Impl::Impl(SimpleSimulationView* self)
 SimpleSimulationView::~SimpleSimulationView()
 {
     delete impl;
-}
-
-
-void SimpleSimulationView::initializeClass(ExtensionManager* ext)
-{
-    ext->viewManager().registerClass<SimpleSimulationView>(
-                N_("SimpleSimulationView"), N_("SimpleSimulation"), ViewManager::SINGLE_OPTIONAL);
-}
-
-
-SimpleSimulationView* SimpleSimulationView::instance()
-{
-    static SimpleSimulationView* instance_ = ViewManager::findView<SimpleSimulationView>();
-    return instance_;
 }
 
 

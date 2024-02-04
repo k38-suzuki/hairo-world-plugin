@@ -14,11 +14,11 @@ namespace cnoid {
 class CNOID_EXPORT LayoutSwitcherBar : public ToolBar
 {
 public:
-    LayoutSwitcherBar();
-    virtual ~LayoutSwitcherBar();
-
     static void initialize(ExtensionManager* ext);
     static LayoutSwitcherBar* instance();
+
+    LayoutSwitcherBar();
+    virtual ~LayoutSwitcherBar();
 
 protected:
     virtual bool storeState(Archive& archive);

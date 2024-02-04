@@ -37,6 +37,22 @@ public:
 }
 
 
+void BeepView::initializeClass(ExtensionManager* ext)
+{
+    ext->viewManager().registerClass<BeepView>(
+                N_("BeepView"), N_("Beep"), ViewManager::SINGLE_OPTIONAL);
+}
+
+
+BeepView* BeepView::instance()
+{
+    if(!instance_) {
+        instance_ = ViewManager::findView<BeepView>();
+    }
+    return instance_;
+}
+
+
 BeepView::BeepView()
 {
     impl = new Impl(this);
@@ -73,22 +89,6 @@ BeepView::Impl::Impl(BeepView* self)
 BeepView::~BeepView()
 {
     delete impl;
-}
-
-
-void BeepView::initializeClass(ExtensionManager* ext)
-{
-    ext->viewManager().registerClass<BeepView>(
-                N_("BeepView"), N_("Beep"), ViewManager::SINGLE_OPTIONAL);
-}
-
-
-BeepView* BeepView::instance()
-{
-    if(!instance_) {
-        instance_ = ViewManager::findView<BeepView>();
-    }
-    return instance_;
 }
 
 

@@ -13,11 +13,11 @@ namespace cnoid {
 class BookmarkBar : public ToolBar
 {
 public:
-    BookmarkBar();
-    virtual ~BookmarkBar();
-
     static void initialize(ExtensionManager* ext);
     static BookmarkBar* instance();
+
+    BookmarkBar();
+    virtual ~BookmarkBar();
 
 private:
     class Impl;

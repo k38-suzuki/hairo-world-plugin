@@ -1,6 +1,6 @@
 
-option(BUILD_MARKERDETECT_PLUGIN "Building a sample plugin of the marker detection" OFF)
-if(NOT BUILD_MARKERDETECT_PLUGIN)
+option(BUILD_MARKER_DETECT_PLUGIN "Building a sample plugin of the marker detection" OFF)
+if(NOT BUILD_MARKER_DETECT_PLUGIN)
     return()
 endif()
 

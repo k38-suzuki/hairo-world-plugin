@@ -24,6 +24,28 @@ public:
 }
 
 
+void BookmarkBar::initialize(ExtensionManager* ext)
+{
+    static bool initialized = false;
+    if(!initialized) {
+        ext->addToolBar(instance());
+        initialized = true;
+    }
+
+    char* CNOID_USE_BOOKMARK = getenv("CNOID_USE_BOOKMARK");
+    if(CNOID_USE_BOOKMARK && (strcmp(CNOID_USE_BOOKMARK, "0") == 0)){
+        instance()->setVisibleByDefault(true);
+    }
+}
+
+
+BookmarkBar* BookmarkBar::instance()
+{
+    static BookmarkBar* bookmarkBar = new BookmarkBar;
+    return bookmarkBar;
+}
+
+
 BookmarkBar::BookmarkBar()
     : ToolBar(N_("BookmarkBar"))
 {
@@ -55,26 +77,4 @@ BookmarkBar::Impl::Impl(BookmarkBar* self)
 BookmarkBar::~BookmarkBar()
 {
     delete impl;
-}
-
-
-void BookmarkBar::initialize(ExtensionManager* ext)
-{
-    static bool initialized = false;
-    if(!initialized) {
-        ext->addToolBar(instance());
-        initialized = true;
-    }
-
-    char* CNOID_USE_BOOKMARK = getenv("CNOID_USE_BOOKMARK");
-    if(CNOID_USE_BOOKMARK && (strcmp(CNOID_USE_BOOKMARK, "0") == 0)){
-        instance()->setVisibleByDefault(true);
-    }
-}
-
-
-BookmarkBar* BookmarkBar::instance()
-{
-    static BookmarkBar* bookmarkBar = new BookmarkBar;
-    return bookmarkBar;
 }

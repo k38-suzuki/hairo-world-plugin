@@ -16,7 +16,5 @@ if(WIN32 OR APPLE)
   return()
 endif()
 
-add_subdirectory(BeepPlugin)
-add_subdirectory(OMPLPlugin)
 add_subdirectory(FileExplorerPlugin)
 add_subdirectory(NetEmPlugin)

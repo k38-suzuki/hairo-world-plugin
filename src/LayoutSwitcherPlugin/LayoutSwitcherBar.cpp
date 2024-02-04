@@ -27,6 +27,23 @@ public:
 }
 
 
+void LayoutSwitcherBar::initialize(ExtensionManager* ext)
+{
+    static bool initialized = false;
+    if(!initialized) {
+        ext->addToolBar(instance());
+        initialized  = true;
+    }
+}
+
+
+LayoutSwitcherBar* LayoutSwitcherBar::instance()
+{
+    static LayoutSwitcherBar* switcherBar = new LayoutSwitcherBar;
+    return switcherBar;
+}
+
+
 LayoutSwitcherBar::LayoutSwitcherBar()
     : ToolBar(N_("LayoutSwitcherBar"))
 {
@@ -45,23 +62,6 @@ LayoutSwitcherBar::Impl::Impl(LayoutSwitcherBar* self)
 LayoutSwitcherBar::~LayoutSwitcherBar()
 {
     delete impl;
-}
-
-
-void LayoutSwitcherBar::initialize(ExtensionManager* ext)
-{
-    static bool initialized = false;
-    if(!initialized) {
-        ext->addToolBar(instance());
-        initialized  = true;
-    }
-}
-
-
-LayoutSwitcherBar* LayoutSwitcherBar::instance()
-{
-    static LayoutSwitcherBar* switcherBar = new LayoutSwitcherBar;
-    return switcherBar;
 }
 
 

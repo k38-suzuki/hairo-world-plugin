@@ -14,11 +14,11 @@ namespace cnoid {
 class CNOID_EXPORT BeepView : public View
 {
 public:
-    BeepView();
-    virtual ~BeepView();
-
     static void initializeClass(ExtensionManager* ext);
     static BeepView* instance();
+
+    BeepView();
+    virtual ~BeepView();
 
     BeepWidget* beepWidget();
 

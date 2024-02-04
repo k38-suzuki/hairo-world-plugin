@@ -13,11 +13,11 @@ namespace cnoid {
 class CNOID_EXPORT OnScreenJoystickView : public View
 {
 public:
+    static void initializeClass(ExtensionManager* ext);
+
     OnScreenJoystickView();
     virtual ~OnScreenJoystickView();
 
-    static void initializeClass(ExtensionManager* ext);
-    
 protected:
     virtual void keyPressEvent(QKeyEvent* event) override;
     virtual void keyReleaseEvent(QKeyEvent* event) override;

@@ -13,11 +13,11 @@ namespace cnoid {
 class CNOID_EXPORT LayoutSwitcherView : public View
 {
 public:
-    LayoutSwitcherView();
-    virtual ~LayoutSwitcherView();
-
     static void initializeClass(ExtensionManager* ext);
     static LayoutSwitcherView* instance();
+
+    LayoutSwitcherView();
+    virtual ~LayoutSwitcherView();
 
     virtual bool storeState(Archive& archive) override;
     virtual bool restoreState(const Archive& archive) override;

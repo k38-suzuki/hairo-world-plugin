@@ -12,11 +12,11 @@ namespace cnoid {
 class SimpleSimulationView : public View
 {
 public:
-    SimpleSimulationView();
-    virtual ~SimpleSimulationView();
-
     static void initializeClass(ExtensionManager* ext);
     static SimpleSimulationView* instance();
+
+    SimpleSimulationView();
+    virtual ~SimpleSimulationView();
 
 private:
     class Impl;

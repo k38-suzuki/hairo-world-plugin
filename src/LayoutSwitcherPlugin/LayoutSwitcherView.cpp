@@ -38,6 +38,15 @@ public:
 }
 
 
+LayoutSwitcherView* LayoutSwitcherView::instance()
+{
+    if(!instance_) {
+        instance_ = ViewManager::findView<LayoutSwitcherView>();
+    }
+    return instance_;
+}
+
+
 LayoutSwitcherView::LayoutSwitcherView()
 {
     impl = new Impl(this);
@@ -81,15 +90,6 @@ void LayoutSwitcherView::initializeClass(ExtensionManager* ext)
 {
     ext->viewManager().registerClass<LayoutSwitcherView>(
                 N_("LayoutSwitcherView"), N_("Layout Switcher"), ViewManager::SINGLE_OPTIONAL);
-}
-
-
-LayoutSwitcherView* LayoutSwitcherView::instance()
-{
-    if(!instance_) {
-        instance_ = ViewManager::findView<LayoutSwitcherView>();
-    }
-    return instance_;
 }
 
 
