@@ -1,3 +1,6 @@
+if(NOT ENABLE_GUI)
+  return()
+endif()
 
 option(BUILD_BEEP_PLUGIN "Building BeepPlugin" OFF)
 if(NOT BUILD_BEEP_PLUGIN)
@@ -5,18 +8,18 @@ if(NOT BUILD_BEEP_PLUGIN)
 endif()
 
 set(sources
-    BeepItem.cpp
-    BeepPlugin.cpp
-    BeepView.cpp
-    BeepWidget.cpp
-    )
+  BeepItem.cpp
+  BeepPlugin.cpp
+  BeepView.cpp
+  BeepWidget.cpp
+)
 
 set(headers
-    BeepItem.h
-    BeepView.h
-    BeepWidget.h
-    exportdecl.h
-    )
+  BeepItem.h
+  BeepView.h
+  BeepWidget.h
+  exportdecl.h
+)
 
 choreonoid_make_header_public(BeepView.h)
 choreonoid_make_header_public(BeepWidget.h)

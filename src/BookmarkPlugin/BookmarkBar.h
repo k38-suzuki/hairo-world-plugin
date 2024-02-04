@@ -16,10 +16,10 @@ public:
     static void initialize(ExtensionManager* ext);
     static BookmarkBar* instance();
 
+private:
     BookmarkBar();
     virtual ~BookmarkBar();
 
-private:
     class Impl;
     Impl* impl;
 };

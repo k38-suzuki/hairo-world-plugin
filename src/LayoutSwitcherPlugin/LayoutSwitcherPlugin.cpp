@@ -4,7 +4,6 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-// #include "LayoutSwitcherBar.h"
 #include "LayoutSwitcherView.h"
 
 using namespace cnoid;

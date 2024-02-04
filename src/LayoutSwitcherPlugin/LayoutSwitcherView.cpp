@@ -35,6 +35,19 @@ public:
     bool restoreState(const Archive& archive);
 };
 
+class LayoutSwitcherBar::Impl
+{
+public:
+    LayoutSwitcherBar* self;
+
+    Impl(LayoutSwitcherBar* self);
+
+    LayoutSwitcher* layoutSwitcher;
+
+    bool storeState(Archive& archive);
+    bool restoreState(const Archive& archive);
+};
+
 }
 
 
@@ -115,5 +128,69 @@ bool LayoutSwitcherView::restoreState(const Archive& archive)
 bool LayoutSwitcherView::Impl::restoreState(const Archive& archive)
 {
     layoutSwicher->restoreState(archive);
+    return true;
+}
+
+
+void LayoutSwitcherBar::initialize(ExtensionManager* ext)
+{
+    static bool initialized = false;
+    if(!initialized) {
+        ext->addToolBar(instance());
+        initialized  = true;
+    }
+}
+
+
+LayoutSwitcherBar* LayoutSwitcherBar::instance()
+{
+    static LayoutSwitcherBar* switcherBar = new LayoutSwitcherBar;
+    return switcherBar;
+}
+
+
+LayoutSwitcherBar::LayoutSwitcherBar()
+    : ToolBar(N_("LayoutSwitcherBar"))
+{
+    impl = new Impl(this);
+}
+
+
+LayoutSwitcherBar::Impl::Impl(LayoutSwitcherBar* self)
+    : self(self)
+{
+    layoutSwitcher = new LayoutSwitcher;
+    self->addWidget(layoutSwitcher);
+}
+
+
+LayoutSwitcherBar::~LayoutSwitcherBar()
+{
+    delete impl;
+}
+
+
+bool LayoutSwitcherBar::storeState(Archive& archive)
+{
+    return impl->storeState(archive);
+}
+
+
+bool LayoutSwitcherBar::Impl::storeState(Archive& archive)
+{
+    layoutSwitcher->storeState(archive);
+    return true;
+}
+
+
+bool LayoutSwitcherBar::restoreState(const Archive& archive)
+{
+    return impl->restoreState(archive);
+}
+
+
+bool LayoutSwitcherBar::Impl::restoreState(const Archive& archive)
+{
+    layoutSwitcher->restoreState(archive);
     return true;
 }

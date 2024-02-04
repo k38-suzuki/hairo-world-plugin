@@ -1,17 +1,20 @@
+if(NOT ENABLE_GUI)
+  return()
+endif()
 
 option(BUILD_IK_PLANNER_PLUGIN "Building IKPlannerPlugin" OFF)
-if(NOT BUILD_IK_PLANNER_PLUGIN OR NOT BUILD_OMPL_PLUGIN)
+if(NOT BUILD_IK_PLANNER_PLUGIN)
   return()
 endif()
 
 set(sources
-    IKPlannerItem.cpp
-    IKPlannerPlugin.cpp
-    )
+  IKPlannerItem.cpp
+  IKPlannerPlugin.cpp
+)
 
 set(headers
-    IKPlannerItem.h
-    )
+  IKPlannerItem.h
+)
 
 set(target CnoidIKPlannerPlugin)
 make_gettext_mofiles(${target} mofiles)

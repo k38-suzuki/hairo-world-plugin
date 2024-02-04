@@ -1,35 +1,27 @@
+if(NOT ENABLE_GUI)
+  return()
+endif()
 
-option(BUILD_MARKER_DETECT_PLUGIN "Building a sample plugin of the marker detection" OFF)
+option(BUILD_MARKER_DETECT_PLUGIN "Building MarkerDetectPlugin" OFF)
 if(NOT BUILD_MARKER_DETECT_PLUGIN)
     return()
 endif()
 
 set(sources
-    ScopeDevice.cpp
-    MarkerDetectorItem.cpp
-    MarkerDetectPlugin.cpp
-    )
+  ScopeDevice.cpp
+  MarkerDetectorItem.cpp
+  MarkerDetectPlugin.cpp
+)
 
 set(headers
-    ScopeDevice.h
-    MarkerDetectorItem.h
-    exportdecl.h
-    )
+  ScopeDevice.h
+  MarkerDetectorItem.h
+  exportdecl.h
+)
 
 choreonoid_make_header_public(ScopeDevice.h)
 
-if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
-  # Build inside the Choreonoid project
-  set(target CnoidMarkerDetectPlugin)
-  make_gettext_mofiles(${target} mofiles)
-  choreonoid_add_plugin(${target} ${sources} ${mofiles} HEADERS ${headers})
-  target_link_libraries(${target} PUBLIC CnoidBodyPlugin CnoidMotionCapturePlugin)
-  apply_common_setting_for_plugin(${target})
-else()
-  # Stand alone build
-  set(target CnoidMarkerDetectPlugin)
-  make_gettext_mofiles(${target} mofiles)
-  add_library(${target} SHARED ${sources} ${mofiles} ${headers})
-  target_link_libraries(${target} ${CHOREONOID_BODY_PLUGIN_LIBRARIES} CnoidMotionCapturePlugin)
-  install(TARGETS ${target} LIBRARY DESTINATION ${CHOREONOID_PLUGIN_DIR})
-endif()
+set(target CnoidMarkerDetectPlugin)
+make_gettext_mofiles(${target} mofiles)
+choreonoid_add_plugin(${target} ${sources} ${mofiles} HEADERS ${headers})
+target_link_libraries(${target} PUBLIC CnoidBodyPlugin CnoidMotionCapturePlugin)
