@@ -16,15 +16,13 @@ else()
   set(CHOREONOID_BINARY_SHARE_DIR ${PROJECT_BINARY_DIR}/${CHOREONOID_SHARE_SUBDIR})
 endif()
 
+add_subdirectory(src)
+#add_subdirectory(include)
+
 if(UNIX AND BUILD_PHITS_PLUGIN)
   option(ENABLE_QAD "Enable QAD" OFF)
 endif()
-
-add_subdirectory(src)
-
-if(ENABLE_QAD)
-  add_subdirectory(share)
-endif()
+add_subdirectory(share)
 
 if(ENABLE_SAMPLES)
   add_subdirectory(sample)
