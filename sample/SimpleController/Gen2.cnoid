@@ -40,7 +40,7 @@ items:
             fix_root: true
             collisionDetection: true
             selfCollisionDetection: false
-            location_editable: true
+            lock_location: false
             scene_sensitive: true
             link_kinematics: 
               "FINGER_DISTAL_1": 
@@ -83,7 +83,7 @@ items:
             fix_root: true
             collisionDetection: true
             selfCollisionDetection: false
-            location_editable: true
+            lock_location: false
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
         - 
@@ -92,7 +92,7 @@ items:
           plugin: Body
           class: AISTSimulatorItem
           data: 
-            time_step: 0.005
+            time_step: 0.01
             realtime_sync_mode: compensatory
             recording: full
             time_range_mode: unlimited
@@ -105,7 +105,7 @@ items:
             controller_options: ""
             block_scene_view_edit_mode: false
             dynamicsMode: "Forward dynamics"
-            integrationMode: "Runge Kutta"
+            integrationMode: runge-kutta
             gravity: [ 0, 0, -9.80665 ]
             min_friction_coefficient: 0
             max_friction_coefficient: 100
@@ -204,7 +204,6 @@ views:
     class: JointDisplacementView
     mounted: true
     state: 
-      show_selected_joints: false
       show_joint_ids: true
       show_joint_names: false
       overlap_joint_names: false
@@ -212,6 +211,7 @@ views:
       show_dials: false
       show_phases: true
       limit_ranges: false
+      show_selected_joints: false
   - 
     id: 6
     plugin: Body
@@ -226,7 +226,7 @@ views:
     class: LinkPositionView
     mounted: true
     state: 
-      coordinate_mode: base
+      coordinate_mode: world
       preferred_coordinate_mode: base
       show_rpy: true
       unique_rpy: false
@@ -270,18 +270,6 @@ Body:
   "BodySelectionManager": 
     current_body_item: 4
     current_link: "Floor"
-  "EditableSceneBody": 
-    editableSceneBodies: 
-      - 
-        bodyItem: 2
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
-      - 
-        bodyItem: 4
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
   "KinematicFaultChecker": 
     checkJointPositions: true
     angleMargin: 0
@@ -291,6 +279,18 @@ Body:
     targetJoints: all
     checkSelfCollisions: true
     onlyTimeBarRange: false
+  "OperableSceneBody": 
+    scene_bodies: 
+      - 
+        body_item: 2
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
+      - 
+        body_item: 4
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
   "SplineFilterDialog": 
     isInputFrameRateSpecified: false
     inputFrameRate: 200

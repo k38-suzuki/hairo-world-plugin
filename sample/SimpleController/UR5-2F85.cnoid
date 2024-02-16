@@ -29,14 +29,19 @@ items:
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            jointDisplacements: [ 0, -150, 120, -60, -90, 0 ]
-            jointPositions: [ 0, -2.61799, 2.0944, -1.0472, -1.5708, 0 ]
+            jointDisplacements: [ 
+              0, -150, 120, -60, -90, 0, 0, 0, 0, 0, 
+              0, 0 ]
+            jointPositions: [ 
+              0, -2.61799, 2.0944, -1.0472, -1.5708, 0, 0, 0, 0, 0, 
+              0, 0 ]
             initialRootPosition: [ 0, 0, 0 ]
             initialRootAttitude: [ 
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            initialJointPositions: [ 0, -2.61799, 2.0944, -1.0472, -1.5708, 0 ]
+            initialJointPositions: [ 
+              0, -2.61799, 2.0944, -1.0472, -1.5708, 0 ]
             fix_root: true
             collisionDetection: true
             selfCollisionDetection: false
@@ -93,7 +98,7 @@ items:
           plugin: Body
           class: AISTSimulatorItem
           data: 
-            time_step: 0.005
+            time_step: 0.01
             realtime_sync_mode: compensatory
             recording: full
             time_range_mode: unlimited
