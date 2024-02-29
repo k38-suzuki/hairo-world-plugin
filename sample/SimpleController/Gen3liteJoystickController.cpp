@@ -8,8 +8,8 @@
 #include <cnoid/SharedJoystick>
 #include <cnoid/SimpleController>
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 namespace {
 
@@ -23,13 +23,14 @@ class Gen3liteJoystickController : public SimpleController
 {
     enum MapID { TWIST_LINEAR, TWIST_ANGULAR, JOINT };
 
-    SimpleControllerIO* io;
     Body* ioBody;
+    Link* ioRightFinger;
+    Link* ioLeftFinger;
     BodyPtr ikBody;
     Link* ikWrist;
     shared_ptr<JointPath> baseToWrist;
     VectorXd qref, qref_old, qold;
-    double dt;
+    double timeStep;
     bool isIKEnabled;
     bool isJointPoseSelected;
     bool prevButtonState[3];
@@ -47,9 +48,12 @@ public:
 
     virtual bool initialize(SimpleControllerIO* io) override
     {
-        this->io = io;
         os = &io->os();
         ioBody = io->body();
+
+        ioRightFinger = ioBody->link("RIGHT_FINGER_PROX");
+        ioLeftFinger = ioBody->link("LEFT_FINGER_PROX");
+
         isIKEnabled = true;
         isJointPoseSelected = false;
         for(int i = 0; i < 3; ++i) {
@@ -70,17 +74,13 @@ public:
 
         for(int i = 0; i < ioBody->numJoints(); ++i) {
             Link* joint = ioBody->joint(i);
-            if(!joint) {
-                (*os) << "Joint " << i << " is not found." << endl;
-                return false;
-            }
             joint->setActuationMode(Link::JointVelocity);
             io->enableIO(joint);
         }
 
         initializeIK();
 
-        dt = io->timeStep();
+        timeStep = io->timeStep();
 
         joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
         targetMode = joystick->addMode();
@@ -194,7 +194,7 @@ public:
                 pos[1] = -pos1[1];
             }
 
-            static const int jointID[] = { 6, 8 };
+            static const int jointID[] = { ioRightFinger->jointId(), ioLeftFinger->jointId() };
             for(int i = 0; i < 2; ++i) {
                 controlFK(jointID[i], pos[i]);
             }
@@ -270,9 +270,9 @@ public:
 
         double rate = (double)currentSpeed / 100.0;
         if(controlMap == TWIST_LINEAR) {
-            p.head<3>() = Vector3(-pos[0], -pos[1], -pos[2]) * 0.5 * rate * dt;
+            p.head<3>() = Vector3(-pos[0], -pos[1], -pos[2]) * 0.5 * rate * timeStep;
         } else if(controlMap == TWIST_ANGULAR) {
-            p.tail<3>() = degree(Vector3(pos[3], -pos[4], -pos[5])) * 1.0 * rate * dt;
+            p.tail<3>() = degree(Vector3(pos[3], -pos[4], -pos[5])) * 1.0 * rate * timeStep;
         }
 
         Isometry3 T;
@@ -286,12 +286,10 @@ public:
         }
 
         for(int i = 0; i < ioBody->numJoints(); ++i) {
-            Link* joint = ioBody->joint(i);
-            double q = joint->q();
-            double dq = (q - qold[i]) / dt;
-            double dq_ref = (qref[i] - qref_old[i]) / dt;
-
-            joint->dq_target() = dq_ref;
+            double q = ioBody->joint(i)->q();
+            double dq = (q - qold[i]) / timeStep;
+            double dq_ref = (qref[i] - qref_old[i]) / timeStep;
+            ioBody->joint(i)->dq_target() = dq_ref;
             qold[i] = q;
         }
         qref_old = qref;
