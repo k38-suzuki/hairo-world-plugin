@@ -18,7 +18,7 @@
 #include <cnoid/WorldItem>
 #include <fmt/format.h>
 #include <ompl/base/spaces/SE3StateSpace.h>
-#include "sample/SimpleController/Interpolator.h"
+#include <sample/SimpleController/Interpolator.h>
 #include "gettext.h"
 
 using namespace cnoid;
