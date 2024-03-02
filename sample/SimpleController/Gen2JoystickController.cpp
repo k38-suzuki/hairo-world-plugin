@@ -147,6 +147,19 @@ public:
                     }
                 } else if(i == 2) {
                     // home position
+                    jointInterpolator.clear();
+                    jointInterpolator.appendSample(time, qref);
+                    // VectorXd qf = VectorXd::Zero(qref.size());
+                    VectorXd qf = qref;
+                    for(int i = 0; i < ioBody->numJoints(); ++i) {
+                        qf[i] = radian(home_position[i]);
+                    }
+                    qf[ioFinger1->jointId()] = qref[ioFinger1->jointId()];
+                    qf[ioFinger2->jointId()] = qref[ioFinger2->jointId()];
+                    qf[ioFinger3->jointId()] = qref[ioFinger3->jointId()];
+                    jointInterpolator.appendSample(time + 2.0, qf);
+                    jointInterpolator.update();
+                    phase = 3;
                 }
             }
             prevButtonState[i] = currentState;
@@ -224,7 +237,23 @@ public:
                     Link* joint = ioBody->joint(i);
                     double q = joint->q();
                     ikBody->joint(i)->q() = q;
+                    qold[i] = q;
                 }
+
+                baseToWrist->calcForwardKinematics();
+
+                VectorXd p0(6);
+                p0.head<3>() = ikWrist->p();
+                p0.tail<3>() = rpyFromRot(ikWrist->R());
+
+                VectorXd p1(6);
+                p1.head<3>() = ikWrist->p();
+                p1.tail<3>() = rpyFromRot(ikWrist->R());
+
+                wristInterpolator.clear();
+                wristInterpolator.appendSample(time + 0.0, p0);
+                wristInterpolator.appendSample(time + timeStep, p1);
+                wristInterpolator.update();
                 phase = 0;
             }
         }
