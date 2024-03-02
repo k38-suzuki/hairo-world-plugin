@@ -222,8 +222,8 @@ public:
                 wristInterpolator.appendSample(time + 0.0, p0);
                 wristInterpolator.appendSample(time + timeStep, p1);
                 wristInterpolator.update();
+                phase = 2;
             }
-            phase = 2;
         } else if(phase == 2) {
             if(time > wristInterpolator.domainUpper()) {
                 phase = 0;

@@ -12,9 +12,13 @@
 using namespace std;
 using namespace cnoid;
 
+namespace {
+
 const double home_position[] = {
     103.1, 197.3, 180.0, 43.6, 265.2, 257.5, 288.1, 0.0, 0.0, 0.0
 };
+
+}
 
 class Gen2JoystickController : public SimpleController
 {
@@ -181,12 +185,14 @@ public:
 
                 jointInterpolator.clear();
                 jointInterpolator.appendSample(time, qref);
-                VectorXd qf = VectorXd::Zero(qref.size());
+                // VectorXd qf = VectorXd::Zero(qref.size());
+                VectorXd qf = qref;
                 qf[ioFinger1->jointId()] = qref[ioFinger1->jointId()];
                 qf[ioFinger2->jointId()] = qref[ioFinger2->jointId()];
                 qf[ioFinger3->jointId()] = qref[ioFinger3->jointId()];
                 jointInterpolator.appendSample(time + timeStep, qf);
                 jointInterpolator.update();
+                phase = 3;
             } else {
                 VectorXd p0(6);
                 p0.head<3>() = ikWrist->p();
@@ -205,17 +211,21 @@ public:
                 wristInterpolator.appendSample(time + 0.0, p0);
                 wristInterpolator.appendSample(time + timeStep, p1);
                 wristInterpolator.update();
+                phase = 2;
             }
-            phase = 2;
         } else if(phase == 2) {
-            if(controlMode == FingersMode) {
-                if(time > jointInterpolator.domainUpper()) {
-                    phase = 0;
+            if(time > wristInterpolator.domainUpper()) {
+                phase = 0;
+            }
+        } else if(phase == 3) {
+            qref = jointInterpolator.interpolate(time);
+            if(time > jointInterpolator.domainUpper()) {
+                for(int i = 0; i < ioBody->numJoints(); ++i) {
+                    Link* joint = ioBody->joint(i);
+                    double q = joint->q();
+                    ikBody->joint(i)->q() = q;
                 }
-            } else {
-                if(time > wristInterpolator.domainUpper()) {
-                    phase = 0;
-                }
+                phase = 0;
             }
         }
 

@@ -218,13 +218,15 @@ public:
                 qref[ioLeftFinger->jointId()] += radian(dq_hand[0]);
                 qref[ioRightFinger->jointId()] += radian(dq_hand[1]);
 
-                // jointInterpolator.clear();
-                // jointInterpolator.appendSample(time, qref);
+                jointInterpolator.clear();
+                jointInterpolator.appendSample(time, qref);
                 // VectorXd qf = VectorXd::Zero(qref.size());
-                // qf[ioLeftFinger->jointId()] = qref[ioLeftFinger->jointId()];
-                // qf[ioRightFinger->jointId()] = qref[ioRightFinger->jointId()];
-                // jointInterpolator.appendSample(time + timeStep, qf);
-                // jointInterpolator.update();
+                VectorXd qf = qref;
+                qf[ioLeftFinger->jointId()] = qref[ioLeftFinger->jointId()];
+                qf[ioRightFinger->jointId()] = qref[ioRightFinger->jointId()];
+                jointInterpolator.appendSample(time + timeStep, qf);
+                jointInterpolator.update();
+                phase = 3;
             } else {
                 if(controlMap == Joint) {
                     // now editing...
@@ -249,16 +251,23 @@ public:
                     wristInterpolator.appendSample(time + 0.0, p0);
                     wristInterpolator.appendSample(time + timeStep, p1);
                     wristInterpolator.update();
-                }          
+                    phase = 2;
+                } 
             }
-            phase = 2;
         } else if(phase == 2) {
-            // if(time > jointInterpolator.domainUpper()) {
-            //     phase = 0;
-            // }
             if(time > wristInterpolator.domainUpper()) {
                 phase = 0;
             }
+        } else if(phase == 3) {
+            qref = jointInterpolator.interpolate(time);
+            if(time > jointInterpolator.domainUpper()) {
+                for(int i = 0; i < ioBody->numJoints(); ++i) {
+                    Link* joint = ioBody->joint(i);
+                    double q = joint->q();
+                    ikBody->joint(i)->q() = q;
+                }
+                phase = 0;
+            }         
         }
 
         for(int i = 0; i < ioBody->numJoints(); ++i) {
