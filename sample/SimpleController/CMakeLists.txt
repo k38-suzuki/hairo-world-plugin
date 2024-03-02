@@ -22,7 +22,7 @@ choreonoid_add_simple_controller(JackalJoystickController JackalJoystickControll
 list(APPEND project_files Jackal.cnoid)
 
 # Universal Robots
-choreonoid_add_simple_controller(UniversalRobotJoystickController UniversalRobotJoystickController.cpp)
+choreonoid_add_simple_controller(URJoystickController URJoystickController.cpp)
 list(APPEND project_files UR3-2F85.cnoid UR5-2F85.cnoid UR10-2F85.cnoid)
 
 # Gen3lite

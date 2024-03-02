@@ -61,7 +61,7 @@ items:
               data: 
                 isNoDelayMode: false
                 controllerOptions: ""
-                controller: "UniversalRobotJoystickController"
+                controller: "URJoystickController"
                 base_directory: "Controller directory"
                 reloading: false
                 export_symbols: false
@@ -97,7 +97,7 @@ items:
           plugin: Body
           class: AISTSimulatorItem
           data: 
-            time_step: 0.01
+            time_step: 0.005
             realtime_sync_mode: compensatory
             recording: full
             time_range_mode: unlimited

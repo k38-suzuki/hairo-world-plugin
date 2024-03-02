@@ -71,7 +71,7 @@ items:
                   data: 
                     isNoDelayMode: false
                     controllerOptions: ""
-                    controller: "UniversalRobotJoystickController"
+                    controller: "URJoystickController"
                     base_directory: "Controller directory"
                     reloading: false
                     export_symbols: false
