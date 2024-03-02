@@ -7,21 +7,29 @@
 #include <cnoid/JointPath>
 #include <cnoid/SharedJoystick>
 #include <cnoid/SimpleController>
+#include <sample/SimpleController/Interpolator.h>
 
 using namespace std;
 using namespace cnoid;
 
 namespace {
 
-const double joint_pose[] = {
+const double home_position[] = {
     0.0, -20.0, 90.0, 80.0, 60.0, 0.0, 20.0, 0.0, -20.0, 0.0
+};
+
+const char* texts[] = {
+    "twist-linear control has set.", "twist-angular control has set.", "joint control has set."
 };
 
 }
 
 class Gen3liteJoystickController : public SimpleController
 {
-    enum MapID { TWIST_LINEAR, TWIST_ANGULAR, JOINT };
+    enum ControlMap { TwistLinear, TwistAngular, Joint };
+
+    SimpleControllerIO* io;
+    int jointActuationMode;
 
     Body* ioBody;
     Link* ioRightFinger;
@@ -29,41 +37,42 @@ class Gen3liteJoystickController : public SimpleController
     BodyPtr ikBody;
     Link* ikWrist;
     shared_ptr<JointPath> baseToWrist;
-    VectorXd qref, qref_old, qold;
+    VectorXd qref, qold, qref_old;
+    Interpolator<VectorXd> wristInterpolator;
+    Interpolator<VectorXd> jointInterpolator;
+    int phase;
+    double time;
     double timeStep;
-    bool isIKEnabled;
-    bool isJointPoseSelected;
-    bool prevButtonState[3];
+    double dq_hand[2];
     int controlMap;
     int currentJoint;
-    int prevHAxis;
-    int prevVAxis;
     int currentSpeed;
 
     SharedJoystickPtr joystick;
     int targetMode;
-    std::ostream* os;
+    bool prevButtonState[3];
+    bool prevButtonState1[2];
 
 public:
 
     virtual bool initialize(SimpleControllerIO* io) override
     {
-        os = &io->os();
+        this->io = io;
+        ostream& os = io->os();
         ioBody = io->body();
 
         ioRightFinger = ioBody->link("RIGHT_FINGER_PROX");
         ioLeftFinger = ioBody->link("LEFT_FINGER_PROX");
 
-        isIKEnabled = true;
-        isJointPoseSelected = false;
-        for(int i = 0; i < 3; ++i) {
-            prevButtonState[i] = false;
+        prevButtonState[0] = prevButtonState[1] = prevButtonState[2] = false;
+        prevButtonState1[0] = prevButtonState1[1] = false;
+        jointActuationMode = Link::JointVelocity;
+        for(auto opt : io->options()) {
+            if(opt == "position") {
+                jointActuationMode = Link::JointDisplacement;
+                os << "The joint-position command mode is used." << endl;
+            }
         }
-        controlMap = TWIST_LINEAR;
-        currentJoint = 0;
-        prevHAxis = 0;
-        prevVAxis = 0;
-        currentSpeed = 50;
 
         ikBody = ioBody->clone();
         ikWrist = ikBody->link("WRIST_ORIGIN");
@@ -72,155 +81,12 @@ public:
         base->p().setZero();
         base->R().setIdentity();
 
-        for(int i = 0; i < ioBody->numJoints(); ++i) {
-            Link* joint = ioBody->joint(i);
-            joint->setActuationMode(Link::JointVelocity);
-            io->enableIO(joint);
-        }
-
-        initializeIK();
-
-        timeStep = io->timeStep();
-
-        joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
-        targetMode = joystick->addMode();
-
-        return true;
-    }
-
-    virtual bool control() override
-    {
-        joystick->updateState(targetMode);
-
-        static const char* texts[] = {
-            "twist-linear control has set.", "twist-angular control has set.", "joint control has set."
-        };
-        static const int buttonID[] = { Joystick::B_BUTTON, Joystick::SELECT_BUTTON, Joystick::START_BUTTON };
-        for(int i = 0; i < 3; ++i) {
-            bool buttonState = joystick->getButtonState(targetMode, buttonID[i]);
-            if(buttonState && !prevButtonState[i]) {
-                if(i == 0) {
-                    isJointPoseSelected = true;
-                } else if(i == 1) {
-                    --controlMap;
-                    if(controlMap < 0) {
-                        controlMap += 3;
-                    }
-                    (*os) << texts[controlMap] << endl;
-                } else if(i == 2) {
-                    controlMap = ++controlMap % 3;
-                    (*os) << texts[controlMap] << endl;
-                }
-            }
-            prevButtonState[i] = buttonState;
-        }
-
-        isIKEnabled = true;
-
-        // speed
-        {
-            double pos = joystick->getPosition(targetMode, Joystick::DIRECTIONAL_PAD_V_AXIS);
-            if(fabs(pos) < 0.15) {
-                pos = 0.0;
-            }
-            if((int)pos != 0 && prevVAxis == 0) {
-                if(pos == -1) {
-                    currentSpeed += 10;
-                    if(currentSpeed > 100) {
-                        currentSpeed = 100;
-                    }
-                } else if(pos == 1) {
-                    currentSpeed -= 10;
-                    if(currentSpeed < 40) {
-                        currentSpeed = 40;
-                    }
-                }
-                (*os) << "current speed is " << currentSpeed << "%." << endl;
-            }
-            prevVAxis = (int)pos;
-        }
-
-        if(controlMap == JOINT) {
-            // joint selection
-            {
-                double pos = joystick->getPosition(targetMode, Joystick::DIRECTIONAL_PAD_H_AXIS);
-                if(fabs(pos) < 0.15) {
-                    pos = 0.0;
-                }
-                if((int)pos != 0 && prevHAxis == 0) {
-                    if(pos == -1) {
-                        --currentJoint;
-                        if(currentJoint < 0) {
-                            currentJoint = 5;
-                        }
-                        (*os) << "joint " << currentJoint << " is selected." << endl;
-                    } else if(pos == 1) {
-                        ++currentJoint;
-                        if(currentJoint > 5) {
-                            currentJoint = 0;
-                        }
-                        (*os) << "joint " << currentJoint << " is selected." << endl;
-                    }
-                }
-                prevHAxis = (int)pos;
-            }
-
-            isIKEnabled = false;
-            double pos = joystick->getPosition(targetMode, Joystick::L_STICK_H_AXIS);
-            if(fabs(pos) < 0.15) {
-                pos = 0.0;
-            }
-
-            controlFK(currentJoint, pos);
-        }
-
-        // gripper
-        {
-            double pos[2] = { 0.0 };
-            double pos1[2];
-            for(int i = 0; i < 2; ++i) {
-                pos1[i] = joystick->getPosition(targetMode,
-                            i == 0 ? Joystick::L_TRIGGER_AXIS : Joystick::R_TRIGGER_AXIS);
-                if(fabs(pos1[i]) < 0.15) {
-                    pos1[i] = 0.0;
-                }
-            }
-
-            if(fabs(pos1[1]) < 0.15) {
-                pos[0] = -pos1[0];
-                pos[1] = pos1[0];
-            } else {
-                pos[0] = pos1[1];
-                pos[1] = -pos1[1];
-            }
-
-            static const int jointID[] = { ioRightFinger->jointId(), ioLeftFinger->jointId() };
-            for(int i = 0; i < 2; ++i) {
-                controlFK(jointID[i], pos[i]);
-            }
-
-            if(fabs(pos[0]) > 0.0 || fabs(pos[1]) > 0.0) {
-                isIKEnabled = false;
-            }            
-        }
-
-        doJointPose();
-        
-        if(isIKEnabled) {
-            controlIK();
-        } else {
-            initializeIK();
-        }
-
-        return true;
-    }
-
-    void initializeIK()
-    {
         const int nj = ioBody->numJoints();
         qold.resize(nj);
         for(int i = 0; i < nj; ++i) {
             Link* joint = ioBody->joint(i);
+            joint->setActuationMode(jointActuationMode);
+            io->enableIO(joint);
             double q = joint->q();
             ikBody->joint(i)->q() = q;
             qold[i] = q;
@@ -229,108 +95,184 @@ public:
         baseToWrist->calcForwardKinematics();
         qref = qold;
         qref_old = qold;
+
+        VectorXd p0(6);
+        p0.head<3>() = ikWrist->p();
+        p0.tail<3>() = rpyFromRot(ikWrist->R());
+        
+        VectorXd p1(6);
+        p1.head<3>() = ikWrist->p();
+        p1.tail<3>() = rpyFromRot(ikWrist->R());
+        
+        wristInterpolator.clear();
+        wristInterpolator.appendSample(0.0, p0);
+        wristInterpolator.appendSample(0.1, p1);
+        wristInterpolator.update();
+
+        phase = 0;
+        time = 0.0;
+        timeStep = io->timeStep();
+        dq_hand[0] = dq_hand[1] = 0.0;
+
+        controlMap = TwistLinear;
+        currentJoint = 0;
+        currentSpeed = 50;
+        joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
+        targetMode = joystick->addMode();
+
+        return true;
     }
 
-    void controlFK(const int& jointId, double pos)
+    virtual bool control() override
     {
-        Link* joint = ioBody->joint(jointId);
-        double q = joint->q();
-        double q_lower = joint->q_lower();
-        double q_upper = joint->q_upper();
-
-        if((q > q_upper && pos > 0.0)
-            || (q < q_lower && pos < 0.0)) {
-            pos = 0.0;
-        }
-
-        static const double speeds[] = {
-            1.0, 1.0, 1.0, 1.0, 1.0, 1.57, 1.0, 1.0, 1.0, 1.0
+       static const int axisID[] = {
+            Joystick::L_STICK_H_AXIS, Joystick::L_STICK_V_AXIS, Joystick::R_STICK_H_AXIS,
+            Joystick::R_STICK_V_AXIS, Joystick::DIRECTIONAL_PAD_H_AXIS, Joystick::DIRECTIONAL_PAD_V_AXIS,
+            Joystick::L_TRIGGER_AXIS, Joystick::R_TRIGGER_AXIS
         };
+        static const int buttonID[] = { Joystick::B_BUTTON, Joystick::SELECT_BUTTON, Joystick::START_BUTTON };
 
-        joint->dq_target() = speeds[jointId] * (double)currentSpeed / 100.0 * pos;
-        qold[jointId] = q;
-    }
+        joystick->updateState(targetMode);
 
-    void controlIK()
-    {
-        VectorXd p(6);
-
-        static const int axisID[] = {
-            Joystick::L_STICK_V_AXIS, Joystick::L_STICK_H_AXIS, Joystick::R_STICK_V_AXIS,
-            Joystick::L_STICK_V_AXIS, Joystick::L_STICK_H_AXIS, Joystick::R_STICK_H_AXIS
-        };
-
-        double pos[6];
-        for(int i = 0; i < 6; ++i) {
+        double pos[8];
+        for(int i = 0; i < 8; ++i) {
             pos[i] = joystick->getPosition(targetMode, axisID[i]);
-            if(fabs(pos[i]) < 0.15) {
+            if(fabs(pos[i]) < 0.2) {
                 pos[i] = 0.0;
             }
         }
 
-        double rate = (double)currentSpeed / 100.0;
-        if(controlMap == TWIST_LINEAR) {
-            p.head<3>() = Vector3(-pos[0], -pos[1], -pos[2]) * 0.5 * rate * timeStep;
-        } else if(controlMap == TWIST_ANGULAR) {
-            p.tail<3>() = degree(Vector3(pos[3], -pos[4], -pos[5])) * 1.0 * rate * timeStep;
+        for(int i = 0; i < 3; ++i) {
+            bool currentState = joystick->getButtonState(targetMode, buttonID[i]);
+            if(currentState && !prevButtonState[i]) {
+                if(i == 0) {
+                    // home position
+                } else if(i == 1) {
+                    controlMap = controlMap == 0 ? 2 : controlMap - 1;
+                    io->os() << texts[controlMap] << endl;
+                } else if(i == 2) {
+                    controlMap = controlMap == 2 ? 0 : controlMap + 1;
+                    io->os() << texts[controlMap] << endl;
+                }
+            }
+            prevButtonState[i] = currentState;
         }
 
-        Isometry3 T;
-        T.linear() = ikWrist->R() * rotFromRpy(radian(p.tail<3>()));
-        T.translation() = ikWrist->p() + ikBody->rootLink()->R() * p.head<3>();
-        if(baseToWrist->calcInverseKinematics(T)) {
-            for(int i = 0; i < baseToWrist->numJoints(); ++i) {
-                Link* joint = baseToWrist->joint(i);
-                qref[joint->jointId()] = joint->q();
+        // speed selection
+        bool currentState1 = fabs(pos[5]) > 0 ? true : false; 
+        if(currentState1 && !prevButtonState1[0]) {
+            if(pos[5] == -1) {
+                currentSpeed = currentSpeed  == 100 ? 100 : currentSpeed + 10;
+            } else if(pos[5] == 1) {
+                currentSpeed = currentSpeed == 40 ? 40 : currentSpeed - 10;
+            }
+            io->os() << "current speed is " << currentSpeed << "%." << endl;
+        }
+        prevButtonState1[0] = currentState1;
+
+        // joint selection
+        if(controlMap == Joint) {
+            bool currentState2 = fabs(pos[4]) > 0 ? true : false;
+            if(currentState2 && !prevButtonState1[1]) {
+                if(pos[4] == -1) {
+                    currentJoint = currentJoint == 0 ? 5 : currentJoint - 1;
+                    io->os() << "joint " << currentJoint << " is selected." << endl;
+                } else if(pos[4] == 1) {
+                    currentJoint = currentJoint == 5 ? 0 : currentJoint + 1;
+                    io->os() << "joint " << currentJoint << " is selected." << endl;
+                }
+            }
+            prevButtonState1[1] = currentState2;
+        }
+
+        double rate = (double)currentSpeed / 100.0;
+
+        VectorXd p(6);
+
+        if(phase <= 2) {
+            p = wristInterpolator.interpolate(time);
+            Isometry3 T;
+            T.linear() = rotFromRpy(Vector3(p.tail<3>()));
+            T.translation() = p.head<3>();
+            if(baseToWrist->calcInverseKinematics(T)) {
+                for(int i = 0; i < baseToWrist->numJoints(); ++i) {
+                    Link* joint = baseToWrist->joint(i);
+                    qref[joint->jointId()] = joint->q();
+                }
+            }
+        }
+
+        if(phase == 0) {
+            if(time > wristInterpolator.domainUpper()) {
+                phase = 1;
+            }
+        } else if(phase == 1) {
+            if(fabs(pos[6]) > 0 || fabs(pos[7]) > 0) {
+                if(fabs(pos[6]) > fabs(pos[7])) {
+                    dq_hand[0] = degree(pos[6] * 1.0 * timeStep) * rate * -1.0;
+                    dq_hand[1] = degree(pos[6] * 1.0 * timeStep) * rate;
+                } else {
+                    dq_hand[0] = degree(pos[7] * 1.0 * timeStep) * rate;
+                    dq_hand[1] = degree(pos[7] * 1.0 * timeStep) * rate * -1.0;
+                }
+                qref[ioLeftFinger->jointId()] += radian(dq_hand[0]);
+                qref[ioRightFinger->jointId()] += radian(dq_hand[1]);
+
+                jointInterpolator.clear();
+                jointInterpolator.appendSample(time, qref);
+                VectorXd qf = VectorXd::Zero(qref.size());
+                qf[ioLeftFinger->jointId()] = qref[ioLeftFinger->jointId()];
+                qf[ioRightFinger->jointId()] = qref[ioRightFinger->jointId()];
+                jointInterpolator.appendSample(time + timeStep, qf);
+                jointInterpolator.update();
+            } else {
+                if(controlMap == Joint) {
+                    // now editing...
+                    // rotate by pos[0]
+                    // rate of joint 5 = 1.57
+                    // rate of other joint = 1.0
+                } else {
+                    VectorXd p0(6);
+                    p0.head<3>() = ikWrist->p();
+                    p0.tail<3>() = rpyFromRot(ikWrist->R());
+
+                    VectorXd p1(6);
+                    if(controlMap == TwistLinear) {
+                        p1.head<3>() = ikWrist->p() + Vector3(-pos[1], -pos[0], -pos[3]) * 0.5 * timeStep * rate;
+                        p1.tail<3>() = rpyFromRot(ikWrist->R());
+                    } else if(controlMap == TwistAngular) {
+                        p1.head<3>() = ikWrist->p();
+                        p1.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[1], -pos[0], -pos[2]) * 1.0 * timeStep * rate));
+                    }
+
+                    wristInterpolator.clear();
+                    wristInterpolator.appendSample(time + 0.0, p0);
+                    wristInterpolator.appendSample(time + timeStep, p1);
+                    wristInterpolator.update();
+                }          
+            }
+            phase = 2;
+        } else if(phase == 2) {
+            if(time > wristInterpolator.domainUpper()) {
+                phase = 0;
             }
         }
 
         for(int i = 0; i < ioBody->numJoints(); ++i) {
-            double q = ioBody->joint(i)->q();
-            double dq = (q - qold[i]) / timeStep;
-            double dq_ref = (qref[i] - qref_old[i]) / timeStep;
-            ioBody->joint(i)->dq_target() = dq_ref;
-            qold[i] = q;
+            if(jointActuationMode == Link::JointDisplacement) {
+                ioBody->joint(i)->q_target() = qref[i];
+            } else if(jointActuationMode == Link::JointVelocity) {
+                double q = ioBody->joint(i)->q();
+                double dq = (q - qold[i]) / timeStep;
+                double dq_ref = (qref[i] - qref_old[i]) / timeStep;
+                ioBody->joint(i)->dq_target() = dq_ref;
+                qold[i] = q;
+            }
         }
         qref_old = qref;
-    }
+        time += timeStep;
 
-    void doJointPose()
-    {
-        double pos[10] = { 0.0 };
-        bool changed = true;
-        if(isJointPoseSelected) {
-            for(int i = 0; i < ioBody->numJoints(); ++i) {
-                Link* joint = ioBody->joint(i);
-                double q = joint->q();
-                double qref = radian(joint_pose[i]) - q;
-
-                if(qref > 0.0) {
-                    pos[i] = 1.0;
-                } else if(qref < 0.0) {
-                    pos[i] = -1.0;
-                } else {
-                    pos[i] = 0.0;
-                }
-
-                if(fabs(degree(qref)) < 1.0) {
-                    pos[i] = 0.0;
-                }
-
-                if(fabs(pos[i]) < 0.15) {
-                    pos[i] = 0.0;
-                } else {
-                    isIKEnabled = false;
-                    changed = false;
-                }
-            }
-            if(changed) {
-                isJointPoseSelected = false;
-            }
-            for(int i = 0; i < ioBody->numJoints(); ++i) {
-                controlFK(i, pos[i]);
-            }
-        }
+        return true;
     }
 };
 

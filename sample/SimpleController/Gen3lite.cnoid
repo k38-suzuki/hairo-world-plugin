@@ -92,7 +92,7 @@ items:
           plugin: Body
           class: AISTSimulatorItem
           data: 
-            time_step: 0.01
+            time_step: 0.005
             realtime_sync_mode: compensatory
             recording: full
             time_range_mode: unlimited
@@ -240,6 +240,11 @@ views:
     mounted: true
   - 
     id: 9
+    plugin: JoystickStart
+    class: OnScreenJoystickView
+    mounted: true
+  - 
+    id: 10
     plugin: Python
     class: PythonConsoleView
     mounted: true
@@ -313,7 +318,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 504, 504 ]
+              sizes: [ 444, 444 ]
               children: 
                 - 
                   type: pane
@@ -325,19 +330,27 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 756, 252 ]
+              sizes: [ 666, 222 ]
               children: 
                 - 
                   type: pane
                   views: [ 4 ]
                 - 
-                  type: pane
-                  views: [ 3, 9 ]
-                  current: 3
+                  type: splitter
+                  orientation: horizontal
+                  sizes: [ 515, 515 ]
+                  children: 
+                    - 
+                      type: pane
+                      views: [ 3, 10 ]
+                      current: 3
+                    - 
+                      type: pane
+                      views: [ 9 ]
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 225, 783 ]
+          sizes: [ 198, 690 ]
           children: 
             - 
               type: pane
@@ -345,7 +358,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 323, 456 ]
+              sizes: [ 284, 402 ]
               children: 
                 - 
                   type: pane

@@ -240,6 +240,11 @@ views:
     mounted: true
   - 
     id: 9
+    plugin: JoystickStart
+    class: OnScreenJoystickView
+    mounted: true
+  - 
+    id: 10
     plugin: Python
     class: PythonConsoleView
     mounted: true
@@ -331,9 +336,17 @@ viewAreas:
                   type: pane
                   views: [ 4 ]
                 - 
-                  type: pane
-                  views: [ 3, 9 ]
-                  current: 3
+                  type: splitter
+                  orientation: horizontal
+                  sizes: [ 515, 515 ]
+                  children: 
+                    - 
+                      type: pane
+                      views: [ 3, 10 ]
+                      current: 3
+                    - 
+                      type: pane
+                      views: [ 9 ]
         - 
           type: splitter
           orientation: vertical
