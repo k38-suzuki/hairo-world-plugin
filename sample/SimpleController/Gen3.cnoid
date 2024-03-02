@@ -162,9 +162,9 @@ views:
         - 
           camera: [ System, Perspective ]
           isCurrent: true
-          eye: [ 3, 1.5, 1.2 ]
+          eye: [ 1.26091, 0.617272, 0.608562 ]
           direction: [ -0.880451, -0.440225, -0.17609 ]
-          up: [ -0.1575, -0.0787498, 0.984374 ]
+          up: [ -0.1575, -0.0787495, 0.984374 ]
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
@@ -240,6 +240,11 @@ views:
     mounted: true
   - 
     id: 9
+    plugin: JoystickStart
+    class: OnScreenJoystickView
+    mounted: true
+  - 
+    id: 10
     plugin: Python
     class: PythonConsoleView
     mounted: true
@@ -313,7 +318,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 504, 504 ]
+              sizes: [ 444, 444 ]
               children: 
                 - 
                   type: pane
@@ -325,19 +330,27 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 756, 252 ]
+              sizes: [ 666, 222 ]
               children: 
                 - 
                   type: pane
                   views: [ 4 ]
                 - 
-                  type: pane
-                  views: [ 3, 9 ]
-                  current: 3
+                  type: splitter
+                  orientation: horizontal
+                  sizes: [ 515, 515 ]
+                  children: 
+                    - 
+                      type: pane
+                      views: [ 3, 10 ]
+                      current: 3
+                    - 
+                      type: pane
+                      views: [ 9 ]
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 225, 783 ]
+          sizes: [ 198, 690 ]
           children: 
             - 
               type: pane
@@ -345,7 +358,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 323, 456 ]
+              sizes: [ 284, 402 ]
               children: 
                 - 
                   type: pane

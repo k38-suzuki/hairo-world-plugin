@@ -162,7 +162,7 @@ views:
         - 
           camera: [ System, Perspective ]
           isCurrent: true
-          eye: [ 3, 1.5, 1.2 ]
+          eye: [ 1.23392, 0.523942, 0.488542 ]
           direction: [ -0.880451, -0.440225, -0.17609 ]
           up: [ -0.1575, -0.0787495, 0.984374 ]
         - 

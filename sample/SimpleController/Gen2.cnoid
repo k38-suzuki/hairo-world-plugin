@@ -29,14 +29,14 @@ items:
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            jointDisplacements: [ 103.2, 197.3, 180, 43.6, 265.2, 257.5, 288.1, 0, 0, 0 ]
-            jointPositions: [ 1.80118, 3.44353, 3.14159, 0.760964, 4.62861, 4.49422, 5.02829, 0, 0, 0 ]
+            jointDisplacements: [ 103.1, 197.3, 180, 43.6, 265.2, 257.5, 288.1, 0, 0, 0 ]
+            jointPositions: [ 1.79943, 3.44353, 3.14159, 0.760964, 4.62861, 4.49422, 5.02829, 0, 0, 0 ]
             initialRootPosition: [ 0, 0, 0 ]
             initialRootAttitude: [ 
               1, 0, 0, 
               0, 1, 0, 
               0, 0, 1 ]
-            initialJointPositions: [ 1.80118, 3.44353, 3.14159, 0.760964, 4.62861, 4.49422, 5.02829, 0, 0, 0 ]
+            initialJointPositions: [ 1.79943, 3.44353, 3.14159, 0.760964, 4.62861, 4.49422, 5.02829, 0, 0, 0 ]
             fix_root: true
             collisionDetection: true
             selfCollisionDetection: false
@@ -105,7 +105,7 @@ items:
             controller_options: ""
             block_scene_view_edit_mode: false
             dynamicsMode: "Forward dynamics"
-            integrationMode: runge-kutta
+            integrationMode: semi-implicit_euler
             gravity: [ 0, 0, -9.80665 ]
             min_friction_coefficient: 0
             max_friction_coefficient: 100
@@ -162,9 +162,9 @@ views:
         - 
           camera: [ System, Perspective ]
           isCurrent: true
-          eye: [ 0.606942, 1.19347, 1.04306 ]
-          direction: [ -0.330477, -0.834306, -0.44127 ]
-          up: [ -0.162507, -0.410257, 0.897374 ]
+          eye: [ 1.45374, 0.586865, 0.634788 ]
+          direction: [ -0.880451, -0.440225, -0.17609 ]
+          up: [ -0.1575, -0.0787499, 0.984374 ]
         - 
           camera: [ System, Orthographic ]
           orthoHeight: 20
@@ -226,7 +226,7 @@ views:
     class: LinkPositionView
     mounted: true
     state: 
-      coordinate_mode: world
+      coordinate_mode: base
       preferred_coordinate_mode: base
       show_rpy: true
       unique_rpy: false
@@ -273,8 +273,8 @@ toolbars:
     lazyCollisionDetectionMode: true
 Body: 
   "BodySelectionManager": 
-    current_body_item: 4
-    current_link: "Floor"
+    current_body_item: 2
+    current_link: "BASE"
   "KinematicFaultChecker": 
     checkJointPositions: true
     angleMargin: 0
