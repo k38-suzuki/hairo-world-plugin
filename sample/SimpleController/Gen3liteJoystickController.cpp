@@ -51,7 +51,7 @@ class Gen3liteJoystickController : public SimpleController
     SharedJoystickPtr joystick;
     int targetMode;
     bool prevButtonState[3];
-    bool prevButtonState1[2];
+    bool prevButtonState2[2];
 
 public:
 
@@ -65,7 +65,7 @@ public:
         ioLeftFinger = ioBody->link("LEFT_FINGER_PROX");
 
         prevButtonState[0] = prevButtonState[1] = prevButtonState[2] = false;
-        prevButtonState1[0] = prevButtonState1[1] = false;
+        prevButtonState2[0] = prevButtonState2[1] = false;
         jointActuationMode = Link::JointVelocity;
         for(auto opt : io->options()) {
             if(opt == "position") {
@@ -160,20 +160,20 @@ public:
 
         // speed selection
         bool currentState1 = fabs(pos[5]) > 0 ? true : false; 
-        if(currentState1 && !prevButtonState1[0]) {
+        if(currentState1 && !prevButtonState2[0]) {
             if(pos[5] == -1) {
-                currentSpeed = currentSpeed  == 100 ? 100 : currentSpeed + 10;
+                currentSpeed = currentSpeed == 100 ? 100 : currentSpeed + 10;
             } else if(pos[5] == 1) {
                 currentSpeed = currentSpeed == 40 ? 40 : currentSpeed - 10;
             }
             io->os() << "current speed is " << currentSpeed << "%." << endl;
         }
-        prevButtonState1[0] = currentState1;
+        prevButtonState2[0] = currentState1;
 
         // joint selection
         if(controlMap == Joint) {
             bool currentState2 = fabs(pos[4]) > 0 ? true : false;
-            if(currentState2 && !prevButtonState1[1]) {
+            if(currentState2 && !prevButtonState2[1]) {
                 if(pos[4] == -1) {
                     currentJoint = currentJoint == 0 ? 5 : currentJoint - 1;
                     io->os() << "joint " << currentJoint << " is selected." << endl;
@@ -182,7 +182,7 @@ public:
                     io->os() << "joint " << currentJoint << " is selected." << endl;
                 }
             }
-            prevButtonState1[1] = currentState2;
+            prevButtonState2[1] = currentState2;
         }
 
         double rate = (double)currentSpeed / 100.0;
@@ -218,13 +218,13 @@ public:
                 qref[ioLeftFinger->jointId()] += radian(dq_hand[0]);
                 qref[ioRightFinger->jointId()] += radian(dq_hand[1]);
 
-                jointInterpolator.clear();
-                jointInterpolator.appendSample(time, qref);
-                VectorXd qf = VectorXd::Zero(qref.size());
-                qf[ioLeftFinger->jointId()] = qref[ioLeftFinger->jointId()];
-                qf[ioRightFinger->jointId()] = qref[ioRightFinger->jointId()];
-                jointInterpolator.appendSample(time + timeStep, qf);
-                jointInterpolator.update();
+                // jointInterpolator.clear();
+                // jointInterpolator.appendSample(time, qref);
+                // VectorXd qf = VectorXd::Zero(qref.size());
+                // qf[ioLeftFinger->jointId()] = qref[ioLeftFinger->jointId()];
+                // qf[ioRightFinger->jointId()] = qref[ioRightFinger->jointId()];
+                // jointInterpolator.appendSample(time + timeStep, qf);
+                // jointInterpolator.update();
             } else {
                 if(controlMap == Joint) {
                     // now editing...
@@ -253,6 +253,9 @@ public:
             }
             phase = 2;
         } else if(phase == 2) {
+            // if(time > jointInterpolator.domainUpper()) {
+            //     phase = 0;
+            // }
             if(time > wristInterpolator.domainUpper()) {
                 phase = 0;
             }

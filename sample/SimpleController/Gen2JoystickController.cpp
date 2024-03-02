@@ -204,18 +204,18 @@ public:
                 wristInterpolator.clear();
                 wristInterpolator.appendSample(time + 0.0, p0);
                 wristInterpolator.appendSample(time + timeStep, p1);
-                wristInterpolator.update();                
+                wristInterpolator.update();
             }
             phase = 2;
         } else if(phase == 2) {
             if(controlMode == FingersMode) {
                 if(time > jointInterpolator.domainUpper()) {
                     phase = 0;
-                }  
+                }
             } else {
                 if(time > wristInterpolator.domainUpper()) {
                     phase = 0;
-                }                
+                }
             }
         }
 
