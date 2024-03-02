@@ -12,9 +12,13 @@
 using namespace std;
 using namespace cnoid;
 
+const double home_position[] = {
+    103.1, 197.3, 180.0, 43.6, 265.2, 257.5, 288.1, 0.0, 0.0, 0.0
+};
+
 class Gen2JoystickController : public SimpleController
 {
-    enum ControlID { TRANSLATION_MODE, WRIST_MODE, FINGERS_MODE };
+    enum ControlMode { TranslationMode, WristMode, FingersMode };
 
     SimpleControllerIO* io;
     int jointActuationMode;
@@ -37,7 +41,7 @@ class Gen2JoystickController : public SimpleController
 
     SharedJoystickPtr joystick;
     int targetMode;
-    bool prevButtonState[2];
+    bool prevButtonState[3];
 
 public:
 
@@ -51,7 +55,7 @@ public:
         ioFinger2 = ioBody->link("FINGER_PROXIMAL_2");
         ioFinger3 = ioBody->link("FINGER_PROXIMAL_3");
 
-        prevButtonState[0] = prevButtonState[1] = false;
+        prevButtonState[0] = prevButtonState[1] = prevButtonState[2] = false;
         jointActuationMode = Link::JointVelocity;
         for(auto opt : io->options()) {
             if(opt == "position") {
@@ -100,7 +104,7 @@ public:
         timeStep = io->timeStep();
         dq_hand[0] = dq_hand[1] = dq_hand[2] = 0.0;
 
-        controlMode = TRANSLATION_MODE;
+        controlMode = TranslationMode;
         joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
         targetMode = joystick->addMode();
 
@@ -112,7 +116,7 @@ public:
         static const int axisID[] = {
             Joystick::L_STICK_H_AXIS, Joystick::L_STICK_V_AXIS, Joystick::DIRECTIONAL_PAD_H_AXIS
         };
-        static const int buttonID[] = { Joystick::A_BUTTON, Joystick::B_BUTTON };
+        static const int buttonID[] = { Joystick::A_BUTTON, Joystick::B_BUTTON, Joystick::LOGO_BUTTON };
 
         joystick->updateState(targetMode);
 
@@ -124,19 +128,21 @@ public:
             }
         }
 
-        for(int i = 0; i < 2; ++i) {
+        for(int i = 0; i < 3; ++i) {
             bool currentState = joystick->getButtonState(targetMode, buttonID[i]);
             if(currentState && !prevButtonState[i]) {
                 if(i == 0) {
-                    controlMode = FINGERS_MODE;
+                    controlMode = FingersMode;
                     io->os() << "fingers-mode has set." << endl;
                 } else if(i == 1) {
-                    controlMode = controlMode == TRANSLATION_MODE ? WRIST_MODE : TRANSLATION_MODE;
-                    if(controlMode == TRANSLATION_MODE) {
+                    controlMode = controlMode == TranslationMode ? WristMode : TranslationMode;
+                    if(controlMode == TranslationMode) {
                         io->os() << "translation-mode has set." << endl;
                     } else {
                         io->os() << "wrist-mode has set." << endl;
                     }
+                } else if(i == 2) {
+                    // home position
                 }
             }
             prevButtonState[i] = currentState;
@@ -162,7 +168,7 @@ public:
                 phase = 1;
             }
         } else if(phase == 1) {
-            if(controlMode == FINGERS_MODE) {
+            if(controlMode == FingersMode) {
                 if(fabs(pos[0]) > fabs(pos[1])) {
                     dq_hand[0] = dq_hand[1] = dq_hand[2] = degree(pos[0] * 1.06 * timeStep);
                 } else {
@@ -187,10 +193,10 @@ public:
                 p0.tail<3>() = rpyFromRot(ikWrist->R());
 
                 VectorXd p1(6);
-                if(controlMode == TRANSLATION_MODE) {
+                if(controlMode == TranslationMode) {
                     p1.head<3>() = ikWrist->p() + Vector3(-pos[0], pos[1], pos[2]) * 0.2 * timeStep;
                     p1.tail<3>() = rpyFromRot(ikWrist->R());
-                } else if(controlMode == WRIST_MODE) {
+                } else if(controlMode == WristMode) {
                     p1.head<3>() = ikWrist->p();
                     p1.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[0], -pos[1], -pos[2]) * 1.06 * timeStep));
                 }
@@ -202,7 +208,7 @@ public:
             }
             phase = 2;
         } else if(phase == 2) {
-            if(controlMode == FINGERS_MODE) {
+            if(controlMode == FingersMode) {
                 if(time > jointInterpolator.domainUpper()) {
                     phase = 0;
                 }  
