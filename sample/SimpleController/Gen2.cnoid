@@ -92,7 +92,7 @@ items:
           plugin: Body
           class: AISTSimulatorItem
           data: 
-            time_step: 0.01
+            time_step: 0.005
             realtime_sync_mode: compensatory
             recording: full
             time_range_mode: unlimited
@@ -162,7 +162,7 @@ views:
         - 
           camera: [ System, Perspective ]
           isCurrent: true
-          eye: [ 1.11403, 2.44615, 1.83713 ]
+          eye: [ 0.606942, 1.19347, 1.04306 ]
           direction: [ -0.330477, -0.834306, -0.44127 ]
           up: [ -0.162507, -0.410257, 0.897374 ]
         - 
@@ -313,7 +313,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 504, 504 ]
+              sizes: [ 444, 444 ]
               children: 
                 - 
                   type: pane
@@ -325,7 +325,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 756, 252 ]
+              sizes: [ 666, 222 ]
               children: 
                 - 
                   type: pane
@@ -337,7 +337,7 @@ viewAreas:
         - 
           type: splitter
           orientation: vertical
-          sizes: [ 222, 786 ]
+          sizes: [ 198, 690 ]
           children: 
             - 
               type: pane
@@ -345,7 +345,7 @@ viewAreas:
             - 
               type: splitter
               orientation: vertical
-              sizes: [ 313, 469 ]
+              sizes: [ 284, 402 ]
               children: 
                 - 
                   type: pane
