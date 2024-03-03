@@ -18,10 +18,6 @@ const double home_position[] = {
     0.0, -30.0, 0.0, 130.0, 0.0, -10.0, 0.0
 };
 
-const char* texts[] = {
-    "twist-linear control has set.", "twist-angular control has set.", "joint control has set."
-};
-
 }
 
 class Gen3JoystickController : public SimpleController
@@ -136,6 +132,11 @@ public:
             }
         }
 
+        static const char* texts[] = {
+            "twist-linear control has set.", "twist-angular control has set.",
+            "joint control has set."
+        };
+
         for(int i = 0; i < 3; ++i) {
             bool currentState = joystick->getButtonState(targetMode, buttonID[i]);
             if(currentState && !prevButtonState[i]) {
@@ -212,6 +213,12 @@ public:
             }
         } else if(phase == 1) {
             if(controlMap == Joint) {
+                Link* joint = ioBody->joint(currentJoint);
+                if((joint->q() <= joint->q_lower() && pos[0] < 0.0)
+                    || (joint->q() >= joint->q_upper() && pos[0] > 0.0)) {
+                    pos[0] = 0.0;
+                }
+
                 // selected joint rotation
                 jointInterpolator.clear();
                 jointInterpolator.appendSample(time, qref);

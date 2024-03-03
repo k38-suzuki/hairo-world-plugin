@@ -18,10 +18,6 @@ const double home_position[] = {
     0.0, -20.0, 90.0, 80.0, 60.0, 0.0, 20.0, 0.0, -20.0, 0.0
 };
 
-const char* texts[] = {
-    "twist-linear control has set.", "twist-angular control has set.", "joint control has set."
-};
-
 }
 
 class Gen3liteJoystickController : public SimpleController
@@ -32,8 +28,8 @@ class Gen3liteJoystickController : public SimpleController
     int jointActuationMode;
 
     Body* ioBody;
-    Link* ioLeftFinger;
-    Link* ioRightFinger;
+    Link* ioLeftHand;
+    Link* ioRightHand;
     BodyPtr ikBody;
     Link* ikWrist;
     shared_ptr<JointPath> baseToWrist;
@@ -61,8 +57,8 @@ public:
         ostream& os = io->os();
         ioBody = io->body();
 
-        ioLeftFinger = ioBody->link("LEFT_FINGER_PROX");
-        ioRightFinger = ioBody->link("RIGHT_FINGER_PROX");
+        ioLeftHand = ioBody->link("LEFT_FINGER_PROX");
+        ioRightHand = ioBody->link("RIGHT_FINGER_PROX");
 
         prevButtonState[0] = prevButtonState[1] = prevButtonState[2] = false;
         prevButtonState2[0] = prevButtonState2[1] = false;
@@ -142,6 +138,11 @@ public:
             }
         }
 
+        static const char* texts[] = {
+            "twist-linear control has set.", "twist-angular control has set.",
+            "joint control has set."
+        };
+
         for(int i = 0; i < 3; ++i) {
             bool currentState = joystick->getButtonState(targetMode, buttonID[i]);
             if(currentState && !prevButtonState[i]) {
@@ -154,8 +155,8 @@ public:
                     for(int i = 0; i < ioBody->numJoints(); ++i) {
                         qf[i] = radian(home_position[i]);
                     }
-                    qf[ioLeftFinger->jointId()] = qref[ioLeftFinger->jointId()];
-                    qf[ioRightFinger->jointId()] = qref[ioRightFinger->jointId()];
+                    qf[ioLeftHand->jointId()] = qref[ioLeftHand->jointId()];
+                    qf[ioRightHand->jointId()] = qref[ioRightHand->jointId()];
                     jointInterpolator.appendSample(time + 2.0, qf);
                     jointInterpolator.update();
                     phase = 3;
@@ -219,7 +220,7 @@ public:
                 phase = 1;
             }
         } else if(phase == 1) {
-            if(fabs(pos[6]) > 0 || fabs(pos[7]) > 0) {
+            if(fabs(pos[6]) > 0.0 || fabs(pos[7]) > 0.0) {
                 if(fabs(pos[6]) > fabs(pos[7])) {
                     dq_hand[0] = degree(pos[6] * 1.0 * timeStep) * rate * -1.0;
                     dq_hand[1] = degree(pos[6] * 1.0 * timeStep) * rate;
@@ -227,20 +228,31 @@ public:
                     dq_hand[0] = degree(pos[7] * 1.0 * timeStep) * rate;
                     dq_hand[1] = degree(pos[7] * 1.0 * timeStep) * rate * -1.0;
                 }
-                qref[ioLeftFinger->jointId()] += radian(dq_hand[0]);
-                qref[ioRightFinger->jointId()] += radian(dq_hand[1]);
+
+                if((ioLeftHand->q() <= ioLeftHand->q_lower() && pos[6] > 0.0)
+                    || (ioLeftHand->q() >= ioLeftHand->q_upper() && pos[7] > 0.0)) {
+                    dq_hand[0] = dq_hand[1] = 0.0;
+                }
+                qref[ioLeftHand->jointId()] += radian(dq_hand[0]);
+                qref[ioRightHand->jointId()] += radian(dq_hand[1]);
 
                 jointInterpolator.clear();
                 jointInterpolator.appendSample(time, qref);
                 // VectorXd qf = VectorXd::Zero(qref.size());
                 VectorXd qf = qref;
-                qf[ioLeftFinger->jointId()] = qref[ioLeftFinger->jointId()];
-                qf[ioRightFinger->jointId()] = qref[ioRightFinger->jointId()];
+                qf[ioLeftHand->jointId()] = qref[ioLeftHand->jointId()];
+                qf[ioRightHand->jointId()] = qref[ioRightHand->jointId()];
                 jointInterpolator.appendSample(time + timeStep, qf);
                 jointInterpolator.update();
                 phase = 3;
             } else {
                 if(controlMap == Joint) {
+                    Link* joint = ioBody->joint(currentJoint);
+                    if((joint->q() <= joint->q_lower() && pos[0] < 0.0)
+                        || (joint->q() >= joint->q_upper() && pos[0] > 0.0)) {
+                        pos[0] = 0.0;
+                    }
+
                     // selected joint rotation
                     double rps = currentJoint == 5 ? 1.57 : 1.0;
                     jointInterpolator.clear();

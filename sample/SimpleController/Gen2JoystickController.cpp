@@ -192,6 +192,13 @@ public:
                     dq_hand[0] = dq_hand[1] = degree(pos[1]) * 1.06 * timeStep;
                     dq_hand[2] = 0.0;
                 }
+
+                if((ioFinger1->q() <= ioFinger1->q_lower() && pos[0] < 0.0)
+                    || (ioFinger1->q() >= ioFinger1->q_upper() && pos[0] > 0.0)
+                    || (ioFinger1->q() <= ioFinger1->q_lower() && pos[1] < 0.0)
+                    || (ioFinger1->q() >= ioFinger1->q_upper() && pos[1] > 0.0)) {
+                    dq_hand[0] = dq_hand[1] = dq_hand[2] = 0.0;
+                }
                 qref[ioFinger1->jointId()] += radian(dq_hand[0]);
                 qref[ioFinger2->jointId()] += radian(dq_hand[1]);
                 qref[ioFinger3->jointId()] += radian(dq_hand[2]);
