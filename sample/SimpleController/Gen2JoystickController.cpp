@@ -187,9 +187,9 @@ public:
         } else if(phase == 1) {
             if(controlMode == FingersMode) {
                 if(fabs(pos[0]) > fabs(pos[1])) {
-                    dq_hand[0] = dq_hand[1] = dq_hand[2] = degree(pos[0] * 1.06 * timeStep);
+                    dq_hand[0] = dq_hand[1] = dq_hand[2] = degree(pos[0]) * 1.06 * timeStep;
                 } else {
-                    dq_hand[0] = dq_hand[1] = degree(pos[1] * 1.06 * timeStep);
+                    dq_hand[0] = dq_hand[1] = degree(pos[1]) * 1.06 * timeStep;
                     dq_hand[2] = 0.0;
                 }
                 qref[ioFinger1->jointId()] += radian(dq_hand[0]);

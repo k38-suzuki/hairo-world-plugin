@@ -32,8 +32,8 @@ class Gen3liteJoystickController : public SimpleController
     int jointActuationMode;
 
     Body* ioBody;
-    Link* ioRightFinger;
     Link* ioLeftFinger;
+    Link* ioRightFinger;
     BodyPtr ikBody;
     Link* ikWrist;
     shared_ptr<JointPath> baseToWrist;
@@ -61,8 +61,8 @@ public:
         ostream& os = io->os();
         ioBody = io->body();
 
-        ioRightFinger = ioBody->link("RIGHT_FINGER_PROX");
         ioLeftFinger = ioBody->link("LEFT_FINGER_PROX");
+        ioRightFinger = ioBody->link("RIGHT_FINGER_PROX");
 
         prevButtonState[0] = prevButtonState[1] = prevButtonState[2] = false;
         prevButtonState2[0] = prevButtonState2[1] = false;
@@ -154,8 +154,8 @@ public:
                     for(int i = 0; i < ioBody->numJoints(); ++i) {
                         qf[i] = radian(home_position[i]);
                     }
-                    qf[ioRightFinger->jointId()] = qref[ioRightFinger->jointId()];
                     qf[ioLeftFinger->jointId()] = qref[ioLeftFinger->jointId()];
+                    qf[ioRightFinger->jointId()] = qref[ioRightFinger->jointId()];
                     jointInterpolator.appendSample(time + 2.0, qf);
                     jointInterpolator.update();
                     phase = 3;
