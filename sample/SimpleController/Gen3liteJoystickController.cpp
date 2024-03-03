@@ -241,10 +241,16 @@ public:
                 phase = 3;
             } else {
                 if(controlMap == Joint) {
-                    // now editing...
-                    // rotate by pos[0]
-                    // rate of joint 5 = 1.57
-                    // rate of other joint = 1.0
+                    // selected joint rotation
+                    double rps = currentJoint == 5 ? 1.57 : 1.0;
+                    jointInterpolator.clear();
+                    jointInterpolator.appendSample(time, qref);
+                    // VectorXd qf = VectorXd::Zero(qref.size());
+                    VectorXd qf = qref;
+                    qf[currentJoint] += pos[0] * rps * timeStep * rate * 10.0;
+                    jointInterpolator.appendSample(time + timeStep * 10.0, qf);
+                    jointInterpolator.update();
+                    phase = 3;
                 } else {
                     VectorXd p0(6);
                     p0.head<3>() = ikWrist->p();
