@@ -222,11 +222,11 @@ public:
         } else if(phase == 1) {
             if(fabs(pos[6]) > 0.0 || fabs(pos[7]) > 0.0) {
                 if(fabs(pos[6]) > fabs(pos[7])) {
-                    dq_hand[0] = degree(pos[6] * 1.0 * timeStep) * rate * -1.0;
-                    dq_hand[1] = degree(pos[6] * 1.0 * timeStep) * rate;
+                    dq_hand[0] = degree(pos[6] * 1.0 * timeStep) * rate * 10.0 * -1.0;
+                    dq_hand[1] = degree(pos[6] * 1.0 * timeStep) * rate * 10.0;
                 } else {
-                    dq_hand[0] = degree(pos[7] * 1.0 * timeStep) * rate;
-                    dq_hand[1] = degree(pos[7] * 1.0 * timeStep) * rate * -1.0;
+                    dq_hand[0] = degree(pos[7] * 1.0 * timeStep) * rate * 10.0;
+                    dq_hand[1] = degree(pos[7] * 1.0 * timeStep) * rate * 10.0 * -1.0;
                 }
 
                 if((ioLeftHand->q() <= ioLeftHand->q_lower() && pos[6] > 0.0)
@@ -242,7 +242,7 @@ public:
                 VectorXd qf = qref;
                 qf[ioLeftHand->jointId()] = qref[ioLeftHand->jointId()];
                 qf[ioRightHand->jointId()] = qref[ioRightHand->jointId()];
-                jointInterpolator.appendSample(time + timeStep, qf);
+                jointInterpolator.appendSample(time + timeStep * 10.0, qf);
                 jointInterpolator.update();
                 phase = 3;
             } else {
@@ -270,16 +270,16 @@ public:
 
                     VectorXd p1(6);
                     if(controlMap == TwistLinear) {
-                        p1.head<3>() = ikWrist->p() + Vector3(-pos[1], -pos[0], -pos[3]) * 0.5 * timeStep * rate;
+                        p1.head<3>() = ikWrist->p() + Vector3(-pos[1], -pos[0], -pos[3]) * 0.5 * rate * timeStep * 10.0;
                         p1.tail<3>() = rpyFromRot(ikWrist->R());
                     } else if(controlMap == TwistAngular) {
                         p1.head<3>() = ikWrist->p();
-                        p1.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[1], -pos[0], -pos[2]) * 1.0 * timeStep * rate));
+                        p1.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[1], -pos[0], -pos[2]) * 1.0 * rate * timeStep * 10.0));
                     }
 
                     wristInterpolator.clear();
                     wristInterpolator.appendSample(time + 0.0, p0);
-                    wristInterpolator.appendSample(time + timeStep, p1);
+                    wristInterpolator.appendSample(time + timeStep * 10.0, p1);
                     wristInterpolator.update();
                     phase = 2;
                 } 

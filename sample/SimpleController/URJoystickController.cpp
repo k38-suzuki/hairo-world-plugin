@@ -139,12 +139,12 @@ public:
                 p0.tail<3>() = rpyFromRot(ikWrist->R());
 
                 VectorXd p1(6);
-                p1.head<3>() = ikWrist->p() + Vector3(-pos[0], -pos[1], -pos[2]) * 0.5 * timeStep;
-                p1.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[3], pos[4], pos[5]) * 1.0 * timeStep));
+                p1.head<3>() = ikWrist->p() + Vector3(-pos[0], -pos[1], -pos[2]) * 0.5 * timeStep * 10.0;
+                p1.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[3], pos[4], pos[5]) * 1.0 * timeStep * 10.0));
 
                 wristInterpolator.clear();
                 wristInterpolator.appendSample(time + 0.0, p0);
-                wristInterpolator.appendSample(time + timeStep, p1);
+                wristInterpolator.appendSample(time + timeStep * 10.0, p1);
                 wristInterpolator.update();
                 phase = 2;
             }
