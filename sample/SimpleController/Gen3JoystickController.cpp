@@ -87,17 +87,17 @@ public:
         qref = qold;
         qref_old = qold;
 
-        VectorXd p0(6);
-        p0.head<3>() = ikWrist->p();
-        p0.tail<3>() = rpyFromRot(ikWrist->R());
+        VectorXd p2(6);
+        p2.head<3>() = ikWrist->p();
+        p2.tail<3>() = rpyFromRot(ikWrist->R());
         
-        VectorXd p1(6);
-        p1.head<3>() = ikWrist->p();
-        p1.tail<3>() = rpyFromRot(ikWrist->R());
+        VectorXd p3(6);
+        p3.head<3>() = ikWrist->p();
+        p3.tail<3>() = rpyFromRot(ikWrist->R());
         
         wristInterpolator.clear();
-        wristInterpolator.appendSample(0.0, p0);
-        wristInterpolator.appendSample(0.1, p1);
+        wristInterpolator.appendSample(0.0, p2);
+        wristInterpolator.appendSample(0.1, p3);
         wristInterpolator.update();
 
         phase = 0;
@@ -229,22 +229,22 @@ public:
                 jointInterpolator.update();
                 phase = 3;
             } else {
-                VectorXd p0(6);
-                p0.head<3>() = ikWrist->p();
-                p0.tail<3>() = rpyFromRot(ikWrist->R());
+                VectorXd p2(6);
+                p2.head<3>() = ikWrist->p();
+                p2.tail<3>() = rpyFromRot(ikWrist->R());
 
-                VectorXd p1(6);
+                VectorXd p3(6);
                 if(controlMap == TwistLinear) {
-                    p1.head<3>() = ikWrist->p() + Vector3(-pos[1], -pos[0], -pos[3]) * 0.5 * rate * timeStep * 10.0;
-                    p1.tail<3>() = rpyFromRot(ikWrist->R());
+                    p3.head<3>() = ikWrist->p() + Vector3(-pos[1], -pos[0], -pos[3]) * 0.5 * rate * timeStep * 10.0;
+                    p3.tail<3>() = rpyFromRot(ikWrist->R());
                 } else if(controlMap == TwistAngular) {
-                    p1.head<3>() = ikWrist->p();
-                    p1.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[1], -pos[0], -pos[2]) * 1.0 * rate * timeStep * 10.0));
+                    p3.head<3>() = ikWrist->p();
+                    p3.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[1], -pos[0], -pos[2]) * 1.0 * rate * timeStep * 10.0));
                 }
 
                 wristInterpolator.clear();
-                wristInterpolator.appendSample(time + 0.0, p0);
-                wristInterpolator.appendSample(time + timeStep * 10.0, p1);
+                wristInterpolator.appendSample(time, p2);
+                wristInterpolator.appendSample(time + timeStep * 10.0, p3);
                 wristInterpolator.update();
                 phase = 2;
             }
@@ -264,17 +264,17 @@ public:
 
                 baseToWrist->calcForwardKinematics();
 
-                VectorXd p0(6);
-                p0.head<3>() = ikWrist->p();
-                p0.tail<3>() = rpyFromRot(ikWrist->R());
+                VectorXd p2(6);
+                p2.head<3>() = ikWrist->p();
+                p2.tail<3>() = rpyFromRot(ikWrist->R());
 
-                VectorXd p1(6);
-                p1.head<3>() = ikWrist->p();
-                p1.tail<3>() = rpyFromRot(ikWrist->R());
+                VectorXd p3(6);
+                p3.head<3>() = ikWrist->p();
+                p3.tail<3>() = rpyFromRot(ikWrist->R());
 
                 wristInterpolator.clear();
-                wristInterpolator.appendSample(time + 0.0, p0);
-                wristInterpolator.appendSample(time + timeStep, p1);
+                wristInterpolator.appendSample(time, p2);
+                wristInterpolator.appendSample(time + timeStep, p3);
                 wristInterpolator.update();
                 phase = 0;
             }      

@@ -73,17 +73,17 @@ public:
         qref = qold;
         qref_old = qold;
 
-        VectorXd p0(6);
-        p0.head<3>() = ikWrist->p();
-        p0.tail<3>() = rpyFromRot(ikWrist->R());
+        VectorXd p2(6);
+        p2.head<3>() = ikWrist->p();
+        p2.tail<3>() = rpyFromRot(ikWrist->R());
         
-        VectorXd p1(6);
-        p1.head<3>() = ikWrist->p();
-        p1.tail<3>() = rpyFromRot(ikWrist->R());
+        VectorXd p3(6);
+        p3.head<3>() = ikWrist->p();
+        p3.tail<3>() = rpyFromRot(ikWrist->R());
         
         wristInterpolator.clear();
-        wristInterpolator.appendSample(0.0, p0);
-        wristInterpolator.appendSample(0.001, p1);
+        wristInterpolator.appendSample(0.0, p2);
+        wristInterpolator.appendSample(0.001, p3);
         wristInterpolator.update();
 
         phase = 0;
@@ -134,17 +134,17 @@ public:
             }
         } else if(phase == 1) {
             if(joystick->mode() == targetMode) {
-                VectorXd p0(6);
-                p0.head<3>() = ikWrist->p();
-                p0.tail<3>() = rpyFromRot(ikWrist->R());
+                VectorXd p2(6);
+                p2.head<3>() = ikWrist->p();
+                p2.tail<3>() = rpyFromRot(ikWrist->R());
 
-                VectorXd p1(6);
-                p1.head<3>() = ikWrist->p() + Vector3(-pos[0], -pos[1], -pos[2]) * 0.5 * timeStep * 10.0;
-                p1.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[3], pos[4], pos[5]) * 1.0 * timeStep * 10.0));
+                VectorXd p3(6);
+                p3.head<3>() = ikWrist->p() + Vector3(-pos[0], -pos[1], -pos[2]) * 0.5 * timeStep * 10.0;
+                p3.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[3], pos[4], pos[5]) * 1.0 * timeStep * 10.0));
 
                 wristInterpolator.clear();
-                wristInterpolator.appendSample(time + 0.0, p0);
-                wristInterpolator.appendSample(time + timeStep * 10.0, p1);
+                wristInterpolator.appendSample(time, p2);
+                wristInterpolator.appendSample(time + timeStep * 10.0, p3);
                 wristInterpolator.update();
                 phase = 2;
             }
