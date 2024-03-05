@@ -222,11 +222,11 @@ public:
         } else if(phase == 1) {
             if(fabs(pos[6]) > 0.0 || fabs(pos[7]) > 0.0) {
                 if(fabs(pos[6]) > fabs(pos[7])) {
-                    dq_hand[0] = degree(pos[6] * 1.0 * timeStep) * rate * 10.0 * -1.0;
-                    dq_hand[1] = degree(pos[6] * 1.0 * timeStep) * rate * 10.0;
+                    dq_hand[0] = degree(pos[6] * 1.0 * timeStep) * rate * -1.0;
+                    dq_hand[1] = degree(pos[6] * 1.0 * timeStep) * rate;
                 } else {
-                    dq_hand[0] = degree(pos[7] * 1.0 * timeStep) * rate * 10.0;
-                    dq_hand[1] = degree(pos[7] * 1.0 * timeStep) * rate * 10.0 * -1.0;
+                    dq_hand[0] = degree(pos[7] * 1.0 * timeStep) * rate;
+                    dq_hand[1] = degree(pos[7] * 1.0 * timeStep) * rate * -1.0;
                 }
 
                 if((ioLeftHand->q() <= ioLeftHand->q_lower() && pos[6] > 0.0)
@@ -235,16 +235,6 @@ public:
                 }
                 qref[ioLeftHand->jointId()] += radian(dq_hand[0]);
                 qref[ioRightHand->jointId()] += radian(dq_hand[1]);
-
-                jointInterpolator.clear();
-                jointInterpolator.appendSample(time, qref);
-                // VectorXd qf = VectorXd::Zero(qref.size());
-                VectorXd qf = qref;
-                qf[ioLeftHand->jointId()] = qref[ioLeftHand->jointId()];
-                qf[ioRightHand->jointId()] = qref[ioRightHand->jointId()];
-                jointInterpolator.appendSample(time + timeStep * 10.0, qf);
-                jointInterpolator.update();
-                phase = 3;
             } else {
                 if(controlMap == Joint) {
                     Link* joint = ioBody->joint(currentJoint);

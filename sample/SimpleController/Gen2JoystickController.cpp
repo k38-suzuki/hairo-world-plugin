@@ -187,9 +187,9 @@ public:
         } else if(phase == 1) {
             if(controlMode == FingersMode) {
                 if(fabs(pos[0]) > fabs(pos[1])) {
-                    dq_hand[0] = dq_hand[1] = dq_hand[2] = degree(pos[0]) * 1.06 * timeStep * 10.0;
+                    dq_hand[0] = dq_hand[1] = dq_hand[2] = degree(pos[0]) * 1.06 * timeStep;
                 } else {
-                    dq_hand[0] = dq_hand[1] = degree(pos[1]) * 1.06 * timeStep * 10.0;
+                    dq_hand[0] = dq_hand[1] = degree(pos[1]) * 1.06 * timeStep;
                     dq_hand[2] = 0.0;
                 }
 
@@ -202,17 +202,6 @@ public:
                 qref[ioFinger1->jointId()] += radian(dq_hand[0]);
                 qref[ioFinger2->jointId()] += radian(dq_hand[1]);
                 qref[ioFinger3->jointId()] += radian(dq_hand[2]);
-
-                jointInterpolator.clear();
-                jointInterpolator.appendSample(time, qref);
-                // VectorXd qf = VectorXd::Zero(qref.size());
-                VectorXd qf = qref;
-                qf[ioFinger1->jointId()] = qref[ioFinger1->jointId()];
-                qf[ioFinger2->jointId()] = qref[ioFinger2->jointId()];
-                qf[ioFinger3->jointId()] = qref[ioFinger3->jointId()];
-                jointInterpolator.appendSample(time + timeStep * 10.0, qf);
-                jointInterpolator.update();
-                phase = 3;
             } else {
                 VectorXd p2(6);
                 p2.head<3>() = ikWrist->p();
