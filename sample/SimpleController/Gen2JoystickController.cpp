@@ -209,16 +209,16 @@ public:
 
                 VectorXd p3(6);
                 if(controlMode == TranslationMode) {
-                    p3.head<3>() = ikWrist->p() + Vector3(-pos[0], pos[1], pos[2]) * 0.2 * timeStep * 10.0;
+                    p3.head<3>() = ikWrist->p() + Vector3(-pos[0], pos[1], pos[2]) * 0.2 * timeStep;
                     p3.tail<3>() = rpyFromRot(ikWrist->R());
                 } else if(controlMode == WristMode) {
                     p3.head<3>() = ikWrist->p();
-                    p3.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[0], -pos[1], -pos[2]) * 1.06 * timeStep * 10.0));
+                    p3.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[0], -pos[1], -pos[2]) * 1.06 * timeStep));
                 }
 
                 wristInterpolator.clear();
                 wristInterpolator.appendSample(time, p2);
-                wristInterpolator.appendSample(time + timeStep * 10.0, p3);
+                wristInterpolator.appendSample(time + timeStep, p3);
                 wristInterpolator.update();
                 phase = 2;
             }

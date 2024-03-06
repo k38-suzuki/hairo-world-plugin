@@ -235,16 +235,16 @@ public:
 
                 VectorXd p3(6);
                 if(controlMap == TwistLinear) {
-                    p3.head<3>() = ikWrist->p() + Vector3(-pos[1], -pos[0], -pos[3]) * 0.5 * rate * timeStep * 10.0;
+                    p3.head<3>() = ikWrist->p() + Vector3(-pos[1], -pos[0], -pos[3]) * 0.5 * rate * timeStep;
                     p3.tail<3>() = rpyFromRot(ikWrist->R());
                 } else if(controlMap == TwistAngular) {
                     p3.head<3>() = ikWrist->p();
-                    p3.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[1], -pos[0], -pos[2]) * 1.0 * rate * timeStep * 10.0));
+                    p3.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[1], -pos[0], -pos[2]) * 1.0 * rate * timeStep));
                 }
 
                 wristInterpolator.clear();
                 wristInterpolator.appendSample(time, p2);
-                wristInterpolator.appendSample(time + timeStep * 10.0, p3);
+                wristInterpolator.appendSample(time + timeStep, p3);
                 wristInterpolator.update();
                 phase = 2;
             }
