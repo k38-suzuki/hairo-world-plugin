@@ -7,7 +7,6 @@
 #include <cnoid/JointPath>
 #include <cnoid/SharedJoystick>
 #include <cnoid/SimpleController>
-#include <sample/SimpleController/Interpolator.h>
 
 using namespace std;
 using namespace cnoid;
@@ -22,8 +21,6 @@ class URJoystickController : public SimpleController
     Link* ikWrist;
     shared_ptr<JointPath> baseToWrist;
     VectorXd qref, qold, qref_old;
-    Interpolator<VectorXd> wristInterpolator;
-    int phase;
     double time;
     double timeStep;
 
@@ -73,25 +70,16 @@ public:
         qref = qold;
         qref_old = qold;
 
-        VectorXd p2(6);
-        p2.head<3>() = ikWrist->p();
-        p2.tail<3>() = rpyFromRot(ikWrist->R());
-        
-        VectorXd p3(6);
-        p3.head<3>() = ikWrist->p();
-        p3.tail<3>() = rpyFromRot(ikWrist->R());
-        
-        wristInterpolator.clear();
-        wristInterpolator.appendSample(0.0, p2);
-        wristInterpolator.appendSample(0.001, p3);
-        wristInterpolator.update();
-
-        phase = 0;
         time = 0.0;
         timeStep = io->timeStep();
 
         joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
         targetMode = joystick->addMode();
+
+        if(timeStep < 0.005) {
+            os << "timestep < 0.005" << endl;
+            return false;
+        }
 
         return true;
     }
@@ -113,44 +101,20 @@ public:
             }
         }
 
+        VectorXd p3(6);
+        p3.head<3>() = ikWrist->p() + Vector3(-pos[0], -pos[1], -pos[2]) * 0.5 * timeStep;
+        p3.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[3], pos[4], pos[5]) * 1.0 * timeStep));
+
         VectorXd p(6);
 
-        if(phase <= 2) {
-            p = wristInterpolator.interpolate(time);
-            Isometry3 T;
-            T.linear() = rotFromRpy(Vector3(p.tail<3>()));
-            T.translation() = p.head<3>();
-            if(baseToWrist->calcInverseKinematics(T)) {
-                for(int i = 0; i < baseToWrist->numJoints(); ++i) {
-                    Link* joint = baseToWrist->joint(i);
-                    qref[joint->jointId()] = joint->q();
-                }
-            }
-        }
-
-        if(phase == 0) {
-            if(time > wristInterpolator.domainUpper()) {
-                phase = 1;
-            }
-        } else if(phase == 1) {
-            if(joystick->mode() == targetMode) {
-                VectorXd p2(6);
-                p2.head<3>() = ikWrist->p();
-                p2.tail<3>() = rpyFromRot(ikWrist->R());
-
-                VectorXd p3(6);
-                p3.head<3>() = ikWrist->p() + Vector3(-pos[0], -pos[1], -pos[2]) * 0.5 * timeStep;
-                p3.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[3], pos[4], pos[5]) * 1.0 * timeStep));
-
-                wristInterpolator.clear();
-                wristInterpolator.appendSample(time, p2);
-                wristInterpolator.appendSample(time + timeStep, p3);
-                wristInterpolator.update();
-                phase = 2;
-            }
-        } else if(phase == 2) {
-            if(time > wristInterpolator.domainUpper()) {
-                phase = 0;
+        p = p3;
+        Isometry3 T;
+        T.linear() = rotFromRpy(Vector3(p.tail<3>()));
+        T.translation() = p.head<3>();
+        if(baseToWrist->calcInverseKinematics(T)) {
+            for(int i = 0; i < baseToWrist->numJoints(); ++i) {
+                Link* joint = baseToWrist->joint(i);
+                qref[joint->jointId()] = joint->q();
             }
         }
 

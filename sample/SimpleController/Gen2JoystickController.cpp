@@ -40,7 +40,7 @@ class Gen2JoystickController : public SimpleController
     double timeStep;
     double dq_hand[3];
 
-    int controlMode;
+    int currentMode;
     bool is_pose_enabled;
 
     SharedJoystickPtr joystick;
@@ -94,11 +94,16 @@ public:
         timeStep = io->timeStep();
         dq_hand[0] = dq_hand[1] = dq_hand[2] = 0.0;
 
-        controlMode = TranslationMode;
+        currentMode = TranslationMode;
         is_pose_enabled = false;
 
         joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
         targetMode = joystick->addMode();
+
+        if(timeStep < 0.01) {
+            os << "timestep < 0.01" << endl;
+            return false;
+        }
 
         return true;
     }
@@ -124,11 +129,11 @@ public:
             bool currentState = joystick->getButtonState(targetMode, buttonID[i]);
             if(currentState && !prevButtonState[i]) {
                 if(i == 0) {
-                    controlMode = FingersMode;
+                    currentMode = FingersMode;
                     io->os() << "fingers-mode has set." << endl;
                 } else if(i == 1) {
-                    controlMode = controlMode == TranslationMode ? WristMode : TranslationMode;
-                    if(controlMode == TranslationMode) {
+                    currentMode = currentMode == TranslationMode ? WristMode : TranslationMode;
+                    if(currentMode == TranslationMode) {
                         io->os() << "translation-mode has set." << endl;
                     } else {
                         io->os() << "wrist-mode has set." << endl;
@@ -154,7 +159,7 @@ public:
         }
 
         if(!is_pose_enabled) {
-            if(controlMode == FingersMode) {
+            if(currentMode == FingersMode) {
                 if(fabs(pos[0]) > fabs(pos[1])) {
                     dq_hand[0] = dq_hand[1] = dq_hand[2] = degree(pos[0]) * 1.06 * timeStep;
                 } else {
@@ -183,10 +188,10 @@ public:
                 qref[ioFinger3->jointId()] += radian(dq_hand[2]);
             } else {
                 VectorXd p3(6);
-                if(controlMode == TranslationMode) {
+                if(currentMode == TranslationMode) {
                     p3.head<3>() = ikWrist->p() + Vector3(-pos[0], pos[1], pos[2]) * 0.2 * timeStep;
                     p3.tail<3>() = rpyFromRot(ikWrist->R());
-                } else if(controlMode == WristMode) {
+                } else if(currentMode == WristMode) {
                     p3.head<3>() = ikWrist->p();
                     p3.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[0], -pos[1], -pos[2]) * 1.06 * timeStep));
                 }
