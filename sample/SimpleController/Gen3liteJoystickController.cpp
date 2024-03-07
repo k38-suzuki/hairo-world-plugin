@@ -106,8 +106,8 @@ public:
         joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
         targetMode = joystick->addMode();
 
-        if(timeStep < 0.005) {
-            os << "timestep < 0.005" << endl;
+        if(timeStep < 0.01) {
+            os << "timestep < 0.01" << endl;
             return false;
         }
 
