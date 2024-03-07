@@ -96,6 +96,7 @@ public:
 
         controlMode = TranslationMode;
         is_pose_enabled = false;
+
         joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
         targetMode = joystick->addMode();
 
