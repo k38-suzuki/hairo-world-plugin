@@ -193,7 +193,19 @@ public:
             prevButtonState2[1] = currentState2;
         }
 
-        double rate = (double)currentSpeed / 100.0;
+        const double rate = (double)currentSpeed / 100.0;
+
+        if(currentMap != prevMapState) {
+            for(int i = 0; i < ioBody->numJoints(); ++i) {
+                Link* joint = ioBody->joint(i);
+                double q = joint->q();
+                ikBody->joint(i)->q() = q;
+                qold[i] = q;
+            }
+
+            baseToWrist->calcForwardKinematics();
+        }
+        prevMapState = currentMap;
 
         if(!is_pose_enabled) {
             if(currentMap == Joint) {
@@ -260,18 +272,6 @@ public:
                 is_pose_enabled = false;
             }
         }
-
-        if(currentMap != prevMapState) {
-            for(int i = 0; i < ioBody->numJoints(); ++i) {
-                Link* joint = ioBody->joint(i);
-                double q = joint->q();
-                ikBody->joint(i)->q() = q;
-                qold[i] = q;
-            }
-
-            baseToWrist->calcForwardKinematics();
-        }
-        prevMapState = currentMap;
 
         for(int i = 0; i < ioBody->numJoints(); ++i) {
             if(jointActuationMode == Link::JointDisplacement) {
