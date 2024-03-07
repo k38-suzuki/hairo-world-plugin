@@ -35,13 +35,13 @@ class Gen2JoystickController : public SimpleController
     Link* ikWrist;
     shared_ptr<JointPath> baseToWrist;
     VectorXd qref, qold, qref_old;
-    Interpolator<VectorXd> wristInterpolator;
     Interpolator<VectorXd> jointInterpolator;
-    int phase;
     double time;
     double timeStep;
     double dq_hand[3];
+
     int controlMode;
+    bool is_pose_enabled;
 
     SharedJoystickPtr joystick;
     int targetMode;
@@ -90,25 +90,12 @@ public:
         qref = qold;
         qref_old = qold;
 
-        VectorXd p2(6);
-        p2.head<3>() = ikWrist->p();
-        p2.tail<3>() = rpyFromRot(ikWrist->R());
-        
-        VectorXd p3(6);
-        p3.head<3>() = ikWrist->p();
-        p3.tail<3>() = rpyFromRot(ikWrist->R());
-        
-        wristInterpolator.clear();
-        wristInterpolator.appendSample(0.0, p2);
-        wristInterpolator.appendSample(0.1, p3);
-        wristInterpolator.update();
-
-        phase = 0;
         time = 0.0;
         timeStep = io->timeStep();
         dq_hand[0] = dq_hand[1] = dq_hand[2] = 0.0;
 
         controlMode = TranslationMode;
+        is_pose_enabled = false;
         joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
         targetMode = joystick->addMode();
 
@@ -159,32 +146,13 @@ public:
                     qf[ioFinger3->jointId()] = qref[ioFinger3->jointId()];
                     jointInterpolator.appendSample(time + 2.0, qf);
                     jointInterpolator.update();
-                    phase = 3;
+                    is_pose_enabled = true;
                 }
             }
             prevButtonState[i] = currentState;
         }
 
-        VectorXd p(6);
-
-        if(phase <= 2) {
-            p = wristInterpolator.interpolate(time);
-            Isometry3 T;
-            T.linear() = rotFromRpy(Vector3(p.tail<3>()));
-            T.translation() = p.head<3>();
-            if(baseToWrist->calcInverseKinematics(T)) {
-                for(int i = 0; i < baseToWrist->numJoints(); ++i) {
-                    Link* joint = baseToWrist->joint(i);
-                    qref[joint->jointId()] = joint->q();
-                }
-            }
-        }
-
-        if(phase == 0) {
-            if(time > wristInterpolator.domainUpper()) {
-                phase = 1;
-            }
-        } else if(phase == 1) {
+        if(!is_pose_enabled) {
             if(controlMode == FingersMode) {
                 if(fabs(pos[0]) > fabs(pos[1])) {
                     dq_hand[0] = dq_hand[1] = dq_hand[2] = degree(pos[0]) * 1.06 * timeStep;
@@ -197,16 +165,22 @@ public:
                     || (ioFinger1->q() >= ioFinger1->q_upper() && pos[0] > 0.0)
                     || (ioFinger1->q() <= ioFinger1->q_lower() && pos[1] < 0.0)
                     || (ioFinger1->q() >= ioFinger1->q_upper() && pos[1] > 0.0)) {
-                    dq_hand[0] = dq_hand[1] = dq_hand[2] = 0.0;
+                    dq_hand[0] = 0.0;
+                }
+                if((ioFinger2->q() <= ioFinger2->q_lower() && pos[0] < 0.0)
+                    || (ioFinger2->q() >= ioFinger2->q_upper() && pos[0] > 0.0)
+                    || (ioFinger2->q() <= ioFinger2->q_lower() && pos[1] < 0.0)
+                    || (ioFinger2->q() >= ioFinger2->q_upper() && pos[1] > 0.0)) {
+                    dq_hand[1] = 0.0;
+                }
+                if((ioFinger3->q() <= ioFinger3->q_lower() && pos[0] < 0.0)
+                    || (ioFinger3->q() >= ioFinger3->q_upper() && pos[0] > 0.0)) {
+                    dq_hand[2] = 0.0;
                 }
                 qref[ioFinger1->jointId()] += radian(dq_hand[0]);
                 qref[ioFinger2->jointId()] += radian(dq_hand[1]);
                 qref[ioFinger3->jointId()] += radian(dq_hand[2]);
             } else {
-                VectorXd p2(6);
-                p2.head<3>() = ikWrist->p();
-                p2.tail<3>() = rpyFromRot(ikWrist->R());
-
                 VectorXd p3(6);
                 if(controlMode == TranslationMode) {
                     p3.head<3>() = ikWrist->p() + Vector3(-pos[0], pos[1], pos[2]) * 0.2 * timeStep;
@@ -216,17 +190,20 @@ public:
                     p3.tail<3>() = rpyFromRot(ikWrist->R() * rotFromRpy(Vector3(pos[0], -pos[1], -pos[2]) * 1.06 * timeStep));
                 }
 
-                wristInterpolator.clear();
-                wristInterpolator.appendSample(time, p2);
-                wristInterpolator.appendSample(time + timeStep, p3);
-                wristInterpolator.update();
-                phase = 2;
+                VectorXd p(6);
+
+                p = p3;
+                Isometry3 T;
+                T.linear() = rotFromRpy(Vector3(p.tail<3>()));
+                T.translation() = p.head<3>();
+                if(baseToWrist->calcInverseKinematics(T)) {
+                    for(int i = 0; i < baseToWrist->numJoints(); ++i) {
+                        Link* joint = baseToWrist->joint(i);
+                        qref[joint->jointId()] = joint->q();
+                    }
+                }
             }
-        } else if(phase == 2) {
-            if(time > wristInterpolator.domainUpper()) {
-                phase = 0;
-            }
-        } else if(phase == 3) {
+        } else {
             qref = jointInterpolator.interpolate(time);
             if(time > jointInterpolator.domainUpper()) {
                 for(int i = 0; i < ioBody->numJoints(); ++i) {
@@ -237,20 +214,7 @@ public:
                 }
 
                 baseToWrist->calcForwardKinematics();
-
-                VectorXd p2(6);
-                p2.head<3>() = ikWrist->p();
-                p2.tail<3>() = rpyFromRot(ikWrist->R());
-
-                VectorXd p3(6);
-                p3.head<3>() = ikWrist->p();
-                p3.tail<3>() = rpyFromRot(ikWrist->R());
-
-                wristInterpolator.clear();
-                wristInterpolator.appendSample(time, p2);
-                wristInterpolator.appendSample(time + timeStep, p3);
-                wristInterpolator.update();
-                phase = 0;
+                is_pose_enabled = false;
             }
         }
 
