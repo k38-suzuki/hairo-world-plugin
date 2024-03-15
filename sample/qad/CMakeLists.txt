@@ -1,4 +1,4 @@
-option(BUILD_QAD_SAMPLES "Building QAD sampels" ON)
+option(BUILD_QAD_SAMPLES "Building QAD sampels" OFF)
 if(NOT BUILD_QAD_SAMPLES)
   return()
 endif()
