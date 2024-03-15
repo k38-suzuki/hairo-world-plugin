@@ -321,7 +321,7 @@ void StairsGenerator::Impl::writeStringerShape(Listing* elementsNode)
     node->insert("geometry", geometryNode);
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
+    MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
     Listing& diffuseColorList = *materialNode->createFlowStyleListing("diffuse");
     QPalette palette = colorButton->palette();
     QColor color = palette.color(QPalette::Button);
@@ -332,7 +332,6 @@ void StairsGenerator::Impl::writeStringerShape(Listing* elementsNode)
     for(int i = 0; i < 3; ++i) {
         diffuseColorList.append(c[i], 3, 3);
     }
-    appearanceNode->insert("material", materialNode);
 
     elementsNode->append(node);
 }
@@ -354,7 +353,7 @@ void StairsGenerator::Impl::writeStepShape(Listing* elementsNode)
     write(geometryNode, "size", Vector3(tread, width, thickness));
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
+    MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
     Listing& diffuseColorList = *materialNode->createFlowStyleListing("diffuse");
     QPalette palette = colorButton->palette();
     QColor color = palette.color(QPalette::Button);
@@ -365,7 +364,6 @@ void StairsGenerator::Impl::writeStepShape(Listing* elementsNode)
     for(int i = 0; i < 3; ++i) {
         diffuseColorList.append(c[i], 3, 3);
     }
-    appearanceNode->insert("material", materialNode);
 
     elementsNode->append(node);
 }

@@ -1001,9 +1001,8 @@ MappingPtr CrawlerGenerator::Impl::writeChassis()
     write(geometryNode, "size", Vector3(dspins[CHS_XSZ]->value(), dspins[CHS_YSZ]->value(), dspins[CHS_ZSZ]->value()));
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
+    MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
     write(materialNode, "diffuseColor", extractColor(buttons[CHS_CLR]));
-    appearanceNode->insert("material", materialNode);
 
     elementsNode->append(node);
     if(!elementsNode->empty()) {
@@ -1079,9 +1078,8 @@ MappingPtr CrawlerGenerator::Impl::writeTrack()
     node->insert("geometry", geometryNode);
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
+    MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
     write(materialNode, "diffuseColor", extractColor(buttons[TRK_CLR]));
-    appearanceNode->insert("material", materialNode);
 
     elementsNode->append(node);
     if(!elementsNode->empty()) {
@@ -1136,9 +1134,8 @@ MappingPtr CrawlerGenerator::Impl::writeFrontTrack()
     node->insert("geometry", geometryNode);
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
+    MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
     write(materialNode, "diffuseColor", extractColor(buttons[FFL_CLR]));
-    appearanceNode->insert("material", materialNode);
 
     elementsNode->append(node);
     if(!elementsNode->empty()) {
@@ -1193,9 +1190,8 @@ MappingPtr CrawlerGenerator::Impl::writeRearTrack()
     node->insert("geometry", geometryNode);
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
+    MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
     write(materialNode, "diffuseColor", extractColor(buttons[RFL_CLR]));
-    appearanceNode->insert("material", materialNode);
 
     elementsNode->append(node);
     if(!elementsNode->empty()) {
@@ -1824,9 +1820,8 @@ MappingPtr CrawlerGenerator::Impl::writeCylinderShape(const double& radius, cons
     geometryNode->write("height", height);
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
+    MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
     write(materialNode, "diffuseColor", color);
-    appearanceNode->insert("material", materialNode);
 
     return node;
 }

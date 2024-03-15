@@ -354,9 +354,8 @@ void TerrainGenerator::Impl::writeLinkShape(Listing* elementsNode)
     node->insert("geometry", geometryNode);
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-    MappingPtr materialNode = new Mapping;
+    MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
     write(materialNode, "diffuse", Vector3(1.0, 1.0, 1.0));
-    appearanceNode->insert("material", materialNode);
 
     elementsNode->append(node);
 }
@@ -367,9 +366,6 @@ void TerrainGenerator::Impl::writeLinkShape2(Listing* elementsNode)
     int xsize = data->xsize();
     int ysize = data->ysize();
     double unit = 0.1 * scale;
-
-    MappingPtr materialNode = new Mapping;
-    write(materialNode, "diffuse", Vector3(1.0, 1.0, 1.0));
 
     for(int j = 0; j < ysize; ++j) {
         for(int i = 0; i < xsize; ++i) {
@@ -387,7 +383,8 @@ void TerrainGenerator::Impl::writeLinkShape2(Listing* elementsNode)
             write(geometryNode, "size", Vector3(unit, unit, z));
 
             MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
-            appearanceNode->insert("material", materialNode);
+            MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
+            write(materialNode, "diffuse", Vector3(1.0, 1.0, 1.0));
 
             elementsNode->append(node);
         }

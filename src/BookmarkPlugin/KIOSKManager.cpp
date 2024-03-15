@@ -30,18 +30,11 @@ namespace {
 
 Action* kioskCheck = nullptr;
 Action* hideCheck = nullptr;
+bool doKioskMode = false;
 
-void onProjectOptionsParsed(boost::program_options::variables_map& v)
+void onSigOptionsParsed(OptionManager*)
 {
-    bool result = false;
-    char* CNOID_USE_KIOSK = getenv("CNOID_USE_KIOSK");
-    if(v.count("kiosk")) {
-        result = true;
-    } else if(CNOID_USE_KIOSK && (strcmp(CNOID_USE_KIOSK, "0") == 0)) {
-        result = true;
-    }
-
-    if(result) {
+    if(doKioskMode) {
         kioskCheck->setChecked(false);
         kioskCheck->setChecked(true);
         BookmarkManagerDialog::instance()->show();
@@ -127,9 +120,16 @@ void KIOSKManager::initializeClass(ExtensionManager* ext)
     // hideCheck = mm.addCheckItem(_("Hide tool bar"));
     // hideCheck->sigToggled().connect([&](bool on){ onHideToolBarToggled(on); });
 
-    OptionManager& om = ext->optionManager().addOption("kiosk", "start kiosk mode automatically");
-    om.sigOptionsParsed(1).connect(
-                [&](boost::program_options::variables_map& v){ onProjectOptionsParsed(v); });
+    auto om = OptionManager::instance();
+    om->add_flag("--kiosk-mode", doKioskMode, "start kiosk mode automatically");
+    om->sigOptionsParsed(1).connect(onSigOptionsParsed);    
+
+    char* CNOID_USE_KIOSK = getenv("CNOID_USE_KIOSK");
+    if(CNOID_USE_KIOSK && (strcmp(CNOID_USE_KIOSK, "0") == 0)) {
+        kioskCheck->setChecked(false);
+        kioskCheck->setChecked(true);
+        BookmarkManagerDialog::instance()->show();
+    }
 
     ext->manage(new KIOSKManager(ext));
     MainWindow::instance()->setFullScreen(false);
