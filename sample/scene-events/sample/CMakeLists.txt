@@ -1,0 +1,14 @@
+choreonoid_add_simple_controller(FireEventController FireEventController.cpp)
+target_link_libraries(FireEventController CnoidBodyPlugin CnoidSceneEffectsPlugin)
+
+choreonoid_add_simple_controller(FountainEventController FountainEventController.cpp)
+target_link_libraries(FountainEventController CnoidBodyPlugin CnoidSceneEffectsPlugin)
+
+choreonoid_add_simple_controller(LightEventController LightEventController.cpp)
+target_link_libraries(LightEventController CnoidBodyPlugin)
+
+choreonoid_add_simple_controller(SmokeEventController SmokeEventController.cpp)
+target_link_libraries(SmokeEventController CnoidBodyPlugin CnoidSceneEffectsPlugin)
+
+install(FILES fire.cnoid fountain.cnoid smoke.cnoid
+        DESTINATION ${CNOID_SHARE_SUBDIR}/project)

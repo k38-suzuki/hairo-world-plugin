@@ -2,8 +2,8 @@ if(NOT ENABLE_GUI)
   return()
 endif()
 
-option(BUILD_MARKER_DETECT_PLUGIN "Building MarkerDetectPlugin" OFF)
-if(NOT BUILD_MARKER_DETECT_PLUGIN)
+option(BUILD_MARKER_DETECTION_SAMPLE "Building a marker detection sample" OFF)
+if(NOT BUILD_MARKER_DETECTION_SAMPLE)
     return()
 endif()
 
