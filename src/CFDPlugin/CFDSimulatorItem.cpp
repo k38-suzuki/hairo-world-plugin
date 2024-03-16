@@ -7,8 +7,8 @@
 #include <cnoid/Body>
 #include <cnoid/DeviceList>
 #include <cnoid/EigenArchive>
-#include <cnoid/EigenUtil>
 #include <cnoid/ItemManager>
+#include <cnoid/MathUtil>
 #include <cnoid/MeshExtractor>
 #include <cnoid/SceneDrawables>
 #include <cnoid/SimulatorItem>

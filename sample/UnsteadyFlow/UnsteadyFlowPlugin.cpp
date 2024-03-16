@@ -3,6 +3,7 @@
 */
 
 #include <cnoid/ItemList>
+#include <cnoid/MathUtil>
 #include <cnoid/MenuManager>
 #include <cnoid/Plugin>
 #include <cnoid/RootItem>
@@ -41,14 +42,14 @@ private:
 
     bool onTimeChanged(const double& time)
     {
+        static const double T = 3.0;
+        static const double w = radian(360.0) / T;
+        Vector3 flow = Vector3(2.0, 0.0, 0.0) * sin(w * time);
+
         if(useUnsteadyFlow->isChecked()) {
             ItemList<FluidAreaItem> areaItems = RootItem::instance()->checkedItems<FluidAreaItem>();
-            for(auto& areaItem : areaItems) { 
-                if(time < 2.0) {
-                    areaItem->setUnsteadyFlow(Vector3(2.0, 0.0, 0.0));
-                } else if(time < 4.0) {
-                    areaItem->setUnsteadyFlow(Vector3(-2.0, 0.0, 0.0));
-                }
+            for(auto& areaItem : areaItems) {
+                areaItem->setUnsteadyFlow(flow);
             }
         }
         return true;
