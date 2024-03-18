@@ -48,7 +48,7 @@ class TaskCreator::Impl : public Dialog
 {
 public:
 
-    enum { NumProjects = 8 };
+    enum { NumProjects = 12 };
 
     ComboBox* projectCombos[NumProjects];
     CheckBox* logCheck;
