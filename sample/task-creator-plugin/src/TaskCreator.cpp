@@ -18,6 +18,7 @@
 #include <cnoid/RootItem>
 #include <cnoid/Separator>
 #include <cnoid/SimulationBar>
+#include <cnoid/SpinBox>
 #include <cnoid/SubProjectItem>
 #include <cnoid/UTF8>
 #include <cnoid/WorldItem>
@@ -52,6 +53,7 @@ public:
     ComboBox* projectCombos[NumProjects];
     CheckBox* logCheck;
     QLineEdit* logLine;
+    DoubleSpinBox* posSpin;
 
     Impl();
     bool store(Archive& archive);
@@ -61,8 +63,7 @@ public:
     void save();
     void onButton1Clicked(const int& id);
     void onButton2Clicked(const int& id);
-    void onPos1ButtonClicked();
-    void onPos2ButtonClicked();
+    void onPosButtonClicked(const int& id);
 };
 
 }
@@ -127,19 +128,24 @@ TaskCreator::Impl::Impl()
         hbox = new QHBoxLayout;
     }
 
-    PushButton* pos1Button = new PushButton(_("Pos 1"));
-    pos1Button->sigClicked().connect([&](){ onPos1ButtonClicked(); });
-    PushButton* pos2Button = new PushButton(_("Pos 2"));
-    pos2Button->sigClicked().connect([&](){ onPos2ButtonClicked(); });
+    posSpin = new DoubleSpinBox;
+    posSpin->setRange(0.0, 10.0);
+    posSpin->setValue(1.5);
+    hbox->addWidget(posSpin);
 
-    hbox->addWidget(pos1Button);
-    hbox->addWidget(pos2Button);
+    const QStringList list = { "x+", "x-", "y+", "y-", "z+", "z-" };
+    for(int i = 0; i < 6; ++i) {
+        PushButton* button = new PushButton(list.at(i));
+        button->sigClicked().connect([=](){ onPosButtonClicked(i); });
+        hbox->addWidget(button);
+    }
+
     vbox->addLayout(hbox);
     hbox = new QHBoxLayout;
 
     logCheck = new CheckBox;
     logCheck->setText(_("Log file"));
-    logCheck->setChecked(true);
+    // logCheck->setChecked(true);
     logLine = new QLineEdit;
 
     hbox->addWidget(logCheck);
@@ -242,9 +248,13 @@ void TaskCreator::Impl::onButton2Clicked(const int& id)
 }
 
 
-void TaskCreator::Impl::onPos1ButtonClicked()
+void TaskCreator::Impl::onPosButtonClicked(const int& id)
 {
     auto rootItem = RootItem::instance();
+    int index1 = id / 2;
+    int index2 = id % 2;
+    double pos = posSpin->value();
+    pos = index2 == 0 ? pos : pos * -1.0;
 
     ItemList<BodyItem> bodyItems = rootItem->selectedItems<BodyItem>();
     if(bodyItems.size()) {
@@ -253,26 +263,7 @@ void TaskCreator::Impl::onPos1ButtonClicked()
 
         Link* rootLink = body->rootLink();
         Vector3 p = rootLink->translation();
-        p[1] -= 1.5;
-        rootLink->setTranslation(p);
-        bodyItem->notifyKinematicStateChange(true);
-        bodyItem->storeInitialState();
-    }
-}
-
-
-void TaskCreator::Impl::onPos2ButtonClicked()
-{
-    auto rootItem = RootItem::instance();
-
-    ItemList<BodyItem> bodyItems = rootItem->selectedItems<BodyItem>();
-    if(bodyItems.size()) {
-        auto bodyItem = bodyItems[0];
-        auto body = bodyItem->body();
-
-        Link* rootLink = body->rootLink();
-        Vector3 p = rootLink->translation();
-        p[1] += 1.5;
+        p[index1] += pos;
         rootLink->setTranslation(p);
         bodyItem->notifyKinematicStateChange(true);
         bodyItem->storeInitialState();

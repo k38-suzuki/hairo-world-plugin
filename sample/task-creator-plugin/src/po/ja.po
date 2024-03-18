@@ -23,12 +23,6 @@ msgstr "タスク作成"
 msgid "Project %1"
 msgstr "プロジェクト %1"
 
-msgid "Pos 1"
-msgstr "位置 1"
-
-msgid "Pos 2"
-msgstr "位置 2"
-
 msgid "Log file"
 msgstr "ログファイル"
 
