@@ -257,8 +257,7 @@ void TaskCreator::Impl::onPosButtonClicked(const int& id)
     pos = index2 == 0 ? pos : pos * -1.0;
 
     ItemList<BodyItem> bodyItems = rootItem->selectedItems<BodyItem>();
-    if(bodyItems.size()) {
-        auto bodyItem = bodyItems[0];
+    for(auto& bodyItem : bodyItems) {
         auto body = bodyItem->body();
 
         Link* rootLink = body->rootLink();
