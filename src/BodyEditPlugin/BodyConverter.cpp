@@ -5,14 +5,12 @@
 #include "BodyConverter.h"
 #include <cnoid/ComboBox>
 #include <cnoid/Dialog>
-#include <cnoid/FileDialog>
-#include <cnoid/MainWindow>
+#include <cnoid/ItemManager>
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <QAction>
 #include <QDialogButtonBox>
 #include <QFile>
-#include <QFileDialog>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QMenu>
@@ -200,16 +198,6 @@ void BodyConverter::initializeClass(ExtensionManager* ext)
 }
 
 
-void BodyConverter::Impl::show()
-{
-    ConvertDialog dialog(MainWindow::instance());
-
-    if(dialog.exec()) {
-
-    }
-}
-
-
 ConvertDialog::ConvertDialog(QWidget* parent)
     : Dialog(parent)
 {
@@ -234,22 +222,8 @@ ConvertDialog::ConvertDialog(QWidget* parent)
 
 void ConvertDialog::open()
 {
-    FileDialog dialog(MainWindow::instance());
-    dialog.setWindowTitle(_("Open a Body file"));
-    dialog.setFileMode(QFileDialog::ExistingFile);
-    dialog.setViewMode(QFileDialog::List);
-    dialog.setLabelText(QFileDialog::Accept, _("Open"));
-    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
-
-    QStringList filters;
-    filters << _("Body files (*.body)");
-    filters << _("Any files (*)");
-    dialog.setNameFilters(filters);
-
-    dialog.updatePresetDirectories();
-
-    if(dialog.exec()) {
-        QString fileName = dialog.selectedFiles().front();
+    QString fileName = getOpenFileName(_("Load a body"), "body").c_str();
+    if(!fileName.isEmpty()) {
         bodyFileName = fileName;
     }
 }

@@ -15,7 +15,6 @@
 #include <cnoid/ItemList>
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
-#include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/MessageView>
 #include <cnoid/PutPropertyFunction>

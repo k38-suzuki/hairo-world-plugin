@@ -230,7 +230,7 @@ void TaskCreator::Impl::save()
 
 void TaskCreator::Impl::onButton1Clicked(const int& id)
 {
-    vector<string> filenames = getOpenFileNames(_("Load projects"), "cnoid");
+    vector<string> filenames = getOpenFileNames(_("Open a project"), "cnoid");
     projectCombos[id]->blockSignals(true);
     for(size_t i = 0; i < filenames.size(); ++i) {
         projectCombos[id]->addItem(filenames[i].c_str());

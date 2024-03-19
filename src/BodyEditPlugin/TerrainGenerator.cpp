@@ -7,9 +7,8 @@
 #include <cnoid/Dialog>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
-#include <cnoid/FileDialog>
+#include <cnoid/ItemManager>
 #include <cnoid/LineEdit>
-#include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
@@ -185,22 +184,8 @@ bool TerrainGenerator::Impl::save(const string& filename)
 
 void TerrainGenerator::Impl::onLoadButtonClicked()
 {
-    FileDialog dialog(MainWindow::instance());
-    dialog.setWindowTitle(_("Open a CSV file"));
-    dialog.setFileMode(QFileDialog::ExistingFile);
-    dialog.setViewMode(QFileDialog::List);
-    dialog.setLabelText(QFileDialog::Accept, _("Open"));
-    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
-
-    QStringList filters;
-    filters << _("CSV files (*.csv)");
-    filters << _("Any files (*)");
-    dialog.setNameFilters(filters);
-
-    dialog.updatePresetDirectories();
-
-    if(dialog.exec()) {
-        string filename = dialog.selectedFiles().front().toStdString();
+    string filename = getOpenFileName(_("Load a CSV file"), "csv");
+    if(!filename.empty()) {
         inputFileLine->setText(filename);
     }
 }

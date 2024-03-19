@@ -38,6 +38,9 @@ msgstr "新規"
 msgid "Open"
 msgstr "開く"
 
+msgid "Open a project"
+msgstr "プロジェクトを開く"
+
 msgid "&Open"
 msgstr "開く(&O)"
 

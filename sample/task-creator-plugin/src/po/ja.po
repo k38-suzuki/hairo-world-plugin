@@ -35,5 +35,5 @@ msgstr "開始(&S)"
 msgid "&Save"
 msgstr "保存(&S)"
 
-msgid "Load projects"
-msgstr "プロジェクトの読み込み"
+msgid "Open a project"
+msgstr "プロジェクトを開く"

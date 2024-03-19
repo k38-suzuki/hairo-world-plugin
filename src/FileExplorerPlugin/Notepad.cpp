@@ -102,7 +102,7 @@ void Notepad::Impl::newFile()
 
 void Notepad::Impl::open()
 {
-    QString fileName = QFileDialog::getOpenFileName(self, "Open the file");
+    QString fileName = QFileDialog::getOpenFileName(self, "Open a file");
     if(fileName.isEmpty()) {
         return;
     }

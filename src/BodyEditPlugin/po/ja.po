@@ -23,8 +23,8 @@ msgstr "ボディの変換"
 msgid "Body Converter"
 msgstr "ボディ変換"
 
-msgid "Open a Body file"
-msgstr "ボディファイルを開く"
+msgid "Load a body"
+msgstr "ボディの読み込み"
 
 msgid "Convert to"
 msgstr "変換先"
@@ -185,11 +185,8 @@ msgstr "エクスポート"
 msgid "&Ok"
 msgstr "Ｏｋ"
 
-msgid "Open a configuration file"
+msgid "Load a configuration file"
 msgstr "設定ファイルの読み込み"
-
-msgid "Open"
-msgstr "読み込み"
 
 msgid "Cancel"
 msgstr "キャンセル"
@@ -293,11 +290,8 @@ msgstr "入力ファイル (.csv)"
 msgid "scale[0.1-10.0]"
 msgstr "スケール[0.1-10.0]"
 
-msgid "Open a CSV file"
+msgid "Load a CSV file"
 msgstr "CSVファイルの読み込み"
-
-msgid "CSV files (*.csv)"
-msgstr "CSVファイル(*.csv)"
 
 msgid "Setting 1"
 msgstr "設定1"

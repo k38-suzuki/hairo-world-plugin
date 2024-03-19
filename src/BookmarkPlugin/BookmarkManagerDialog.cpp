@@ -8,7 +8,7 @@
 #include <cnoid/Archive>
 #include <cnoid/Button>
 #include <cnoid/CheckBox>
-#include <cnoid/FileDialog>
+#include <cnoid/ItemManager>
 #include <cnoid/MainWindow>
 #include <cnoid/Menu>
 #include <cnoid/ProjectManager>
@@ -205,31 +205,13 @@ void BookmarkManagerDialog::Impl::removeItem()
 
 void BookmarkManagerDialog::Impl::onAddButtonClicked()
 {
-    MainWindow* mw = MainWindow::instance();
-    FileDialog dialog(mw);
-    dialog.setWindowTitle(_("Select a Choreonoid project file"));
-    dialog.setFileMode(QFileDialog::ExistingFiles);
-    dialog.setViewMode(QFileDialog::List);
-    dialog.setLabelText(QFileDialog::Accept, _("Open"));
-    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
-
-    QStringList filters;
-    filters << _("Project files (*.cnoid)");
-    filters << _("Any files (*)");
-    dialog.setNameFilters(filters);
-
-    dialog.updatePresetDirectories();
-
-    if(dialog.exec()) {
-        int numFiles = dialog.selectedFiles().size();
-        for(int i = 0; i < numFiles; ++i) {
-            QString filename = dialog.selectedFiles()[i];
-            QTreeWidgetItem* parentItem = treeWidget->currentItem();
-            if(!parentItem) {
-                parentItem = treeWidget->invisibleRootItem();
-            }
-            addItem(filename.toStdString(), parentItem);
+    vector<string> filenames = getOpenFileNames(_("Open a project"), "cnoid");
+    for(size_t i = 0; i < filenames.size(); ++i) {
+        QTreeWidgetItem* parentItem = treeWidget->currentItem();
+        if(!parentItem) {
+            parentItem = treeWidget->invisibleRootItem();
         }
+        addItem(filenames[i].c_str(), parentItem);
     }
 }
 

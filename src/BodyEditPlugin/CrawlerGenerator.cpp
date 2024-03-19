@@ -11,6 +11,7 @@
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/FileDialog>
+#include <cnoid/ItemManager>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/NullOut>
@@ -575,24 +576,7 @@ void CrawlerGenerator::Impl::onResetButtonClicked()
 
 void CrawlerGenerator::Impl::onImportButtonClicked()
 {
-    FileDialog dialog(MainWindow::instance());
-    dialog.setWindowTitle(_("Open a configuration file"));
-    dialog.setFileMode(QFileDialog::ExistingFile);
-    dialog.setViewMode(QFileDialog::List);
-    dialog.setLabelText(QFileDialog::Accept, _("Open"));
-    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
-
-    QStringList filters;
-    filters << _("YAML files (*.yaml *.yml)");
-    filters << _("Any files (*)");
-    dialog.setNameFilters(filters);
-
-    dialog.updatePresetDirectories();
-
-    string filename;
-    if(dialog.exec()) {
-        filename = dialog.selectedFiles().front().toStdString();
-    }
+    string filename = getOpenFileName(_("Load a configuration file"), "yaml");
 
     if(!filename.empty()) {
         filesystem::path path(filename);
