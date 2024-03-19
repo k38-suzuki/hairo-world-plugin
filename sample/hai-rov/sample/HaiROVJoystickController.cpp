@@ -14,14 +14,11 @@ using namespace cnoid;
 
 class HaiROVJoystickController : public SimpleController
 {
-public:
-    SharedJoystickPtr joystick;
-    int targetMode;
     BodyPtr ioBody;
     vector<Thruster*> thrusters;
     vector<Thruster*> pthrusters;
     RateGyroSensor* gyroSensor;
-    double dt;
+    double timeStep;
 
     Vector4 zref;
     Vector4 zprev;
@@ -33,17 +30,24 @@ public:
     Vector2 dxyref;
     Vector2 dxyprev;
 
-    bool on;
+    bool power;
     bool manualMode;
+
+    SharedJoystickPtr joystick;
+    int targetMode;
+    bool prevButtonState;
+
+public:
 
     virtual bool initialize(SimpleControllerIO* io) override
     {
         ioBody = io->body();
-        dt = io->timeStep();
+        timeStep = io->timeStep();
         gyroSensor = ioBody->findDevice<RateGyroSensor>("GyroSensor");
-        on = true;
+        power = true;
         manualMode = false;
 
+        prevButtonState = false;
         for(auto opt : io->options()) {
             if(opt == "manual") {
                 manualMode = true;
@@ -92,33 +96,32 @@ public:
 
     virtual bool control() override
     {
-        joystick->updateState(targetMode);
-
-        static bool pprev = false;
-        bool p = joystick->getButtonState(targetMode, Joystick::A_BUTTON);
-        if(p && !pprev) {
-            on = !on;
-        }
-        pprev = p;
-
         static const int axisID[] = {
             Joystick::R_STICK_V_AXIS, Joystick::L_STICK_H_AXIS,
             Joystick::L_STICK_V_AXIS, Joystick::R_STICK_H_AXIS
         };
 
-        double ppos[2];
+        joystick->updateState(targetMode);
+
+        bool currentState = joystick->getButtonState(targetMode, Joystick::A_BUTTON);
+        if(currentState && !prevButtonState) {
+            power = !power;
+        }
+        prevButtonState = currentState;
+
+        double pos[2];
         for(int i = 0; i < 2; ++i) {
-            ppos[i] = joystick->getPosition(targetMode,
+            pos[i] = joystick->getPosition(targetMode,
                 i == 0 ? Joystick::L_STICK_H_AXIS : Joystick::L_STICK_V_AXIS);
-            if(fabs(ppos[i]) < 0.2) {
-                ppos[i] = 0.0;
+            if(fabs(pos[i]) < 0.2) {
+                pos[i] = 0.0;
             }
         }
 
-        if(on) {
+        if(power) {
             double k = 0.3;
-            pthrusters[0]->force() = k * (-2.0 * ppos[1] - ppos[0]);
-            pthrusters[1]->force() = k * (-2.0 * ppos[1] + ppos[0]);
+            pthrusters[0]->force() = k * (-2.0 * pos[1] - pos[0]);
+            pthrusters[1]->force() = k * (-2.0 * pos[1] + pos[0]);
             for(size_t i = 0; i < pthrusters.size(); ++i) {
                 Thruster* thruster = pthrusters[i];
                 thruster->notifyStateChange();
@@ -144,48 +147,49 @@ public:
 
         Vector4 f = Vector4::Zero();
         Vector4 z = getZRPY();
-        Vector4 dz = (z - zprev) / dt;
+        Vector4 dz = (z - zprev) / timeStep;
 
         if(gyroSensor) {
             Vector3 w = ioBody->rootLink()->R() * gyroSensor->w();
             dz[3] = w[2];
         }
 
-        Vector4 ddz = (dz - dzprev) / dt;
+        Vector4 ddz = (dz - dzprev) / timeStep;
 
         Vector2 xy = getXY();
-        Vector2 dxy = (xy - xyprev) / dt;
-        Vector2 ddxy = (dxy - dxyprev) / dt;
+        Vector2 dxy = (xy - xyprev) / timeStep;
+        Vector2 ddxy = (dxy - dxyprev) / timeStep;
         Vector2 dxy_local = Eigen::Rotation2Dd(-z[3]) * dxy;
         Vector2 ddxy_local = Eigen::Rotation2Dd(-z[3]) * ddxy;
 
         if((fabs(degree(z[1])) > 45.0) || (fabs(degree(z[2])) > 45.0)) {
-            on = false;
+            power = false;
         }
 
-        if(!on) {
+        if(!power) {
             zref[0] = z[0];
             dzref[0] = dz[0];
         }
 
+        double pos2[4];
         for(int i = 0; i < 4; i++) {
-            double pos = joystick->getPosition(targetMode, axisID[i]);
-            if(fabs(pos) < 0.20) {
-                pos = 0.0;
+            pos2[i] = joystick->getPosition(targetMode, axisID[i]);
+            if(fabs(pos2[i]) < 0.2) {
+                pos2[i] = 0.0;
             }
 
             if(i == 3) {
-                dzref[i] = X[i] * pos;
+                dzref[i] = X[i] * pos2[i];
                 f[i] = P[i] * (dzref[i] - dz[i]) + D[i] * (0.0 - ddz[i]);
             } else {
                 if(i == 0) {
-                    zref[i] += X[i] * pos;
+                    zref[i] += X[i] * pos2[i];
                 } else {
                     if(manualMode) {
-                        zref[i] = X[i] * pos;
+                        zref[i] = X[i] * pos2[i];
                     } else {
                         int j = i - 1;
-                        dxyref[j] = KX[j] * pos;
+                        dxyref[j] = KX[j] * pos2[i];
                         zref[i] = KP[j] * (dxyref[j] - dxy_local[1 - j])
                                 + KD[j] * (0.0 - ddxy_local[1 - j]);
                     }
@@ -205,7 +209,7 @@ public:
         for(size_t i = 0; i < thrusters.size(); i++) {
             Thruster* thruster = thrusters[i];
             double force = 0.0;
-            if(on) {
+            if(power) {
                 force += sign[i][0] * f[0];
                 force += sign[i][1] * f[1];
                 force += sign[i][2] * f[2];

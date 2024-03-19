@@ -188,27 +188,28 @@ public:
             dzref[0] = 0.0;
         }
 
+        double pos[4];
         for(int i = 0; i < 4; i++) {
-            double pos = joystick->getPosition(targetMode, axisID[i]);
-            if(fabs(pos) < 0.2) {
-                pos = 0.0;
+            pos[i] = joystick->getPosition(targetMode, axisID[i]);
+            if(fabs(pos[i]) < 0.2) {
+                pos[i] = 0.0;
             }
             if(wailly && (currentMode == Mode1) && (i == 0)) {
-                pos *= -1.0;
+                pos[i] *= -1.0;
             }
 
             if(i == 3) {
-                dzref[i] = X[i] * pos;
+                dzref[i] = X[i] * pos[i];
                 f[i] = P[i] * (dzref[i] - dz[i]) + D[i] * (0.0 - ddz[i]);
             } else {
                 if(i == 0) {
-                    zref[i] += X[i] * pos;
+                    zref[i] += X[i] * pos[i];
                 } else {
                     if(manualMode) {
-                        zref[i] = X[i] * pos;
+                        zref[i] = X[i] * pos[i];
                     } else {
                         int j = i - 1;
-                        dxyref[j] = KX[j] * pos;
+                        dxyref[j] = KX[j] * pos[i];
                         zref[i] = KP[j] * (dxyref[j] - dxy_local[1 - j])
                                 + KD[j] * (0.0 - ddxy_local[1 - j]);
                     }
