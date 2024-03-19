@@ -20,14 +20,23 @@ public:
 
     static void initializeClass(ExtensionManager* ext);
 
+    void setHsv(const Vector3& hsv) { hsv_ = hsv; }
     Vector3 hsv() const { return hsv_; }
+    void setRgb(const Vector3& rgb) { rgb_ = rgb; }
     Vector3 rgb() const { return rgb_; }
+    void setCoefB(const double coef_b) { coef_b_ = coef_b; }
     double coefB() const { return coef_b_; }
+    void setCoefD(const double& coef_d) { coef_d_ = coef_d; }
     double coefD() const { return coef_d_; }
+    void setStdDev(const double& std_dev) { std_dev_ = std_dev; }
     double stdDev() const { return std_dev_; }
+    void setSalt(const double& salt) { salt_ = salt; }
     double salt() const { return salt_; }
+    void setPepper(const double& pepper) { pepper_ = pepper; }
     double pepper() const { return pepper_; }
+    void setFlip(const bool& flip) { flip_ = flip; }
     bool flip() const { return flip_; }
+    void setFilter(const int& filter) { filter_.selectIndex(filter); }
     int filter() const { return filter_.which(); }
 
 protected:

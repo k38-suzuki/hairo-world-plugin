@@ -5,6 +5,7 @@
 #include "VisualEffectorItem.h"
 #include <cnoid/Action>
 #include <cnoid/Archive>
+#include <cnoid/BasicSensors>
 #include <cnoid/BodyItem>
 #include <cnoid/Button>
 #include <cnoid/CheckBox>
@@ -13,6 +14,7 @@
 #include <cnoid/Dialog>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenUtil>
+#include <cnoid/GeneralSliderView>
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
 #include <cnoid/ImageView>
@@ -20,8 +22,8 @@
 #include <cnoid/MeshGenerator>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/RenderableItem>
-#include <cnoid/BasicSensors>
 #include <cnoid/RangeCamera>
+#include <cnoid/RootItem>
 #include <cnoid/SceneGraph>
 #include <cnoid/SceneDrawables>
 #include <cnoid/Separator>
@@ -46,6 +48,7 @@ using namespace cnoid;
 namespace {
 
 Menu contextMenu;
+vector<GeneralSliderView::SliderPtr> sliders;
 
 enum DoubleSpinID {
     HUE, SATURATION, VALUE,
@@ -72,6 +75,108 @@ WidgetInfo labelInfo[] = {
     { 2, 0 }, { 2, 2 },
     { 3, 0 }, { 3, 2 }, { 3, 4 }
 };
+
+static const double value_range[11][2] = {
+    {  0.0, 1.0 }, { -1.0,  1.0 }, { -1.0, 1.0 },
+    { -1.0, 1.0 }, { -1.0,  1.0 }, { -1.0, 1.0 },
+    { -1.0, 0.0 }, {  1.0, 32.0 },
+    {  0.0, 1.0 }, {  0.0,  1.0 }, {  0.0, 1.0 }
+};
+
+void onSelectedItemChanged(const ItemList<>& selectedItems)
+{
+    GeneralSliderView* sliderView = GeneralSliderView::instance();
+    sliders.clear();
+
+    ItemList<VEAreaItem> areaItems = selectedItems;
+
+    static const char* label[] = {
+        _("Hue"), _("Saturation"), _("Value"),
+        _("Red"), _("Green"), _("Blue"),
+        _("CoefB"), _("CoefD"),
+        _("Std_dev"), _("Salt"), _("Pepper")
+    };
+
+    for(auto& areaItem : areaItems) {
+        for(int i = 0; i < 11; ++i) {
+            GeneralSliderView::SliderPtr slider = sliderView->getOrCreateSlider(label[i], value_range[i][0], value_range[i][1], 2);
+            const Vector3& hsv = areaItem->hsv();
+            const Vector3& rgb = areaItem->rgb();
+            switch(i) {
+                case 0 :
+                    slider->setValue(hsv[0]);
+                    slider->setCallback([=](double value){
+                        areaItem->setHsv(Vector3(value, hsv[1], hsv[2]));
+                        areaItem->notifyUpdate(); });
+                    break;
+                case 1 :
+                    slider->setValue(hsv[1]);
+                    slider->setCallback([=](double value){
+                        areaItem->setHsv(Vector3(hsv[0], value, hsv[2]));
+                        areaItem->notifyUpdate(); });
+                    break;
+                case 2 :
+                    slider->setValue(hsv[2]);
+                    slider->setCallback([=](double value){
+                        areaItem->setHsv(Vector3(hsv[0], hsv[1], value));
+                        areaItem->notifyUpdate(); });
+                    break;
+                case 3 :
+                    slider->setValue(rgb[0]);
+                    slider->setCallback([=](double value){
+                        areaItem->setRgb(Vector3(value, rgb[1], rgb[2]));
+                        areaItem->notifyUpdate(); });
+                    break;
+                case 4 :
+                    slider->setValue(rgb[1]);
+                    slider->setCallback([=](double value){
+                        areaItem->setRgb(Vector3(rgb[0], value, rgb[2]));
+                        areaItem->notifyUpdate(); });
+                case 5 :
+                    slider->setValue(rgb[2]);
+                    slider->setCallback([=](double value){
+                        areaItem->setRgb(Vector3(rgb[0], rgb[1], value));
+                        areaItem->notifyUpdate(); });
+                case 6 :
+                    slider->setValue(areaItem->coefB());
+                    slider->setCallback([=](double value){
+                        areaItem->setCoefB(value);
+                        areaItem->notifyUpdate(); });
+                    break;
+                case 7 :
+                    slider->setValue(areaItem->coefD());
+                    slider->setCallback([=](double value){
+                        areaItem->setCoefD(value);
+                        areaItem->notifyUpdate(); });
+                    break;
+                case 8 :
+                    slider->setValue(areaItem->stdDev());
+                    slider->setCallback([=](double value){
+                        areaItem->setStdDev(value);
+                        areaItem->notifyUpdate(); });
+                    break;
+                case 9 :
+                    slider->setValue(areaItem->salt());
+                    slider->setCallback([=](double value){
+                        areaItem->setSalt(value);
+                        areaItem->notifyUpdate(); });
+                    break;
+                case 10 :
+                    slider->setValue(areaItem->pepper());
+                    slider->setCallback([=](double value){
+                        areaItem->setPepper(value);
+                        areaItem->notifyUpdate(); });
+                    break;
+                default :
+                    break;
+            }
+
+            slider->setCallback([=](double value){  });
+            sliders.push_back(slider);
+        }
+
+    }
+}
 
 class ConfigDialog : public Dialog
 {
@@ -234,6 +339,20 @@ public:
     std::shared_ptr<const Image> image;
     Signal<void()> sigImageUpdated_;
 
+    double hue;
+    double saturation;
+    double value;
+    double red;
+    double green;
+    double blue;
+    bool flipped;
+    double coefB;
+    double coefD;
+    double stdDev;
+    double salt;
+    double pepper;
+    int filter;
+
 protected:
     virtual bool store(Archive& archive) override;
     virtual bool restore(const Archive& archive) override;
@@ -319,6 +438,10 @@ void VisualEffectorItem::initializeClass(ExtensionManager* ext)
     contextMenu.addAction(showConfig);
     showConfig->sigTriggered().connect([&](){ onShowConfigTriggered(); });
     ext->viewManager().sigViewCreated().connect([&](View* view){ onViewCreated(view); });
+
+    auto rootItem = RootItem::instance();
+    rootItem->sigSelectedItemsChanged().connect(
+        [&](const ItemList<>& selectedItems){ onSelectedItemChanged(selectedItems); });
 }
 
 
@@ -751,19 +874,19 @@ void VEImageVisualizerItem::doUpdateVisualization()
 {
     if(camera) {
         std::lock_guard<std::mutex> lock(mtx);
-        double hue = configDialog->optionSpins[HUE]->value();
-        double saturation = configDialog->optionSpins[SATURATION]->value();
-        double value = configDialog->optionSpins[VALUE]->value();
-        double red = configDialog->optionSpins[RED]->value();
-        double green = configDialog->optionSpins[GREEN]->value();
-        double blue = configDialog->optionSpins[BLUE]->value();
-        bool flipped = configDialog->flipCheck->isChecked();
-        double coefB = configDialog->optionSpins[COEFB]->value();
-        double coefD = configDialog->optionSpins[COEFD]->value();
-        double stdDev = configDialog->optionSpins[STDDEV]->value();
-        double salt = configDialog->optionSpins[SALT]->value();
-        double pepper = configDialog->optionSpins[PEPPER]->value();
-        int filter = configDialog->filterCombo->currentIndex();
+        hue = configDialog->optionSpins[HUE]->value();
+        saturation = configDialog->optionSpins[SATURATION]->value();
+        value = configDialog->optionSpins[VALUE]->value();
+        red = configDialog->optionSpins[RED]->value();
+        green = configDialog->optionSpins[GREEN]->value();
+        blue = configDialog->optionSpins[BLUE]->value();
+        flipped = configDialog->flipCheck->isChecked();
+        coefB = configDialog->optionSpins[COEFB]->value();
+        coefD = configDialog->optionSpins[COEFD]->value();
+        stdDev = configDialog->optionSpins[STDDEV]->value();
+        salt = configDialog->optionSpins[SALT]->value();
+        pepper = configDialog->optionSpins[PEPPER]->value();
+        filter = configDialog->filterCombo->currentIndex();
 
         if(simulatorItem) {
             WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
@@ -848,13 +971,6 @@ ConfigDialog::ConfigDialog()
 {
     setWindowTitle(_("Effect Config"));
 
-    static const double ranges[11][2] = {
-        {  0.0, 1.0 }, { -1.0,  1.0 }, { -1.0, 1.0 },
-        { -1.0, 1.0 }, { -1.0,  1.0 }, { -1.0, 1.0 },
-        { -1.0, 0.0 }, {  1.0, 32.0 },
-        {  0.0, 1.0 }, {  0.0,  1.0 }, {  0.0, 1.0 }
-    };
-
     static const char* label[] = {
         _("Hue"), _("Saturation"), _("Value"),
         _("Red"), _("Green"), _("Blue"),
@@ -868,7 +984,7 @@ ConfigDialog::ConfigDialog()
         DoubleSpinBox* dspin = optionSpins[i];
         WidgetInfo dinfo = dspinInfo[i];
         WidgetInfo linfo = labelInfo[i];
-        dspin->setRange(ranges[i][0], ranges[i][1]);
+        dspin->setRange(value_range[i][0], value_range[i][1]);
         dspin->setSingleStep(0.1);
         gbox->addWidget(new QLabel(label[i]), linfo.row, linfo.column);
         gbox->addWidget(dspin, dinfo.row, dinfo.column);
