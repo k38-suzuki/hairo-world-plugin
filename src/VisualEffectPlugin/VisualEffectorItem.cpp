@@ -89,92 +89,87 @@ void onSelectedItemChanged(const ItemList<>& selectedItems)
     sliders.clear();
 
     ItemList<VEAreaItem> areaItems = selectedItems;
-
-    static const char* label[] = {
-        _("Hue"), _("Saturation"), _("Value"),
-        _("Red"), _("Green"), _("Blue"),
-        _("CoefB"), _("CoefD"),
-        _("Std_dev"), _("Salt"), _("Pepper")
-    };
-
     for(auto& areaItem : areaItems) {
-        for(int i = 0; i < 11; ++i) {
-            GeneralSliderView::SliderPtr slider = sliderView->getOrCreateSlider(label[i], value_range[i][0], value_range[i][1], 2);
-            const Vector3& hsv = areaItem->hsv();
-            const Vector3& rgb = areaItem->rgb();
-            switch(i) {
-                case 0 :
-                    slider->setValue(hsv[0]);
-                    slider->setCallback([=](double value){
-                        areaItem->setHsv(Vector3(value, hsv[1], hsv[2]));
-                        areaItem->notifyUpdate(); });
-                    break;
-                case 1 :
-                    slider->setValue(hsv[1]);
-                    slider->setCallback([=](double value){
-                        areaItem->setHsv(Vector3(hsv[0], value, hsv[2]));
-                        areaItem->notifyUpdate(); });
-                    break;
-                case 2 :
-                    slider->setValue(hsv[2]);
-                    slider->setCallback([=](double value){
-                        areaItem->setHsv(Vector3(hsv[0], hsv[1], value));
-                        areaItem->notifyUpdate(); });
-                    break;
-                case 3 :
-                    slider->setValue(rgb[0]);
-                    slider->setCallback([=](double value){
-                        areaItem->setRgb(Vector3(value, rgb[1], rgb[2]));
-                        areaItem->notifyUpdate(); });
-                    break;
-                case 4 :
-                    slider->setValue(rgb[1]);
-                    slider->setCallback([=](double value){
-                        areaItem->setRgb(Vector3(rgb[0], value, rgb[2]));
-                        areaItem->notifyUpdate(); });
-                case 5 :
-                    slider->setValue(rgb[2]);
-                    slider->setCallback([=](double value){
-                        areaItem->setRgb(Vector3(rgb[0], rgb[1], value));
-                        areaItem->notifyUpdate(); });
-                case 6 :
-                    slider->setValue(areaItem->coefB());
-                    slider->setCallback([=](double value){
-                        areaItem->setCoefB(value);
-                        areaItem->notifyUpdate(); });
-                    break;
-                case 7 :
-                    slider->setValue(areaItem->coefD());
-                    slider->setCallback([=](double value){
-                        areaItem->setCoefD(value);
-                        areaItem->notifyUpdate(); });
-                    break;
-                case 8 :
-                    slider->setValue(areaItem->stdDev());
-                    slider->setCallback([=](double value){
-                        areaItem->setStdDev(value);
-                        areaItem->notifyUpdate(); });
-                    break;
-                case 9 :
-                    slider->setValue(areaItem->salt());
-                    slider->setCallback([=](double value){
-                        areaItem->setSalt(value);
-                        areaItem->notifyUpdate(); });
-                    break;
-                case 10 :
-                    slider->setValue(areaItem->pepper());
-                    slider->setCallback([=](double value){
-                        areaItem->setPepper(value);
-                        areaItem->notifyUpdate(); });
-                    break;
-                default :
-                    break;
-            }
+        const Vector3& hsv = areaItem->hsv();
+        const Vector3& rgb = areaItem->rgb();
 
-            slider->setCallback([=](double value){  });
-            sliders.push_back(slider);
-        }
+        GeneralSliderView::SliderPtr slider_hue = sliderView->getOrCreateSlider(_("Hue"), value_range[0][0], value_range[0][1], 2);
+        slider_hue->setValue(hsv[0]);
+        slider_hue->setCallback([=](double value){
+            areaItem->setHsv(Vector3(value, hsv[1], hsv[2]));
+            areaItem->notifyUpdate(); });
 
+        GeneralSliderView::SliderPtr slider_saturation = sliderView->getOrCreateSlider(_("Saturation"), value_range[1][0], value_range[1][1], 2);
+        slider_saturation->setValue(hsv[1]);
+        slider_saturation->setCallback([=](double value){
+            areaItem->setHsv(Vector3(hsv[0], value, hsv[2]));
+            areaItem->notifyUpdate(); });
+
+        GeneralSliderView::SliderPtr slider_value = sliderView->getOrCreateSlider(_("Value"), value_range[2][0], value_range[2][1], 2);
+        slider_value->setValue(hsv[2]);
+        slider_value->setCallback([=](double value){
+            areaItem->setHsv(Vector3(hsv[0], hsv[1], value));
+            areaItem->notifyUpdate(); });
+
+        GeneralSliderView::SliderPtr slider_red = sliderView->getOrCreateSlider(_("Red"), value_range[3][0], value_range[3][1], 2);
+        slider_red->setValue(rgb[0]);
+        slider_red->setCallback([=](double value){
+            areaItem->setRgb(Vector3(value, rgb[1], rgb[2]));
+            areaItem->notifyUpdate(); });
+
+        GeneralSliderView::SliderPtr slider_green = sliderView->getOrCreateSlider(_("Green"), value_range[4][0], value_range[4][1], 2);
+        slider_green->setValue(rgb[1]);
+        slider_green->setCallback([=](double value){
+            areaItem->setRgb(Vector3(rgb[0], value, rgb[2]));
+            areaItem->notifyUpdate(); });
+
+        GeneralSliderView::SliderPtr slider_blue = sliderView->getOrCreateSlider(_("Blue"), value_range[5][0], value_range[5][1], 2);
+        slider_blue->setValue(rgb[2]);
+        slider_blue->setCallback([=](double value){
+            areaItem->setRgb(Vector3(rgb[0], rgb[1], value));
+            areaItem->notifyUpdate(); });
+
+        GeneralSliderView::SliderPtr slider_coefb = sliderView->getOrCreateSlider(_("CoefB"), value_range[6][0], value_range[6][1], 2);
+        slider_coefb->setValue(areaItem->coefB());
+        slider_coefb->setCallback([=](double value){
+            areaItem->setCoefB(value);
+            areaItem->notifyUpdate(); });
+
+        GeneralSliderView::SliderPtr slider_coefd = sliderView->getOrCreateSlider(_("CoefD"), value_range[7][0], value_range[7][1], 2);
+        slider_coefd->setValue(areaItem->coefD());
+        slider_coefd->setCallback([=](double value){
+            areaItem->setCoefD(value);
+            areaItem->notifyUpdate(); });
+
+        GeneralSliderView::SliderPtr slider_stddev = sliderView->getOrCreateSlider(_("Std_dev"), value_range[8][0], value_range[8][1], 2);
+        slider_stddev->setValue(areaItem->stdDev());
+        slider_stddev->setCallback([=](double value){
+            areaItem->setStdDev(value);
+            areaItem->notifyUpdate(); });
+
+        GeneralSliderView::SliderPtr slider_salt = sliderView->getOrCreateSlider(_("Salt"), value_range[9][0], value_range[9][1], 2);
+        slider_salt->setValue(areaItem->salt());
+        slider_salt->setCallback([=](double value){
+            areaItem->setSalt(value);
+            areaItem->notifyUpdate(); });
+
+        GeneralSliderView::SliderPtr slider_pepper = sliderView->getOrCreateSlider(_("Pepper"), value_range[10][0], value_range[10][1], 2);
+        slider_pepper->setValue(areaItem->pepper());
+        slider_pepper->setCallback([=](double value){
+            areaItem->setPepper(value);
+            areaItem->notifyUpdate(); });
+
+        sliders.push_back(slider_hue);
+        sliders.push_back(slider_saturation);
+        sliders.push_back(slider_value);
+        sliders.push_back(slider_red);
+        sliders.push_back(slider_green);
+        sliders.push_back(slider_blue);
+        sliders.push_back(slider_coefb);
+        sliders.push_back(slider_coefd);
+        sliders.push_back(slider_stddev);
+        sliders.push_back(slider_salt);
+        sliders.push_back(slider_pepper);
     }
 }
 

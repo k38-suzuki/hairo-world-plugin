@@ -10,6 +10,7 @@
 #include <cnoid/RootItem>
 #include <cnoid/TimeBar>
 #include <cnoid/FluidAreaItem>
+#include <vector>
 
 using namespace cnoid;
 using namespace std;
@@ -22,12 +23,7 @@ Action* useUnsteadyFlow = nullptr;
 
 class UnsteadyFlowPlugin : public Plugin
 {
-    GeneralSliderView* sliderView;
-    GeneralSliderView::SliderPtr slider_pt;
-    GeneralSliderView::SliderPtr slider_fx;
-    GeneralSliderView::SliderPtr slider_fy;
-    GeneralSliderView::SliderPtr slider_fz;
-
+    vector<GeneralSliderView::SliderPtr> sliders;
     double pt;
     double fx;
     double fy;
@@ -45,7 +41,7 @@ public:
         MenuManager& mm = menuManager().setPath("/Options").setPath("UnsteadyFlow");
         useUnsteadyFlow = mm.addCheckItem("Use an unsteady flow");
 
-        sliderView = GeneralSliderView::instance();
+        sliders.clear();
         pt = 3.0;
         fx = 2.0;
         fy = fz = 0.0;
@@ -65,21 +61,32 @@ private:
 
     void onSelectedItemsChanged(const ItemList<>& selectedItems)
     {
-        slider_pt = sliderView->getOrCreateSlider("T [s]", 1.0, 10.0, 1);
-        slider_pt->setValue(pt);
-        slider_pt->setCallback([&](double value){ pt = value; });
+        GeneralSliderView* sliderView = GeneralSliderView::instance();
+        sliders.clear();
 
-        slider_fx = sliderView->getOrCreateSlider("Fx [N]", 0.0, 10.0, 1);
-        slider_fx->setValue(fx);
-        slider_fx->setCallback([&](double value){ fx = value; });
+        ItemList<FluidAreaItem> areaItems = selectedItems;
+        if(areaItems.size()) {
+            GeneralSliderView::SliderPtr slider_pt = sliderView->getOrCreateSlider("T [s]", 1.0, 10.0, 1);
+            slider_pt->setValue(pt);
+            slider_pt->setCallback([&](double value){ pt = value; });
 
-        slider_fy = sliderView->getOrCreateSlider("Fy [N]", 0.0, 10.0, 1);
-        slider_fy->setValue(fy);
-        slider_fy->setCallback([&](double value){ fy = value; });
+            GeneralSliderView::SliderPtr slider_fx = sliderView->getOrCreateSlider("Fx [N]", 0.0, 10.0, 1);
+            slider_fx->setValue(fx);
+            slider_fx->setCallback([&](double value){ fx = value; });
 
-        slider_fz = sliderView->getOrCreateSlider("Fz [N]", 0.0, 10.0, 1);
-        slider_fz->setValue(fz);
-        slider_fz->setCallback([&](double value){ fz = value; });
+            GeneralSliderView::SliderPtr slider_fy = sliderView->getOrCreateSlider("Fy [N]", 0.0, 10.0, 1);
+            slider_fy->setValue(fy);
+            slider_fy->setCallback([&](double value){ fy = value; });
+
+            GeneralSliderView::SliderPtr slider_fz = sliderView->getOrCreateSlider("Fz [N]", 0.0, 10.0, 1);
+            slider_fz->setValue(fz);
+            slider_fz->setCallback([&](double value){ fz = value; });
+
+            sliders.push_back(slider_pt);
+            sliders.push_back(slider_fx);
+            sliders.push_back(slider_fy);
+            sliders.push_back(slider_fz);
+        }
     }
 
     bool onTimeChanged(const double& time)
