@@ -15,14 +15,13 @@ using namespace cnoid;
 
 class HobbyDroneJoystickController : public SimpleController
 {
-public:
-    SharedJoystickPtr joystick;
-    int targetMode;
+    enum ControlMode { Mode1, Mode2 };
+
     BodyPtr ioBody;
     DeviceList<Rotor> rotors;
     RateGyroSensor* gyroSensor;
     AccelerationSensor* accSensor;
-    double dt;
+    double timeStep;
 
     Vector4 zref;
     Vector4 zprev;
@@ -34,33 +33,40 @@ public:
     Vector2 dxyref;
     Vector2 dxyprev;
 
-    bool on;
+    bool power;
     bool manualMode;
-    bool mode1;
+    int currentMode;
     bool wailly;
+
+    SharedJoystickPtr joystick;
+    int targetMode;
+    bool prevButtonState[2];
+
+public:
 
     virtual bool initialize(SimpleControllerIO* io) override
     {
         ioBody = io->body();
-        dt = io->timeStep();
+        timeStep = io->timeStep();
         rotors = io->body()->devices();
         gyroSensor = ioBody->findDevice<RateGyroSensor>("GyroSensor");
         accSensor = ioBody->findDevice<AccelerationSensor>("AccSensor");
-        on = true;
+        power = true;
         manualMode = false;
-        mode1 = true;
+        currentMode = Mode1;
         wailly = false;
 
+        prevButtonState[0] = prevButtonState[1] = false;
         for(auto opt : io->options()) {
             if(opt == "manual") {
                 manualMode = true;
             }
             if(opt == "mode2") {
-                mode1 = false;
+                currentMode = Mode2;
             }
             if(opt == "wailly") {
                 wailly = true;
-                on = true;
+                power = true;
             }
         }
 
@@ -86,21 +92,21 @@ public:
 
     virtual bool control() override
     {
+        static const int buttonID[] = { Joystick::A_BUTTON, Joystick::B_BUTTON };
+
         joystick->updateState(targetMode);
 
-        static bool pprev = false;
-        bool p = joystick->getButtonState(targetMode, Joystick::A_BUTTON);
-        if(p && !pprev) {
-            on = !on;
+        for(int i = 0; i < 2; ++i) {
+            bool currentState = joystick->getButtonState(targetMode, buttonID[i]);
+            if(currentState && !prevButtonState[i]) {
+                if(i == 0) {
+                    power = !power;
+                } else if(i == 1) {
+                    currentMode = currentMode == Mode1 ? Mode2 : Mode1;
+                }
+            }
+            prevButtonState[i] = currentState;
         }
-        pprev = p;
-
-        static bool mprev = false;
-        bool m = joystick->getButtonState(targetMode, Joystick::B_BUTTON);
-        if(m && !mprev) {
-            mode1 = !mode1;
-        }
-        mprev = m;
 
         static const int modeID[][4] = {
             { Joystick::R_STICK_V_AXIS, Joystick::R_STICK_H_AXIS, Joystick::L_STICK_V_AXIS, Joystick::L_STICK_H_AXIS },
@@ -113,7 +119,7 @@ public:
         };
 
         int axisID[4] = { 0 };
-        if(mode1) {
+        if(currentMode == Mode1) {
             for(int i = 0; i < 4; i++) {
                 if(!wailly) {
                     axisID[i] = modeID[0][i];
@@ -150,7 +156,7 @@ public:
 
         Vector4 f = Vector4::Zero();
         Vector4 z = getZRPY();
-        Vector4 dz = (z - zprev) / dt;
+        Vector4 dz = (z - zprev) / timeStep;
 
         if(gyroSensor) {
             Vector3 w = ioBody->rootLink()->R() * gyroSensor->w();
@@ -162,11 +168,11 @@ public:
 //            dv = accSensor->dv();
         }
 
-        Vector4 ddz = (dz - dzprev) / dt;
+        Vector4 ddz = (dz - dzprev) / timeStep;
 
         Vector2 xy = getXY();
-        Vector2 dxy = (xy - xyprev) / dt;
-        Vector2 ddxy = (dxy - dxyprev) / dt;
+        Vector2 dxy = (xy - xyprev) / timeStep;
+        Vector2 ddxy = (dxy - dxyprev) / timeStep;
         Vector2 dxy_local = Eigen::Rotation2Dd(-z[3]) * dxy;
         Vector2 ddxy_local = Eigen::Rotation2Dd(-z[3]) * ddxy;
 
@@ -174,20 +180,20 @@ public:
         double gfcoef = ioBody->mass() * dv[2] / 4.0 / cc ;
 
         if((fabs(degree(z[1])) > 45.0) || (fabs(degree(z[2])) > 45.0)) {
-            on = false;
+            power = false;
         }
 
-        if(!on) {
+        if(!power) {
             zref[0] = 0.0;
             dzref[0] = 0.0;
         }
 
         for(int i = 0; i < 4; i++) {
             double pos = joystick->getPosition(targetMode, axisID[i]);
-            if(fabs(pos) < 0.20) {
+            if(fabs(pos) < 0.2) {
                 pos = 0.0;
             }
-            if(wailly && mode1 && (i == 0)) {
+            if(wailly && (currentMode == Mode1) && (i == 0)) {
                 pos *= -1.0;
             }
 
@@ -222,7 +228,7 @@ public:
         for(size_t i = 0; i < rotors.size(); i++) {
             Rotor* rotor = rotors[i];
             double force = 0.0;
-            if(on) {
+            if(power) {
                 force += gfcoef;
                 force += sign[i][0] * f[0];
                 force += sign[i][1] * f[1];
