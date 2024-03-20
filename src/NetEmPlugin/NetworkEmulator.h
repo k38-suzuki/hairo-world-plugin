@@ -5,9 +5,9 @@
 #ifndef CNOID_NETEM_PLUGIN_NETWORK_EMULATOR_H
 #define CNOID_NETEM_PLUGIN_NETWORK_EMULATOR_H
 
-#include <cnoid/ExtensionManager>
-
 namespace cnoid {
+
+class ExtensionManager;
 
 class NetworkEmulator
 {

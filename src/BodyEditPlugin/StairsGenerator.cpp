@@ -8,6 +8,7 @@
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
+#include <cnoid/ExtensionManager>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>
@@ -27,7 +28,7 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
-StairsGenerator* instance_ = nullptr;
+StairsGenerator* stairsInstance = nullptr;
 
 struct DoubleSpinInfo
 {
@@ -55,9 +56,6 @@ namespace cnoid {
 class StairsGenerator::Impl : public Dialog
 {
 public:
-    StairsGenerator* self;
-
-    Impl(StairsGenerator* self);
 
     enum DoubleSpinId {
         TREAD, WIDTH, RISER,
@@ -70,6 +68,8 @@ public:
     ColorButton* colorButton;
     FileFormWidget* formWidget;
     YAMLWriter yamlWriter;
+
+    Impl();
 
     bool save(const string& filename);
     void onColorButtonClicked();
@@ -85,12 +85,11 @@ public:
 
 StairsGenerator::StairsGenerator()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-StairsGenerator::Impl::Impl(StairsGenerator* self)
-    : self(self)
+StairsGenerator::Impl::Impl()
 {
     setWindowTitle(_("Stairs Generator"));
     yamlWriter.setKeyOrderPreservationMode(true);
@@ -145,12 +144,12 @@ StairsGenerator::~StairsGenerator()
 
 void StairsGenerator::initializeClass(ExtensionManager* ext)
 {
-    if(!instance_) {
-        instance_ = ext->manage(new StairsGenerator);
+    if(!stairsInstance) {
+        stairsInstance = ext->manage(new StairsGenerator);
 
         MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
         mm.addItem(_("Stairs"))->sigTriggered().connect(
-                    [&](){ instance_->impl->show(); });
+                    [&](){ stairsInstance->impl->show(); });
     }
 }
 

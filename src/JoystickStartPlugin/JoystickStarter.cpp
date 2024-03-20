@@ -17,7 +17,7 @@ using namespace std;
 
 namespace {
 
-JoystickStarter* instance_ = nullptr;
+JoystickStarter* starterInstance = nullptr;
 Action* startCheck = nullptr;
 
 }
@@ -78,8 +78,8 @@ void JoystickStarter::initializeClass(ExtensionManager* ext)
         AppConfig::archive()->openMapping("joystick_starter")->write("game_start_mode", startCheck->isChecked());
     });
 
-    if(!instance_) {
-        instance_ = ext->manage(new JoystickStarter);
+    if(!starterInstance) {
+        starterInstance = ext->manage(new JoystickStarter);
     }
 
     auto config = AppConfig::archive()->openMapping("joystick_starter");

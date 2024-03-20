@@ -11,12 +11,6 @@
 
 using namespace cnoid;
 
-namespace {
-
-BeepView* instance_ = nullptr;
-
-}
-
 namespace cnoid {
 
 class BeepView::Impl
@@ -46,9 +40,7 @@ void BeepView::initializeClass(ExtensionManager* ext)
 
 BeepView* BeepView::instance()
 {
-    if(!instance_) {
-        instance_ = ViewManager::findView<BeepView>();
-    }
+    static BeepView* instance_ = ViewManager::findView<BeepView>();
     return instance_;
 }
 

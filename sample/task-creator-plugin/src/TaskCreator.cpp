@@ -59,6 +59,7 @@ public:
 
     Impl();
     ~Impl();
+
     bool store(Archive& archive);
     void restore(const Archive& archive);
     void create();

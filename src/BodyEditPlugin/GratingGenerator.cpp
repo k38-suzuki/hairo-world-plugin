@@ -7,6 +7,7 @@
 #include <cnoid/Dialog>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
+#include <cnoid/ExtensionManager>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>
@@ -26,7 +27,7 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
-GratingGenerator* instance_ = nullptr;
+GratingGenerator* gratingInstance = nullptr;
 
 struct DoubleSpinInfo
 {
@@ -69,9 +70,6 @@ namespace cnoid {
 class GratingGenerator::Impl : public Dialog
 {
 public:
-    GratingGenerator* self;
-
-    Impl(GratingGenerator* self);
 
     enum DoubleSpinId {
         MASS, HEIGHT, FRAME_WDT,
@@ -88,6 +86,8 @@ public:
     FileFormWidget* formWidget;
     YAMLWriter yamlWriter;
 
+    Impl();
+
     bool save(const string& filename);
     void onColorButtonClicked();
     void onValueChanged();
@@ -102,12 +102,11 @@ public:
 
 GratingGenerator::GratingGenerator()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-GratingGenerator::Impl::Impl(GratingGenerator* self)
-    : self(self)
+GratingGenerator::Impl::Impl()
 {
     setWindowTitle(_("Grating Generator"));
     yamlWriter.setKeyOrderPreservationMode(true);
@@ -190,12 +189,12 @@ GratingGenerator::~GratingGenerator()
 
 void GratingGenerator::initializeClass(ExtensionManager* ext)
 {
-    if(!instance_) {
-        instance_ = ext->manage(new GratingGenerator);
+    if(!gratingInstance) {
+        gratingInstance = ext->manage(new GratingGenerator);
 
         MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
         mm.addItem(_("Grating"))->sigTriggered().connect(
-                    [&](){ instance_->impl->show(); });
+                    [&](){ gratingInstance->impl->show(); });
     }
 }
 

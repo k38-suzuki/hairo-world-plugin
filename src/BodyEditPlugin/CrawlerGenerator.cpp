@@ -10,6 +10,7 @@
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
+#include <cnoid/ExtensionManager>
 #include <cnoid/FileDialog>
 #include <cnoid/ItemManager>
 #include <cnoid/MainWindow>
@@ -37,7 +38,7 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
-CrawlerGenerator* instance_ = nullptr;
+CrawlerGenerator* crawlerInstance = nullptr;
 
 VectorXd calcBoxInertia(double mass, double x, double y, double z)
 {
@@ -208,9 +209,6 @@ namespace cnoid {
 class CrawlerGenerator::Impl : public Dialog
 {
 public:
-    CrawlerGenerator* self;
-
-    Impl(CrawlerGenerator* self);
 
     enum DoubleSpinId {
         CHS_MAS, CHS_XSZ, CHS_YSZ, CHS_ZSZ,
@@ -254,6 +252,8 @@ public:
     FileFormWidget* formWidget;
     YAMLWriter yamlWriter;
     YAMLWriter yamlWriter2;
+
+    Impl();
 
     bool save(const string& filename);
     bool save2(const string& filename);
@@ -303,12 +303,11 @@ public:
 
 CrawlerGenerator::CrawlerGenerator()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-CrawlerGenerator::Impl::Impl(CrawlerGenerator* self)
-    : self(self)
+CrawlerGenerator::Impl::Impl()
 {
     setWindowTitle(_("CrawlerRobot Generator"));
 
@@ -483,12 +482,12 @@ CrawlerGenerator::~CrawlerGenerator()
 
 void CrawlerGenerator::initializeClass(ExtensionManager* ext)
 {
-    if(!instance_) {
-        instance_ = ext->manage(new CrawlerGenerator);
+    if(!crawlerInstance) {
+        crawlerInstance = ext->manage(new CrawlerGenerator);
 
         MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
         mm.addItem(_("CrawlerRobot"))->sigTriggered().connect(
-                    [&](){ instance_->impl->show(); });
+                    [&](){ crawlerInstance->impl->show(); });
     }
 }
 

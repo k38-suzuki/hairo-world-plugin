@@ -12,12 +12,6 @@
 
 using namespace cnoid;
 
-namespace {
-
-LayoutSwitcherView* instance_ = nullptr;
-
-}
-
 namespace cnoid {
 
 class LayoutSwitcherView::Impl
@@ -53,9 +47,7 @@ public:
 
 LayoutSwitcherView* LayoutSwitcherView::instance()
 {
-    if(!instance_) {
-        instance_ = ViewManager::findView<LayoutSwitcherView>();
-    }
+    static LayoutSwitcherView* instance_ = ViewManager::findView<LayoutSwitcherView>();
     return instance_;
 }
 

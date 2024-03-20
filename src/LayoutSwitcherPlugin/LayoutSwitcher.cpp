@@ -23,7 +23,7 @@ using namespace cnoid;
 
 namespace {
 
-LayoutSwitcher* instance_ = nullptr;
+LayoutSwitcher* switcherInstance = nullptr;
 
 class LayoutButton : public ToolButton
 {
@@ -134,7 +134,7 @@ NewLayoutDialog::NewLayoutDialog(LayoutSwitcherImpl* impl)
 LayoutSwitcher::LayoutSwitcher()
 {
     impl = new LayoutSwitcherImpl(this);
-    instance_ = this;
+    switcherInstance = this;
 }
 
 

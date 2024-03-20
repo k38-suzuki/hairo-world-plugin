@@ -6,6 +6,7 @@
 #include <cnoid/Button>
 #include <cnoid/ComboBox>
 #include <cnoid/Dialog>
+#include <cnoid/ExtensionManager>
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
@@ -29,9 +30,6 @@ namespace cnoid {
 class NetworkEmulator::Impl : public Dialog
 {
 public:
-    NetworkEmulator* self;
-
-    Impl(NetworkEmulator* self);
 
     NetEmPtr emulator;
     ComboBox* interfaceCombo;
@@ -41,6 +39,7 @@ public:
     DoubleSpinBox* lossSpins[2];
     PushButton* startButton;
 
+    Impl();
     void onStartButtonToggled(const bool& on);
 };
 
@@ -49,12 +48,11 @@ public:
 
 NetworkEmulator::NetworkEmulator()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-NetworkEmulator::Impl::Impl(NetworkEmulator* self)
-    : self(self)
+NetworkEmulator::Impl::Impl()
 {
     setWindowTitle(_("Network Emulator"));
 

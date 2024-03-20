@@ -38,9 +38,8 @@ FileExplorer* explorerInstance = nullptr;
 class FileExplorer::Impl : public Dialog
 {
 public:
-    FileExplorer* self;
 
-    Impl(FileExplorer* self);
+    Impl();
 
     void execute(const Item* item, const int& id);
     void execute(const int argc, const char* argv[]);
@@ -80,12 +79,11 @@ private:
 
 FileExplorer::FileExplorer()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-FileExplorer::Impl::Impl(FileExplorer* self)
-    : self(self)
+FileExplorer::Impl::Impl()
 {
     createMenu();
 

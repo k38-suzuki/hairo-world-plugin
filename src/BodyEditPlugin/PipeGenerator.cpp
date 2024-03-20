@@ -8,6 +8,7 @@
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
+#include <cnoid/ExtensionManager>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>
@@ -27,7 +28,7 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
-PipeGenerator* instance_ = nullptr;
+PipeGenerator* pipeInstance = nullptr;
 
 struct DoubleSpinInfo
 {
@@ -69,9 +70,6 @@ namespace cnoid {
 class PipeGenerator::Impl : public Dialog
 {
 public:
-    PipeGenerator* self;
-
-    Impl(PipeGenerator* self);
 
     enum DoubleSpinId { MASS, LENGTH, IN_DIA, OUT_DIA, NUM_DSPINS };
     enum SpinId { ANGLE, STEP, NUM_SPINS };
@@ -81,6 +79,8 @@ public:
     ColorButton* colorButton;
     FileFormWidget* formWidget;
     YAMLWriter yamlWriter;
+
+    Impl();
 
     bool save(const string& filename);
     void onInnerDiameterChanged(const double& diameter);
@@ -96,12 +96,11 @@ public:
 
 PipeGenerator::PipeGenerator()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-PipeGenerator::Impl::Impl(PipeGenerator* self)
-    : self(self)
+PipeGenerator::Impl::Impl()
 {
     setWindowTitle(_("Pipe Generator"));
     yamlWriter.setKeyOrderPreservationMode(true);
@@ -163,12 +162,12 @@ PipeGenerator::~PipeGenerator()
 
 void PipeGenerator::initializeClass(ExtensionManager* ext)
 {
-    if(!instance_) {
-        instance_ = ext->manage(new PipeGenerator);
+    if(!pipeInstance) {
+        pipeInstance = ext->manage(new PipeGenerator);
 
         MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
         mm.addItem(_("Pipe"))->sigTriggered().connect(
-                    [&](){ instance_->impl->show(); });
+                    [&](){ pipeInstance->impl->show(); });
     }
 }
 

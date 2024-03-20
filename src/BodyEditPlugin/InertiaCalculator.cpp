@@ -6,6 +6,7 @@
 #include <cnoid/Button>
 #include <cnoid/ComboBox>
 #include <cnoid/Dialog>
+#include <cnoid/ExtensionManager>
 #include <cnoid/MenuManager>
 #include <cnoid/MessageView>
 #include <cnoid/Separator>
@@ -23,7 +24,7 @@ using namespace cnoid;
 
 namespace {
 
-InertiaCalculator* instance_ = nullptr;
+InertiaCalculator* calculatorInstance = nullptr;
 
 struct DoubleSpinInfo {
     int row;
@@ -58,9 +59,6 @@ namespace cnoid {
 class InertiaCalculator::Impl : public Dialog
 {
 public:
-    InertiaCalculator* self;
-
-    Impl(InertiaCalculator* self);
 
     enum DoubleSpinID {
         BOX_MAS, BOX_X, BOX_Y, BOX_Z,
@@ -78,6 +76,8 @@ public:
     DoubleSpinBox* dspins[NUM_DSPINS];
     ComboBox* combos[NUM_COMBOS];
 
+    Impl();
+
     void onCalcButtonClicked();
     void calcBoxInertia();
     void calcSphereInertia();
@@ -91,13 +91,12 @@ public:
 
 InertiaCalculator::InertiaCalculator()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-InertiaCalculator::Impl::Impl(InertiaCalculator* self)
-    : self(self),
-      mv(new MessageView)
+InertiaCalculator::Impl::Impl()
+    : mv(new MessageView)
 {
     setWindowTitle(_("InertiaCalculator"));
     setFixedWidth(500);
@@ -179,14 +178,14 @@ InertiaCalculator::~InertiaCalculator()
 
 void InertiaCalculator::initializeClass(ExtensionManager* ext)
 {
-    if(!instance_) {
-        instance_ = ext->manage(new InertiaCalculator);
+    if(!calculatorInstance) {
+        calculatorInstance = ext->manage(new InertiaCalculator);
     }
 
     MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
     mm.addItem(_("Calculate Inertia"))->sigTriggered().connect([&](){
-        instance_->impl->mv->clear();
-        instance_->impl->show();
+        calculatorInstance->impl->mv->clear();
+        calculatorInstance->impl->show();
     });
 }
 

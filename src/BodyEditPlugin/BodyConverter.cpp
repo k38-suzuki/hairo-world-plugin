@@ -130,9 +130,8 @@ namespace cnoid {
 class BodyConverter::Impl : public Dialog
 {
 public:
-    BodyConverter* self;
 
-    Impl(BodyConverter* self);
+    Impl();
 
     void open();
     void save();
@@ -177,12 +176,11 @@ BodyConverter* BodyConverter::instance()
 
 BodyConverter::BodyConverter()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-BodyConverter::Impl::Impl(BodyConverter* self)
-    : self(self)
+BodyConverter::Impl::Impl()
 {
     createMenu();
     createFormGroupBox();

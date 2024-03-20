@@ -8,6 +8,7 @@
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
+#include <cnoid/ExtensionManager>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>
@@ -27,7 +28,7 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
-SlopeGenerator* instance_ = nullptr;
+SlopeGenerator* slopeInstance = nullptr;
 
 struct DoubleSpinInfo
 {
@@ -54,9 +55,6 @@ namespace cnoid {
 class SlopeGenerator::Impl : public Dialog
 {
 public:
-    SlopeGenerator* self;
-
-    Impl(SlopeGenerator* self);
 
     enum DoubleSpinId {
         MASS, WIDTH, HEIGHT,
@@ -67,6 +65,8 @@ public:
     ColorButton* colorButton;
     FileFormWidget* formWidget;
     YAMLWriter yamlWriter;
+
+    Impl();
 
     bool save(const string& filename);
     MappingPtr writeBody(const string& filename);
@@ -80,12 +80,11 @@ public:
 
 SlopeGenerator::SlopeGenerator()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-SlopeGenerator::Impl::Impl(SlopeGenerator* self)
-    : self(self)
+SlopeGenerator::Impl::Impl()
 {
     setWindowTitle(_("Slope Generator"));
     yamlWriter.setKeyOrderPreservationMode(true);
@@ -133,12 +132,12 @@ SlopeGenerator::~SlopeGenerator()
 
 void SlopeGenerator::initializeClass(ExtensionManager* ext)
 {
-    if(!instance_) {
-        instance_ = ext->manage(new SlopeGenerator);
+    if(!slopeInstance) {
+        slopeInstance = ext->manage(new SlopeGenerator);
 
         MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
         mm.addItem(_("Slope"))->sigTriggered().connect(
-                    [&](){ instance_->impl->show(); });
+                    [&](){ slopeInstance->impl->show(); });
     }
 }
 

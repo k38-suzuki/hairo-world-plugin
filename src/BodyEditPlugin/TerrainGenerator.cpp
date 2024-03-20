@@ -7,6 +7,7 @@
 #include <cnoid/Dialog>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
+#include <cnoid/ExtensionManager>
 #include <cnoid/ItemManager>
 #include <cnoid/LineEdit>
 #include <cnoid/MenuManager>
@@ -29,7 +30,7 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
-TerrainGenerator* instance_ = nullptr;
+TerrainGenerator* terrainInstance = nullptr;
 double scale = 1.0;
 
 }
@@ -66,15 +67,14 @@ private:
 class TerrainGenerator::Impl : public Dialog
 {
 public:
-    TerrainGenerator* self;
-
-    Impl(TerrainGenerator* self);
 
     LineEdit* inputFileLine;
     TerrainData* data;
     FileFormWidget* formWidget;
     DoubleSpinBox* scaleSpin;
     YAMLWriter yamlWriter;
+
+    Impl();
 
     bool save(const string& filename);
     void onLoadButtonClicked();
@@ -89,13 +89,12 @@ public:
 
 TerrainGenerator::TerrainGenerator()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 
 }
 
 
-TerrainGenerator::Impl::Impl(TerrainGenerator* self)
-    : self(self)
+TerrainGenerator::Impl::Impl()
 {
     setWindowTitle(_("BoxTerrain Generator"));
     yamlWriter.setKeyOrderPreservationMode(true);
@@ -148,12 +147,12 @@ TerrainGenerator::~TerrainGenerator()
 
 void TerrainGenerator::initializeClass(ExtensionManager* ext)
 {
-    if(!instance_) {
-        instance_ = ext->manage(new TerrainGenerator);
+    if(!terrainInstance) {
+        terrainInstance = ext->manage(new TerrainGenerator);
 
         MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
         mm.addItem(_("BoxTerrain"))->sigTriggered().connect(
-                    [&](){ instance_->impl->show(); });
+                    [&](){ terrainInstance->impl->show(); });
     }
 }
 

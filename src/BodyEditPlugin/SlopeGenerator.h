@@ -5,9 +5,9 @@
 #ifndef CNOID_BODY_EDIT_PLUGIN_SLOPE_GENERATOR_H
 #define CNOID_BODY_EDIT_PLUGIN_SLOPE_GENERATOR_H
 
-#include <cnoid/ExtensionManager>
-
 namespace cnoid {
+
+class ExtensionManager;
 
 class SlopeGenerator
 {
