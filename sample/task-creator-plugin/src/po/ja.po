@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 msgid "Task Creator"
-msgstr "タスク作成"
+msgstr "タスククリエイタ"
 
 msgid "Project %1"
 msgstr "プロジェクト %1"
@@ -37,3 +37,6 @@ msgstr "保存(&S)"
 
 msgid "Open a project"
 msgstr "プロジェクトを開く"
+
+msgid "Show the task creator"
+msgstr "タスクの作成"

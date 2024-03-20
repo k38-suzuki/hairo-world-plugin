@@ -99,4 +99,4 @@ msgid "JoystickTester"
 msgstr "ジョイスティックテスタ"
 
 msgid "Show the joystick tester"
-msgstr "ジョイスティックテスタの表示"
+msgstr "ジョイスティック状態の表示"
