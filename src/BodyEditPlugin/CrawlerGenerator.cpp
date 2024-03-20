@@ -570,14 +570,9 @@ void CrawlerGenerator::Impl::onResetButtonClicked()
 
 void CrawlerGenerator::Impl::onImportButtonClicked()
 {
-    string filename = getOpenFileName(_("Load a configuration file"), "yaml");
+    string filename = getOpenFileName(_("Load a configuration file"), "yml;yaml");
 
     if(!filename.empty()) {
-        filesystem::path path(filename);
-        string ext = path.extension().string();
-        if(ext.empty()) {
-            filename += ".yaml";
-        }
         load2(filename);
     }
 }

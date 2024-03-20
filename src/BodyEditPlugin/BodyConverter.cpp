@@ -24,7 +24,7 @@ using namespace cnoid;
 
 namespace {
 
-BodyConverter* instance_ = nullptr;
+BodyConverter* converterInstance_ = nullptr;
 
 struct KeyInfo {
     QString oldKey;
@@ -127,12 +127,13 @@ KeyInfo keyInfo[] = {
 
 namespace cnoid {
 
-class ConvertDialog : public Dialog
+class BodyConverter::Impl : public Dialog
 {
 public:
-    ConvertDialog(QWidget* parent = nullptr);
+    BodyConverter* self;
 
-private:
+    Impl(BodyConverter* self);
+
     void open();
     void save();
 
@@ -153,17 +154,24 @@ private:
     QAction* exitAct;
 };
 
+}
 
-class BodyConverter::Impl
+
+void BodyConverter::initializeClass(ExtensionManager* ext)
 {
-public:
-    BodyConverter* self;
+    if(!converterInstance_) {
+        converterInstance_ = ext->manage(new BodyConverter);
 
-    Impl(BodyConverter* self);
+        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
+        mm.addItem(_("Convert Body"))->sigTriggered().connect(
+                    [&](){ converterInstance_->impl->show(); });
+    }
+}
 
-    void show();
-};
 
+BodyConverter* BodyConverter::instance()
+{
+    return converterInstance_;
 }
 
 
@@ -175,31 +183,6 @@ BodyConverter::BodyConverter()
 
 BodyConverter::Impl::Impl(BodyConverter* self)
     : self(self)
-{
-
-}
-
-
-BodyConverter::~BodyConverter()
-{
-    delete impl;
-}
-
-
-void BodyConverter::initializeClass(ExtensionManager* ext)
-{
-    if(!instance_) {
-        instance_ = ext->manage(new BodyConverter);
-
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
-        mm.addItem(_("Convert Body"))->sigTriggered().connect(
-                    [&](){ instance_->impl->show(); });
-    }
-}
-
-
-ConvertDialog::ConvertDialog(QWidget* parent)
-    : Dialog(parent)
 {
     createMenu();
     createFormGroupBox();
@@ -220,7 +203,13 @@ ConvertDialog::ConvertDialog(QWidget* parent)
 }
 
 
-void ConvertDialog::open()
+BodyConverter::~BodyConverter()
+{
+    delete impl;
+}
+
+
+void BodyConverter::Impl::open()
 {
     QString fileName = getOpenFileName(_("Load a body"), "body").c_str();
     if(!fileName.isEmpty()) {
@@ -229,7 +218,7 @@ void ConvertDialog::open()
 }
 
 
-void ConvertDialog::save()
+void BodyConverter::Impl::save()
 {
     if(!bodyFileName.isEmpty()) {
         saveFile(bodyFileName);
@@ -237,7 +226,7 @@ void ConvertDialog::save()
 }
 
 
-QString ConvertDialog::convert(const QString& line) const
+QString BodyConverter::Impl::convert(const QString& line) const
 {
     QString newLine(line);
 
@@ -258,7 +247,7 @@ QString ConvertDialog::convert(const QString& line) const
 }
 
 
-void ConvertDialog::saveFile(const QString& fileName)
+void BodyConverter::Impl::saveFile(const QString& fileName)
 {
     QFile file(fileName);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -289,7 +278,7 @@ void ConvertDialog::saveFile(const QString& fileName)
 }
 
 
-void ConvertDialog::createMenu()
+void BodyConverter::Impl::createMenu()
 {
     menuBar = new QMenuBar;
 
@@ -305,7 +294,7 @@ void ConvertDialog::createMenu()
 }
 
 
-void ConvertDialog::createFormGroupBox()
+void BodyConverter::Impl::createFormGroupBox()
 {
     formatCombo = new ComboBox;
     formatCombo->addItems(QStringList() << _("1.0") << _("2.0"));

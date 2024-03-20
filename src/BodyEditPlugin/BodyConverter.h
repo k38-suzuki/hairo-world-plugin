@@ -12,10 +12,11 @@ namespace cnoid {
 class BodyConverter
 {
 public:
-    BodyConverter();
-    virtual ~BodyConverter();
-
     static void initializeClass(ExtensionManager* ext);
+    static BodyConverter* instance();
+
+    BodyConverter();
+    ~BodyConverter();
 
 private:
     class Impl;
