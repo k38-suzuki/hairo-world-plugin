@@ -19,7 +19,7 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QStatusBar>
-#include "BookmarkManagerDialog.h"
+#include "BookmarkManager.h"
 #include "JoyKey.h"
 #include "gettext.h"
 
@@ -37,7 +37,7 @@ void onSigOptionsParsed(OptionManager*)
     if(doKioskMode) {
         kioskCheck->setChecked(false);
         kioskCheck->setChecked(true);
-        BookmarkManagerDialog::instance()->show();
+        BookmarkManager::instance()->show();
     }
 }
 
@@ -50,9 +50,9 @@ void onEnableKIOSKToggled(const bool& on)
     // onHideMenuBarToggled(on);
     // hideCheck->setChecked(on);
     if(on) {
-        BookmarkManagerDialog::instance()->show();
+        BookmarkManager::instance()->show();
     } else {
-        BookmarkManagerDialog::instance()->hide();
+        BookmarkManager::instance()->hide();
     }
 }
 
@@ -128,7 +128,7 @@ void KIOSKManager::initializeClass(ExtensionManager* ext)
     if(CNOID_USE_KIOSK && (strcmp(CNOID_USE_KIOSK, "0") == 0)) {
         kioskCheck->setChecked(false);
         kioskCheck->setChecked(true);
-        BookmarkManagerDialog::instance()->show();
+        BookmarkManager::instance()->show();
     }
 
     ext->manage(new KIOSKManager(ext));
@@ -157,7 +157,7 @@ void KIOSKManager::Impl::onButton(const int& id, const bool& isPressed)
                 timeBar->stopPlayback(true);
             }
             timeBar->setTime(0.0);
-            BookmarkManagerDialog::instance()->show();
+            BookmarkManager::instance()->show();
         }
     }
 }
@@ -167,6 +167,6 @@ void KIOSKManager::Impl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
     this->simulatorItem = simulatorItem;
     if(kioskCheck->isChecked()) {
-        BookmarkManagerDialog::instance()->hide();
+        BookmarkManager::instance()->hide();
     }
 }

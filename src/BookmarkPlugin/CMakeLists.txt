@@ -4,21 +4,21 @@ endif()
 
 set(sources
   BookmarkBar.cpp
-  BookmarkManagerDialog.cpp
+  BookmarkManager.cpp
   BookmarkPlugin.cpp
   HistoryManager.cpp
   JoyKey.cpp
   KIOSKManager.cpp
-  WorldLogManagerDialog.cpp
+  WorldLogManager.cpp
 )
 
 set(headers
   BookmarkBar.h
-  BookmarkManagerDialog.h
+  BookmarkManager.h
   HistoryManager.h
   JoyKey.h
   KIOSKManager.h
-  WorldLogManagerDialog.h
+  WorldLogManager.h
 )
 
 set(target CnoidBookmarkPlugin)

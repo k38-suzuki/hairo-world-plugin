@@ -16,7 +16,7 @@ public:
     static BodyConverter* instance();
 
     BodyConverter();
-    ~BodyConverter();
+    virtual ~BodyConverter();
 
 private:
     class Impl;

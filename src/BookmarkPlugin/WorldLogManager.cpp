@@ -2,12 +2,14 @@
    @author Kenta Suzuki
 */
 
-#include "WorldLogManagerDialog.h"
+#include "WorldLogManager.h"
 #include <cnoid/Action>
 #include <cnoid/Archive>
 #include <cnoid/AppConfig>
 #include <cnoid/Button>
 #include <cnoid/CheckBox>
+#include <cnoid/Dialog>
+#include <cnoid/ExtensionManager>
 #include <cnoid/MainWindow>
 #include <cnoid/Menu>
 #include <cnoid/MenuManager>
@@ -34,25 +36,24 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
-WorldLogManagerDialog* instance_ = nullptr;
+WorldLogManager* logInstance = nullptr;
 
 }
 
 namespace cnoid {
 
-class WorldLogManagerDialog::Impl
+class WorldLogManager::Impl : public Dialog
 {
 public:
-    WorldLogManagerDialog* self;
-
-    Impl(WorldLogManagerDialog* self);
-    ~Impl();
 
     TreeWidget* treeWidget;
     CheckBox* saveCheck;
     Menu contextMenu;
     string projectFileName;
     bool isSimulationStarted;
+
+    Impl();
+    ~Impl();
 
     void addItem(const string& filename);
     void removeItem();
@@ -67,21 +68,44 @@ public:
 }
 
 
-WorldLogManagerDialog::WorldLogManagerDialog()
+void WorldLogManager::initializeClass(ExtensionManager* ext)
 {
-    impl = new Impl(this);
+    if(!logInstance) {
+        logInstance = ext->manage(new WorldLogManager);
+    }
 }
 
 
-WorldLogManagerDialog::Impl::Impl(WorldLogManagerDialog* self)
-    : self(self)
+WorldLogManager* WorldLogManager::instance()
 {
-    self->setWindowTitle(_("WorldLogManager"));
+    static WorldLogManager* logInstance = nullptr;
+    if(!logInstance) {
+        logInstance = new WorldLogManager;
+    }
+    return logInstance;
+}
+
+
+void WorldLogManager::show()
+{
+    impl->show();
+}
+
+
+WorldLogManager::WorldLogManager()
+{
+    impl = new Impl;
+}
+
+
+WorldLogManager::Impl::Impl()
+{
+    setWindowTitle(_("WorldLogManager"));
 
     projectFileName.clear();
     isSimulationStarted = false;
 
-    self->setFixedSize(800, 450);
+    setFixedSize(800, 450);
     treeWidget = new TreeWidget;
     treeWidget->setHeaderHidden(true);
 
@@ -99,7 +123,7 @@ WorldLogManagerDialog::Impl::Impl(WorldLogManagerDialog* self)
 
     removeAct->sigTriggered().connect([&](){ removeItem(); });
     openAct->sigTriggered().connect([&](){ onStartButtonClicked(); });
-    self->connect(treeWidget, &TreeWidget::customContextMenuRequested,
+    connect(treeWidget, &TreeWidget::customContextMenuRequested,
         [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
 
     QHBoxLayout* hbox = new QHBoxLayout;
@@ -118,7 +142,7 @@ WorldLogManagerDialog::Impl::Impl(WorldLogManagerDialog* self)
     hbox->addStretch();
     hbox->addWidget(removeButton);
 
-    auto buttonBox = new QDialogButtonBox(self);
+    auto buttonBox = new QDialogButtonBox(this);
     auto startButton  = new PushButton(_("&Play"));
     startButton->setIconSize(MainWindow::instance()->iconSize());
     buttonBox->addButton(startButton, QDialogButtonBox::ActionRole);
@@ -130,7 +154,7 @@ WorldLogManagerDialog::Impl::Impl(WorldLogManagerDialog* self)
     vbox->addWidget(treeWidget);
     vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);
-    self->setLayout(vbox);
+    setLayout(vbox);
 
     TimeBar* timeBar = TimeBar::instance();
     timeBar->sigPlaybackStopped().connect([&](double time, bool isStoppedManually){ onPlaybackStopped(time, isStoppedManually); });
@@ -146,29 +170,19 @@ WorldLogManagerDialog::Impl::Impl(WorldLogManagerDialog* self)
 }
 
 
-WorldLogManagerDialog::~WorldLogManagerDialog()
+WorldLogManager::~WorldLogManager()
 {
     delete impl;
 }
 
 
-WorldLogManagerDialog::Impl::~Impl()
+WorldLogManager::Impl::~Impl()
 {
     store(AppConfig::archive()->openMapping("world_log_manager"));
 }
 
 
-WorldLogManagerDialog* WorldLogManagerDialog::instance()
-{
-    static WorldLogManagerDialog* instance_ = nullptr;
-    if(!instance_) {
-        instance_ = new WorldLogManagerDialog;
-    }
-    return instance_;
-}
-
-
-void WorldLogManagerDialog::Impl::addItem(const string& filename)
+void WorldLogManager::Impl::addItem(const string& filename)
 {
     QTreeWidgetItem* item = new QTreeWidgetItem(treeWidget);
     item->setText(0, filename.c_str());
@@ -176,7 +190,7 @@ void WorldLogManagerDialog::Impl::addItem(const string& filename)
 }
 
 
-void WorldLogManagerDialog::Impl::removeItem()
+void WorldLogManager::Impl::removeItem()
 {
     QTreeWidgetItem* item = treeWidget->currentItem();
     if(item) {
@@ -186,7 +200,7 @@ void WorldLogManagerDialog::Impl::removeItem()
 }
 
 
-void WorldLogManagerDialog::Impl::onStartButtonClicked()
+void WorldLogManager::Impl::onStartButtonClicked()
 {
     QTreeWidgetItem* item = treeWidget->currentItem();
     if(item) {
@@ -210,13 +224,13 @@ void WorldLogManagerDialog::Impl::onStartButtonClicked()
 }
 
 
-void WorldLogManagerDialog::Impl::onCustomContextMenuRequested(const QPoint& pos)
+void WorldLogManager::Impl::onCustomContextMenuRequested(const QPoint& pos)
 {
     // contextMenu.exec(treeWidget->mapToGlobal(pos));
 }
 
 
-void WorldLogManagerDialog::Impl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
+void WorldLogManager::Impl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
     isSimulationStarted = true;
     if(saveCheck->isChecked()) {
@@ -252,7 +266,7 @@ void WorldLogManagerDialog::Impl::onSimulationAboutToStart(SimulatorItem* simula
 }
 
 
-void WorldLogManagerDialog::Impl::onPlaybackStopped(double time, bool isStoppedManually)
+void WorldLogManager::Impl::onPlaybackStopped(double time, bool isStoppedManually)
 {
     if(isSimulationStarted) {
         ProjectManager::instance()->saveProject(projectFileName);
@@ -262,7 +276,7 @@ void WorldLogManagerDialog::Impl::onPlaybackStopped(double time, bool isStoppedM
 }
 
 
-void WorldLogManagerDialog::Impl::store(Mapping* archive)
+void WorldLogManager::Impl::store(Mapping* archive)
 {
     archive->write("save_world_log_file", saveCheck->isChecked());
 
@@ -281,7 +295,7 @@ void WorldLogManagerDialog::Impl::store(Mapping* archive)
 }
 
 
-void WorldLogManagerDialog::Impl::restore(const Mapping* archive)
+void WorldLogManager::Impl::restore(const Mapping* archive)
 {
     saveCheck->setChecked(archive->get("save_world_log_file", false));
 

@@ -2,12 +2,14 @@
    @author Kenta Suzuki
 */
 
-#include "BookmarkManagerDialog.h"
+#include "BookmarkManager.h"
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
 #include <cnoid/Archive>
 #include <cnoid/Button>
 #include <cnoid/CheckBox>
+#include <cnoid/Dialog>
+#include <cnoid/ExtensionManager>
 #include <cnoid/ItemManager>
 #include <cnoid/MainWindow>
 #include <cnoid/Menu>
@@ -26,19 +28,24 @@ using namespace cnoid;
 using namespace std;
 namespace filesystem = cnoid::stdx::filesystem;
 
+namespace {
+
+BookmarkManager* bookmarkInstance = nullptr;
+
+}
+
 namespace cnoid {
 
-class BookmarkManagerDialog::Impl
+class BookmarkManager::Impl : public Dialog
 {
 public:
-    BookmarkManagerDialog* self;
-
-    Impl(BookmarkManagerDialog* self);
-    ~Impl();
 
     TreeWidget* treeWidget;
     Menu contextMenu;
     CheckBox* autoCheck;
+
+    Impl();
+    ~Impl();
 
     QTreeWidgetItem* addItem(const string& filename, QTreeWidgetItem* parentItem);
     void removeItem();
@@ -55,18 +62,35 @@ public:
 }
 
 
-BookmarkManagerDialog::BookmarkManagerDialog()
+void BookmarkManager::initializeClass(ExtensionManager* ext)
 {
-    impl = new Impl(this);
+    if(!bookmarkInstance) {
+        bookmarkInstance = ext->manage(new BookmarkManager);
+    }
 }
 
 
-BookmarkManagerDialog::Impl::Impl(BookmarkManagerDialog* self)
-    : self(self)
+BookmarkManager* BookmarkManager::instance()
 {
-    self->setWindowTitle(_("BookmarkManager"));
+    static BookmarkManager* bookmarkInstance = nullptr;
+    if(!bookmarkInstance) {
+        bookmarkInstance = new BookmarkManager;
+    }
+    return bookmarkInstance;
+}
 
-    self->setFixedSize(800, 450);
+
+BookmarkManager::BookmarkManager()
+{
+    impl = new Impl;
+}
+
+
+BookmarkManager::Impl::Impl()
+{
+    setWindowTitle(_("BookmarkManager"));
+
+    setFixedSize(800, 450);
     treeWidget = new TreeWidget;
     treeWidget->setHeaderHidden(true);
 
@@ -88,7 +112,7 @@ BookmarkManagerDialog::Impl::Impl(BookmarkManagerDialog* self)
     addAct->sigTriggered().connect([&](){ onAddButtonClicked(); });
     removeAct->sigTriggered().connect([&](){ removeItem(); });
     openAct->sigTriggered().connect([&](){ onStartButtonClicked(); });
-    self->connect(treeWidget, &TreeWidget::customContextMenuRequested,
+    connect(treeWidget, &TreeWidget::customContextMenuRequested,
         [=](const QPoint& pos){ onCustomContextMenuRequested(pos); });
 
     QHBoxLayout* hbox = new QHBoxLayout;
@@ -124,7 +148,7 @@ BookmarkManagerDialog::Impl::Impl(BookmarkManagerDialog* self)
     hbox->addStretch();
     hbox->addWidget(removeButton);
 
-    auto buttonBox = new QDialogButtonBox(self);
+    auto buttonBox = new QDialogButtonBox(this);
     auto startButton  = new PushButton(_("&Open"));
     startButton->setIconSize(MainWindow::instance()->iconSize());
     buttonBox->addButton(startButton, QDialogButtonBox::ActionRole);
@@ -136,7 +160,7 @@ BookmarkManagerDialog::Impl::Impl(BookmarkManagerDialog* self)
     vbox->addWidget(treeWidget);
     vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);
-    self->setLayout(vbox);
+    setLayout(vbox);
 
     auto config = AppConfig::archive()->openMapping("bookmark_manager");
     if(config->isValid()) {
@@ -145,29 +169,31 @@ BookmarkManagerDialog::Impl::Impl(BookmarkManagerDialog* self)
 }
 
 
-BookmarkManagerDialog::~BookmarkManagerDialog()
+BookmarkManager::~BookmarkManager()
 {
     delete impl;
 }
 
 
-BookmarkManagerDialog::Impl::~Impl()
+BookmarkManager::Impl::~Impl()
 {
     store(AppConfig::archive()->openMapping("bookmark_manager"));
 }
 
 
-BookmarkManagerDialog* BookmarkManagerDialog::instance()
+void BookmarkManager::show()
 {
-    static BookmarkManagerDialog* instance_ = nullptr;
-    if(!instance_) {
-        instance_ = new BookmarkManagerDialog;
-    }
-    return instance_;
+    impl->show();
 }
 
 
-void BookmarkManagerDialog::addProjectFile(const string& filename)
+void BookmarkManager::hide()
+{
+    impl->hide();
+}
+
+
+void BookmarkManager::addProjectFile(const string& filename)
 {
     QTreeWidgetItem* parentItem = impl->treeWidget->currentItem();
     if(!parentItem) {
@@ -177,7 +203,7 @@ void BookmarkManagerDialog::addProjectFile(const string& filename)
 }
 
 
-QTreeWidgetItem* BookmarkManagerDialog::Impl::addItem(const string& filename, QTreeWidgetItem* parentItem)
+QTreeWidgetItem* BookmarkManager::Impl::addItem(const string& filename, QTreeWidgetItem* parentItem)
 {
     QTreeWidgetItem* item = new QTreeWidgetItem(parentItem);
     item->setText(0, filename.c_str());
@@ -188,7 +214,7 @@ QTreeWidgetItem* BookmarkManagerDialog::Impl::addItem(const string& filename, QT
 }
 
 
-void BookmarkManagerDialog::Impl::removeItem()
+void BookmarkManager::Impl::removeItem()
 {
     QTreeWidgetItem* item = treeWidget->currentItem();
     if(item) {
@@ -203,7 +229,7 @@ void BookmarkManagerDialog::Impl::removeItem()
 }
 
 
-void BookmarkManagerDialog::Impl::onAddButtonClicked()
+void BookmarkManager::Impl::onAddButtonClicked()
 {
     vector<string> filenames = getOpenFileNames(_("Open a project"), "cnoid");
     for(size_t i = 0; i < filenames.size(); ++i) {
@@ -216,7 +242,7 @@ void BookmarkManagerDialog::Impl::onAddButtonClicked()
 }
 
 
-void BookmarkManagerDialog::Impl::onNewButtonClicked()
+void BookmarkManager::Impl::onNewButtonClicked()
 {
     QTreeWidgetItem* parentItem = treeWidget->currentItem();
     if(!parentItem) {
@@ -229,7 +255,7 @@ void BookmarkManagerDialog::Impl::onNewButtonClicked()
 }
 
 
-void BookmarkManagerDialog::Impl::onStartButtonClicked()
+void BookmarkManager::Impl::onStartButtonClicked()
 {
     QTreeWidgetItem* item = treeWidget->currentItem();
     if(item) {
@@ -253,20 +279,20 @@ void BookmarkManagerDialog::Impl::onStartButtonClicked()
 }
 
 
-void BookmarkManagerDialog::Impl::onCustomContextMenuRequested(const QPoint& pos)
+void BookmarkManager::Impl::onCustomContextMenuRequested(const QPoint& pos)
 {
     // contextMenu.exec(treeWidget->mapToGlobal(pos));
 }
 
 
-void BookmarkManagerDialog::Impl::store(Mapping* archive)
+void BookmarkManager::Impl::store(Mapping* archive)
 {
     archive->write("auto_play", autoCheck->isChecked());
     storeChildItem(archive, treeWidget->invisibleRootItem());
 }
 
 
-void BookmarkManagerDialog::Impl::storeChildItem(Mapping* archive, QTreeWidgetItem* parentItem)
+void BookmarkManager::Impl::storeChildItem(Mapping* archive, QTreeWidgetItem* parentItem)
 {
     ListingPtr childItemListing = new Listing;
 
@@ -287,14 +313,14 @@ void BookmarkManagerDialog::Impl::storeChildItem(Mapping* archive, QTreeWidgetIt
 }
 
 
-void BookmarkManagerDialog::Impl::restore(const Mapping* archive)
+void BookmarkManager::Impl::restore(const Mapping* archive)
 {
     autoCheck->setChecked(archive->get("auto_play", false));
     restoreChildItem(archive, treeWidget->invisibleRootItem());
 }
 
 
-void BookmarkManagerDialog::Impl::restoreChildItem(const Mapping* archive, QTreeWidgetItem* parentItem)
+void BookmarkManager::Impl::restoreChildItem(const Mapping* archive, QTreeWidgetItem* parentItem)
 {
     ListingPtr childItemListing = archive->findListing("children");
     if(childItemListing->isValid()) {

@@ -5,10 +5,11 @@
 #ifndef CNOID_BOOKMARK_PLUGIN_BOOKMARK_BAR_H
 #define CNOID_BOOKMARK_PLUGIN_BOOKMARK_BAR_H
 
-#include <cnoid/ExtensionManager>
 #include <cnoid/ToolBar>
 
 namespace cnoid {
+
+class ExtensionManager;
 
 class BookmarkBar : public ToolBar
 {

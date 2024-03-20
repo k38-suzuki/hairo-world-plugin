@@ -16,7 +16,7 @@ public:
     static TaskCreator* instance();
 
     TaskCreator();
-    ~TaskCreator();
+    virtual ~TaskCreator();
 
 private:
     class Impl;

@@ -3,9 +3,10 @@
 */
 
 #include "BookmarkBar.h"
+#include <cnoid/ExtensionManager>
 #include <cnoid/ProjectManager>
-#include "BookmarkManagerDialog.h"
-#include "WorldLogManagerDialog.h"
+#include "BookmarkManager.h"
+#include "WorldLogManager.h"
 #include "gettext.h"
 
 using namespace cnoid;
@@ -61,16 +62,16 @@ BookmarkBar::Impl::Impl(BookmarkBar* self)
     button1->sigClicked().connect([&](){ 
         const string& filename = ProjectManager::instance()->currentProjectFile();
         if(!filename.empty()) {
-            BookmarkManagerDialog::instance()->addProjectFile(filename);
+            BookmarkManager::instance()->addProjectFile(filename);
         }
         });
     auto button2 = self->addButton(QIcon::fromTheme("user-bookmarks"));
     button2->setToolTip(_("Show the bookmark manager"));
-    button2->sigClicked().connect([&](){ BookmarkManagerDialog::instance()->show(); });
+    button2->sigClicked().connect([&](){ BookmarkManager::instance()->show(); });
 
     auto button3 = self->addButton(QIcon::fromTheme("emblem-documents"));
     button3->setToolTip(_("Show the worldlog manager"));
-    button3->sigClicked().connect([&](){ WorldLogManagerDialog::instance()->show(); });
+    button3->sigClicked().connect([&](){ WorldLogManager::instance()->show(); });
 }
 
 

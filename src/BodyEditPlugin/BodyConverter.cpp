@@ -24,7 +24,7 @@ using namespace cnoid;
 
 namespace {
 
-BodyConverter* converterInstance_ = nullptr;
+BodyConverter* converterInstance = nullptr;
 
 struct KeyInfo {
     QString oldKey;
@@ -159,19 +159,19 @@ public:
 
 void BodyConverter::initializeClass(ExtensionManager* ext)
 {
-    if(!converterInstance_) {
-        converterInstance_ = ext->manage(new BodyConverter);
+    if(!converterInstance) {
+        converterInstance = ext->manage(new BodyConverter);
 
         MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
         mm.addItem(_("Convert Body"))->sigTriggered().connect(
-                    [&](){ converterInstance_->impl->show(); });
+                    [&](){ converterInstance->impl->show(); });
     }
 }
 
 
 BodyConverter* BodyConverter::instance()
 {
-    return converterInstance_;
+    return converterInstance;
 }
 
 
