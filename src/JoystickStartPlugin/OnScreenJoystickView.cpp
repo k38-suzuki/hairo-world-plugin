@@ -9,6 +9,7 @@
 #include <cnoid/Buttons>
 #include <cnoid/ExtJoystick>
 #include <cnoid/JoystickCapture>
+#include <cnoid/MathUtil>
 #include <cnoid/MenuManager>
 #include <cnoid/ViewManager>
 #include <cnoid/Widget>
@@ -20,7 +21,6 @@
 #include <QVBoxLayout>
 #include <thread>
 #include <mutex>
-#include <cmath>
 #include "OnScreenJoystickWidget.h"
 #include "gettext.h"
 

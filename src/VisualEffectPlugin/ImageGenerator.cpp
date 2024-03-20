@@ -3,8 +3,8 @@
 */
 
 #include "ImageGenerator.h"
+#include <cnoid/MathUtil>
 #include <algorithm>
-#include <cmath>
 #include <random>
 #include <vector>
 #include <QColor>

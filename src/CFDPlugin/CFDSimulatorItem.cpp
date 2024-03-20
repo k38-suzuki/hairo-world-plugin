@@ -14,7 +14,6 @@
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
 #include <vector>
-#include <cmath>
 #include "FluidAreaItem.h"
 #include "Rotor.h"
 #include "Thruster.h"

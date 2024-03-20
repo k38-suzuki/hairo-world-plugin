@@ -13,6 +13,7 @@
 #include <cnoid/FileDialog>
 #include <cnoid/ItemManager>
 #include <cnoid/MainWindow>
+#include <cnoid/MathUtil>
 #include <cnoid/MenuManager>
 #include <cnoid/NullOut>
 #include <cnoid/ProjectManager>
@@ -22,13 +23,11 @@
 #include <cnoid/Widget>
 #include <cnoid/YAMLReader>
 #include <cnoid/YAMLWriter>
-#include <QColorDialog>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QPalette>
 #include <QStackedWidget>
 #include <QVBoxLayout>
-#include <cmath>
+#include "ColorButton.h"
 #include "FileFormWidget.h"
 #include "gettext.h"
 
@@ -243,7 +242,7 @@ public:
     enum DialogButtonId { RESET, IMPORT, EXPORT, NUM_TBUTTONS };
 
     CheckBox* checks[NUM_CHECKS];
-    PushButton* buttons[NUM_BUTTONS];
+    ColorButton* buttons[NUM_BUTTONS];
     DoubleSpinBox* dspins[NUM_DSPINS];
     DoubleSpinBox* agxdspins[NUM_AGXDSPINS];
     SpinBox* agxspins[NUM_SPINS];
@@ -266,11 +265,7 @@ public:
 
     bool load2(const string& filename, ostream& os = nullout());
     void onEnableAGXCheckToggled(const bool& on);
-    void onColorChanged(PushButton* pushbutton);
     void onButtonToggled(const int& id, const bool& checked);
-
-    void setColor(PushButton* pushbutton, const Vector3& color);
-    Vector3 extractColor(PushButton* colorButton);
 
     MappingPtr writeBody(const string& filename);
     MappingPtr writeConfig(const string& filename);
@@ -348,9 +343,8 @@ CrawlerGenerator::Impl::Impl(CrawlerGenerator* self)
 
     for(int i = 0; i < NUM_BUTTONS; ++i) {
         ButtonInfo info = buttonInfo[i];
-        buttons[i] = new PushButton;
+        buttons[i] = new ColorButton;
         PushButton* button = buttons[i];
-        button->sigClicked().connect([&, button](){ onColorChanged(button); });
         gbox[info.page]->addWidget(button, info.row, info.column);
     }
 
@@ -557,8 +551,8 @@ void CrawlerGenerator::Impl::initialize()
 
     for(int i = 0; i < NUM_BUTTONS; ++i) {
         ButtonInfo info = buttonInfo[i];
-        PushButton* button = buttons[i];
-        setColor(button, Vector3(info.red, info.green, info.blue));
+        ColorButton* button = buttons[i];
+        button->setColor(Vector3(info.red, info.green, info.blue));
     }
 
     for(int i = 0; i < NUM_CHECKS; ++i) {
@@ -625,7 +619,7 @@ bool CrawlerGenerator::Impl::load2(const string& filename,std::ostream& os )
                                 for(int k = 0; k < colorList.size(); ++k) {
                                     color[k] = colorList[k].toDouble();
                                 }
-                                setColor(buttons[j], color);
+                                buttons[j]->setColor(color);
                             }
                         }
                     }
@@ -727,50 +721,11 @@ void CrawlerGenerator::Impl::onEnableAGXCheckToggled(const bool& on)
 }
 
 
-void CrawlerGenerator::Impl::onColorChanged(PushButton* pushbutton)
-{
-    QColor selectedColor;
-    QColor currentColor = pushbutton->palette().color(QPalette::Button);
-    QColorDialog dialog(MainWindow::instance());
-    dialog.setWindowTitle(_("Select a color"));
-    dialog.setCurrentColor(currentColor);
-    dialog.setOption (QColorDialog::DontUseNativeDialog);
-    if(dialog.exec()) {
-        selectedColor = dialog.currentColor();
-    } else {
-        selectedColor = currentColor;
-    }
-
-    QPalette palette;
-    palette.setColor(QPalette::Button, selectedColor);
-    pushbutton->setPalette(palette);
-}
-
-
 void CrawlerGenerator::Impl::onButtonToggled(const int& id, const bool& checked)
 {
     if(checked) {
         topWidget->setCurrentIndex(id);
     }
-}
-
-
-void CrawlerGenerator::Impl::setColor(PushButton* pushbutton, const Vector3& color)
-{
-    QColor selectedColor;
-    selectedColor.setRed(color[0] * 255.0);
-    selectedColor.setGreen(color[1] * 255.0);
-    selectedColor.setBlue(color[2] * 255.0);
-    QPalette palette;
-    palette.setColor(QPalette::Button, selectedColor);
-    pushbutton->setPalette(palette);
-}
-
-
-Vector3 CrawlerGenerator::Impl::extractColor(PushButton* colorButton)
-{
-    QColor selectedColor = colorButton->palette().color(QPalette::Button);
-    return Vector3(selectedColor.red() / 255.0, selectedColor.green() / 255.0, selectedColor.blue() / 255.0);
 }
 
 
@@ -836,7 +791,7 @@ MappingPtr CrawlerGenerator::Impl::writeConfig(const string& filename)
         for(int i = 0; i < NUM_BUTTONS; ++i) {
             ListingPtr colorList = new Listing;
             for(int j = 0; j < 3; ++j) {
-                colorList->append(extractColor(buttons[i])[j], 5, 5);
+                colorList->append(buttons[i]->color()[j], 5, 5);
             }
             buttonList->append(colorList);
         }
@@ -986,7 +941,7 @@ MappingPtr CrawlerGenerator::Impl::writeChassis()
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
     MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
-    write(materialNode, "diffuseColor", extractColor(buttons[CHS_CLR]));
+    write(materialNode, "diffuseColor", buttons[CHS_CLR]->color());
 
     elementsNode->append(node);
     if(!elementsNode->empty()) {
@@ -1010,7 +965,7 @@ MappingPtr CrawlerGenerator::Impl::writeSpacer()
 
     ListingPtr elementsNode = new Listing;
 
-    elementsNode->append(writeCylinderShape(dspins[SPC_RAD]->value(), dspins[SPC_WDT]->value(), extractColor(buttons[SPC_CLR])));
+    elementsNode->append(writeCylinderShape(dspins[SPC_RAD]->value(), dspins[SPC_WDT]->value(), buttons[SPC_CLR]->color()));
     if(!elementsNode->empty()) {
         node->insert("elements", elementsNode);
     }
@@ -1063,7 +1018,7 @@ MappingPtr CrawlerGenerator::Impl::writeTrack()
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
     MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
-    write(materialNode, "diffuseColor", extractColor(buttons[TRK_CLR]));
+    write(materialNode, "diffuseColor", buttons[TRK_CLR]->color());
 
     elementsNode->append(node);
     if(!elementsNode->empty()) {
@@ -1119,7 +1074,7 @@ MappingPtr CrawlerGenerator::Impl::writeFrontTrack()
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
     MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
-    write(materialNode, "diffuseColor", extractColor(buttons[FFL_CLR]));
+    write(materialNode, "diffuseColor", buttons[FFL_CLR]->color());
 
     elementsNode->append(node);
     if(!elementsNode->empty()) {
@@ -1175,7 +1130,7 @@ MappingPtr CrawlerGenerator::Impl::writeRearTrack()
 
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
     MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
-    write(materialNode, "diffuseColor", extractColor(buttons[RFL_CLR]));
+    write(materialNode, "diffuseColor", buttons[RFL_CLR]->color());
 
     elementsNode->append(node);
     if(!elementsNode->empty()) {
@@ -1559,7 +1514,7 @@ MappingPtr CrawlerGenerator::Impl::writeAGXSprocket()
 
     ListingPtr elementsNode = new Listing;
 
-    elementsNode->append(writeCylinderShape(dspins[TRK_RAD]->value(), dspins[TRK_WDT]->value(), extractColor(buttons[TRK_CLR])));
+    elementsNode->append(writeCylinderShape(dspins[TRK_RAD]->value(), dspins[TRK_WDT]->value(), buttons[TRK_CLR]->color()));
     if(!elementsNode->empty()) {
         node->insert("elements", elementsNode);
     }
@@ -1645,7 +1600,7 @@ MappingPtr CrawlerGenerator::Impl::writeAGXFrontSprocket()
 
     ListingPtr elementsNode = new Listing;
 
-    elementsNode->append(writeCylinderShape(dspins[FFL_RRD]->value(), dspins[FFL_WDT]->value(), extractColor(buttons[FFL_CLR])));
+    elementsNode->append(writeCylinderShape(dspins[FFL_RRD]->value(), dspins[FFL_WDT]->value(), buttons[FFL_CLR]->color()));
     if(!elementsNode->empty()) {
         node->insert("elements", elementsNode);
     }
@@ -1670,7 +1625,7 @@ MappingPtr CrawlerGenerator::Impl::writeAGXFrontRoller()
 
     ListingPtr elementsNode = new Listing;
 
-    elementsNode->append(writeCylinderShape((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0, dspins[FFL_WDT]->value(), extractColor(buttons[FFL_CLR])));
+    elementsNode->append(writeCylinderShape((dspins[FFL_RRD]->value() + dspins[FFL_FRD]->value()) / 2.0, dspins[FFL_WDT]->value(), buttons[FFL_CLR]->color()));
     if(!elementsNode->empty()) {
         node->insert("elements", elementsNode);
     }
@@ -1695,7 +1650,7 @@ MappingPtr CrawlerGenerator::Impl::writeAGXFrontIdler()
 
     ListingPtr elementsNode = new Listing;
 
-    elementsNode->append(writeCylinderShape(dspins[FFL_FRD]->value(), dspins[FFL_WDT]->value(), extractColor(buttons[FFL_CLR])));
+    elementsNode->append(writeCylinderShape(dspins[FFL_FRD]->value(), dspins[FFL_WDT]->value(), buttons[FFL_CLR]->color()));
     if(!elementsNode->empty()) {
         node->insert("elements", elementsNode);
     }
@@ -1720,7 +1675,7 @@ MappingPtr CrawlerGenerator::Impl::writeAGXRearSprocket()
 
     ListingPtr elementsNode = new Listing;
 
-    elementsNode->append(writeCylinderShape(dspins[RFL_FRD]->value(), dspins[RFL_WDT]->value(), extractColor(buttons[RFL_CLR])));
+    elementsNode->append(writeCylinderShape(dspins[RFL_FRD]->value(), dspins[RFL_WDT]->value(), buttons[RFL_CLR]->color()));
     if(!elementsNode->empty()) {
         node->insert("elements", elementsNode);
     }
@@ -1745,7 +1700,7 @@ MappingPtr CrawlerGenerator::Impl::writeAGXRearRoller()
 
     ListingPtr elementsNode = new Listing;
 
-    elementsNode->append(writeCylinderShape((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0, dspins[RFL_WDT]->value(), extractColor(buttons[RFL_CLR])));
+    elementsNode->append(writeCylinderShape((dspins[RFL_RRD]->value() + dspins[RFL_FRD]->value()) / 2.0, dspins[RFL_WDT]->value(), buttons[RFL_CLR]->color()));
     if(!elementsNode->empty()) {
         node->insert("elements", elementsNode);
     }
@@ -1770,7 +1725,7 @@ MappingPtr CrawlerGenerator::Impl::writeAGXRearIdler()
 
     ListingPtr elementsNode = new Listing;
 
-    elementsNode->append(writeCylinderShape(dspins[RFL_RRD]->value(), dspins[RFL_WDT]->value(), extractColor(buttons[RFL_CLR])));
+    elementsNode->append(writeCylinderShape(dspins[RFL_RRD]->value(), dspins[RFL_WDT]->value(), buttons[RFL_CLR]->color()));
     if(!elementsNode->empty()) {
         node->insert("elements", elementsNode);
     }

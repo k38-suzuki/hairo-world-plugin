@@ -4,6 +4,7 @@ endif()
 
 set(sources
   BodyConverter.cpp
+  ColorButton.cpp
   CrawlerGenerator.cpp
   FileFormWidget.cpp
   GratingGenerator.cpp
@@ -17,6 +18,7 @@ set(sources
 
 set(headers
   BodyConverter.h
+  ColorButton.h
   CrawlerGenerator.h
   FileFormWidget.h
   GratingGenerator.h

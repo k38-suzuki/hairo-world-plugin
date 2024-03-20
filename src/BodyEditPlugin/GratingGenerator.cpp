@@ -13,10 +13,10 @@
 #include <cnoid/SpinBox>
 #include <cnoid/YAMLWriter>
 #include <cnoid/stdx/filesystem>
-#include <QColorDialog>
 #include <QGridLayout>
 #include <QLabel>
 #include <QVBoxLayout>
+#include "ColorButton.h"
 #include "FileFormWidget.h"
 #include "gettext.h"
 
@@ -84,7 +84,7 @@ public:
     SpinBox* spins[NUM_SPINS];
 
     QLabel* sizeLabel;
-    PushButton* colorButton;
+    ColorButton* colorButton;
     FileFormWidget* formWidget;
     YAMLWriter yamlWriter;
 
@@ -144,7 +144,7 @@ GratingGenerator::Impl::Impl(GratingGenerator* self)
     }
 
     sizeLabel = new QLabel(_(" "));
-    colorButton = new PushButton;
+    colorButton = new ColorButton;
 
     dspins[MASS]->setValue(1.0);
     dspins[FRAME_WDT]->setValue(0.005);
@@ -171,7 +171,6 @@ GratingGenerator::Impl::Impl(GratingGenerator* self)
 
     onValueChanged();
 
-    colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
     dspins[FRAME_WDT]->sigValueChanged().connect([&](double value){ onValueChanged(); });
     dspins[FRAME_HGT]->sigValueChanged().connect([&](double value){ onValueChanged(); });
     dspins[GRID_WDT]->sigValueChanged().connect([&](double value){ onValueChanged(); });
@@ -212,26 +211,6 @@ bool GratingGenerator::Impl::save(const string& filename)
     }
 
     return true;
-}
-
-
-void GratingGenerator::Impl::onColorButtonClicked()
-{
-    QColor selectedColor;
-    QColor currentColor = colorButton->palette().color(QPalette::Button);
-    QColorDialog dialog(MainWindow::instance());
-    dialog.setWindowTitle(_("Select a color"));
-    dialog.setCurrentColor(currentColor);
-    dialog.setOption (QColorDialog::DontUseNativeDialog);
-    if(dialog.exec()) {
-        selectedColor = dialog.currentColor();
-    } else {
-        selectedColor = currentColor;
-    }
-
-    QPalette palette;
-    palette.setColor(QPalette::Button, selectedColor);
-    colorButton->setPalette(palette);
 }
 
 
@@ -394,12 +373,7 @@ void GratingGenerator::Impl::writeLinkShape(Listing* elementsNode)
         MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
         MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
         Listing& diffuseColorList = *materialNode->createFlowStyleListing("diffuse");
-        QPalette palette = colorButton->palette();
-        QColor color = palette.color(QPalette::Button);
-        Vector3 c;
-        c[0] = (double)color.red() / 255.0;
-        c[1] = (double)color.green() / 255.0;
-        c[2] = (double)color.blue() / 255.0;
+        Vector3 c = colorButton->color();
         for(int i = 0; i < 3; ++i) {
             diffuseColorList.append(c[i], 3, 3);
         }

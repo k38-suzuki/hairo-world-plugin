@@ -14,10 +14,10 @@
 #include <cnoid/SpinBox>
 #include <cnoid/YAMLWriter>
 #include <cnoid/stdx/filesystem>
-#include <QColorDialog>
 #include <QGridLayout>
 #include <QLabel>
 #include <QVBoxLayout>
+#include "ColorButton.h"
 #include "FileFormWidget.h"
 #include "gettext.h"
 
@@ -67,7 +67,7 @@ public:
 
     DoubleSpinBox* dspins[NUM_DSPINS];
     SpinBox* stepsSpin;
-    PushButton* colorButton;
+    ColorButton* colorButton;
     FileFormWidget* formWidget;
     YAMLWriter yamlWriter;
 
@@ -120,7 +120,7 @@ StairsGenerator::Impl::Impl(StairsGenerator* self)
     gbox->addWidget(new QLabel(_("Number of steps [-]")), 2, 2);
     gbox->addWidget(stepsSpin, 2, 3); 
 
-    colorButton = new PushButton;
+    colorButton = new ColorButton;
     gbox->addWidget(new QLabel(_("Color [-]")), 3, 0);
     gbox->addWidget(colorButton, 3, 1);
 
@@ -133,7 +133,6 @@ StairsGenerator::Impl::Impl(StairsGenerator* self)
     vbox->addWidget(formWidget);
     setLayout(vbox);
 
-    colorButton->sigClicked().connect([&](){ onColorButtonClicked(); });
     formWidget->sigClicked().connect([&](string filename){ save(filename); });
 }
 
@@ -167,26 +166,6 @@ bool StairsGenerator::Impl::save(const string& filename)
     }
 
     return true;
-}
-
-
-void StairsGenerator::Impl::onColorButtonClicked()
-{
-    QColor selectedColor;
-    QColor currentColor = colorButton->palette().color(QPalette::Button);
-    QColorDialog dialog(MainWindow::instance());
-    dialog.setWindowTitle(_("Select a color"));
-    dialog.setCurrentColor(currentColor);
-    dialog.setOption (QColorDialog::DontUseNativeDialog);
-    if(dialog.exec()) {
-        selectedColor = dialog.currentColor();
-    } else {
-        selectedColor = currentColor;
-    }
-
-    QPalette palette;
-    palette.setColor(QPalette::Button, selectedColor);
-    colorButton->setPalette(palette);
 }
 
 
@@ -323,12 +302,7 @@ void StairsGenerator::Impl::writeStringerShape(Listing* elementsNode)
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
     MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
     Listing& diffuseColorList = *materialNode->createFlowStyleListing("diffuse");
-    QPalette palette = colorButton->palette();
-    QColor color = palette.color(QPalette::Button);
-    Vector3 c;
-    c[0] = (double)color.red() / 255.0;
-    c[1] = (double)color.green() / 255.0;
-    c[2] = (double)color.blue() / 255.0;
+    Vector3 c = colorButton->color();;
     for(int i = 0; i < 3; ++i) {
         diffuseColorList.append(c[i], 3, 3);
     }
@@ -355,12 +329,7 @@ void StairsGenerator::Impl::writeStepShape(Listing* elementsNode)
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
     MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
     Listing& diffuseColorList = *materialNode->createFlowStyleListing("diffuse");
-    QPalette palette = colorButton->palette();
-    QColor color = palette.color(QPalette::Button);
-    Vector3 c;
-    c[0] = (double)color.red() / 255.0;
-    c[1] = (double)color.green() / 255.0;
-    c[2] = (double)color.blue() / 255.0;
+    Vector3 c = colorButton->color();
     for(int i = 0; i < 3; ++i) {
         diffuseColorList.append(c[i], 3, 3);
     }

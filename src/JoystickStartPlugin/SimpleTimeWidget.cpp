@@ -3,13 +3,13 @@
 */
 
 #include "SimpleTimeWidget.h"
+#include <cnoid/MathUtil>
 #include <cnoid/Slider>
 #include <cnoid/SpinBox>
 #include <cnoid/TimeBar>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QVBoxLayout>
-#include <cmath>
 #include "gettext.h"
 
 using namespace cnoid;
