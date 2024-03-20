@@ -290,6 +290,9 @@ void WorldLogManager::Impl::store(Mapping* archive)
             logList->append(filename, DOUBLE_QUOTED);
         }
     }
+    if(!logList->size()) {
+        logList->append("", DOUBLE_QUOTED);
+    }
     AppConfig::archive()->insert("world_logs", logList);
 }
 
@@ -302,7 +305,9 @@ void WorldLogManager::Impl::restore(const Mapping* archive)
     if(logList.isValid() && !logList.empty()) {
         for(int i = 0; i < logList.size(); ++i) {
             string filename = logList[i].toString();
-            addItem(filename);
+            if(!filename.empty()) {
+                addItem(filename);
+            }
         }
     }
 }

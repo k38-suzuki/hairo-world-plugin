@@ -30,7 +30,7 @@ public:
     DeviceList<ScopeDevice> scopes;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
-    void onPreDynamicsFunction();
+    void onPreDynamics();
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
     bool restore(const Archive& archive);
@@ -101,13 +101,13 @@ bool MarkerDetectorItem::Impl::initializeSimulation(SimulatorItem* simulatorItem
     }
 
     if(markers.size() && scopes.size()) {
-        simulatorItem->addPreDynamicsFunction([&](){ onPreDynamicsFunction(); });
+        simulatorItem->addPreDynamicsFunction([&](){ onPreDynamics(); });
     }
     return true;
 }
 
 
-void MarkerDetectorItem::Impl::onPreDynamicsFunction()
+void MarkerDetectorItem::Impl::onPreDynamics()
 {
     DeviceList<PassiveMarker> capturedMarkers;
     for(size_t i = 0; i < scopes.size(); ++i) {

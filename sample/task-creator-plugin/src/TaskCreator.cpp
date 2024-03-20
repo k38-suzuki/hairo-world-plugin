@@ -3,6 +3,7 @@
 */
 
 #include "TaskCreator.h"
+#include <cnoid/AppConfig>
 #include <cnoid/Archive>
 #include <cnoid/Body>
 #include <cnoid/BodyItem>
@@ -57,6 +58,7 @@ public:
     DoubleSpinBox* posSpin;
 
     Impl();
+    ~Impl();
     bool store(Archive& archive);
     void restore(const Archive& archive);
     void create();
@@ -107,12 +109,6 @@ TaskCreator::TaskCreator()
 }
 
 
-TaskCreator::~TaskCreator()
-{
-    delete impl;
-}
-
-
 TaskCreator::Impl::Impl()
 {
     setWindowTitle(_("Task Creator"));
@@ -124,16 +120,20 @@ TaskCreator::Impl::Impl()
 
     for(int i = 0; i < NumProjects; ++i) {
         projectCombos[i] = new ComboBox;
+        projectCombos[i]->setFixedWidth(480);
 
         auto button1 = new ToolButton("+");
         button1->sigClicked().connect([=](){ onButton1Clicked(i); });
         auto button2 = new ToolButton("-");
         button2->sigClicked().connect([=](){ onButton2Clicked(i); });
+        auto button3 = new ToolButton("c");
+        button3->sigClicked().connect([=](){ projectCombos[i]->clear(); });
 
         hbox->addWidget(new QLabel(QString(_("Project %1")).arg(i)));
         hbox->addWidget(projectCombos[i]);
         hbox->addWidget(button1);
         hbox->addWidget(button2);
+        hbox->addWidget(button3);
         vbox->addLayout(hbox);
         hbox = new QHBoxLayout;
     }
@@ -178,6 +178,45 @@ TaskCreator::Impl::Impl()
     saveButton->sigClicked().connect([&](){ save(); });
 
     vbox->addWidget(buttonBox);
+
+    // restore config
+    for(int i = 0; i < NumProjects; ++i) {
+        string key = "registered_projects_" + to_string(i);
+        projectCombos[i]->clear();
+        auto& projectList = *AppConfig::archive()->findListing(key);
+        if(projectList.isValid() && !projectList.empty()) {
+            for(int j = 0; j < projectList.size(); ++j) {
+                string filename = projectList[j].toString();
+                if(!filename.empty()) {
+                    projectCombos[i]->addItem(filename.c_str());
+                }
+            }
+        }
+    }
+}
+
+
+TaskCreator::~TaskCreator()
+{
+    delete impl;
+}
+
+
+TaskCreator::Impl::~Impl()
+{
+    // store config
+    for(int i = 0; i < NumProjects; ++i) {
+        string key = "registered_projects_" + to_string(i);
+        ListingPtr projectList = new Listing;
+        for(int j = 0; j < projectCombos[i]->count(); ++j) {
+            string filename = projectCombos[i]->itemText(j).toStdString();
+            projectList->append(filename, DOUBLE_QUOTED);
+        }
+        if(!projectList->size()) {
+            projectList->append("", DOUBLE_QUOTED);
+        }
+        AppConfig::archive()->insert(key, projectList);
+    }
 }
 
 

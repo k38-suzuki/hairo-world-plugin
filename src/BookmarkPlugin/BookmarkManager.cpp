@@ -271,7 +271,10 @@ void BookmarkManager::Impl::store(Mapping* archive)
             bookmarkList->append(filename, DOUBLE_QUOTED);
         }
     }
-    AppConfig::archive()->insert("bookmarks", bookmarkList);    
+    if(!bookmarkList->size()) {
+        bookmarkList->append("", DOUBLE_QUOTED);
+    }
+    AppConfig::archive()->insert("bookmarks", bookmarkList);
 }
 
 
@@ -283,7 +286,9 @@ void BookmarkManager::Impl::restore(const Mapping* archive)
     if(bookmarkList.isValid() && !bookmarkList.empty()) {
         for(int i = 0; i < bookmarkList.size(); ++i) {
             string filename = bookmarkList[i].toString();
-            addItem(filename);
+            if(!filename.empty()) {
+                addItem(filename);
+            }
         }
     }
 } 

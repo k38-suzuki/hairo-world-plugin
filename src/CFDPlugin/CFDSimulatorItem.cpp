@@ -87,7 +87,7 @@ public:
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void addBody(CFDBody* cfdBody);
-    void onPreDynamicsFunction();
+    void onPreDynamics();
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
     bool restore(const Archive& archive);
@@ -299,7 +299,7 @@ bool CFDSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
     }
 
     if(cfdBodies.size()) {
-        simulatorItem->addPreDynamicsFunction([&](){ onPreDynamicsFunction(); });
+        simulatorItem->addPreDynamicsFunction([&](){ onPreDynamics(); });
     }
     return true;
 }
@@ -314,7 +314,7 @@ void CFDSimulatorItemImpl::addBody(CFDBody* cfdBody)
 }
 
 
-void CFDSimulatorItemImpl::onPreDynamicsFunction()
+void CFDSimulatorItemImpl::onPreDynamics()
 {
     for(size_t i = 0; i < cfdBodies.size(); ++i) {
         CFDBody* cfdBody = cfdBodies[i];

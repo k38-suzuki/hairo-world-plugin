@@ -69,14 +69,14 @@ bool LiftSimulatorItem::initializeSimulation(SimulatorItem* simulatorItem)
     }
 
     if(simBodies.size()) {
-        simulatorItem->addPreDynamicsFunction([&](){ onPreDynamicsFunction(); });
+        simulatorItem->addPreDynamicsFunction([&](){ onPreDynamics(); });
     }
     
     return true;
 }
 
 
-void LiftSimulatorItem::onPreDynamicsFunction()
+void LiftSimulatorItem::onPreDynamics()
 {
     for(int i = 0; i < wings.size(); ++i) {
         WingDevice* wing = wings[i];

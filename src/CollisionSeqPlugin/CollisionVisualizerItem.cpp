@@ -73,7 +73,7 @@ public:
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void extract(SgNode* node, Link* link, Vector3 color);
-    void onPostDynamicsFunction();
+    void onPostDynamics();
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
     bool restore(const Archive& archive);
@@ -186,14 +186,14 @@ bool CollisionVisualizerItem::Impl::initializeSimulation(SimulatorItem* simulato
     }
 
     if(bodies.size()) {
-        this->simulatorItem->addPostDynamicsFunction([&](){ onPostDynamicsFunction(); });
+        this->simulatorItem->addPostDynamicsFunction([&](){ onPostDynamics(); });
     }
 
     return true;
 }
 
 
-void CollisionVisualizerItem::Impl::onPostDynamicsFunction()
+void CollisionVisualizerItem::Impl::onPostDynamics()
 {
     int currentFrame = simulatorItem->currentFrame();
     for(size_t i = 0; i < bodies.size(); ++i) {

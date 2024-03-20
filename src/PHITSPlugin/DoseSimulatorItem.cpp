@@ -50,8 +50,8 @@ public:
     enum ColorScaleID { LOG_SCALE, LINER_SCALE, NUM_SCALES };
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
-    void onMidDynamicsFunction();
-    void onPostDynamicsFunction();
+    void onMidDynamics();
+    void onPostDynamics();
     void setDefaultShieldFile(const string& filename);
     bool onColorScalePropertyChanged(const int& index);
     void onGammaDataLoaded();
@@ -148,8 +148,8 @@ bool DoseSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
     if(crossSectionItem) {
         onGammaDataLoaded();
         if(nodeData) {
-            simulatorItem->addMidDynamicsFunction([&](){ onMidDynamicsFunction(); });
-            simulatorItem->addPostDynamicsFunction([&](){ onPostDynamicsFunction(); });
+            simulatorItem->addMidDynamicsFunction([&](){ onMidDynamics(); });
+            simulatorItem->addPostDynamicsFunction([&](){ onPostDynamics(); });
             crossSectionItem->sigGammaDataLoaded().connect([&](){ onGammaDataLoaded(); });
         }
     } else {
@@ -161,7 +161,7 @@ bool DoseSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 }
 
 
-void DoseSimulatorItem::Impl::onMidDynamicsFunction()
+void DoseSimulatorItem::Impl::onMidDynamics()
 {
     if(!nodeData) {
         return;
@@ -198,7 +198,7 @@ void DoseSimulatorItem::Impl::onMidDynamicsFunction()
 }
 
 
-void DoseSimulatorItem::Impl::onPostDynamicsFunction()
+void DoseSimulatorItem::Impl::onPostDynamics()
 {
     if(doseMeters.size()) {
         vector<double> integralDoses;

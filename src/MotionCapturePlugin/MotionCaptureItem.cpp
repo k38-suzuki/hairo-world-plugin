@@ -42,7 +42,7 @@ public:
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void finalizeSimulation();
-    void onPreDynamicsFunction();
+    void onPreDynamics();
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
     bool restore(const Archive& archive);
@@ -146,7 +146,7 @@ bool MotionCaptureItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
             markerPointSeq->setDimension(0, numParts, false);
             markerPointSeq->setOffsetTime(0.0);
 
-            simulatorItem->addPreDynamicsFunction([&](){ onPreDynamicsFunction(); });
+            simulatorItem->addPreDynamicsFunction([&](){ onPreDynamics(); });
         }
     }
     return true;
@@ -207,7 +207,7 @@ void MotionCaptureItem::Impl::finalizeSimulation()
 }
 
 
-void MotionCaptureItem::Impl::onPreDynamicsFunction()
+void MotionCaptureItem::Impl::onPreDynamics()
 {
     int currentFrame = simulatorItem->currentFrame();
     shared_ptr<MultiSE3Seq> motionSeq = motionSeqItem->seq();

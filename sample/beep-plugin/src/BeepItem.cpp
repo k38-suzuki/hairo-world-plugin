@@ -47,7 +47,7 @@ public:
     bool isPlayed;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
-    void onPostDynamicsFunction();
+    void onPostDynamics();
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
     bool restore(const Archive& archive);
@@ -127,7 +127,7 @@ bool BeepItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 
         if(worldItem) {
             worldItem->setCollisionDetectionEnabled(true);
-            this->simulatorItem->addPostDynamicsFunction([&](){ onPostDynamicsFunction(); });
+            this->simulatorItem->addPostDynamicsFunction([&](){ onPostDynamics(); });
         }
     }
 
@@ -135,7 +135,7 @@ bool BeepItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 }
 
 
-void BeepItem::Impl::onPostDynamicsFunction()
+void BeepItem::Impl::onPostDynamics()
 {
     double currentTime = simulatorItem->currentTime();
     static double startTime = 0.0;

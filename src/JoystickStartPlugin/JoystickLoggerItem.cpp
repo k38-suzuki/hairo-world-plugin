@@ -32,7 +32,7 @@ public:
     SimulatorItem* simulatorItem;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
-    void onPostDynamicsFunction();
+    void onPostDynamics();
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
     bool restore(const Archive& archive);
@@ -110,13 +110,13 @@ bool JoystickLoggerItem::Impl::initializeSimulation(SimulatorItem* simulatorItem
     joystickStateSeq->setOffsetTime(0.0);
 
     if(simulatorItem) {
-        simulatorItem->addPostDynamicsFunction([&](){ onPostDynamicsFunction(); });
+        simulatorItem->addPostDynamicsFunction([&](){ onPostDynamics(); });
     }
     return true;
 }
 
 
-void JoystickLoggerItem::Impl::onPostDynamicsFunction()
+void JoystickLoggerItem::Impl::onPostDynamics()
 {
     int currentFrame = simulatorItem->currentFrame();
     joystick->readCurrentState();

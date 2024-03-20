@@ -77,9 +77,11 @@ HistoryManager::Impl::Impl(HistoryManager* self, ExtensionManager* ext)
     if(historyList.isValid() && !historyList.empty()) {
         for(int i = 0; i < historyList.size(); ++i) {
             string filename = historyList[i].toString();
-            Action* action = new Action;
-            action->setText(filename.c_str());
-            currentMenu->addAction(action);
+            if(!filename.empty()) {
+                Action* action = new Action;
+                action->setText(filename.c_str());
+                currentMenu->addAction(action);
+            }
         }
     }
 }
@@ -101,6 +103,9 @@ HistoryManager::Impl::~Impl()
         QAction* action = currentMenu->actions()[i + 2];
         string filename = action->text().toStdString();
         historyList->append(filename, DOUBLE_QUOTED);
+    }
+    if(!historyList->size()) {
+        historyList->append("", DOUBLE_QUOTED);
     }
     AppConfig::archive()->insert("histories", historyList);
 }

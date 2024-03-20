@@ -75,7 +75,7 @@ public:
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void finalizeSimulation();
-    void onPreDynamicsFunction();
+    void onPreDynamics();
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
     bool restore(const Archive& archive);
@@ -157,7 +157,7 @@ bool NetworkEmulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorIte
             bodies.push_back(simuBodies[i]->body());
         }
         netem->start(interface.which(), ifbDevice.which());
-        simulatorItem->addPreDynamicsFunction([&](){ onPreDynamicsFunction(); });
+        simulatorItem->addPreDynamicsFunction([&](){ onPreDynamics(); });
     }
     return true;
 }
@@ -175,7 +175,7 @@ void NetworkEmulatorItem::Impl::finalizeSimulation()
 }
 
 
-void NetworkEmulatorItem::Impl::onPreDynamicsFunction()
+void NetworkEmulatorItem::Impl::onPreDynamics()
 {
     ItemList<TCAreaItem> areaItems;
     WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();

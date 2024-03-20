@@ -36,7 +36,7 @@ private:
     DeviceList<WingDevice> wings;
     ItemList<FluidAreaItem> areaItems;
 
-    void onPreDynamicsFunction();
+    void onPreDynamics();
 };
 
 typedef ref_ptr<LiftSimulatorItem> LiftSimulatorItemPtr;
