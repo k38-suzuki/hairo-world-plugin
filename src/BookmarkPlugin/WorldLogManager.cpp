@@ -78,7 +78,7 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
             if(bar->name() == "FileBar") {
                 auto button1 = bar->addButton(QIcon::fromTheme("emblem-documents"));
                 button1->setToolTip(_("Show the worldlog manager"));
-                button1->sigClicked().connect([&](){ WorldLogManager::instance()->show(); });
+                button1->sigClicked().connect([&](){ logInstance->show(); });
             }
         }
     }

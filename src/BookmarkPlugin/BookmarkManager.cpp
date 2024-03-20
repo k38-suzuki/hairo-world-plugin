@@ -72,12 +72,12 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
                 button1->sigClicked().connect([&](){ 
                     const string& filename = ProjectManager::instance()->currentProjectFile();
                     if(!filename.empty()) {
-                        BookmarkManager::instance()->addProjectFile(filename);
+                        bookmarkInstance->addProjectFile(filename);
                     }
                     });
                 auto button2 = bar->addButton(QIcon::fromTheme("user-bookmarks"));
                 button2->setToolTip(_("Show the bookmark manager"));
-                button2->sigClicked().connect([&](){ BookmarkManager::instance()->show(); });
+                button2->sigClicked().connect([&](){ bookmarkInstance->show(); });
             }
         }
     }

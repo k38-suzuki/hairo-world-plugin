@@ -6,9 +6,12 @@
 #include <cnoid/Action>
 #include <cnoid/Button>
 #include <cnoid/Dialog>
+#include <cnoid/ExtensionManager>
 #include <cnoid/JoystickCapture>
+#include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>
+#include <cnoid/ToolBar>
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QGroupBox>
@@ -25,7 +28,7 @@ using namespace std;
 
 namespace {
 
-JoystickTester* instance_ = nullptr;
+JoystickTester* testerInstance = nullptr;
 
 }
 
@@ -34,14 +37,13 @@ namespace cnoid {
 class JoystickTester::Impl : public Dialog
 {
 public:
-    JoystickTester* self;
-
-    Impl(JoystickTester* self);
 
     vector<QProgressBar*> bars;
     vector<PushButton*> buttons;
 
     JoystickCapture joystick;
+
+    Impl();
 
     void onAxis(const int& id, const double& position);
     void onButton(const int& id, const bool& isPressed);
@@ -50,14 +52,36 @@ public:
 }
 
 
-JoystickTester::JoystickTester()
+void JoystickTester::initializeClass(ExtensionManager* ext)
 {
-    impl = new Impl(this);
+    if(!testerInstance) {
+        testerInstance = ext->manage(new JoystickTester);
+
+        vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
+        for(auto& bar : toolBars) {
+            if(bar->name() == "FileBar") {
+                auto button1 = bar->addButton(QIcon::fromTheme("applications-games"));
+                button1->setToolTip(_("Show the joystick tester"));
+                button1->sigClicked().connect([&](){ testerInstance->impl->show(); });
+            }
+        }
+    }
 }
 
 
-JoystickTester::Impl::Impl(JoystickTester* self)
-    : self(self)
+JoystickTester* JoystickTester::instance()
+{
+    return testerInstance;
+}
+
+
+JoystickTester::JoystickTester()
+{
+    impl = new Impl;
+}
+
+
+JoystickTester::Impl::Impl()
 {
     setWindowTitle(_("JoystickTester"));
 
@@ -117,18 +141,6 @@ JoystickTester::Impl::Impl(JoystickTester* self)
 JoystickTester::~JoystickTester()
 {
     delete impl;
-}
-
-
-void JoystickTester::initializeClass(ExtensionManager* ext)
-{
-    if(!instance_) {
-        instance_ = ext->manage(new JoystickTester);
-    }
-
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));    
-    mm.addItem(_("JoystickTester"))->sigTriggered().connect(
-        [&](){ instance_->impl->show(); });
 }
 
 

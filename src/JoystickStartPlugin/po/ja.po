@@ -97,3 +97,6 @@ msgstr "ゲームスタートモード"
 
 msgid "JoystickTester"
 msgstr "ジョイスティックテスタ"
+
+msgid "Show the joystick tester"
+msgstr "ジョイスティックテスタの表示"

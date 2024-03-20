@@ -5,17 +5,19 @@
 #ifndef CNOID_JOYSTICK_START_PLUGIN_JOYSTICK_TESTER_H
 #define CNOID_JOYSTICK_START_PLUGIN_JOYSTICK_TESTER_H
 
-#include <cnoid/ExtensionManager>
 
 namespace cnoid {
+
+class ExtensionManager;
 
 class JoystickTester
 {
 public:
+    static void initializeClass(ExtensionManager* ext);
+    static JoystickTester* instance();
+
     JoystickTester();
     virtual ~JoystickTester();
-
-    static void initializeClass(ExtensionManager* ext);
 
 private:
     class Impl;
