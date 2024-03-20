@@ -212,7 +212,7 @@ msgstr "ファイル"
 msgid "&Save"
 msgstr "保存(&S)"
 
-msgid "Save a Body file"
+msgid "Save a body"
 msgstr "ボディを保存"
 
 msgid "Body files (*.body)"

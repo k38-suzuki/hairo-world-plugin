@@ -11,13 +11,10 @@
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/ExtensionManager>
-#include <cnoid/FileDialog>
 #include <cnoid/ItemManager>
-#include <cnoid/MainWindow>
 #include <cnoid/MathUtil>
 #include <cnoid/MenuManager>
 #include <cnoid/NullOut>
-#include <cnoid/ProjectManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <cnoid/stdx/filesystem>
@@ -32,8 +29,8 @@
 #include "FileFormWidget.h"
 #include "gettext.h"
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
@@ -569,7 +566,7 @@ void CrawlerGenerator::Impl::onResetButtonClicked()
 
 void CrawlerGenerator::Impl::onImportButtonClicked()
 {
-    string filename = getOpenFileName(_("Load a configuration file"), "yml;yaml");
+    string filename = getOpenFileName(_("Load a configuration file"), "yaml;yml");
 
     if(!filename.empty()) {
         load2(filename);
@@ -639,33 +636,10 @@ bool CrawlerGenerator::Impl::load2(const string& filename,std::ostream& os )
 
 void CrawlerGenerator::Impl::onExportButtonClicked()
 {
-    FileDialog dialog(MainWindow::instance());
-    dialog.setWindowTitle(_("Save a configuration file"));
-    dialog.setFileMode(QFileDialog::AnyFile);
-    dialog.setAcceptMode(QFileDialog::AcceptSave);
-    dialog.setViewMode(QFileDialog::List);
-    dialog.setLabelText(QFileDialog::Accept, _("Save"));
-    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
-    dialog.setOption(QFileDialog::DontConfirmOverwrite);
+    string filename = getSaveFileName(_("Save a configuration file"), "yaml;yml");
 
-    QStringList filters;
-    filters << _("YAML files (*.yaml *.yml)");
-    filters << _("Any files (*)");
-    dialog.setNameFilters(filters);
-
-    dialog.updatePresetDirectories();
-
-    ProjectManager* pm = ProjectManager::instance();
-    string currentProjectFile = pm->currentProjectFile();
-    filesystem::path cpfpath(currentProjectFile);
-    string currentProjectName = cpfpath.stem().string();
-    if(!dialog.selectFilePath(currentProjectFile)) {
-        dialog.selectFile(currentProjectName);
-    }
-
-    if(dialog.exec() == QDialog::Accepted) {
-        string filename = dialog.selectedFiles().front().toStdString();
-        filesystem::path path(filename);
+    if(!filename.empty()) {
+       filesystem::path path(filename);
         string ext = path.extension().string();
         if(ext.empty()) {
             filename += ".yaml";

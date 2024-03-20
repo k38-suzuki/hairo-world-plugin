@@ -49,8 +49,8 @@
 #define MAX_PARAMETER 4
 #define MAX_PROCESS 99
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {

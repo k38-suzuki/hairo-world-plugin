@@ -17,7 +17,6 @@
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
 #include <cnoid/ImageableItem>
-#include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/Separator>
@@ -42,8 +41,8 @@
 #include <libgen.h>
 #endif
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {

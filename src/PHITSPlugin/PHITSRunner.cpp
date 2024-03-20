@@ -13,8 +13,8 @@
 #include <iostream>
 #include "gettext.h"
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 namespace filesystem = cnoid::stdx::filesystem;
 
 PHITSRunner::PHITSRunner()

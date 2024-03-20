@@ -36,7 +36,7 @@
 
 using namespace std;
 using namespace cnoid;
-namespace filesystem = stdx::filesystem;
+namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 

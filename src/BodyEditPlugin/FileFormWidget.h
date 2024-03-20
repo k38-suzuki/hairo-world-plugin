@@ -23,6 +23,9 @@ private:
     Impl* impl;
 };
 
+std::string getSaveFileName(const std::string& caption, const std::string& extensions);
+std::vector<std::string> getSaveFileNames(const std::string& caption, const std::string& extensions);
+
 }
 
 #endif

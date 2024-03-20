@@ -9,7 +9,6 @@
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/ExtensionManager>
-#include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
@@ -22,8 +21,8 @@
 #include "FileFormWidget.h"
 #include "gettext.h"
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {

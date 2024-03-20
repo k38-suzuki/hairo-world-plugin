@@ -6,10 +6,11 @@
 #include <cnoid/BodyItem>
 #include <cnoid/Button>
 #include <cnoid/FileDialog>
+#include <cnoid/ItemFileDialog>
+#include <cnoid/ItemFileIO>
 #include <cnoid/LineEdit>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
-#include <cnoid/ProjectManager>
 #include <cnoid/RootItem>
 #include <cnoid/Separator>
 #include <cnoid/stdx/filesystem>
@@ -19,8 +20,8 @@
 #include <QVBoxLayout>
 #include "gettext.h"
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 namespace filesystem = cnoid::stdx::filesystem;
 
 namespace cnoid {
@@ -39,7 +40,6 @@ public:
         return sigClicked_;
     }
 
-    void openSaveDialog();
     void onSaveButtonClicked();
     void onReloadButtonClicked();
 };
@@ -83,46 +83,13 @@ SignalProxy<void(string)> FileFormWidget::sigClicked()
 }
 
 
-void FileFormWidget::Impl::openSaveDialog()
-{
-    FileDialog dialog(MainWindow::instance());
-    dialog.setWindowTitle(_("Save a Body file"));
-    dialog.setFileMode(QFileDialog::AnyFile);
-    dialog.setAcceptMode(QFileDialog::AcceptSave);
-    dialog.setViewMode(QFileDialog::List);
-    dialog.setLabelText(QFileDialog::Accept, _("Save"));
-    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
-    dialog.setOption(QFileDialog::DontConfirmOverwrite);
-
-    QStringList filters;
-    filters << _("Body files (*.body)");
-    filters << _("Any files (*)");
-    dialog.setNameFilters(filters);
-
-    dialog.updatePresetDirectories();
-
-    ProjectManager* pm = ProjectManager::instance();
-    string currentProjectFile = pm->currentProjectFile();
-    filesystem::path path(currentProjectFile);
-    string currentProjectName = path.stem().string();
-    if(!dialog.selectFilePath(currentProjectFile)) {
-        dialog.selectFile(currentProjectName);
-    }
-
-    if(dialog.exec() == QDialog::Accepted) {
-        QString filename = dialog.selectedFiles().front();
-        fileLine->setText(filename);
-    }
-}
-
-
 void FileFormWidget::Impl::onSaveButtonClicked()
 {
     string filename = fileLine->text().toStdString();
 
     if(filename.empty()) {
-        openSaveDialog();
-        filename = fileLine->text().toStdString();
+        filename = getSaveFileName("Save a body", "body");
+        fileLine->setText(filename.c_str());
     }
 
     if(!filename.empty()) {
@@ -152,3 +119,59 @@ void FileFormWidget::Impl::onReloadButtonClicked()
         }
     }
 }
+
+
+static QString makeNameFilterString(const std::string& caption, const string& extensions)
+{
+    QString filters =
+        ItemFileDialog::makeNameFilter(
+            caption, ItemFileIO::separateExtensions(extensions));
+    
+    filters += _(";;Any files (*)");
+    return filters;
+}
+
+
+namespace cnoid {
+
+string getSaveFileName(const string& caption, const string& extensions)
+{
+    string filename;
+    FileDialog dialog(MainWindow::instance());
+    dialog.setWindowTitle(caption.c_str());
+    dialog.setNameFilter(makeNameFilterString(caption, extensions));
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setViewMode(QFileDialog::List);
+    dialog.setLabelText(QFileDialog::Accept, _("Save"));
+    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
+    dialog.updatePresetDirectories();
+    if(dialog.exec() == QDialog::Accepted) {
+        filename = dialog.selectedFiles().front().toStdString();
+    }
+    return filename;
+}
+
+
+vector<string> getSaveFileNames(const string& caption, const string& extensions)
+{
+    vector<string> filenames;
+    FileDialog dialog(MainWindow::instance());
+    dialog.setWindowTitle(caption.c_str());
+    dialog.setNameFilter(makeNameFilterString(caption, extensions));
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setViewMode(QFileDialog::List);
+    dialog.setLabelText(QFileDialog::Accept, _("Save"));
+    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
+    dialog.updatePresetDirectories();
+    if(dialog.exec() == QDialog::Accepted) {
+        for(auto& file : dialog.selectedFiles()) {
+            filenames.push_back(file.toStdString());
+        }
+    }
+    return filenames;
+}
+
+}
+
