@@ -3,7 +3,6 @@ if(NOT ENABLE_GUI)
 endif()
 
 set(sources
-  BookmarkBar.cpp
   BookmarkManager.cpp
   BookmarkPlugin.cpp
   HistoryManager.cpp
@@ -13,7 +12,6 @@ set(sources
 )
 
 set(headers
-  BookmarkBar.h
   BookmarkManager.h
   HistoryManager.h
   JoyKey.h

@@ -63,16 +63,29 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
 {
     if(!bookmarkInstance) {
         bookmarkInstance = ext->manage(new BookmarkManager);
+
+        vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
+        for(auto& bar : toolBars) {
+            if(bar->name() == "FileBar") {
+                auto button1 = bar->addButton(QIcon::fromTheme("list-add"));
+                button1->setToolTip(_("Bookmark a current project"));
+                button1->sigClicked().connect([&](){ 
+                    const string& filename = ProjectManager::instance()->currentProjectFile();
+                    if(!filename.empty()) {
+                        BookmarkManager::instance()->addProjectFile(filename);
+                    }
+                    });
+                auto button2 = bar->addButton(QIcon::fromTheme("user-bookmarks"));
+                button2->setToolTip(_("Show the bookmark manager"));
+                button2->sigClicked().connect([&](){ BookmarkManager::instance()->show(); });
+            }
+        }
     }
 }
 
 
 BookmarkManager* BookmarkManager::instance()
 {
-    static BookmarkManager* bookmarkInstance = nullptr;
-    if(!bookmarkInstance) {
-        bookmarkInstance = new BookmarkManager;
-    }
     return bookmarkInstance;
 }
 

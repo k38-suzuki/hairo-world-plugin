@@ -17,9 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "BookmarkBar"
-msgstr "ブックマークバー"
-
 msgid "BookmarkManager"
 msgstr "ブックマークマネージャ"
 
@@ -31,9 +28,6 @@ msgstr "自動再生"
 
 msgid "Remove"
 msgstr "削除"
-
-msgid "New"
-msgstr "新規"
 
 msgid "Open"
 msgstr "開く"

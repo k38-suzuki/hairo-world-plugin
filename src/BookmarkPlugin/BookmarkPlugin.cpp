@@ -4,9 +4,10 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "BookmarkBar.h"
+#include "BookmarkManager.h"
 #include "HistoryManager.h"
 #include "KIOSKManager.h"
+#include "WorldLogManager.h"
 
 using namespace cnoid;
 
@@ -23,7 +24,8 @@ public:
 
     virtual bool initialize() override
     {
-        BookmarkBar::initialize(this);
+        BookmarkManager::initializeClass(this);
+        WorldLogManager::initializeClass(this);
         HistoryManager::initializeClass(this);
         KIOSKManager::initializeClass(this);
         return true;

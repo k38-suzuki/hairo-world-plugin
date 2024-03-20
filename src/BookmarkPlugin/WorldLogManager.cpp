@@ -72,16 +72,21 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
 {
     if(!logInstance) {
         logInstance = ext->manage(new WorldLogManager);
+
+        vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
+        for(auto& bar : toolBars) {
+            if(bar->name() == "FileBar") {
+                auto button1 = bar->addButton(QIcon::fromTheme("emblem-documents"));
+                button1->setToolTip(_("Show the worldlog manager"));
+                button1->sigClicked().connect([&](){ WorldLogManager::instance()->show(); });
+            }
+        }
     }
 }
 
 
 WorldLogManager* WorldLogManager::instance()
 {
-    static WorldLogManager* logInstance = nullptr;
-    if(!logInstance) {
-        logInstance = new WorldLogManager;
-    }
     return logInstance;
 }
 
