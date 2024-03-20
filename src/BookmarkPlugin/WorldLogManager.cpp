@@ -110,9 +110,6 @@ WorldLogManager::Impl::Impl()
     treeWidget->setHeaderHidden(true);
 
     treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    // treeWidget->setDragDropMode(QAbstractItemView::InternalMove);
-    // treeWidget->setDragEnabled(true);
-    // treeWidget->viewport()->setAcceptDrops(true);
 
     Action* removeAct = new Action;
     removeAct->setText(_("Remove"));
@@ -280,18 +277,15 @@ void WorldLogManager::Impl::store(Mapping* archive)
 {
     archive->write("save_world_log_file", saveCheck->isChecked());
 
-    ListingPtr logListing = new Listing;
-
+    ListingPtr logList = new Listing;
     for(int i = 0; i < treeWidget->topLevelItemCount(); ++i) {
         QTreeWidgetItem* item = treeWidget->topLevelItem(i);
         if(item) {
             string filename = item->text(0).toStdString();
-
-            logListing->append(filename, DOUBLE_QUOTED);
+            logList->append(filename, DOUBLE_QUOTED);
         }
     }
-
-    archive->insert("world_logs", logListing);
+    AppConfig::archive()->insert("world_logs", logList);
 }
 
 
@@ -299,10 +293,10 @@ void WorldLogManager::Impl::restore(const Mapping* archive)
 {
     saveCheck->setChecked(archive->get("save_world_log_file", false));
 
-    auto& logListing = *archive->findListing("world_logs");
-    if(logListing.isValid() && !logListing.empty()) {
-        for(int i = 0; i < logListing.size(); ++i) {
-            string filename = logListing[i].toString();
+    auto& logList = *AppConfig::archive()->findListing("world_logs");
+    if(logList.isValid() && !logList.empty()) {
+        for(int i = 0; i < logList.size(); ++i) {
+            string filename = logList[i].toString();
             addItem(filename);
         }
     }

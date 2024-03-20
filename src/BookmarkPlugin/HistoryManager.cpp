@@ -36,8 +36,6 @@ public:
     void onCurrentMenuTriggered(QAction* action);
     void onCustomContextMenuRequested(const QPoint& pos);
     void onProjectLoaded();
-    void store(Mapping* archive);
-    void restore(const Mapping* archive);
 };
 
 }
@@ -74,9 +72,15 @@ HistoryManager::Impl::Impl(HistoryManager* self, ExtensionManager* ext)
 
     pm->sigProjectLoaded().connect([&](int level){ onProjectLoaded(); });
 
-    auto config = AppConfig::archive()->openMapping("history_manager");
-    if(config->isValid()) {
-        restore(config);
+    // restore config
+    auto& historyList = *AppConfig::archive()->findListing("histories");
+    if(historyList.isValid() && !historyList.empty()) {
+        for(int i = 0; i < historyList.size(); ++i) {
+            string filename = historyList[i].toString();
+            Action* action = new Action;
+            action->setText(filename.c_str());
+            currentMenu->addAction(action);
+        }
     }
 }
 
@@ -89,7 +93,16 @@ HistoryManager::~HistoryManager()
 
 HistoryManager::Impl::~Impl()
 {
-    store(AppConfig::archive()->openMapping("history_manager"));
+    // store config
+    int numHistories = currentMenu->actions().size() - 2;
+
+    ListingPtr historyList = new Listing;
+    for(int i = 0; i < numHistories; ++i) {
+        QAction* action = currentMenu->actions()[i + 2];
+        string filename = action->text().toStdString();
+        historyList->append(filename, DOUBLE_QUOTED);
+    }
+    AppConfig::archive()->insert("histories", historyList);
 }
 
 
@@ -150,39 +163,6 @@ void HistoryManager::Impl::onProjectLoaded()
         int numHistories = currentMenu->actions().size();
         if(numHistories > maxHistory) {
             currentMenu->removeAction(currentMenu->actions()[0]);
-        }
-    }
-}
-
-
-void HistoryManager::Impl::store(Mapping* archive)
-{
-    int numHistories = currentMenu->actions().size() - 2;
-
-    ListingPtr itemListing = new Listing;
-
-    for(int i = 0; i < numHistories; ++i) {
-        QAction* action = currentMenu->actions()[i + 2];
-        string filename = action->text().toStdString();
-
-        itemListing->append(filename, DOUBLE_QUOTED);
-    }
-
-    archive->insert("histories", itemListing);
-}
-
-
-void HistoryManager::Impl::restore(const Mapping* archive)
-{
-    auto& itemListing = *archive->findListing("histories");
-    if(itemListing.isValid() && !itemListing.empty()) {
-        for(int i = 0; i < itemListing.size(); ++i) {
-            if(itemListing[i].isString()) {
-                string filename = itemListing[i].toString();
-                Action* action = new Action;
-                action->setText(filename.c_str());
-                currentMenu->addAction(action);
-            }
         }
     }
 }
