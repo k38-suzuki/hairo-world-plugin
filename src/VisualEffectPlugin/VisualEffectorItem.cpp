@@ -24,8 +24,7 @@
 #include <cnoid/RenderableItem>
 #include <cnoid/RangeCamera>
 #include <cnoid/RootItem>
-#include <cnoid/SceneGraph>
-#include <cnoid/SceneDrawables>
+#include <cnoid/SensorVisualizerItem>
 #include <cnoid/Separator>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
@@ -187,88 +186,6 @@ public:
     void restoreState(const Archive& archive);
 };
 
-
-class ArrowMarker : public SgPosTransform
-{
-public:
-    SgSwitchableGroupPtr sgroup;
-    SgPosTransformPtr cylinderPosition;
-    SgScaleTransformPtr cylinderScale;
-    SgPosTransformPtr conePosition;
-    SgMaterialPtr material;
-    bool isVisible;
-    
-    static SgMeshPtr cylinderMesh;
-    static SgMeshPtr coneMesh;
-    
-    ArrowMarker(SgMaterial* material)
-        : material(material)
-    {
-        sgroup = new SgSwitchableGroup;
-        
-        if(!cylinderMesh){
-            MeshGenerator meshGenerator;
-            cylinderMesh = meshGenerator.generateCylinder(0.01, 1.0);
-            coneMesh = meshGenerator.generateCone(0.03,  0.04);
-        }
-
-        auto cylinder = new SgShape;
-        cylinder->setMesh(cylinderMesh);
-        cylinder->setMaterial(material);
-        cylinderScale = new SgScaleTransform;
-        cylinderScale->addChild(cylinder);
-        cylinderPosition = new SgPosTransform;
-        cylinderPosition->addChild(cylinderScale);
-        sgroup->addChild(cylinderPosition);
-
-        auto cone = new SgShape;
-        cone->setMesh(coneMesh);
-        cone->setMaterial(material);
-        conePosition = new SgPosTransform;
-        conePosition->addChild(cone);
-        sgroup->addChild(conePosition);
-
-        addChild(sgroup);
-        isVisible = true;
-
-        setVector(Vector3::Zero(), 1.0, nullptr);
-    }
-
-    void setVector(const Vector3& v, double threshold, SgUpdateRef update)
-    {
-        double len = v.norm();
-
-        if(len < threshold){
-            if(isVisible){
-                sgroup->setTurnedOn(false, update);
-                isVisible = false;
-            }
-        } else {
-            if(!isVisible){
-                sgroup->setTurnedOn(true);
-                isVisible = true;
-            }
-            cylinderScale->setScale(Vector3(1.0, len, 1.0));
-            cylinderPosition->setTranslation(Vector3(0.0, len / 2.0, 0.0));
-            conePosition->setTranslation(Vector3(0.0, len, 0.0));
-
-            Vector3 axis = (Vector3::UnitY().cross(v)).normalized();
-            double angle = acos(Vector3::UnitY().dot(v) / len);
-            setRotation(AngleAxis(angle, axis));
-
-            if(update){
-                notifyUpdate(*update);
-            }
-        }
-    }
-};
-
-SgMeshPtr ArrowMarker::cylinderMesh;
-SgMeshPtr ArrowMarker::coneMesh;
-
-
-typedef ref_ptr<ArrowMarker> ArrowMarkerPtr;
-
 class SubVisualEffectorItem
 {
 public:
@@ -283,36 +200,6 @@ public:
     virtual void enableVisualization(bool on) = 0;
     virtual void doUpdateVisualization() = 0;
 };
-
-
-class Vector3VisualEffectorItem : public Item, public SubVisualEffectorItem, public RenderableItem
-{
-public:
-    Vector3VisualEffectorItem();
-
-    virtual Item* doCloneItem(CloneMap* cloneMap) const override;
-    virtual SgNode* getScene() override;
-    virtual void enableVisualization(bool on) override;
-    virtual void doUpdateVisualization() override;
-    virtual void updateSensors() = 0;
-    void updateSensorMarkerPositions(bool doNotify);
-    void updateSensorMarkerVector(int index);
-    virtual Vector3 getSensorMarkerVector(Device* sensor) = 0;
-    virtual void doPutProperties(PutPropertyFunction& putProperty) override;
-    virtual bool store(Archive& archive) override;
-    virtual bool restore(const Archive& archive) override;
-
-    SgGroupPtr scene;
-    SgMaterialPtr material;
-    Vector3f color;
-    DeviceList<> sensors;
-    vector<ArrowMarkerPtr> markers;
-    Vector3 offset;
-    double threshold;
-    double visualRatio;
-    ScopedConnectionSet connections;
-};
-
 
 class VEImageVisualizerItem : public Item, public SubVisualEffectorItem, public ImageableItem
 {
@@ -394,8 +281,6 @@ public:
     ref_ptr<ItemType> extractMatchedSubItem(ItemList<>& items, Device* deviceInstance);
     template<class ItemType, class SensorType>
     void addVisualEffectorItem(Body* body);
-    template<class ItemType, class SensorType>
-    void addVisionVisualEffectorItem(Body* body);
     void updateSubVisualizerItems(bool forceUpdate);
 };
 
@@ -415,7 +300,7 @@ void VisualEffectorItem::initializeClass(ExtensionManager* ext)
        Tha following item aliases are defined for reading old project files.
        \todo Remove the aliases in newer versions.
     */
-    im.addAlias<VisualEffectorItem>("SensorVisualizer", "Body");
+    im.addAlias<VisualEffectorItem>("VisualEffectorItem", "Body");
     im.addAlias<VEImageVisualizerItem>("VEImageVisualizer", "Body");
 
     ItemTreeView::instance()->customizeContextMenu<VEImageVisualizerItem>(
@@ -504,7 +389,7 @@ void VisualEffectorItem::Impl::updateSubVisualizerItems(bool forceUpdate)
         if(bodyItem) {
             auto body = bodyItem->body();
             int itemIndex = 0;
-            addVisionVisualEffectorItem<VEImageVisualizerItem, Camera>(body);
+            addVisualEffectorItem<VEImageVisualizerItem, Camera>(body);
 
             bodyItemConnection = bodyItem->sigModelUpdated().connect(
                 [this](int flags) {
@@ -543,26 +428,6 @@ ref_ptr<ItemType> VisualEffectorItem::Impl::extractMatchedSubItem(ItemList<>& it
 
 template<class ItemType, class SensorType>
 void VisualEffectorItem::Impl::addVisualEffectorItem(Body* body)
-{
-    auto sensors = body->devices<SensorType>();
-    if(!sensors.empty()) {
-        auto item = extractMatchedSubItem<ItemType, SensorType>(existingSubItems, nullptr);
-        if(!item && isRestoringSubItems) {
-            item = extractMatchedSubItem<ItemType, SensorType>(subItemsToRestore, nullptr);
-        }
-        if(!item) {
-            item = new ItemType;
-        }
-        if(item->bodyItem != bodyItem) {
-            item->setBodyItem(bodyItem);
-            self->addSubItem(item);
-        }
-    }
-}
-
-
-template<class ItemType, class SensorType>
-void VisualEffectorItem::Impl::addVisionVisualEffectorItem(Body* body)
 {
     bool isCamera = typeid(SensorType) == typeid(Camera);
     
@@ -672,138 +537,6 @@ void SubVisualEffectorItem::updateVisualization()
     if(item->isChecked(Item::LogicalSumOfAllChecks)) {
         doUpdateVisualization();
     }
-}
-    
-
-Vector3VisualEffectorItem::Vector3VisualEffectorItem()
-    : SubVisualEffectorItem(this)
-{
-
-}
-
-
-Item* Vector3VisualEffectorItem::doCloneItem(CloneMap* /* cloneMap */) const
-{
-    return nullptr;
-}
-
-
-SgNode* Vector3VisualEffectorItem::getScene()
-{
-    if(!scene) {
-        scene = new SgGroup;
-        scene->setAttribute(SgObject::MetaScene);
-    }
-    return scene;
-}
-
-
-void Vector3VisualEffectorItem::enableVisualization(bool on)
-{
-    getScene();
-    
-    connections.disconnect();
-    scene->clearChildren();
-    sensors.clear();
-    markers.clear();
-
-    if(bodyItem && on) {
-        if(!material) {
-            material = new SgMaterial;
-            material->setDiffuseColor(Vector3f::Zero());
-            material->setEmissiveColor(color);
-            material->setAmbientIntensity(0.0f);
-            material->setTransparency(0.5f);
-        }
-
-        updateSensors();
-
-        for(size_t i=0; i < sensors.size(); ++i) {
-            auto marker = new ArrowMarker(material);
-            markers.push_back(marker);
-            scene->addChild(marker);
-            connections.add(
-                sensors[i]->sigStateChanged().connect(
-                    [this, i]() { updateSensorMarkerVector(i); }));
-        }
-        if(!sensors.empty()) {
-            connections.add(
-                bodyItem->sigKinematicStateChanged().connect(
-                    [&]() { updateSensorMarkerPositions(true); }));
-        }
-        doUpdateVisualization();
-    }
-}
-
-
-void Vector3VisualEffectorItem::doUpdateVisualization()
-{
-    updateSensorMarkerPositions(false);
-    for(size_t i=0; i < sensors.size(); ++i) {
-        updateSensorMarkerVector(i);
-    }
-}
-
-    
-void Vector3VisualEffectorItem::updateSensorMarkerPositions(bool doNotify)
-{
-    for(size_t i=0; i < sensors.size(); ++i) {
-        auto sensor = sensors[i];
-        Vector3 p = sensor->link()->T() * sensor->localTranslation();
-        markers[i]->setTranslation(p);
-        if(doNotify) {
-            markers[i]->notifyUpdate(update.withAction(SgUpdate::Modified));
-        }
-    }
-}
-
-
-void Vector3VisualEffectorItem::updateSensorMarkerVector(int index)
-{
-    if(index < static_cast<int>(sensors.size())) {
-        auto sensor = sensors[index];
-        Vector3 v_local = getSensorMarkerVector(sensor) + offset;
-        Vector3 v_global = sensor->link()->R() * sensor->R_local() * v_local;
-        markers[index]->setVector(visualRatio * v_global, threshold, update);
-    }
-}
-
-
-void Vector3VisualEffectorItem::doPutProperties(PutPropertyFunction& putProperty)
-{
-    putProperty.decimals(4)(
-        _("Visual ratio"), visualRatio,
-        [&](double ratio) {
-            if(ratio > 0.0) {
-                visualRatio = ratio;
-                updateVisualization();
-                return true;
-            }
-            return false;
-        });
-    
-    putProperty.decimals(3)(_("Visual threshold"), threshold, changeProperty(threshold));
-    
-    putProperty.decimals(2)(
-        _("Offset"), str(offset), [&](const string& v) { return toVector3(v, offset); });
-}
-
-
-bool Vector3VisualEffectorItem::store(Archive& archive)
-{
-    archive.write("ratio", visualRatio);
-    archive.write("threshold", threshold);
-    write(archive, "offset", offset);
-    return true;
-}
-
-
-bool Vector3VisualEffectorItem::restore(const Archive& archive)
-{
-    archive.read({ "ratio", "visualRatio" }, visualRatio);
-    archive.read("threshold", threshold);
-    read(archive, "offset", offset);
-    return true;
 }
 
 
