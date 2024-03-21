@@ -6,6 +6,7 @@
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
 #include <cnoid/Archive>
+#include <cnoid/ExtensionManager>
 #include <cnoid/Menu>
 #include <cnoid/MenuManager>
 #include <cnoid/MessageView>

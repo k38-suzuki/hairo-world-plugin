@@ -5,6 +5,7 @@
 #include "FileExplorer.h"
 #include <cnoid/BodyItem>
 #include <cnoid/Dialog>
+#include <cnoid/ExtensionManager>
 #include <cnoid/ItemTreeView>
 #include <cnoid/MenuManager>
 #include <cnoid/Process>

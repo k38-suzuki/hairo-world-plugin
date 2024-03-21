@@ -6,6 +6,7 @@
 #include <cnoid/Action>
 #include <cnoid/Archive>
 #include <cnoid/ExecutablePath>
+#include <cnoid/ExtensionManager>
 #include <cnoid/Joystick>
 #include <cnoid/JoystickCapture>
 #include <cnoid/MainWindow>

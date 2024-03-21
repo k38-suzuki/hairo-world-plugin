@@ -4,6 +4,7 @@
 
 #include "SystemTrayManager.h"
 #include <cnoid/Action>
+#include <cnoid/ExtensionManager>
 #include <cnoid/MainWindow>
 #include <cnoid/Menu>
 #include <cnoid/MessageView>

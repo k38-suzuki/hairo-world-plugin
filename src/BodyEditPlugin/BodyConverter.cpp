@@ -5,6 +5,7 @@
 #include "BodyConverter.h"
 #include <cnoid/ComboBox>
 #include <cnoid/Dialog>
+#include <cnoid/ExtensionManager>
 #include <cnoid/ItemManager>
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>

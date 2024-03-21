@@ -5,6 +5,7 @@
 #include "JoystickStarter.h"
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
+#include <cnoid/ExtensionManager>
 #include <cnoid/Joystick>
 #include <cnoid/JoystickCapture>
 #include <cnoid/MenuManager>

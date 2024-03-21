@@ -5,9 +5,9 @@
 #ifndef CNOID_FILE_EXPLORER_PLUGIN_FILE_EXPLORER_H
 #define CNOID_FILE_EXPLORER_PLUGIN_FILE_EXPLORER_H
 
-#include <cnoid/ExtensionManager>
-
 namespace cnoid {
+
+class ExtensionManager;
 
 class FileExplorer
 {

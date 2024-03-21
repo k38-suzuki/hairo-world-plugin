@@ -7,6 +7,7 @@
 #include <cnoid/BodyItem>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenTypes>
+#include <cnoid/ExtensionManager>
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
 #include <cnoid/JointPath>

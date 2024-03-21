@@ -5,11 +5,12 @@
 #ifndef CNOID_SYSTEM_TRAY_PLUGIN_SYSTEM_TRAY_MANAGER_H
 #define CNOID_SYSTEM_TRAY_PLUGIN_SYSTEM_TRAY_MANAGER_H
 
-#include <cnoid/ExtensionManager>
 #include "SystemTrayIcon.h"
 #include "exportdecl.h"
 
 namespace cnoid {
+
+class ExtensionManager;
 
 class CNOID_EXPORT SystemTrayManager
 {

@@ -5,10 +5,11 @@
 #ifndef CNOID_BOOKMARK_PLUGIN_KIOSK_MANAGER_H
 #define CNOID_BOOKMARK_PLUGIN_KIOSK_MANAGER_H
 
-#include <cnoid/ExtensionManager>
 #include <cnoid/Signal>
 
 namespace cnoid {
+
+class ExtensionManager;
 
 class KIOSKManager
 {

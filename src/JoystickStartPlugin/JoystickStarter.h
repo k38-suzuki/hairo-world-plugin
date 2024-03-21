@@ -5,9 +5,9 @@
 #ifndef CNOID_JOYSTICK_START_PLUGIN_JOYSTICK_STARTER_H
 #define CNOID_JOYSTICK_START_PLUGIN_JOYSTICK_STARTER_H
 
-#include <cnoid/ExtensionManager>
-
 namespace cnoid {
+
+class ExtensionManager;
 
 class JoystickStarter
 {

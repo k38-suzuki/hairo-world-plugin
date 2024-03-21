@@ -5,10 +5,11 @@
 #ifndef CNOID_IK_PLANNER_PLUGIN_IK_PLANNER_ITEM_H
 #define CNOID_IK_PLANNER_PLUGIN_IK_PLANNER_ITEM_H
 
-#include <cnoid/ExtensionManager>
 #include <cnoid/SimpleSetupItem>
 
 namespace cnoid {
+
+class ExtensionManager;
 
 class IKPlannerItem : public SimpleSetupItem
 {
