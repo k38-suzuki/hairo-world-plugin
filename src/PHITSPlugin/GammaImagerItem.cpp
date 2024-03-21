@@ -94,8 +94,6 @@ public:
     int maxcas;
     int maxbch;
     bool is_message_checked;
-    string default_nuclide_table_file;
-    string default_element_table_file;
 
     void setCamera(Camera* camera);
     void start(const bool& on);
@@ -132,7 +130,9 @@ public:
     BodyItem* bodyItem;
     vector<Item*> subItems;
     vector<ItemPtr> restoredSubItems;
-    string defaultEnergyFilterFile;
+    string default_nuclide_table_file;
+    string default_element_table_file;
+    string default_energy_filter_file;
 
     void onPositionChanged();
 };
@@ -161,7 +161,7 @@ void GammaImagerItem::initializeClass(ExtensionManager* ext)
     vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
     for(auto& bar : toolBars) {
         if(bar->name() == "FileBar") {
-            auto button1 = bar->addToggleButton("G");
+            auto button1 = bar->addToggleButton("GC");
             button1->setToolTip(_("Start/Stop PHITS"));
             button1->sigToggled().connect([&](bool checked){ onButtonToggled(checked); });
         }
@@ -171,8 +171,8 @@ void GammaImagerItem::initializeClass(ExtensionManager* ext)
 
 void GammaImagerItem::setDefaultEnergyFilterFile(const string& filename)
 {
-    if(filename != impl->defaultEnergyFilterFile) {
-        impl->defaultEnergyFilterFile = filename;
+    if(filename != impl->default_energy_filter_file) {
+        impl->default_energy_filter_file = filename;
         for(size_t i = 0; i < impl->subItems.size(); ++i) {
             GammaImageVisualizerItem* item = dynamic_cast<GammaImageVisualizerItem*>(impl->subItems[i]);
             if(item) {
@@ -183,9 +183,21 @@ void GammaImagerItem::setDefaultEnergyFilterFile(const string& filename)
 }
 
 
+string GammaImagerItem::defaultNuclideTableFile() const
+{
+    return impl->default_nuclide_table_file;
+}
+
+
+string GammaImagerItem::defaultElementTableFile() const
+{
+    return impl->default_element_table_file;
+}
+
+
 string GammaImagerItem::defaultEnergyFilterFile() const
 {
-    return impl->defaultEnergyFilterFile;
+    return impl->default_energy_filter_file;
 }
 
 
@@ -198,7 +210,9 @@ GammaImagerItem::GammaImagerItem()
 GammaImagerItem::Impl::Impl(GammaImagerItem* self)
     : self(self)
 {
-    defaultEnergyFilterFile = toUTF8((shareDirPath() / "default" / "filters.yaml").string());
+    default_nuclide_table_file = toUTF8((shareDirPath() / "default" / "nuclides.yaml").string());
+    default_element_table_file = toUTF8((shareDirPath() / "default" / "elements.yaml").string());
+    default_energy_filter_file = toUTF8((shareDirPath() / "default" / "filters.yaml").string());
 }
 
 
@@ -211,7 +225,9 @@ GammaImagerItem::GammaImagerItem(const GammaImagerItem& org)
 
 GammaImagerItem::Impl::Impl(GammaImagerItem* self, const Impl& org)
     : self(self),
-      defaultEnergyFilterFile(org.defaultEnergyFilterFile)
+      default_nuclide_table_file(org.default_nuclide_table_file),
+      default_element_table_file(org.default_element_table_file),
+      default_energy_filter_file(org.default_energy_filter_file)
 {
 
 }
@@ -231,8 +247,16 @@ Item* GammaImagerItem::doDuplicate() const
 
 void GammaImagerItem::doPutProperties(PutPropertyFunction& putProperty)
 {
+    FilePathProperty nuclideFileProperty(
+                impl->default_nuclide_table_file, { _("Nuclide definition file (*.yaml)") });
+    putProperty(_("Default nuclide table"), nuclideFileProperty,
+                [&](const string& filename){ impl->default_nuclide_table_file = filename; return true; });
+    FilePathProperty elementFileProperty(
+                impl->default_element_table_file, { _("Element definition file (*.yaml)") });
+    putProperty(_("Default element table"), elementFileProperty,
+                [&](const string& filename){ impl->default_element_table_file = filename; return true; });
     FilePathProperty filterFileProperty(
-                impl->defaultEnergyFilterFile, { _("Energy filter definition file (*.yaml)") });
+                impl->default_energy_filter_file, { _("Energy filter definition file (*.yaml)") });
     putProperty(_("Default energy filter"), filterFileProperty,
                 [&](const string& filename){ setDefaultEnergyFilterFile(filename); return true; });
 }
@@ -272,7 +296,7 @@ void GammaImagerItem::Impl::onPositionChanged()
                                 j<n ? dynamic_cast<GammaImageVisualizerItem*>(restoredSubItems[j++].get()) : new GammaImageVisualizerItem;
                         if(gammaImageVisualizerItem) {
                             gammaImageVisualizerItem->setBodyItem(bodyItem, camera[i]);
-                            gammaImageVisualizerItem->filter->load(defaultEnergyFilterFile);
+                            gammaImageVisualizerItem->filter->load(default_energy_filter_file);
                             self->addSubItem(gammaImageVisualizerItem);
                             subItems.push_back(gammaImageVisualizerItem);
                         }
@@ -297,6 +321,10 @@ void GammaImagerItem::onDisconnectedFromRoot()
 
 bool GammaImagerItem::store(Archive& archive)
 {
+    archive.writeRelocatablePath("default_nuclide_table_file", impl->default_nuclide_table_file);
+    archive.writeRelocatablePath("default_element_table_file", impl->default_element_table_file);
+    archive.writeRelocatablePath("default_energy_filter_file", impl->default_energy_filter_file);
+
     ListingPtr subItems = new Listing;
 
     for(size_t i = 0; i < impl->subItems.size(); i++) {
@@ -318,8 +346,6 @@ bool GammaImagerItem::store(Archive& archive)
         if(vitem) {
             vitem->filter->storeState(*subArchive);
             vitem->store(*subArchive);
-            subArchive->write("default_nuclide_table_file", archive.getRelocatablePath(vitem->default_nuclide_table_file));
-            subArchive->write("default_element_table_file", archive.getRelocatablePath(vitem->default_element_table_file));
         }
 
         subItems->append(subArchive);
@@ -333,6 +359,10 @@ bool GammaImagerItem::store(Archive& archive)
 
 bool GammaImagerItem::restore(const Archive& archive)
 {
+    archive.readRelocatablePath("default_nuclide_table_file", impl->default_nuclide_table_file);
+    archive.readRelocatablePath("default_element_table_file", impl->default_element_table_file);
+    archive.readRelocatablePath("default_energy_filter_file", impl->default_energy_filter_file);
+
     impl->restoredSubItems.clear();
 
     ListingPtr subItems = archive.findListing("sub_items");
@@ -359,10 +389,6 @@ bool GammaImagerItem::restore(const Archive& archive)
                 if(vitem) {
                     vitem->filter->restoreState(*subArchive);
                     vitem->restore(*subArchive);
-                    subArchive->read("default_nuclide_table_file", vitem->default_nuclide_table_file);
-                    subArchive->read("default_element_table_file", vitem->default_element_table_file);
-                    vitem->default_nuclide_table_file = archive.resolveRelocatablePath(vitem->default_nuclide_table_file);
-                    vitem->default_element_table_file = archive.resolveRelocatablePath(vitem->default_element_table_file);
                 }
 
                 impl->restoredSubItems.push_back(item);
@@ -405,8 +431,6 @@ GammaImageVisualizerItem::GammaImageVisualizerItem()
     maxcas = 1000;
     maxbch = 2;
     is_message_checked = true;
-    default_nuclide_table_file = toUTF8((shareDirPath() / "default" / "nuclides.yaml").string());
-    default_element_table_file = toUTF8((shareDirPath() / "default" / "elements.yaml").string());
 }
 
 
@@ -506,8 +530,10 @@ void GammaImageVisualizerItem::start(const bool& on)
                 filename0 = toUTF8((dir / "cross_xz.out").string());
             }
 
-            phitsWriter.setDefaultNuclideTableFile(default_nuclide_table_file);
-            phitsWriter.setDefaultElementTableFile(default_element_table_file);
+            GammaImagerItem* parentItem = dynamic_cast<GammaImagerItem*>(this->parentItem());
+
+            phitsWriter.setDefaultNuclideTableFile(parentItem->defaultNuclideTableFile());
+            phitsWriter.setDefaultElementTableFile(parentItem->defaultElementTableFile());
             writeTextFile(filename, phitsWriter.writePHITS(calcInfo));
             phitsRunner.setEnergy(phitsWriter.energy());
             phitsRunner.setReadStandardOutput(filename0, calcInfo.inputMode);
@@ -529,14 +555,6 @@ void GammaImageVisualizerItem::doPutProperties(PutPropertyFunction& putProperty)
                 [&](bool value){ is_message_checked = value;
                 phitsRunner.putMessages(is_message_checked);
                 return true; });
-    FilePathProperty nuclideFileProperty(
-                default_nuclide_table_file, { _("Nuclide definition file (*.yaml)") });
-    putProperty(_("Default nuclide table"), nuclideFileProperty,
-                [&](const string& filename){ default_nuclide_table_file = filename; return true; });
-    FilePathProperty elementFileProperty(
-                default_element_table_file, { _("Element definition file (*.yaml)") });
-    putProperty(_("Default element table"), elementFileProperty,
-                [&](const string& filename){ default_element_table_file = filename; return true; });
 }
 
 

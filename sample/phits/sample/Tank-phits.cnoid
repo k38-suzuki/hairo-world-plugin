@@ -1,142 +1,139 @@
-items: 
+items:
   id: 0
   name: "RootItem"
   plugin: Base
   class: RootItem
   is_builtin_item: true
-  children: 
-    - 
+  children:
+    -
       id: 1
       name: "World"
       plugin: Body
       class: WorldItem
       is_checked: true
-      data: 
+      data:
         collision_detection: false
         collision_detector: AISTCollisionDetector
         default_material_table_file: "${SHARE}/default/materials.yaml"
-      children: 
-        - 
+      children:
+        -
           id: 2
           name: "Tank"
           plugin: Body
           class: BodyItem
           is_checked: true
-          data: 
+          data:
             file: "${SHARE}/PHITS/model/Tank.body"
-            currentBaseLink: "CHASSIS"
             format: CHOREONOID-BODY
+            currentBaseLink: "CHASSIS"
             rootPosition: [ -1.5, 1, 0.105900008 ]
-            rootAttitude: [ 
-              1, 2.52504595e-09, -9.5407115e-09, 
-              -2.52504596e-09, 1, -2.29087761e-10, 
+            rootAttitude: [
+              1, 2.52504595e-09, -9.5407115e-09,
+              -2.52504596e-09, 1, -2.29087761e-10,
               9.5407115e-09, 2.29087785e-10, 1 ]
             jointDisplacements: [ 1.15637e-10, -2.21112, 0, 0 ]
             initialJointDisplacements: [ 0, -1.64966, 0, 0 ]
             jointPositions: [ 2.01825e-12, -0.0385913, 0, 0 ]
             initialRootPosition: [ -1.5, 1, 0.1004 ]
-            initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            initialRootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
             initialJointPositions: [ 0, -0.028792, 0, 0 ]
-            staticModel: false
+            fix_root: false
             collisionDetection: true
             selfCollisionDetection: false
-            location_editable: true
+            lock_location: false
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
-          children: 
-            - 
+          children:
+            -
               id: 3
               name: "JoystickController"
               plugin: Body
               class: SimpleControllerItem
-              data: 
+              data:
                 isNoDelayMode: true
                 controllerOptions: ""
                 controller: "TankJoystickController"
                 base_directory: "Controller directory"
                 reloading: true
                 export_symbols: false
-            - 
+            -
               id: 4
               name: "DoseMeterController"
               plugin: Body
               class: SimpleControllerItem
-              data: 
+              data:
                 isNoDelayMode: false
                 controllerOptions: ""
                 controller: "DoseMeterController"
                 base_directory: "Controller directory"
                 reloading: false
                 export_symbols: false
-            - 
+            -
               id: 5
               name: "GammaImager"
               plugin: PHITS
               class: GammaImagerItem
-              data: 
-                sub_items: 
-                  - 
+              data:
+                default_nuclide_table_file: "${SHARE}/default/nuclides.yaml"
+                default_element_table_file: "${SHARE}/default/elements.yaml"
+                default_energy_filter_file: "${SHARE}/default/filters.yaml"
+                sub_items:
+                  -
                     class: GammaImageVisualizerItem
                     name: PinholeCamera
-                    is_checked: true
                     mode: 0
-                    min: 1
-                    max: 10
-                    filters: 
-                      - 
+                    min: 0
+                    max: 1
+                    filters:
+                      -
                         filter: false
-                      - 
+                      -
                         filter: false
-                      - 
+                      -
                         filter: false
                     maxcas: 100000
                     maxbch: 10
                     put_messages: true
-                    default_nuclide_table_file: ${SHARE}/default/nuclides.yaml
-                    default_element_table_file: ${SHARE}/default/elements.yaml
-                  - 
+                  -
                     class: GammaImageVisualizerItem
                     name: ComptonCamera
-                    is_checked: true
                     mode: 0
-                    min: 22023
-                    max: 100000
-                    filters: 
-                      - 
+                    min: 0
+                    max: 1
+                    filters:
+                      -
                         filter: false
-                      - 
+                      -
                         filter: false
-                      - 
+                      -
                         filter: false
                     maxcas: 1000000
                     maxbch: 10
                     put_messages: true
-                    default_nuclide_table_file: ${SHARE}/default/nuclides.yaml
-                    default_element_table_file: ${SHARE}/default/elements.yaml
-        - 
+        -
           id: 6
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
           is_checked: true
-          data: 
-            timeStep: 0.001
-            realtimeSync: true
-            recording: "off"
-            timeRangeMode: "Unlimited"
-            timeLength: 180
-            active_control_time_range_mode: false
-            allLinkPositionOutputMode: false
-            deviceStateOutput: true
-            controllerThreads: true
-            recordCollisionData: false
-            controllerOptions: ""
-            scene_view_edit_mode_blocking: false
+          data:
+            time_step: 0.001
+            realtime_sync_mode: compensatory
+            recording: off
+            time_range_mode: unlimited
+            time_length: 180
+            is_active_control_time_range_mode: false
+            output_all_link_positions: false
+            output_device_states: true
+            use_controller_threads: true
+            record_collision_data: false
+            controller_options: ""
+            block_scene_view_edit_mode: false
             dynamicsMode: "Forward dynamics"
-            integrationMode: "Runge Kutta"
+            integrationMode: runge-kutta
             gravity: [ 0, 0, -9.80665 ]
             min_friction_coefficient: 0
             max_friction_coefficient: 100
@@ -149,172 +146,173 @@ items:
             kinematicWalking: false
             2Dmode: false
             oldAccelSensorMode: false
-          children: 
-            - 
+          children:
+            -
               id: 7
               name: "GLVisionSimulator"
               plugin: Body
               class: GLVisionSimulatorItem
-              data: 
+              data:
                 enabled: true
-                targetSensors: [ PinholeCamera, ComptonCamera ]
-                maxFrameRate: 1000
-                maxLatency: 1
-                recordVisionData: true
-                threadMode: Sensor
-                bestEffort: false
-                allSceneObjects: false
-                rangeSensorPrecisionRatio: 2
-                depthError: 0
-                enableHeadLight: true
-                enableAdditionalLights: true
-                antiAliasing: false
-            - 
+                target_sensors: [ PinholeCamera, ComptonCamera ]
+                max_frame_rate: 1000
+                max_latency: 1
+                record_vision_data: true
+                thread_mode: Sensor
+                best_effort: false
+                all_scene_objects: false
+                range_sensor_precision_ratio: 2
+                depth_error: 0
+                enable_head_light: true
+                enable_additional_lights: true
+                antialiasing: false
+            -
               id: 8
               name: "DoseSimulator"
               plugin: PHITS
               class: DoseSimulatorItem
-              data: 
+              data:
                 enabled: true
+                color_scale: 0
                 default_shield_table_file: "${SHARE}/default/shields.yaml"
-        - 
+        -
           id: 9
           name: "Floor"
           plugin: Body
           class: BodyItem
-          data: 
+          data:
             file: "${SHARE}/PHITS/model/floor.body"
-            currentBaseLink: "Floor"
             format: CHOREONOID-BODY
+            currentBaseLink: "Floor"
             rootPosition: [ 0, 0, -0.1 ]
-            rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            rootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
-            jointPositions: [  ]
+            jointPositions: [ ]
             initialRootPosition: [ 0, 0, -0.1 ]
-            initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            initialRootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
-            staticModel: true
+            fix_root: true
             collisionDetection: true
             selfCollisionDetection: false
-            location_editable: false
+            lock_location: true
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
-        - 
+        -
           id: 10
           name: "box1"
           plugin: Body
           class: BodyItem
           is_checked: true
-          data: 
+          data:
             file: "${SHARE}/PHITS/model/box1.body"
             format: CHOREONOID-BODY
             rootPosition: [ 1.00092508, 1.99978656, 1.49997979 ]
-            rootAttitude: [ 
-              0.999999993, -6.80843512e-06, 0.0001186464, 
-              6.81239637e-06, 0.999999999, -3.33866841e-05, 
+            rootAttitude: [
+              0.999999993, -6.80843512e-06, 0.0001186464,
+              6.81239637e-06, 0.999999999, -3.33866841e-05,
               -0.000118646172, 3.33874921e-05, 0.999999992 ]
-            jointPositions: [  ]
+            jointPositions: [ ]
             initialRootPosition: [ 1, 2, 1.5 ]
-            initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            initialRootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
-            staticModel: false
+            fix_root: false
             collisionDetection: true
             selfCollisionDetection: false
-            location_editable: true
+            lock_location: false
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
-        - 
+        -
           id: 11
           name: "cylinder1"
           plugin: Body
           class: BodyItem
           is_checked: true
-          data: 
+          data:
             file: "${SHARE}/PHITS/model/cylinder1.body"
             format: CHOREONOID-BODY
             rootPosition: [ 1.99999604, 9.20266813e-07, 0.999900013 ]
-            rootAttitude: [ 
-              1, 9.66397127e-13, 1.0768042e-05, 
-              1.0768042e-05, -1.7547519e-11, -1, 
+            rootAttitude: [
+              1, 9.66397127e-13, 1.0768042e-05,
+              1.0768042e-05, -1.7547519e-11, -1,
               -9.66309311e-13, 1, -1.7547519e-11 ]
-            jointPositions: [  ]
+            jointPositions: [ ]
             initialRootPosition: [ 2, 0, 1 ]
-            initialRootAttitude: [ 
-              1, -6.71948619e-07, 9.44094884e-07, 
-              9.44091993e-07, -4.30136943e-06, -1, 
-              6.7195268e-07, 1, -4.3013688e-06 ]
-            staticModel: false
+            initialRootAttitude: [
+              1, -6.71948619e-07, 9.44094884e-07,
+              9.44091993e-07, -4.30138827e-06, -1,
+              6.7195268e-07, 1, -4.30138764e-06 ]
+            fix_root: false
             collisionDetection: true
             selfCollisionDetection: false
-            location_editable: true
+            lock_location: false
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
-        - 
+        -
           id: 12
           name: "sphere1"
           plugin: Body
           class: BodyItem
           is_checked: true
-          data: 
+          data:
             file: "${SHARE}/PHITS/model/sphere1.body"
             format: CHOREONOID-BODY
             rootPosition: [ -1.84369109, 2.65078124, 0.975802724 ]
-            rootAttitude: [ 
-              0.985574247, -0.0939606476, 0.140765051, 
-              0.0699220412, 0.983488743, 0.166915551, 
+            rootAttitude: [
+              0.985574247, -0.0939606476, 0.140765051,
+              0.0699220412, 0.983488743, 0.166915551,
               -0.154124336, -0.154665089, 0.975871098 ]
-            jointPositions: [  ]
+            jointPositions: [ ]
             initialRootPosition: [ -2, 2.5, 1 ]
-            initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            initialRootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
-            staticModel: false
+            fix_root: false
             collisionDetection: true
             selfCollisionDetection: false
-            location_editable: true
+            lock_location: false
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
-        - 
+        -
           id: 13
           name: "Cs137"
           plugin: Body
           class: BodyItem
           is_checked: true
-          data: 
+          data:
             file: "${SHARE}/PHITS/model/Cs137.body"
-            currentBaseLink: "CS137"
             format: CHOREONOID-BODY
+            currentBaseLink: "CS137"
             rootPosition: [ -0.5, 0.8, 0.5 ]
-            rootAttitude: [ 
-              1, -6.71788679e-09, 4.74033465e-07, 
-              6.71591497e-09, 1, 4.15965644e-06, 
+            rootAttitude: [
+              1, -6.71788679e-09, 4.74033465e-07,
+              6.71591497e-09, 1, 4.15965644e-06,
               -4.74033493e-07, -4.15965643e-06, 1 ]
-            jointPositions: [  ]
+            jointPositions: [ ]
             initialRootPosition: [ -0.5, 0.8, 0.5 ]
-            initialRootAttitude: [ 
-              1, -6.71788679e-09, 4.74033465e-07, 
-              6.71591497e-09, 1, 4.15965644e-06, 
+            initialRootAttitude: [
+              1, -6.71788679e-09, 4.74033465e-07,
+              6.71591497e-09, 1, 4.15965644e-06,
               -4.74033493e-07, -4.15965643e-06, 1 ]
-            staticModel: true
+            fix_root: true
             collisionDetection: true
             selfCollisionDetection: false
-            location_editable: true
+            lock_location: false
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
-        - 
+        -
           id: 14
           name: "CrossSection"
           plugin: PHITS
           class: CrossSectionItem
           is_checked: true
-          data: 
+          data:
             code: 0
             maxcas: 1000
             maxbch: 2
@@ -336,82 +334,88 @@ items:
             default_nuclide_table_file: "${SHARE}/default/nuclides.yaml"
             default_element_table_file: "${SHARE}/default/elements.yaml"
             gamma_data_file: "dosemap/dose_xy.gbin"
-views: 
-  - 
+            color_scale: 0
+views:
+  -
     id: 0
+    plugin: Base
+    class: GeneralSliderView
+  -
+    id: 1
     name: "Image"
     plugin: Base
     class: ImageView
     mounted: true
-    state: 
-      imageable_item: [ 5, "PinholeCamera" ]
-  - 
-    id: 1
+  -
+    id: 2
     name: "画像 2"
     plugin: Base
     class: ImageView
     mounted: true
-    state: 
-      imageable_item: [ 5, "ComptonCamera" ]
-  - 
-    id: 2
+  -
+    id: 3
     plugin: Base
     class: ItemPropertyView
     mounted: true
-  - 
-    id: 3
+  -
+    id: 4
     plugin: Base
     class: ItemTreeView
     mounted: true
-    state: 
+    state:
       expanded: [ 1, 2, 3, 5, 6, 8, 9, 10, 11, 12 ]
-  - 
-    id: 4
+  -
+    id: 5
     plugin: Base
     class: LocationView
-    state: 
+    state:
       show_rpy: true
       unique_rpy: false
       show_quaternion: false
       show_rotation_matrix: false
       coordinate: world
-  - 
-    id: 5
+  -
+    id: 6
     plugin: Base
     class: MessageView
     mounted: true
-  - 
-    id: 6
+  -
+    id: 7
     plugin: Base
     class: SceneView
     mounted: true
-    state: 
+    state:
       editMode: false
       viewpointOperationMode: thirdPerson
       visible_polygon_elements: [ face ]
       highlighting: false
       collisionLines: false
-      cameras: 
-        - 
+      cameras:
+        -
           camera: [ System, Perspective ]
           isCurrent: true
           eye: [ -5.81938, -3.10068, 4.23182 ]
           direction: [ 0.702093, 0.585675, -0.405031 ]
           up: [ 0.311023, 0.259451, 0.914303 ]
-        - 
+        -
           camera: [ System, Orthographic ]
           orthoHeight: 20
-      lightingMode: normal
-      cullingMode: enabled
-      worldLight: true
-      worldLightIntensity: 0.5
-      worldLightAmbient: 0.25
-      defaultHeadLight: true
-      defaultHeadLightIntensity: 0.75
+      lighting_mode: normal
+      culling_mode: enabled
+      shading_mode: smooth
+      world_light: true
+      world_light_intensity: 0.5
+      ambient_light: true
+      ambient_light_intensity: 0.25
+      head_light: true
+      head_light_intensity: 0.75
       world_light_shadow: true
-      backgroundColor: [ 0.1, 0.1, 0.3 ]
-      lineWidth: 1
-      pointSize: 1
+      shadow_lights:
+        - { index: 0, enabled: false }
+        - { index: 1, enabled: false }
+      background_color: [ 0.1, 0.1, 0.3 ]
+      line_width: 1
+      point_size: 1
       field_of_view: 35
       clip_distances: [ 0.04, 200 ]
       floorGrid: true
@@ -426,25 +430,24 @@ views:
       xy_grid_color: [ 0.9, 0.9, 0.9 ]
       xz_grid_color: [ 0.9, 0.9, 0.9 ]
       yz_grid_color: [ 0.9, 0.9, 0.9 ]
-  - 
-    id: 7
+  -
+    id: 8
     plugin: Base
     class: VirtualJoystickView
     mounted: true
-  - 
-    id: 8
+  -
+    id: 9
     plugin: Body
     class: BodyLinkView
     mounted: true
-    state: 
+    state:
       showRotationMatrix: false
-  - 
-    id: 9
+  -
+    id: 10
     plugin: Body
     class: JointDisplacementView
     mounted: true
-    state: 
-      show_selected_joints: false
+    state:
       show_joint_ids: false
       show_joint_names: true
       overlap_joint_names: false
@@ -452,19 +455,20 @@ views:
       show_dials: false
       show_phases: true
       limit_ranges: false
-  - 
-    id: 10
+      show_selected_joints: false
+  -
+    id: 11
     plugin: Body
     class: LinkDeviceListView
     mounted: true
-    state: 
+    state:
       element_type: link
-      listingMode: list
-  - 
-    id: 11
+      listing_mode: list
+  -
+    id: 12
     plugin: Body
     class: LinkPositionView
-    state: 
+    state:
       coordinate_mode: world
       preferred_coordinate_mode: base
       show_rpy: true
@@ -472,16 +476,16 @@ views:
       show_quaternion: false
       show_rotation_matrix: false
       target_link_type: ik_link
-  - 
-    id: 12
+  -
+    id: 13
     plugin: Body
     class: LinkPropertyView
-  - 
-    id: 13
+  -
+    id: 14
     plugin: Python
     class: PythonConsoleView
-toolbars: 
-  "TimeBar": 
+toolbars:
+  "TimeBar":
     current_time: 0
     min_time: 0
     max_time: 0
@@ -491,9 +495,9 @@ toolbars:
     playback_speed_ratio: 1
     sync_to_ongoing_updates: true
     auto_expansion: true
-  "LeggedBodyBar": 
+  "LeggedBodyBar":
     stanceWidth: 0.15
-  "KinematicsBar": 
+  "KinematicsBar":
     forward_kinematics: true
     inverse_kinematics: true
     preset_kinematics: true
@@ -503,43 +507,11 @@ toolbars:
     snapDistance: 0.025
     penetrationBlockDepth: 0.0005
     lazyCollisionDetectionMode: true
-Body: 
-  "BodySelectionManager": 
+Body:
+  "BodySelectionManager":
     current_body_item: 13
     current_link: "CS137"
-  "EditableSceneBody": 
-    editableSceneBodies: 
-      - 
-        bodyItem: 2
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
-      - 
-        bodyItem: 9
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
-      - 
-        bodyItem: 10
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
-      - 
-        bodyItem: 11
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
-      - 
-        bodyItem: 12
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
-      - 
-        bodyItem: 13
-        show_cm: false
-        show_cm_projection: false
-        show_zmp: false
-  "KinematicFaultChecker": 
+  "KinematicFaultChecker":
     checkJointPositions: true
     angleMargin: 0
     translationMargin: 0
@@ -548,84 +520,118 @@ Body:
     targetJoints: all
     checkSelfCollisions: true
     onlyTimeBarRange: false
-  "SplineFilterDialog": 
+  "OperableSceneBody":
+    scene_bodies:
+      -
+        body_item: 2
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
+      -
+        body_item: 9
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
+      -
+        body_item: 10
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
+      -
+        body_item: 11
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
+      -
+        body_item: 12
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
+      -
+        body_item: 13
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
+  "SplineFilterDialog":
     isInputFrameRateSpecified: false
     inputFrameRate: 200
     isOutputFrameRateSpecified: false
     outputFrameRate: 200
-viewAreas: 
-  - 
+TaskCreator:
+  "TaskCreator": { }
+viewAreas:
+  -
     type: embedded
     tabs: true
-    contents: 
+    contents:
       type: splitter
       orientation: horizontal
-      sizes: [ 323, 1526 ]
-      children: 
-        - 
+      sizes: [ 322, 1524 ]
+      children:
+        -
           type: splitter
           orientation: vertical
-          sizes: [ 509, 508 ]
-          children: 
-            - 
+          sizes: [ 504, 504 ]
+          children:
+            -
               type: pane
-              views: [ 3 ]
-            - 
+              views: [ 4 ]
+            -
               type: pane
-              views: [ 2, 10 ]
-              current: 2
-        - 
+              views: [ 3, 11 ]
+              current: 3
+        -
           type: splitter
           orientation: vertical
-          sizes: [ 727, 290 ]
-          children: 
-            - 
+          sizes: [ 721, 287 ]
+          children:
+            -
               type: splitter
               orientation: horizontal
-              sizes: [ 673, 849 ]
-              children: 
-                - 
+              sizes: [ 672, 848 ]
+              children:
+                -
                   type: splitter
                   orientation: vertical
-                  sizes: [ 362, 361 ]
-                  children: 
-                    - 
+                  sizes: [ 359, 358 ]
+                  children:
+                    -
                       type: pane
-                      views: [ 8, 9 ]
-                      current: 8
-                    - 
+                      views: [ 9, 10 ]
+                      current: 9
+                    -
                       type: splitter
                       orientation: horizontal
-                      sizes: [ 335, 334 ]
-                      children: 
-                        - 
-                          type: pane
-                          views: [ 0 ]
-                        - 
+                      sizes: [ 334, 334 ]
+                      children:
+                        -
                           type: pane
                           views: [ 1 ]
-                - 
-                  type: pane
-                  views: [ 6 ]
-            - 
-              type: splitter
-              orientation: horizontal
-              sizes: [ 762, 760 ]
-              children: 
-                - 
-                  type: pane
-                  views: [ 5 ]
-                - 
+                        -
+                          type: pane
+                          views: [ 2 ]
+                -
                   type: pane
                   views: [ 7 ]
-layoutOfToolBars: 
-  rows: 
-    - 
+            -
+              type: splitter
+              orientation: horizontal
+              sizes: [ 761, 759 ]
+              children:
+                -
+                  type: pane
+                  views: [ 6 ]
+                -
+                  type: pane
+                  views: [ 8 ]
+layoutOfToolBars:
+  rows:
+    -
       - { name: "FileBar", x: 0, priority: 0 }
       - { name: "ScriptBar", x: 49, priority: 1 }
       - { name: "SimulationBar", x: 98, priority: 2 }
       - { name: "TimeBar", x: 307, priority: 3 }
-    - 
+    -
       - { name: "BodyBar", x: 0, priority: 0 }
       - { name: "KinematicsBar", x: 273, priority: 1 }
       - { name: "SceneBar", x: 520, priority: 2 }

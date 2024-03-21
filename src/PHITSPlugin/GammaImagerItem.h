@@ -19,6 +19,8 @@ public:
 
     static void initializeClass(ExtensionManager* ext);
 
+    std::string defaultNuclideTableFile() const;
+    std::string defaultElementTableFile() const;
     void setDefaultEnergyFilterFile(const std::string& filename);
     std::string defaultEnergyFilterFile() const;
 

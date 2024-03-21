@@ -6,16 +6,15 @@
 #include <cnoid/DoseMeter>
 #include <cnoid/Joystick>
 #include <cnoid/SimpleController>
-#include <fmt/format.h>
 
 using namespace std;
 using namespace cnoid;
 
 class DoseMeterController : public SimpleController
 {
+    DeviceList<DoseMeter> doseMeters;
     Joystick joystick;
     std::ostream* os;
-    DeviceList<DoseMeter> doseMeters;
     bool prevButtonState[2];
 
 public:
@@ -38,9 +37,9 @@ public:
         joystick.readCurrentState();
 
         for(int i = 0; i < 2; ++i) {
-            bool buttonState = joystick.getButtonState(
+            bool currentState = joystick.getButtonState(
                 i == 0 ? Joystick::X_BUTTON : Joystick::Y_BUTTON);
-            if(buttonState && !prevButtonState[i]) {
+            if(currentState && !prevButtonState[i]) {
                 for(int j = 0; j < doseMeters.size(); ++j) {
                     DoseMeter* doseMeter = doseMeters[j];
                     if(i == 0) {
@@ -58,7 +57,7 @@ public:
                     }
                 }
             }
-            prevButtonState[i] = buttonState;
+            prevButtonState[i] = currentState;
         }
 
         return true;
