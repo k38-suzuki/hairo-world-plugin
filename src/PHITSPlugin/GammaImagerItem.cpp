@@ -6,28 +6,23 @@
 #include <cnoid/Archive>
 #include <cnoid/BasicSensors>
 #include <cnoid/BodyItem>
-#include <cnoid/Button>
 #include <cnoid/Camera>
-#include <cnoid/CheckBox>
 #include <cnoid/ConnectionSet>
-#include <cnoid/Dialog>
 #include <cnoid/ExecutablePath>
-#include <cnoid/FileDialog>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
 #include <cnoid/ImageableItem>
+#include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/PutPropertyFunction>
-#include <cnoid/Separator>
-#include <cnoid/SpinBox>
+#include <cnoid/RootItem>
+#include <cnoid/ToolBar>
 #include <cnoid/stdx/filesystem>
 #include <cnoid/UTF8>
 #include <QDateTime>
-#include <QDialogButtonBox>
-#include <QLabel>
+#include <QFile>
 #include <QTextStream>
-#include <QVBoxLayout>
 #include "ComptonCamera.h"
 #include "EnergyFilter.h"
 #include "GammaCamera.h"
@@ -61,27 +56,6 @@ bool writeTextFile(const string& filename, const string& text)
     return true;
 }
 
-class ConfigDialog : public Dialog
-{
-public:
-    ConfigDialog();
-
-    SpinBox* maxCasSpin;
-    SpinBox* maxBchSpin;
-    PHITSRunner phitsRunner;
-    PHITSWriter phitsWriter;
-    ComptonCamera* ccamera;
-    PinholeCamera* pcamera;
-    CheckBox* messageCheck;
-    string defaultNuclideTableFile_;
-    string defaultElementTableFile_;
-
-    void setCamera(Camera* camera);
-    void onItemTriggered(const bool& on);
-    void storeState(Archive& archive);
-    void restoreState(const Archive& archive);
-};
-
 class GammaImagerItemBase
 {
 public:
@@ -107,19 +81,40 @@ public:
     virtual void doUpdateVisualization() override;
 
     CameraPtr camera;
-    ConfigDialog* config;
     GammaImageGenerator generator;
     EnergyFilter* filter;
     ScopedConnectionSet connections;
     std::shared_ptr<const Image> image;
     Signal<void()> sigImageUpdated_;
 
-    void setDefaultNuclideTableFile(const string& filename);
-    void setDefaultElementTableFile(const string& filename);
+    PHITSRunner phitsRunner;
+    PHITSWriter phitsWriter;
+    ComptonCamera* comptonCamera;
+    PinholeCamera* pinholeCamera;
+    int maxcas;
+    int maxbch;
+    bool is_message_checked;
+    string default_nuclide_table_file;
+    string default_element_table_file;
+
+    void setCamera(Camera* camera);
+    void start(const bool& on);
+
+    virtual bool store(Archive& archive) override;
+    virtual bool restore(const Archive& archive) override;
 
 protected:
     virtual void doPutProperties(PutPropertyFunction& putProperty) override;
 };
+
+void onButtonToggled(const bool& checked)
+{
+    auto rootItem = RootItem::instance();
+    ItemList<GammaImageVisualizerItem> selectedItems = rootItem->selectedItems();
+    for(auto& item : selectedItems) {
+        item->start(checked);
+    }
+}
 
 }
 
@@ -153,22 +148,24 @@ void GammaImagerItem::initializeClass(ExtensionManager* ext)
 
     im.registerClass<GammaImageVisualizerItem>(N_("GammaImageVisualizerItem"));
 
-    ItemTreeView::instance()->customizeContextMenu<GammaImageVisualizerItem>(
-        [](GammaImageVisualizerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
-            menuManager.setPath("/").setPath(_("PHITS"));
-            menuManager.addItem(_("Start"))->sigTriggered().connect(
-                        [item](){ item->config->onItemTriggered(true); });
-            menuManager.addItem(_("Stop"))->sigTriggered().connect(
-                        [item](){ item->config->onItemTriggered(false); });
-            menuManager.setPath("/");
-            menuManager.addItem(_("Configuration of PHITS"))->sigTriggered().connect(
-                [item](){ item->config->show(); });
-//            menuManager.addItem(_("Energy Filter"))->sigTriggered().connect(
-//                [item](){ item->filter->showConfigDialog(); });
-//            menuManager.setPath("/");
-//            menuManager.addSeparator();
-//            menuFunction.dispatchAs<Item>(item);
-        });
+    // ItemTreeView::instance()->customizeContextMenu<GammaImageVisualizerItem>(
+    //     [](GammaImageVisualizerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
+    //         menuManager.setPath("/").setPath(_("PHITS"));
+    //        menuManager.addItem(_("Energy Filter"))->sigTriggered().connect(
+    //            [item](){ item->filter->showConfigDialog(); });
+    //        menuManager.setPath("/");
+    //        menuManager.addSeparator();
+    //        menuFunction.dispatchAs<Item>(item);
+    //     });
+
+    vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
+    for(auto& bar : toolBars) {
+        if(bar->name() == "FileBar") {
+            auto button1 = bar->addToggleButton("G");
+            button1->setToolTip(_("Start/Stop PHITS"));
+            button1->sigToggled().connect([&](bool checked){ onButtonToggled(checked); });
+        }
+    }
 }
 
 
@@ -320,10 +317,9 @@ bool GammaImagerItem::store(Archive& archive)
         GammaImageVisualizerItem* vitem = dynamic_cast<GammaImageVisualizerItem*>(item);
         if(vitem) {
             vitem->filter->storeState(*subArchive);
-            ConfigDialog* config = vitem->config;
-            config->storeState(*subArchive);
-            subArchive->write("default_nuclide_table_file", archive.getRelocatablePath(config->defaultNuclideTableFile_));
-            subArchive->write("default_element_table_file", archive.getRelocatablePath(config->defaultElementTableFile_));
+            vitem->store(*subArchive);
+            subArchive->write("default_nuclide_table_file", archive.getRelocatablePath(vitem->default_nuclide_table_file));
+            subArchive->write("default_element_table_file", archive.getRelocatablePath(vitem->default_element_table_file));
         }
 
         subItems->append(subArchive);
@@ -362,14 +358,11 @@ bool GammaImagerItem::restore(const Archive& archive)
                 GammaImageVisualizerItem* vitem = dynamic_cast<GammaImageVisualizerItem*>(tmpItem);
                 if(vitem) {
                     vitem->filter->restoreState(*subArchive);
-                    ConfigDialog* config = vitem->config;
-                    config->restoreState(*subArchive);
-                    string default_nuclide_table_file;
-                    string default_element_table_file;
-                    subArchive->read("default_nuclide_table_file", default_nuclide_table_file);
-                    subArchive->read("default_element_table_file", default_element_table_file);
-                    config->defaultNuclideTableFile_ = archive.resolveRelocatablePath(default_nuclide_table_file);
-                    config->defaultElementTableFile_ = archive.resolveRelocatablePath(default_element_table_file);
+                    vitem->restore(*subArchive);
+                    subArchive->read("default_nuclide_table_file", vitem->default_nuclide_table_file);
+                    subArchive->read("default_element_table_file", vitem->default_element_table_file);
+                    vitem->default_nuclide_table_file = archive.resolveRelocatablePath(vitem->default_nuclide_table_file);
+                    vitem->default_element_table_file = archive.resolveRelocatablePath(vitem->default_element_table_file);
                 }
 
                 impl->restoredSubItems.push_back(item);
@@ -407,10 +400,13 @@ void GammaImagerItemBase::updateVisualization()
 
 GammaImageVisualizerItem::GammaImageVisualizerItem()
     : GammaImagerItemBase(this),
-      config(new ConfigDialog),
       filter(new EnergyFilter)
 {
-
+    maxcas = 1000;
+    maxbch = 2;
+    is_message_checked = true;
+    default_nuclide_table_file = toUTF8((shareDirPath() / "default" / "nuclides.yaml").string());
+    default_element_table_file = toUTF8((shareDirPath() / "default" / "elements.yaml").string());
 }
 
 
@@ -434,7 +430,7 @@ void GammaImageVisualizerItem::setBodyItem(BodyItem* bodyItem, Camera* camera)
     }
 
     this->camera = camera;
-    config->setCamera(camera);
+    setCamera(camera);
 
     GammaImagerItemBase::setBodyItem(bodyItem);
 }
@@ -472,73 +468,16 @@ void GammaImageVisualizerItem::doUpdateVisualization()
 }
 
 
-void GammaImageVisualizerItem::setDefaultNuclideTableFile(const string& filename)
+void GammaImageVisualizerItem::setCamera(Camera* camera)
 {
-    config->defaultNuclideTableFile_ = filename;
+    comptonCamera = dynamic_cast<ComptonCamera*>(camera);
+    pinholeCamera = dynamic_cast<PinholeCamera*>(camera);
+    phitsRunner.setCamera(camera);
+    phitsWriter.setCamera(camera);
 }
 
 
-void GammaImageVisualizerItem::setDefaultElementTableFile(const string& filename)
-{
-    config->defaultElementTableFile_ = filename;
-}
-
-
-void GammaImageVisualizerItem::doPutProperties(PutPropertyFunction& putProperty)
-{
-    FilePathProperty nuclideFileProperty(
-                config->defaultNuclideTableFile_, { _("Nuclide definition file (*.yaml)") });
-    putProperty(_("Default nuclide table"), nuclideFileProperty,
-                [&](const string& filename){ setDefaultNuclideTableFile(filename); return true; });
-    FilePathProperty elementFileProperty(
-                config->defaultElementTableFile_, { _("Element definition file (*.yaml)") });
-    putProperty(_("Default element table"), elementFileProperty,
-                [&](const string& filename){ setDefaultElementTableFile(filename); return true; });
-}
-
-
-ConfigDialog::ConfigDialog()
-{
-    setWindowTitle(_("Configuration of PHITS"));
-
-    maxCasSpin = new SpinBox;
-    maxCasSpin->setRange(1, INT_MAX);
-    maxCasSpin->setValue(1000);
-    maxBchSpin = new SpinBox;
-    maxBchSpin->setRange(1, 1000000);
-    maxBchSpin->setValue(2);
-
-    messageCheck = new CheckBox;
-    messageCheck->setChecked(true);
-    messageCheck->setText(_("Put messages"));
-    messageCheck->sigToggled().connect([&](bool on){ phitsRunner.putMessages(on); });
-
-    QGridLayout* gbox = new QGridLayout;
-    int index = 0;
-    gbox->addWidget(new QLabel(_("maxcas")), index, 0);
-    gbox->addWidget(maxCasSpin, index, 1);
-    gbox->addWidget(new QLabel(_("maxbch")), index, 2);
-    gbox->addWidget(maxBchSpin, index++, 3);
-    gbox->addWidget(messageCheck, index++, 2, 1, 2);
-
-    auto buttonBox = new QDialogButtonBox(this);
-    auto okButton = new PushButton(_("&Ok"));
-    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
-    connect(buttonBox, &QDialogButtonBox::accepted, [this](){ this->accept(); });
-
-    QVBoxLayout* vbox = new QVBoxLayout;
-    vbox->addLayout(new HSeparatorBox(new QLabel("PHITS")));
-    vbox->addLayout(gbox);
-    vbox->addWidget(new HSeparator);
-    vbox->addWidget(buttonBox);
-    setLayout(vbox);
-
-    defaultNuclideTableFile_ = toUTF8((shareDirPath() / "default" / "nuclides.yaml").string());
-    defaultElementTableFile_ = toUTF8((shareDirPath() / "default" / "elements.yaml").string());
-}
-
-
-void ConfigDialog::onItemTriggered(const bool& on)
+void GammaImageVisualizerItem::start(const bool& on)
 {
     if(on) {
         filesystem::path homeDir(getenv("HOME"));
@@ -550,58 +489,70 @@ void ConfigDialog::onItemTriggered(const bool& on)
             filesystem::create_directories(dir);
         }
 
-        if(ccamera || pcamera) {
+        if(comptonCamera || pinholeCamera) {
             string filename = toUTF8((dir / "phits").string()) + ".inp";
             filesystem::path filePath(filename);
             filesystem::path dir(filePath.parent_path());
 
             string filename0;
             GammaData::CalcInfo calcInfo;
-            calcInfo.maxcas = maxCasSpin->value();
-            calcInfo.maxbch = maxBchSpin->value();
-            if(ccamera) {
+            calcInfo.maxcas = maxcas;
+            calcInfo.maxbch = maxbch;
+            if(comptonCamera) {
                 calcInfo.inputMode = GammaData::COMPTON;
                 filename0 = toUTF8((dir / "flux_cross_dmp.out").string());
-            } else if(pcamera) {
+            } else if(pinholeCamera) {
                 calcInfo.inputMode = GammaData::PINHOLE;
                 filename0 = toUTF8((dir / "cross_xz.out").string());
             }
 
-            phitsWriter.setDefaultNuclideTableFile(defaultNuclideTableFile_);
-            phitsWriter.setDefaultElementTableFile(defaultElementTableFile_);
+            phitsWriter.setDefaultNuclideTableFile(default_nuclide_table_file);
+            phitsWriter.setDefaultElementTableFile(default_element_table_file);
             writeTextFile(filename, phitsWriter.writePHITS(calcInfo));
             phitsRunner.setEnergy(phitsWriter.energy());
             phitsRunner.setReadStandardOutput(filename0, calcInfo.inputMode);
             phitsRunner.startPHITS(filename.c_str());
         }
     } else {
-        if(ccamera || pcamera) {
+        if(comptonCamera || pinholeCamera) {
             phitsRunner.stop();
         }
     }
 }
 
 
-void ConfigDialog::setCamera(Camera* camera)
+void GammaImageVisualizerItem::doPutProperties(PutPropertyFunction& putProperty)
 {
-    ccamera = dynamic_cast<ComptonCamera*>(camera);
-    pcamera = dynamic_cast<PinholeCamera*>(camera);
-    phitsRunner.setCamera(camera);
-    phitsWriter.setCamera(camera);
+    putProperty.min(1).max(INT_MAX)(_("maxcas"), maxcas, changeProperty(maxcas));
+    putProperty.min(1).max(1000000)(_("maxbch"), maxbch, changeProperty(maxbch));
+    putProperty(_("Put messages"), is_message_checked,
+                [&](bool value){ is_message_checked = value;
+                phitsRunner.putMessages(is_message_checked);
+                return true; });
+    FilePathProperty nuclideFileProperty(
+                default_nuclide_table_file, { _("Nuclide definition file (*.yaml)") });
+    putProperty(_("Default nuclide table"), nuclideFileProperty,
+                [&](const string& filename){ default_nuclide_table_file = filename; return true; });
+    FilePathProperty elementFileProperty(
+                default_element_table_file, { _("Element definition file (*.yaml)") });
+    putProperty(_("Default element table"), elementFileProperty,
+                [&](const string& filename){ default_element_table_file = filename; return true; });
 }
 
 
-void ConfigDialog::storeState(Archive& archive)
+bool GammaImageVisualizerItem::store(Archive& archive)
 {
-    archive.write("maxcas", maxCasSpin->value());
-    archive.write("maxbch", maxBchSpin->value());
-    archive.write("put_messages", messageCheck->isChecked());
+    archive.write("maxcas", maxcas);
+    archive.write("maxbch", maxbch);
+    archive.write("put_messages", is_message_checked);
+    return true;
 }
 
 
-void ConfigDialog::restoreState(const Archive& archive)
+bool GammaImageVisualizerItem::restore(const Archive& archive)
 {
-    maxCasSpin->setValue(archive.get("maxcas", 0));
-    maxBchSpin->setValue(archive.get("maxbch", 0));
-    messageCheck->setChecked(archive.get("put_messages", true));
+    maxcas = archive.get("maxcas", 0);
+    maxbch = archive.get("maxbch", 0);
+    is_message_checked = archive.get("put_messages", true);
+    return true;
 }

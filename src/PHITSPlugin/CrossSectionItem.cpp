@@ -15,14 +15,17 @@
 #include <cnoid/ItemList>
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
+#include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/MessageView>
 #include <cnoid/PutPropertyFunction>
+#include <cnoid/RootItem>
 #include <cnoid/SceneDrawables>
 #include <cnoid/Selection>
 #include <cnoid/Separator>
 #include <cnoid/Slider>
 #include <cnoid/SpinBox>
+#include <cnoid/ToolBar>
 #include <cnoid/UTF8>
 #include <cnoid/ViewManager>
 #include <cnoid/stdx/filesystem>
@@ -198,6 +201,15 @@ public:
     bool restore(const Archive& archive);
 };
 
+void onButtonToggled(const bool& checked)
+{
+    auto rootItem = RootItem::instance();
+    ItemList<CrossSectionItem> selectedItems = rootItem->selectedItems();
+    for(auto& item : selectedItems) {
+
+    }
+}
+
 }
 
 
@@ -271,6 +283,15 @@ void CrossSectionItem::initializeClass(ExtensionManager* ext)
             menuManager.addSeparator();
             menuFunction.dispatchAs<Item>(item);
     });
+
+    // vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
+    // for(auto& bar : toolBars) {
+    //     if(bar->name() == "FileBar") {
+    //         auto button1 = bar->addToggleButton("P");
+    //         button1->setToolTip(_("Start/Stop PHITS"));
+    //         button1->sigToggled().connect([&](bool checked){ onButtonToggled(checked); });
+    //     }
+    // }
 }
 
 

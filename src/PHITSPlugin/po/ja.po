@@ -148,3 +148,6 @@ msgstr "PHITSが終了しました．"
 
 msgid "QAD has been finished."
 msgstr "QADが終了しました．"
+
+msgid "Start/Stop PHITS"
+msgstr "PHITSの実行/停止"
