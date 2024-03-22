@@ -24,16 +24,7 @@ public:
     virtual void forEachActualType(std::function<bool(const std::type_info& type)> func) override;
     virtual void clearState() override;
 
-    const Image& image() const { return *image_; }
-    const Image& constImage() const { return *image_; }
-    Image& image();
-    Image& newImage();
-
-    std::shared_ptr<const Image> sharedImage() const { return image_; }
-
-    void setImage(std::shared_ptr<Image>& image);
-
-    void clearImage();
+    const Image& constImage() const;
 
     virtual int stateSize() const override;
     virtual const double* readState(const double* buf) override;
@@ -47,8 +38,7 @@ protected:
     virtual Referenced* doClone(CloneMap* cloneMap) const override;
 
 private:
-    ImageGenerator generator;
-    std::shared_ptr<Image> image_;
+    ImageGenerator* generator;
 
     struct Spec {
 

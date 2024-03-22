@@ -620,8 +620,7 @@ void VEImageVisualizerItem::doUpdateVisualization()
             WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
             if(worldItem) {
                 ItemList<VEAreaItem> areaItems = worldItem->descendantItems<VEAreaItem>();
-                for(size_t i = 0; i < areaItems.size(); ++i) {
-                    VEAreaItem* areaItem = areaItems[i];
+                for(auto& areaItem : areaItems) {
                     bool isCollided = areaItem->isCollided(camera->link()->T().translation());
                     if(isCollided) {
                         hue = areaItem->hsv()[0];
@@ -653,9 +652,7 @@ void VEImageVisualizerItem::doUpdateVisualization()
         if(flipped) {
             generator.flippedImage(orgImage);
         }
-        if(coefB < 0.0 || coefD > 1.0) {
-            generator.barrelDistortion(orgImage, coefB, coefD);
-        }
+
         if(stdDev > 0.0) {
             generator.gaussianNoise(orgImage, stdDev);
         }
@@ -670,6 +667,9 @@ void VEImageVisualizerItem::doUpdateVisualization()
             generator.sobelFilter(orgImage);
         } else if(filter == 4) {
             generator.prewittFilter(orgImage);
+        }
+        if(coefB < 0.0 || coefD > 1.0) {
+            generator.barrelDistortion(orgImage, coefB, coefD);
         }
 
         image = make_shared<Image>(orgImage);

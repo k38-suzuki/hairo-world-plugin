@@ -15,7 +15,7 @@ NoisyCamera::NoisyCamera()
       CameraEffect()
 {
     setImageType(NO_IMAGE);
-    image_ = std::make_shared<Image>();
+    generator = new ImageGenerator;
 }
 
 
@@ -70,46 +70,60 @@ void NoisyCamera::clearState()
 }
 
 
-Image& NoisyCamera::image()
+const Image& NoisyCamera::constImage() const
 {
-    if(image_.use_count() > 1) {
-        image_ = std::make_shared<Image>(*image_);
+    double hue = CameraEffect::hsv()[0];
+    double saturation = CameraEffect::hsv()[1];
+    double value = CameraEffect::hsv()[2];
+    double red = CameraEffect::rgb()[0];
+    double green = CameraEffect::rgb()[1];
+    double blue = CameraEffect::rgb()[2];
+    double coefB = CameraEffect::coefB();
+    double coefD = CameraEffect::coefD();
+    double stdDev = CameraEffect::stdDev();
+    double salt = CameraEffect::salt();
+    double pepper = CameraEffect::pepper();
+    bool flipped = CameraEffect::flip();
+    FilterType filterType = CameraEffect::filterType();
+
+    Image image = *Camera::sharedImage();
+    if(hue > 0.0 || saturation > 0.0 || value > 0.0) {
+        generator->hsv(image, hue, saturation, value);
     }
-    return *image_;
-}
-
-
-Image& NoisyCamera::newImage()
-{
-    image_ = std::make_shared<Image>();
-    return *image_;
-}
-
-
-void NoisyCamera::setImage(std::shared_ptr<Image>& image)
-{
-    if(image.use_count() == 1) {
-        image_ = image;
-    } else {
-        image_ = std::make_shared<Image>(*image);
+    if(red > 0.0 || green > 0.0 || blue > 0.0) {
+        generator->rgb(image, red, green, blue);
     }
-    image.reset();
+    if(flipped) {
+        generator->flippedImage(image);
+    }
+
+    if(stdDev > 0.0) {
+        generator->gaussianNoise(image, stdDev);
+    }
+    if(salt > 0.0 || pepper > 0.0) {
+        generator->saltPepperNoise(image, salt, pepper);
+    }
+    if(filterType == GAUSSIAN_3X3) {
+        generator->gaussianFilter(image, 3);
+    } else if(filterType == GAUSSIAN_5X5) {
+        generator->gaussianFilter(image, 5);
+    } else if(filterType == SOBEL) {
+        generator->sobelFilter(image);
+    } else if(filterType == PREWITT) {
+        generator->prewittFilter(image);
+    }
+    if(coefB < 0.0 || coefD > 1.0) {
+        generator->barrelDistortion(image, coefB, coefD);
+    }
+
+    std::shared_ptr<Image> sharedImage = std::make_shared<Image>(image);
+    return *sharedImage;
 }
 
 
 int NoisyCamera::stateSize() const
 {
     return Camera::stateSize() + 12;
-}
-
-
-void NoisyCamera::clearImage()
-{
-    if(image_.use_count() == 1) {
-        image_->clear();
-    } else {
-        image_ = std::make_shared<Image>();
-    }
 }
 
 
@@ -235,12 +249,6 @@ void NoisyCamera::copyNoisyCameraStateFrom(const NoisyCamera& other, bool doCopy
     setPepper(other.pepper());
     setFlip(other.flip());
     setFilterType(other.filterType());
-
-    if(doCopyImage && !other.image_->empty()) {
-        image_ = other.image_;
-    } else {
-        image_ = std::make_shared<Image>();
-    }
 }
 
 
