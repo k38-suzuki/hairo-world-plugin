@@ -15,7 +15,6 @@
 #include <cnoid/ItemList>
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
-#include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/MessageView>
 #include <cnoid/PutPropertyFunction>
@@ -25,7 +24,6 @@
 #include <cnoid/Separator>
 #include <cnoid/Slider>
 #include <cnoid/SpinBox>
-#include <cnoid/ToolBar>
 #include <cnoid/UTF8>
 #include <cnoid/ViewManager>
 #include <cnoid/stdx/filesystem>
@@ -41,7 +39,6 @@
 #include <QVBoxLayout>
 #include <cstdlib>
 #include <iomanip>
-#include "gettext.h"
 #include "ColorScale.h"
 #include "GammaCamera.h"
 #include "PHITSRunner.h"
@@ -142,12 +139,10 @@ public:
     PHITSRunner qadRunners[MAX_PROCESS];
     GammaData::CalcInfo calcInfo;
     int countQAD;
-    GammaData qadTotDoseDataFile;
-    string gammaDataFile;
     string defaultNuclideTableFile;
     string defaultElementTableFile;
 
-    enum CodeID { PHITS, QAD, NUM_CODES };
+    enum CodeType { PHITS, QAD };
 
     SignalProxy<void(double value)> sigValueChanged() { return sigValueChanged_; }
     SignalProxy<void(string filename)> sigReadPHITSData() { return sigReadPHITSData_; }
@@ -159,7 +154,7 @@ public:
     Signal<void(string filename)> sigReadPHITSData_;
 
     bool readPHITSData(const string& filename);
-    void onItemTriggered(const bool& on);
+    void start(const bool& on);
     void storeState(Archive& archive);
     void restoreState(const Archive& archive);
 };
@@ -173,7 +168,8 @@ public:
     Impl(CrossSectionItem* self);
     Impl(CrossSectionItem* self, const Impl& org);
 
-    enum PlainID { XY, YZ, ZX, NUM_PLAINS };
+    enum PlainID { XY, YZ, ZX };
+    enum ColorScaleType { LOG_SCALE, LINER_SCALE };
 
     SgPosTransformPtr scene;
 
@@ -185,11 +181,7 @@ public:
     Signal<void()> sigGammaDataLoaded_;
     Selection colorScale;
 
-    enum ColorScaleID { LOG_SCALE, LINER_SCALE, NUM_SCALES };
-
     void initialize();
-    void setDefaultNuclideTableFile(const string& filename);
-    void setDefaultElementTableFile(const string& filename);
     bool onColorScalePropertyChanged(const int& index);
     void createScene();
     void updateScenePosition();
@@ -200,15 +192,6 @@ public:
     bool store(Archive& archive);
     bool restore(const Archive& archive);
 };
-
-void onButtonToggled(const bool& checked)
-{
-    auto rootItem = RootItem::instance();
-    ItemList<CrossSectionItem> selectedItems = rootItem->selectedItems();
-    for(auto& item : selectedItems) {
-
-    }
-}
 
 }
 
@@ -273,9 +256,9 @@ void CrossSectionItem::initializeClass(ExtensionManager* ext)
         [](CrossSectionItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
             menuManager.setPath("/").setPath(_("PHITS"));
             menuManager.addItem(_("Start"))->sigTriggered().connect(
-                        [item](){ item->impl->config->onItemTriggered(true); });
+                        [item](){ item->impl->config->start(true); });
             menuManager.addItem(_("Stop"))->sigTriggered().connect(
-                        [item](){ item->impl->config->onItemTriggered(false); });
+                        [item](){ item->impl->config->start(false); });
             menuManager.setPath("/");
             menuManager.addItem(_("Configuration of PHITS"))->sigTriggered().connect(
                 [item](){ item->impl->config->show(); });
@@ -283,15 +266,6 @@ void CrossSectionItem::initializeClass(ExtensionManager* ext)
             menuManager.addSeparator();
             menuFunction.dispatchAs<Item>(item);
     });
-
-    // vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
-    // for(auto& bar : toolBars) {
-    //     if(bar->name() == "FileBar") {
-    //         auto button1 = bar->addToggleButton("P");
-    //         button1->setToolTip(_("Start/Stop PHITS"));
-    //         button1->sigToggled().connect([&](bool checked){ onButtonToggled(checked); });
-    //     }
-    // }
 }
 
 
@@ -477,18 +451,6 @@ bool CrossSectionItem::Impl::load(const string& filename)
 }
 
 
-void CrossSectionItem::Impl::setDefaultNuclideTableFile(const string& filename)
-{
-    config->defaultNuclideTableFile = filename;
-}
-
-
-void CrossSectionItem::Impl::setDefaultElementTableFile(const string& filename)
-{
-    config->defaultElementTableFile = filename;
-}
-
-
 bool CrossSectionItem::Impl::onColorScalePropertyChanged(const int& index)
 {
     colorScale.selectIndex(index);
@@ -517,11 +479,11 @@ void CrossSectionItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
     FilePathProperty nuclideFileProperty(
                 config->defaultNuclideTableFile, { _("Nuclide definition file (*.yaml)") });
     putProperty(_("Default nuclide table"), nuclideFileProperty,
-                [&](const string& filename){ setDefaultNuclideTableFile(filename); return true; });
+                [&](const string& filename){ config->defaultNuclideTableFile = filename; return true; });
     FilePathProperty elementFileProperty(
                 config->defaultElementTableFile, { _("Element definition file (*.yaml)") });
     putProperty(_("Default element table"), elementFileProperty,
-                [&](const string& filename){ setDefaultElementTableFile(filename); return true; });
+                [&](const string& filename){ config->defaultElementTableFile = filename; return true; });
 }
 
 
@@ -562,7 +524,6 @@ DoseConfigDialog::DoseConfigDialog()
 {
     setWindowTitle(_("Configuration of PHITS"));
 
-    gammaDataFile.clear();
     codeCombo = new ComboBox;
     QStringList codes;
     string env = getenv("PATH");
@@ -700,17 +661,19 @@ DoseConfigDialog::DoseConfigDialog()
 
 bool DoseConfigDialog::readPHITSData(const string& filename)
 {
-    GammaData gammaData;
+    GammaData phitsData;
+    GammaData qadData;
+
     bool result = false;
     filesystem::path path(filename);
-    gammaDataFile = toUTF8((path.parent_path() / path.stem()).string()) + ".gbin";
+    string gbin_file = toUTF8((path.parent_path() / path.stem()).string()) + ".gbin";
 
     int index = codeCombo->currentIndex();
     if(index == PHITS) {
-        result = gammaData.readPHITS(filename, GammaData::DOSERATE);
+        result = phitsData.readPHITS(filename, GammaData::DOSERATE);
         if(result) {
-            result = gammaData.write(gammaDataFile);
-            result = result && gammaData.setDataHeaderInfo(gammaData.geometryInfo(0));
+            result = phitsData.write(gbin_file);
+            result = result && phitsData.setDataHeaderInfo(phitsData.geometryInfo(0));
         }
     } else if(index == QAD) {
         QString baseName = path.stem().string().c_str();
@@ -721,30 +684,30 @@ bool DoseConfigDialog::readPHITSData(const string& filename)
         } else {
             numSources = 0;
         }
-        result = gammaData.readQAD(filename, calcInfo, numSources);
+        result = phitsData.readQAD(filename, calcInfo, numSources);
         if(result) {
             countQAD += 1;
             MessageView::instance()->putln(fmt::format("QAD process: {0}", countQAD));
             if(countQAD == 1) {
-                qadTotDoseDataFile = gammaData;
+                qadData = phitsData;
             } else {
-                qadTotDoseDataFile.addDataInfo(gammaData.dataInfo());
+                qadData.addDataInfo(phitsData.dataInfo());
             }
             if(countQAD == calcInfo.nSrc) {
-                result = qadTotDoseDataFile.write(gammaDataFile);
-                result = result && qadTotDoseDataFile.setDataHeaderInfo(qadTotDoseDataFile.geometryInfo(0));
+                result = qadData.write(gbin_file);
+                result = result && qadData.setDataHeaderInfo(qadData.geometryInfo(0));
             }
         }
     }
 
     if(result) {
-        sigReadPHITSData_(gammaDataFile);
+        sigReadPHITSData_(gbin_file);
     }
     return result;
 }
 
 
-void DoseConfigDialog::onItemTriggered(const bool& on)
+void DoseConfigDialog::start(const bool& on)
 {
     if(on) {
         filesystem::path homeDir(getenv("HOME"));
