@@ -283,15 +283,13 @@ void WorldLogManager::Impl::store(Mapping* archive)
     archive->write("save_world_log_file", saveCheck->isChecked());
 
     ListingPtr logList = new Listing;
+    logList->append("", DOUBLE_QUOTED);
     for(int i = 0; i < treeWidget->topLevelItemCount(); ++i) {
         QTreeWidgetItem* item = treeWidget->topLevelItem(i);
         if(item) {
             string filename = item->text(0).toStdString();
             logList->append(filename, DOUBLE_QUOTED);
         }
-    }
-    if(!logList->size()) {
-        logList->append("", DOUBLE_QUOTED);
     }
     AppConfig::archive()->insert("world_logs", logList);
 }

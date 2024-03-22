@@ -209,12 +209,10 @@ TaskCreator::Impl::~Impl()
     for(int i = 0; i < NumProjects; ++i) {
         string key = "registered_projects_" + to_string(i);
         ListingPtr projectList = new Listing;
+        projectList->append("", DOUBLE_QUOTED);
         for(int j = 0; j < projectCombos[i]->count(); ++j) {
             string filename = projectCombos[i]->itemText(j).toStdString();
             projectList->append(filename, DOUBLE_QUOTED);
-        }
-        if(!projectList->size()) {
-            projectList->append("", DOUBLE_QUOTED);
         }
         AppConfig::archive()->insert(key, projectList);
     }

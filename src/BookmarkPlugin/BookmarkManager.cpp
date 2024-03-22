@@ -264,15 +264,13 @@ void BookmarkManager::Impl::store(Mapping* archive)
     archive->write("auto_play", autoCheck->isChecked());
 
     ListingPtr bookmarkList = new Listing;
+    bookmarkList->append("", DOUBLE_QUOTED);
     for(int i = 0; i < treeWidget->topLevelItemCount(); ++i) {
         QTreeWidgetItem* item = treeWidget->topLevelItem(i);;
         if(item) {
             string filename = item->text(0).toStdString();
             bookmarkList->append(filename, DOUBLE_QUOTED);
         }
-    }
-    if(!bookmarkList->size()) {
-        bookmarkList->append("", DOUBLE_QUOTED);
     }
     AppConfig::archive()->insert("bookmarks", bookmarkList);
 }
