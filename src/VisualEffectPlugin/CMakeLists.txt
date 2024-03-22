@@ -3,20 +3,25 @@ if(NOT ENABLE_GUI)
 endif()
 
 set(sources
+  CameraEffect.cpp
   ImageGenerator.cpp
+  NoisyCamera.cpp
   VEAreaItem.cpp
   VisualEffectorItem.cpp
   VisualEffectPlugin.cpp
 )
 
 set(headers
+  CameraEffect.h
   ImageGenerator.h
+  NoisyCamera.h
   VEAreaItem.h
   VisualEffectorItem.h
   exportdecl.h
 )
 
 choreonoid_make_header_public(ImageGenerator.h)
+choreonoid_make_header_public(NoisyCamera.h)
 
 set(target CnoidVisualEffectPlugin)
 make_gettext_mofiles(${target} mofiles)
