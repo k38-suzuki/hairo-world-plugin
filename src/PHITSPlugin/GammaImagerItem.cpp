@@ -13,11 +13,9 @@
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
 #include <cnoid/ImageableItem>
-#include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/RootItem>
-#include <cnoid/ToolBar>
 #include <cnoid/stdx/filesystem>
 #include <cnoid/UTF8>
 #include <QDateTime>
@@ -105,15 +103,6 @@ protected:
     virtual void doPutProperties(PutPropertyFunction& putProperty) override;
 };
 
-void onButtonToggled(const bool& checked)
-{
-    auto rootItem = RootItem::instance();
-    ItemList<GammaImageVisualizerItem> selectedItems = rootItem->selectedItems();
-    for(auto& item : selectedItems) {
-        item->start(checked);
-    }
-}
-
 }
 
 
@@ -148,24 +137,19 @@ void GammaImagerItem::initializeClass(ExtensionManager* ext)
 
     im.registerClass<GammaImageVisualizerItem>(N_("GammaImageVisualizerItem"));
 
-    // ItemTreeView::instance()->customizeContextMenu<GammaImageVisualizerItem>(
-    //     [](GammaImageVisualizerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
-    //         menuManager.setPath("/").setPath(_("PHITS"));
-    //        menuManager.addItem(_("Energy Filter"))->sigTriggered().connect(
-    //            [item](){ item->filter->showConfigDialog(); });
-    //        menuManager.setPath("/");
-    //        menuManager.addSeparator();
-    //        menuFunction.dispatchAs<Item>(item);
-    //     });
-
-    vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
-    for(auto& bar : toolBars) {
-        if(bar->name() == "FileBar") {
-            auto button1 = bar->addToggleButton("GC");
-            button1->setToolTip(_("Start/Stop PHITS"));
-            button1->sigToggled().connect([&](bool checked){ onButtonToggled(checked); });
-        }
-    }
+    ItemTreeView::instance()->customizeContextMenu<GammaImageVisualizerItem>(
+        [](GammaImageVisualizerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
+            menuManager.setPath("/").setPath(_("PHITS"));
+            menuManager.addItem(_("Start"))->sigTriggered().connect(
+                        [item](){ item->start(true); });
+            menuManager.addItem(_("Stop"))->sigTriggered().connect(
+                        [item](){ item->start(false); });
+        //    menuManager.addItem(_("Energy Filter"))->sigTriggered().connect(
+        //        [item](){ item->filter->showConfigDialog(); });
+           menuManager.setPath("/");
+           menuManager.addSeparator();
+           menuFunction.dispatchAs<Item>(item);
+        });
 }
 
 
