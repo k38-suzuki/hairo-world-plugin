@@ -148,8 +148,8 @@ void BeepItem::Impl::onPostDynamics()
 
         bool contacted = false;
         vector<CollisionLinkPairPtr>& collisions = worldItem->collisions();
-        for(int j = 0; j < collisions.size(); ++j) {
-            LinkPtr links[2] = { collisions[j]->link(0), collisions[j]->link(1) };
+        for(auto& collision : collisions) {
+            LinkPtr links[2] = { collision->link(0), collision->link(1) };
             if((links[0]->name() == link0 && links[1]->name() == link1)
                     || (links[0]->name() == link1 && links[1]->name() == link0)) {
                 contacted = true;
@@ -166,6 +166,7 @@ void BeepItem::Impl::onPostDynamics()
                 playID = i;
             }
         }
+
         info.isContacted = contacted;
     }
 
@@ -182,7 +183,7 @@ void BeepItem::Impl::onPostDynamics()
 }
 
 
-Item* BeepItem::doDuplicate() const
+Item* BeepItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new BeepItem(*this);
 }

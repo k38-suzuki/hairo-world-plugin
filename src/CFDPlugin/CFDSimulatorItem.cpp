@@ -198,16 +198,12 @@ void CFDBody::createBody(CFDSimulatorItemImpl* simImpl)
 void CFDBody::updateDevices()
 {
     const DeviceList<Thruster>& thrusters = this->body()->devices();
-
-    for(int i = 0; i < thrusters.size(); ++i) {
-        Thruster* thruster = thrusters[i];
+    for(auto& thruster : thrusters) {
         const Link* link = thruster->link();
     }
 
     const DeviceList<Rotor>& rotors = this->body()->devices();
-
-    for(int i = 0; i < rotors.size(); ++i) {
-        Rotor* rotor = rotors[i];
+    for(auto& rotor : rotors) {
         const Link* link = rotor->link();
     }
 }
@@ -279,10 +275,10 @@ bool CFDSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
     gravity = simulatorItem->getGravity();
 
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
-    for(size_t i = 0; i < simBodies.size(); ++i) {
-        Body* body = simBodies[i]->body();
+    for(auto& simBody : simBodies) {
+        Body* body = simBody->body();
         // addBody(static_cast<CFDBody*>(simBodies[i]));
-        CFDBody* cfdBody = new CFDBody(simBodies[i]->body());
+        CFDBody* cfdBody = new CFDBody(body);
         cfdBody->createBody(this);
         cfdBodies.push_back(cfdBody);
         thrusters << body->devices();
@@ -293,8 +289,7 @@ bool CFDSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
     if(worldItem) {
         areaItems = worldItem->descendantItems<FluidAreaItem>();
     }
-    for(int i = 0; i < areaItems.size(); ++i) {
-        FluidAreaItem* areaItem = areaItems[i];
+    for(auto& areaItem : areaItems) {
         areaItem->setUnsteadyFlow(Vector3(0.0, 0.0, 0.0));
     }
 
@@ -316,8 +311,7 @@ void CFDSimulatorItemImpl::addBody(CFDBody* cfdBody)
 
 void CFDSimulatorItemImpl::onPreDynamics()
 {
-    for(size_t i = 0; i < cfdBodies.size(); ++i) {
-        CFDBody* cfdBody = cfdBodies[i];
+    for(auto& cfdBody : cfdBodies) {
         for(int j = 0; j < cfdBody->numCFDLinks(); ++j) {
             CFDLink* cfdLink = cfdBody->cfdLink(j);
             Link* link = cfdLink->link;
@@ -393,17 +387,17 @@ void CFDSimulatorItemImpl::onPreDynamics()
     }
 
     // thruster
-    for(int i = 0; i < thrusters.size(); ++i) {
-        Thruster* thruster = thrusters[i];
+    for(auto& thruster : thrusters) {
         Link* link = thruster->link();
-        FluidAreaItem* areaItem = nullptr;
-        for(size_t j = 0; j <  areaItems.size(); ++j) {
-            if(areaItems[j]->isCollided(link->T().translation())) {
-                areaItem = areaItems[j];
+        FluidAreaItem* item = nullptr;
+        for(auto& areaItem : areaItems) {
+            if(areaItem->isCollided(link->T().translation())) {
+                item = areaItem;
             }
         }
-        if(areaItem) {
-            double density = areaItem->density();
+
+        if(item) {
+            double density = item->density();
             if(density > 10.0) {
                 Matrix3 R = link->R() * thruster->R_local();
                 Vector3 direction = thruster->direction();
@@ -419,17 +413,17 @@ void CFDSimulatorItemImpl::onPreDynamics()
     }
 
     // rotor
-    for(int i = 0; i < rotors.size(); ++i) {
-        Rotor* rotor = rotors[i];
+    for(auto& rotor : rotors) {
         Link* link = rotor->link();
-        FluidAreaItem* areaItem = nullptr;
-        for(size_t j = 0; j <  areaItems.size(); ++j) {
-            if(areaItems[j]->isCollided(link->T().translation())) {
-                areaItem = areaItems[j];
+        FluidAreaItem* item = nullptr;
+        for(auto& areaItem : areaItems) {
+            if(areaItem->isCollided(link->T().translation())) {
+                item = areaItem;
             }
         }
-        if(areaItem) {
-            double density = areaItem->density();
+
+        if(item) {
+            double density = item->density();
             if(density < 10.0) {
                 double n = rotor->kv() * rotor->voltage();
                 double d3 = rotor->diameter() / 10.0;
@@ -463,7 +457,7 @@ void CFDSimulatorItemImpl::onPreDynamics()
 }
 
 
-Item* CFDSimulatorItem::doDuplicate() const
+Item* CFDSimulatorItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new CFDSimulatorItem(*this);
 }

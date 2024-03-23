@@ -69,4 +69,4 @@ msgid "SteadyFlow"
 msgstr "定常流"
 
 msgid "CFDSimulatorItem"
-msgstr "流体力学シミュレータアイテム"
+msgstr "CFDシミュレータアイテム"

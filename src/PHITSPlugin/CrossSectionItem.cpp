@@ -460,7 +460,7 @@ bool CrossSectionItem::Impl::onColorScalePropertyChanged(const int& index)
 }
 
 
-Item* CrossSectionItem::doDuplicate() const
+Item* CrossSectionItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new CrossSectionItem(*this);
 }

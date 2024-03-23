@@ -46,18 +46,6 @@ items:
           children:
             -
               id: 3
-              name: "CameraController"
-              plugin: Body
-              class: SimpleControllerItem
-              data:
-                isNoDelayMode: false
-                controllerOptions: ""
-                controller: "NoisyCameraController"
-                base_directory: "Controller directory"
-                reloading: false
-                export_symbols: false
-            -
-              id: 4
               name: "SensorVisualizer"
               plugin: Body
               class: SensorVisualizerItem
@@ -68,7 +56,7 @@ items:
                     name: NoisyCamera
                     is_checked: true
         -
-          id: 5
+          id: 4
           name: "Floor"
           plugin: Body
           class: BodyItem
@@ -94,7 +82,57 @@ items:
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
         -
-          id: 6
+          id: 5
+          name: "HobbyDrone"
+          plugin: Body
+          class: BodyItem
+          is_checked: true
+          data:
+            file: "${SHARE}/HobbyDrone/model/HobbyDrone.body"
+            format: CHOREONOID-BODY
+            rootPosition: [ 0, 0, 1 ]
+            rootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
+              0, 0, 1 ]
+            jointPositions: [ ]
+            initialRootPosition: [ 0, 0, 1 ]
+            initialRootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
+              0, 0, 1 ]
+            fix_root: true
+            collisionDetection: true
+            selfCollisionDetection: false
+            lock_location: false
+            scene_sensitive: true
+            zmp: [ 0, 0, 0 ]
+          children:
+            -
+              id: 6
+              name: "SensorVisualizer"
+              plugin: Body
+              class: SensorVisualizerItem
+              data:
+                sub_items:
+                  -
+                    class: AccelerationSensorVisualizerItem
+                    name: AccelerationSensor
+                    ratio: 0.1
+                    threshold: 0.05
+                    offset: [ 0, 0, -9.8 ]
+                  -
+                    class: RateGyroSensorVisualizerItem
+                    name: RateGyro
+                    ratio: 0.4
+                    threshold: 0.01
+                    offset: [ 0, 0, 0 ]
+                  -
+                    class: CameraImageVisualizerItem
+                    name: FrontCamera
+                    is_checked: true
+        -
+          id: 7
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
@@ -127,10 +165,10 @@ items:
             oldAccelSensorMode: false
           children:
             -
-              id: 7
-              name: "GLVisionSimulator"
-              plugin: Body
-              class: GLVisionSimulatorItem
+              id: 8
+              name: "VEVisionSimulator"
+              plugin: VisualEffect
+              class: VEVisionSimulatorItem
               data:
                 enabled: true
                 max_frame_rate: 1000
@@ -144,11 +182,34 @@ items:
                 enable_head_light: true
                 enable_additional_lights: true
                 antialiasing: false
+        -
+          id: 9
+          name: "VEArea"
+          plugin: VisualEffect
+          class: VEAreaItem
+          data:
+            type: 0
+            size: [ 10, 10, 10 ]
+            radius: 0.5
+            height: 1
+            diffuse_color: [ 0, 1, 0 ]
+            shininess: 0
+            transparency: 0.8
+            hsv: [ 0, 0, 0 ]
+            rgb: [ 0, 0, 0 ]
+            coef_b: -0.3
+            coef_d: 1
+            std_dev: 0
+            salt: 0.01
+            pepper: 0
+            flip: false
+            filter: 0
 views:
   -
     id: 0
     plugin: Base
     class: GeneralSliderView
+    mounted: true
   -
     id: 1
     name: "Image"
@@ -156,7 +217,7 @@ views:
     class: ImageView
     mounted: true
     state:
-      imageable_item: [ 4, "NoisyCamera" ]
+      imageable_item: [ 3, "NoisyCamera" ]
   -
     id: 2
     plugin: Base
@@ -168,7 +229,7 @@ views:
     class: ItemTreeView
     mounted: true
     state:
-      expanded: [ 1, 2, 4, 6 ]
+      expanded: [ 1, 2, 3, 5, 6, 7 ]
   -
     id: 4
     plugin: Base
@@ -202,7 +263,7 @@ views:
           isCurrent: true
           eye: [ 3, 1.5, 1.2 ]
           direction: [ -0.880451, -0.440225, -0.17609 ]
-          up: [ -0.1575, -0.0787496, 0.984374 ]
+          up: [ -0.1575, -0.0787495, 0.984374 ]
         -
           camera: [ System, Orthographic ]
           orthoHeight: 20
@@ -238,11 +299,6 @@ views:
       yz_grid_color: [ 0.9, 0.9, 0.9 ]
   -
     id: 7
-    plugin: Base
-    class: VirtualJoystickView
-    mounted: true
-  -
-    id: 8
     plugin: Body
     class: JointDisplacementView
     mounted: true
@@ -256,7 +312,7 @@ views:
       limit_ranges: false
       show_selected_joints: false
   -
-    id: 9
+    id: 8
     plugin: Body
     class: LinkDeviceListView
     mounted: true
@@ -264,7 +320,7 @@ views:
       element_type: all
       listing_mode: list
   -
-    id: 10
+    id: 9
     plugin: Body
     class: LinkPositionView
     mounted: true
@@ -277,12 +333,12 @@ views:
       show_rotation_matrix: false
       target_link_type: ik_link
   -
-    id: 11
+    id: 10
     plugin: Body
     class: LinkPropertyView
     mounted: true
   -
-    id: 12
+    id: 11
     plugin: Python
     class: PythonConsoleView
     mounted: true
@@ -311,7 +367,7 @@ toolbars:
     lazyCollisionDetectionMode: true
 Body:
   "BodySelectionManager":
-    current_body_item: 2
+    current_body_item: 5
     current_link: "CHASSIS"
   "KinematicFaultChecker":
     checkJointPositions: true
@@ -326,6 +382,11 @@ Body:
     scene_bodies:
       -
         body_item: 2
+        show_cm: false
+        show_cm_projection: false
+        show_zmp: false
+      -
+        body_item: 4
         show_cm: false
         show_cm_projection: false
         show_zmp: false
@@ -365,7 +426,7 @@ viewAreas:
                   views: [ 3 ]
                 -
                   type: pane
-                  views: [ 2, 11 ]
+                  views: [ 2, 10 ]
                   current: 2
             -
               type: splitter
@@ -376,17 +437,9 @@ viewAreas:
                   type: pane
                   views: [ 6 ]
                 -
-                  type: splitter
-                  orientation: horizontal
-                  sizes: [ 516, 515 ]
-                  children:
-                    -
-                      type: pane
-                      views: [ 5, 12 ]
-                      current: 5
-                    -
-                      type: pane
-                      views: [ 7 ]
+                  type: pane
+                  views: [ 5, 11, 0 ]
+                  current: 0
         -
           type: splitter
           orientation: vertical
@@ -402,10 +455,10 @@ viewAreas:
               children:
                 -
                   type: pane
-                  views: [ 10 ]
+                  views: [ 9 ]
                 -
                   type: pane
-                  views: [ 9, 8, 1 ]
+                  views: [ 8, 7, 1 ]
                   current: 1
 layoutOfToolBars:
   rows:

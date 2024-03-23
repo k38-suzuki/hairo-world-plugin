@@ -54,7 +54,7 @@ void TCAreaItem::initializeClass(ExtensionManager* ext)
 }
 
 
-Item* TCAreaItem::doDuplicate() const
+Item* TCAreaItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new TCAreaItem(*this);
 }

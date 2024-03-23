@@ -2,21 +2,22 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_MARKER_DETECT_PLUGIN_MARKER_DETECTOR_ITEM_H
-#define CNOID_MARKER_DETECT_PLUGIN_MARKER_DETECTOR_ITEM_H
+#ifndef CNOID_VISUAL_EFFECT_PLUGIN_VE_VISION_SIMULATOR_ITEM_H
+#define CNOID_VISUAL_EFFECT_PLUGIN_VE_VISION_SIMULATOR_ITEM_H
 
-#include <cnoid/SubSimulatorItem>
+#include <cnoid/GLVisionSimulatorItem>
+#include "exportdecl.h"
 
 namespace cnoid {
 
-class MarkerDetectorItem : public SubSimulatorItem
+class CNOID_EXPORT VEVisionSimulatorItem : public GLVisionSimulatorItem
 {
 public:
-    MarkerDetectorItem();
-    MarkerDetectorItem(const MarkerDetectorItem& org);
-    virtual ~MarkerDetectorItem();
-
     static void initializeClass(ExtensionManager* ext);
+        
+    VEVisionSimulatorItem();
+    VEVisionSimulatorItem(const VEVisionSimulatorItem& org);
+    ~VEVisionSimulatorItem();
 
     virtual bool initializeSimulation(SimulatorItem* simulatorItem) override;
 
@@ -30,8 +31,6 @@ private:
     class Impl;
     Impl* impl;
 };
-
-typedef ref_ptr<MarkerDetectorItem> MarkerDetectorItemPtr;
 
 }
 

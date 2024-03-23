@@ -203,8 +203,7 @@ void FileExplorer::Impl::execute(const int argc, const char* argv[])
 
 void FileExplorer::Impl::kill()
 {
-    for(size_t i = 0; i < processes.size(); ++i) {
-        Process* process = processes[i];
+    for(auto& process : processes) {
         if(process) {
             if(process->state() != QProcess::NotRunning) {
                 process->kill();

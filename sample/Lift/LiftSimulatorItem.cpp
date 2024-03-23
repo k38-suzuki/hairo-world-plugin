@@ -54,8 +54,8 @@ bool LiftSimulatorItem::initializeSimulation(SimulatorItem* simulatorItem)
     areaItems.clear();
 
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
-    for(size_t i = 0; i < simBodies.size(); ++i) {
-        Body* body = simBodies[i]->body();
+    for(auto& simBody : simBodies) {
+        Body* body = simBody;
         wings << body->devices();
     }
 
@@ -63,8 +63,7 @@ bool LiftSimulatorItem::initializeSimulation(SimulatorItem* simulatorItem)
     if(worldItem) {
         areaItems = worldItem->descendantItems<FluidAreaItem>();
     }
-    for(int i = 0; i < areaItems.size(); ++i) {
-        FluidAreaItem* areaItem = areaItems[i];
+    for(auto& areaItem : areaItems) {
         areaItem->setUnsteadyFlow(Vector3(0.0, 0.0, 0.0));
     }
 
@@ -78,19 +77,19 @@ bool LiftSimulatorItem::initializeSimulation(SimulatorItem* simulatorItem)
 
 void LiftSimulatorItem::onPreDynamics()
 {
-    for(int i = 0; i < wings.size(); ++i) {
-        WingDevice* wing = wings[i];
+    for(auto& wing : wings) {
         Link* link = wing->link();
         Vector3 cb = link->T() * link->centerOfMass();
 
-        FluidAreaItem* areaItem = nullptr;
-        for(size_t j = 0; j <  areaItems.size(); ++j) {
-            if(areaItems[j]->isCollided(link->T().translation())) {
-                areaItem = areaItems[j];
+        FluidAreaItem* item = nullptr;
+        for(auto& areaItem : areaItems) {
+            if(areaItem->isCollided(link->T().translation())) {
+                item = areaItem;
             }
         }
-        if(areaItem) {
-            double density = areaItem->density();
+
+        if(item) {
+            double density = item->density();
             const BoundingBox& bb = link->visualShape()->boundingBox();
             // double s = wing->wingspan() * wing->chordLength();
             double s = bb.size().x() * bb.size().y();
@@ -122,7 +121,7 @@ void LiftSimulatorItem::onPreDynamics()
 }
 
 
-Item* LiftSimulatorItem::doDuplicate() const
+Item* LiftSimulatorItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new LiftSimulatorItem(*this);
 }

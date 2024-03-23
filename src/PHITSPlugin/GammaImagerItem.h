@@ -25,7 +25,7 @@ public:
     std::string defaultEnergyFilterFile() const;
 
 protected:
-    virtual Item* doDuplicate() const override;
+    virtual Item* doCloneItem(CloneMap* cloneMap) const override;
     virtual void doPutProperties(PutPropertyFunction& putProperty) override;
     virtual void onPositionChanged() override;
     virtual void onDisconnectedFromRoot() override;

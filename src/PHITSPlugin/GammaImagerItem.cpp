@@ -223,7 +223,7 @@ GammaImagerItem::~GammaImagerItem()
 }
 
 
-Item* GammaImagerItem::doDuplicate() const
+Item* GammaImagerItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new GammaImagerItem(*this);
 }

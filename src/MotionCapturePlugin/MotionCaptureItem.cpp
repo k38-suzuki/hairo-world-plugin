@@ -114,8 +114,8 @@ bool MotionCaptureItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
     }
 
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
-    for(size_t i = 0; i < simBodies.size(); ++i) {
-        Body* body = simBodies[i]->body();
+    for(auto& simBody : simBodies) {
+        Body* body = simBody->body();
         markers << body->devices();
     }
 
@@ -126,8 +126,7 @@ bool MotionCaptureItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
             multiPointSetItem->setChecked(false);
             self->addSubItem(multiPointSetItem);
 
-            for(size_t i = 0; i < markers.size(); ++i) {
-                PassiveMarker* marker = markers[i];
+            for(auto& marker : markers) {
                 PointSetItem* pointSetItem = new PointSetItem;
                 pointSetItem->setName(marker->name());
                 pointSetItem->setChecked(false);
@@ -188,10 +187,10 @@ void MotionCaptureItem::Impl::finalizeSimulation()
             const int numPoints = src.size();
             points.resize(numPoints);
             colors.resize(numPoints);
-            for(int i = 0; i < numPoints; ++i) {
+            for(int j = 0; j < numPoints; ++j) {
                 Vector3f point = Vector3f(src[i][0], src[i][1], src[i][2]);
-                points[i] = point;
-                Vector3f& c = colors[i];
+                points[j] = point;
+                Vector3f& c = colors[j];
                 c[0] = marker->color()[0];
                 c[1] = marker->color()[1];
                 c[2] = marker->color()[2];
@@ -227,7 +226,7 @@ void MotionCaptureItem::Impl::onPreDynamics()
 }
 
 
-Item* MotionCaptureItem::doDuplicate() const
+Item* MotionCaptureItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new MotionCaptureItem(*this);
 }

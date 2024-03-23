@@ -73,13 +73,11 @@ public:
         io->enableInput(ioBody->rootLink(), LINK_POSITION);
         io->enableInput(gyroSensor);
 
-        for(size_t i = 0; i < thrusters.size(); i++) {
-            Thruster* thruster = thrusters[i];
+        for(auto& thruster : thrusters) {
             io->enableInput(thruster);
         }
 
-        for(size_t i = 0; i < pthrusters.size(); ++i) {
-            Thruster* thruster = pthrusters[i];
+        for(auto& thruster : pthrusters) {
             io->enableInput(thruster);
         }
 
@@ -122,8 +120,7 @@ public:
             double k = 0.3;
             pthrusters[0]->force() = k * (-2.0 * pos[1] - pos[0]);
             pthrusters[1]->force() = k * (-2.0 * pos[1] + pos[0]);
-            for(size_t i = 0; i < pthrusters.size(); ++i) {
-                Thruster* thruster = pthrusters[i];
+            for(auto& thruster : pthrusters) {
                 thruster->notifyStateChange();
             }
         }

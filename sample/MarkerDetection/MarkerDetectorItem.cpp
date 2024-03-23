@@ -94,8 +94,8 @@ bool MarkerDetectorItem::Impl::initializeSimulation(SimulatorItem* simulatorItem
     scopes.clear();
 
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
-    for(size_t i = 0; i < simBodies.size(); ++i) {
-        Body* body = simBodies[i]->body();
+    for(auto& simBody : simBodies) {
+        Body* body = simBody->body();
         markers << body->devices();
         scopes << body->devices();
     }
@@ -110,8 +110,7 @@ bool MarkerDetectorItem::Impl::initializeSimulation(SimulatorItem* simulatorItem
 void MarkerDetectorItem::Impl::onPreDynamics()
 {
     DeviceList<PassiveMarker> capturedMarkers;
-    for(size_t i = 0; i < scopes.size(); ++i) {
-        ScopeDevice* scope = scopes[i];
+    for(auto& scope : scopes) {
         Link* clink = scope->link();
         double rangehy = scope->focalLength() * tan((double)scope->fieldOfView() / 2.0 * TO_RADIAN);
         double rangehz = rangehy * 2.0 / scope->aspectRatio()[0] * scope->aspectRatio()[1] / 2.0;
@@ -128,8 +127,7 @@ void MarkerDetectorItem::Impl::onPreDynamics()
         Vector3 oc = c - o;
         Vector3 od = d - o;
 
-        for(size_t j = 0; j < markers.size(); ++j) {
-            PassiveMarker* marker = markers[j];
+        for(auto& marker : markers) {
             Link* mlink = marker->link();
             Vector3 mp = mlink->T().translation() + mlink->R() * marker->R_local() * marker->p_local();
             Vector3 op = mp - o;
@@ -162,15 +160,15 @@ void MarkerDetectorItem::Impl::onPreDynamics()
             marker->notifyStateChange();
         }
     }
-    for(size_t i = 0; i < capturedMarkers.size(); ++i) {
-        PassiveMarker* marker = capturedMarkers[i];
+
+    for(auto& marker : capturedMarkers) {
         marker->setTransparency(0.0);
         marker->notifyStateChange();
     }
 }
 
 
-Item* MarkerDetectorItem::doDuplicate() const
+Item* MarkerDetectorItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new MarkerDetectorItem(*this);
 }

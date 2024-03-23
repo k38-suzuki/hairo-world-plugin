@@ -132,7 +132,7 @@ void JoystickLoggerItem::Impl::onPostDynamics()
 }
 
 
-Item* JoystickLoggerItem::doDuplicate() const
+Item* JoystickLoggerItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new JoystickLoggerItem(*this);
 }

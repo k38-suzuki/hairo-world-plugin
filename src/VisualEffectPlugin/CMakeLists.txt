@@ -7,7 +7,7 @@ set(sources
   ImageGenerator.cpp
   NoisyCamera.cpp
   VEAreaItem.cpp
-  VisualEffectorItem.cpp
+  VEVisionSimulatorItem.cpp
   VisualEffectPlugin.cpp
 )
 
@@ -16,7 +16,7 @@ set(headers
   ImageGenerator.h
   NoisyCamera.h
   VEAreaItem.h
-  VisualEffectorItem.h
+  VEVisionSimulatorItem.h
   exportdecl.h
 )
 

@@ -110,8 +110,7 @@ void FileFormWidget::Impl::onReloadButtonClicked()
 {
     RootItem* rootItem = RootItem::instance();
     ItemList<BodyItem> bodyItems = rootItem->checkedItems<BodyItem>();
-    for(size_t i = 0; i < bodyItems.size(); ++i) {
-        BodyItem* bodyItem = bodyItems[i];
+    for(auto& bodyItem : bodyItems) {
         string filename0 = fileLine->text().toStdString();
         string filename1 = bodyItem->filePath().c_str();
         if(filename0 == filename1) {

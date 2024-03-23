@@ -145,13 +145,13 @@ bool CollisionVisualizerItem::Impl::initializeSimulation(SimulatorItem* simulato
     sensors.clear();
 
     std::set<string> bodyNameSet;
-    for(size_t i = 0; i < bodyNames.size(); ++i) {
-        bodyNameSet.insert(bodyNames[i]);
+    for(auto& bodyName : bodyNames) {
+        bodyNameSet.insert(bodyName);
     }
 
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
-    for(size_t i = 0; i < simBodies.size(); ++i) {
-        Body* body = simBodies[i]->body();
+    for(auto& simBody : simBodies) {
+        Body* body = simBody->body();
         if(bodyNameSet.empty() || bodyNameSet.find(body->name()) != bodyNameSet.end()) {
             sensors << body->devices();
             if(!body->isStaticModel()) {
@@ -179,8 +179,7 @@ bool CollisionVisualizerItem::Impl::initializeSimulation(SimulatorItem* simulato
         }
     }
 
-    for(size_t i = 0; i < sensors.size(); ++i) {
-        CollisionSensor* sensor = sensors[i];
+    for(auto& sensor : sensors) {
         Link* link = sensor->link();
         link->mergeSensingMode(Link::LinkContactState);
     }
@@ -218,7 +217,7 @@ void CollisionVisualizerItem::Impl::onPostDynamics()
 }
 
 
-Item* CollisionVisualizerItem::doDuplicate() const
+Item* CollisionVisualizerItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new CollisionVisualizerItem(*this);
 }

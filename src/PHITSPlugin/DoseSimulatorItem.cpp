@@ -126,14 +126,13 @@ bool DoseSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
     crossSectionItem = nullptr;
 
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
-    for(size_t i = 0; i < simBodies.size(); ++i) {
-        Body* body = simBodies[i]->body();
+    for(auto& simBody : simBodies) {
+        Body* body = simBody->body();
         doseMeters << body->devices();
     }
 
     OrthoNodeData::clearShield();
-    for(size_t i = 0; i < doseMeters.size(); ++i) {
-        DoseMeter* doseMeter = doseMeters[i];
+    for(auto& doseMeter : doseMeters) {
         OrthoNodeData::addShield(doseMeter->material(), doseMeter->thickness());
     }
 
@@ -166,6 +165,7 @@ void DoseSimulatorItem::Impl::onMidDynamics()
     if(!nodeData) {
         return;
     }
+    
     for(size_t i = 0; i < doseMeters.size(); ++i) {
         DoseMeter* doseMeter = doseMeters[i];
         Link* link = doseMeter->link();
@@ -202,8 +202,7 @@ void DoseSimulatorItem::Impl::onPostDynamics()
 {
     if(doseMeters.size()) {
         vector<double> integralDoses;
-        for(size_t i = 0; i < doseMeters.size(); ++i) {
-            DoseMeter* doseMeter = doseMeters[i];
+        for(auto& doseMeter : doseMeters) {
             integralDoses.push_back(doseMeter->integralDose());
         }
 
@@ -215,8 +214,7 @@ void DoseSimulatorItem::Impl::onPostDynamics()
         max = 1.0 * pow(10, exp);
         scale->setRange(min, max);
 
-        for(size_t i = 0; i < doseMeters.size(); ++i) {
-            DoseMeter* doseMeter = doseMeters[i];
+        for(auto& doseMeter : doseMeters) {
             Vector3 color;
             if(colorScale.is(LOG_SCALE)) {
                 color = scale->logColor(doseMeter->integralDose());
@@ -255,7 +253,7 @@ bool DoseSimulatorItem::Impl::onColorScalePropertyChanged(const int& index)
 }
 
 
-Item* DoseSimulatorItem::doDuplicate() const
+Item* DoseSimulatorItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new DoseSimulatorItem(*this);
 }

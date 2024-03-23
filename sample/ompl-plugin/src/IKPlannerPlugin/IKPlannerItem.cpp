@@ -207,8 +207,8 @@ void IKPlannerItem::Impl::onPlaybackStarted(const double& time)
             interpolator.clear();
             int numPoints = solutions.size();
             double dt = timeLength / (double)numPoints;
-            for(size_t i = 0; i < solutions.size(); ++i) {
-                interpolator.appendSample(dt * (double)i, solutions[i]);
+            for(auto& solution : solutions) {
+                interpolator.appendSample(dt * (double)i, solution);
             }
             interpolator.update();
         }
@@ -337,7 +337,7 @@ void IKPlannerItem::Impl::postPlannerFunction(og::PathGeometric& pathes)
 }
 
 
-Item* IKPlannerItem::doDuplicate() const
+Item* IKPlannerItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new IKPlannerItem(*this);
 }

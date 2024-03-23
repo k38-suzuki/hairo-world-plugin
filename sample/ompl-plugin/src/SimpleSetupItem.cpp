@@ -366,7 +366,7 @@ void SimpleSetupItem::postPlannerFunction(og::PathGeometric& pathes)
 }
 
 
-Item* SimpleSetupItem::doDuplicate() const
+Item* SimpleSetupItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new SimpleSetupItem(*this);
 }

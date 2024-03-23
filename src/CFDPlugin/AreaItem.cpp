@@ -298,7 +298,7 @@ SignalProxy<void()> RegionLocation::sigLocationChanged()
 }
 
 
-Item* AreaItem::doDuplicate() const
+Item* AreaItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new AreaItem(*this);
 }

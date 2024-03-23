@@ -17,12 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "VisualEffectorItem"
-msgstr "視覚効果アイテム"
-
-msgid "VEImageVisualizerItem"
-msgstr "視覚効果画像可視化"
-
 msgid "Flip"
 msgstr "反転"
 
@@ -91,3 +85,6 @@ msgstr "視覚効果"
 
 msgid "VEAreaItem"
 msgstr "視覚効果領域アイテム"
+
+msgid "VEVisionSimulatorItem"
+msgstr "VEビジョンシミュレータ"

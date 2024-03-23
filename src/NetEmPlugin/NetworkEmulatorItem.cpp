@@ -185,8 +185,7 @@ void NetworkEmulatorItem::Impl::onPreDynamics()
 
     TCAreaItem* currentItem = new TCAreaItem;
     int currentItemID = INT_MAX;
-    for(size_t i = 0; i < bodies.size(); ++i) {
-        Body* body = bodies[i];
+    for(auto& body : bodies) {
         if(!body->isStaticModel()) {
             Link* link = body->rootLink();
             for(size_t j = 0; j <  areaItems.size(); ++j) {
@@ -229,7 +228,7 @@ void NetworkEmulatorItem::Impl::onPreDynamics()
 }
 
 
-Item* NetworkEmulatorItem::doDuplicate() const
+Item* NetworkEmulatorItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new NetworkEmulatorItem(*this);
 }

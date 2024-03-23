@@ -1,133 +1,113 @@
-items: 
+items:
   id: 0
   name: "RootItem"
   plugin: Base
   class: RootItem
   is_builtin_item: true
-  children: 
-    - 
+  children:
+    -
       id: 1
       name: "World"
       plugin: Body
       class: WorldItem
       is_checked: true
-      data: 
+      data:
         collision_detection: false
         collision_detector: AISTCollisionDetector
         default_material_table_file: "${SHARE}/default/materials.yaml"
-      children: 
-        - 
+      children:
+        -
           id: 2
           name: "HaiROV"
           plugin: Body
           class: BodyItem
           is_checked: true
-          data: 
+          data:
             file: "${SHARE}/HaiROV/model/HaiROV.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, -0.5 ]
-            rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            rootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
-            jointPositions: [  ]
+            jointPositions: [ ]
             initialRootPosition: [ 0, 0, -0.5 ]
-            initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            initialRootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
             fix_root: false
             collisionDetection: true
             selfCollisionDetection: false
-            location_editable: true
+            lock_location: false
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
-          children: 
-            - 
+          children:
+            -
               id: 3
               name: "JoystickController"
               plugin: Body
               class: SimpleControllerItem
-              data: 
+              data:
                 isNoDelayMode: false
                 controllerOptions: ""
                 controller: "HaiROVJoystickController"
                 base_directory: "Controller directory"
                 reloading: false
                 export_symbols: false
-            - 
+            -
               id: 4
-              name: "VisualEffector"
-              plugin: VisualEffect
-              class: VisualEffectorItem
-              data: 
-                sub_items: 
-                  - 
-                    class: VEImageVisualizerItem
+              name: "SensorVisualizer"
+              plugin: Body
+              class: SensorVisualizerItem
+              data:
+                sub_items:
+                  -
+                    class: RateGyroSensorVisualizerItem
+                    name: RateGyro
+                    ratio: 0.4
+                    threshold: 0.01
+                    offset: [ 0, 0, 0 ]
+                  -
+                    class: CameraImageVisualizerItem
                     name: FrontCamera
-                    hue: 0
-                    saturation: 0
-                    value: 0
-                    red: 0
-                    green: 0
-                    blue: 0
-                    coef_b: 0
-                    coef_d: 1
-                    std_dev: 0
-                    salt: 0
-                    pepper: 0
-                    flip: false
-                    filter: 0
-                  - 
-                    class: VEImageVisualizerItem
+                  -
+                    class: CameraImageVisualizerItem
                     name: BottomCamera
                     is_checked: true
-                    hue: 0
-                    saturation: 0
-                    value: 0
-                    red: 0
-                    green: 0
-                    blue: 0
-                    coef_b: -0.3
-                    coef_d: 1.7
-                    std_dev: 0
-                    salt: 0
-                    pepper: 0
-                    flip: false
-                    filter: 0
-        - 
+        -
           id: 5
           name: "FuelPool"
           plugin: Body
           class: BodyItem
           is_checked: true
-          data: 
+          data:
             file: "${SHARE}/HaiROV/model/FuelPool.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, -4 ]
-            rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            rootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
-            jointPositions: [  ]
+            jointPositions: [ ]
             initialRootPosition: [ 0, 0, -4 ]
-            initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            initialRootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
             fix_root: true
             collisionDetection: true
             selfCollisionDetection: false
-            location_editable: true
+            lock_location: false
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
-        - 
+        -
           id: 6
           name: "FluidArea"
           plugin: CFD
           class: FluidAreaItem
           is_checked: true
-          data: 
+          data:
             translation: [ 0, 0, -2.5 ]
             type: 0
             size: [ 5.4, 5.4, 5 ]
@@ -139,12 +119,12 @@ items:
             density: 1000
             viscosity: 0.001
             steady_flow: [ 0, 0, 0 ]
-        - 
+        -
           id: 7
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
-          data: 
+          data:
             time_step: 0.001
             realtime_sync_mode: compensatory
             recording: full
@@ -171,87 +151,114 @@ items:
             kinematicWalking: false
             2Dmode: false
             oldAccelSensorMode: false
-          children: 
-            - 
+          children:
+            -
               id: 8
-              name: "GLVisionSimulator"
-              plugin: Body
-              class: GLVisionSimulatorItem
-              data: 
+              name: "CFDSimulator"
+              plugin: CFD
+              class: CFDSimulatorItem
+              data:
+                enabled: true
+            -
+              id: 9
+              name: "VEVisionSimulator"
+              plugin: VisualEffect
+              class: VEVisionSimulatorItem
+              data:
                 enabled: true
                 max_frame_rate: 1000
                 max_latency: 1
                 record_vision_data: true
                 thread_mode: Sensor
-                best_effort: false
-                all_scene_objects: false
+                best_effort: true
+                all_scene_objects: true
                 range_sensor_precision_ratio: 2
                 depth_error: 0
                 enable_head_light: true
                 enable_additional_lights: true
                 antialiasing: false
-            - 
-              id: 9
-              name: "CFDSimulator"
-              plugin: CFD
-              class: CFDSimulatorItem
-              data: 
-                enabled: true
-views: 
-  - 
+        -
+          id: 10
+          name: "VEArea"
+          plugin: VisualEffect
+          class: VEAreaItem
+          data:
+            type: 0
+            size: [ 10, 10, 10 ]
+            radius: 0.5
+            height: 1
+            diffuse_color: [ 0, 1, 0 ]
+            shininess: 0
+            transparency: 0.8
+            hsv: [ 0, 0, 0 ]
+            rgb: [ 0, 0, 0 ]
+            coef_b: -0.3
+            coef_d: 1
+            std_dev: 0
+            salt: 0.01
+            pepper: 0
+            flip: false
+            filter: 0
+views:
+  -
     id: 0
+    plugin: Base
+    class: GeneralSliderView
+    mounted: true
+  -
+    id: 1
     name: "Image"
     plugin: Base
     class: ImageView
     mounted: true
-    state: 
+    state:
       imageable_item: [ 4, "BottomCamera" ]
-  - 
-    id: 1
+  -
+    id: 2
     plugin: Base
     class: ItemPropertyView
     mounted: true
-  - 
-    id: 2
+  -
+    id: 3
     plugin: Base
     class: ItemTreeView
     mounted: true
-    state: 
-      expanded: [ 1, 2, 3, 4, 7, 9 ]
-  - 
-    id: 3
+    state:
+      expanded: [ 1, 2, 3, 4, 7, 8 ]
+  -
+    id: 4
     plugin: Base
     class: LocationView
-    state: 
+    state:
       show_rpy: true
       unique_rpy: false
       show_quaternion: false
       show_rotation_matrix: false
       coordinate: world
-  - 
-    id: 4
+  -
+    id: 5
     plugin: Base
     class: MessageView
     mounted: true
-  - 
-    id: 5
+  -
+    id: 6
     plugin: Base
     class: SceneView
     mounted: true
-    state: 
+    state:
       editMode: false
       viewpointOperationMode: thirdPerson
       visible_polygon_elements: [ face ]
       highlighting: false
       collisionLines: false
-      cameras: 
-        - 
+      cameras:
+        -
           camera: [ System, Perspective ]
           isCurrent: true
           eye: [ -2.84516, -4.96345, 3.44473 ]
           direction: [ 0.425937, 0.7126, -0.557475 ]
           up: [ 0.286017, 0.478511, 0.830194 ]
-        - 
+        -
           camera: [ System, Orthographic ]
           orthoHeight: 20
       lighting_mode: normal
@@ -264,7 +271,7 @@ views:
       head_light: true
       head_light_intensity: 0.75
       world_light_shadow: true
-      shadow_lights: 
+      shadow_lights:
         - { index: 0, enabled: false }
         - { index: 1, enabled: false }
       background_color: [ 0.1, 0.1, 0.3 ]
@@ -284,25 +291,24 @@ views:
       xy_grid_color: [ 0.9, 0.9, 0.9 ]
       xz_grid_color: [ 0.9, 0.9, 0.9 ]
       yz_grid_color: [ 0.9, 0.9, 0.9 ]
-  - 
-    id: 6
+  -
+    id: 7
     plugin: Base
     class: VirtualJoystickView
     mounted: true
-  - 
-    id: 7
+  -
+    id: 8
     plugin: Body
     class: BodyLinkView
     mounted: true
-    state: 
+    state:
       showRotationMatrix: false
-  - 
-    id: 8
+  -
+    id: 9
     plugin: Body
     class: JointDisplacementView
     mounted: true
-    state: 
-      show_selected_joints: false
+    state:
       show_joint_ids: false
       show_joint_names: true
       overlap_joint_names: false
@@ -310,19 +316,20 @@ views:
       show_dials: false
       show_phases: true
       limit_ranges: false
-  - 
-    id: 9
+      show_selected_joints: false
+  -
+    id: 10
     plugin: Body
     class: LinkDeviceListView
     mounted: true
-    state: 
+    state:
       element_type: link
       listing_mode: list
-  - 
-    id: 10
+  -
+    id: 11
     plugin: Body
     class: LinkPositionView
-    state: 
+    state:
       coordinate_mode: world
       preferred_coordinate_mode: base
       show_rpy: true
@@ -330,17 +337,17 @@ views:
       show_quaternion: false
       show_rotation_matrix: false
       target_link_type: ik_link
-  - 
-    id: 11
+  -
+    id: 12
     plugin: Body
     class: LinkPropertyView
-  - 
-    id: 12
+  -
+    id: 13
     plugin: Python
     class: PythonConsoleView
     mounted: true
-toolbars: 
-  "TimeBar": 
+toolbars:
+  "TimeBar":
     current_time: 0
     min_time: 0
     max_time: 30
@@ -350,9 +357,9 @@ toolbars:
     playback_speed_ratio: 1
     sync_to_ongoing_updates: true
     auto_expansion: true
-  "LeggedBodyBar": 
+  "LeggedBodyBar":
     stanceWidth: 0.15
-  "KinematicsBar": 
+  "KinematicsBar":
     forward_kinematics: true
     inverse_kinematics: true
     preset_kinematics: true
@@ -362,11 +369,11 @@ toolbars:
     snapDistance: 0.025
     penetrationBlockDepth: 0.0005
     lazyCollisionDetectionMode: true
-Body: 
-  "BodySelectionManager": 
-    current_body_item: 5
-    current_link: "Line0"
-  "KinematicFaultChecker": 
+Body:
+  "BodySelectionManager":
+    current_body_item: 2
+    current_link: "CHASSIS"
+  "KinematicFaultChecker":
     checkJointPositions: true
     angleMargin: 0
     translationMargin: 0
@@ -375,81 +382,83 @@ Body:
     targetJoints: all
     checkSelfCollisions: true
     onlyTimeBarRange: false
-  "OperableSceneBody": 
-    scene_bodies: 
-      - 
+  "OperableSceneBody":
+    scene_bodies:
+      -
         body_item: 2
         show_cm: false
         show_cm_projection: false
         show_zmp: false
-      - 
+      -
         body_item: 5
         show_cm: false
         show_cm_projection: false
         show_zmp: false
-  "SplineFilterDialog": 
+  "SplineFilterDialog":
     isInputFrameRateSpecified: false
     inputFrameRate: 200
     isOutputFrameRateSpecified: false
     outputFrameRate: 200
-viewAreas: 
-  - 
+TaskCreator:
+  "TaskCreator": { }
+viewAreas:
+  -
     type: embedded
     tabs: true
-    contents: 
+    contents:
       type: splitter
       orientation: horizontal
-      sizes: [ 322, 1522 ]
-      children: 
-        - 
+      sizes: [ 322, 1524 ]
+      children:
+        -
           type: splitter
           orientation: vertical
           sizes: [ 504, 504 ]
-          children: 
-            - 
+          children:
+            -
               type: pane
-              views: [ 2 ]
-            - 
+              views: [ 3 ]
+            -
               type: pane
-              views: [ 1, 9 ]
-              current: 1
-        - 
+              views: [ 2, 10 ]
+              current: 2
+        -
           type: splitter
           orientation: vertical
           sizes: [ 721, 287 ]
-          children: 
-            - 
+          children:
+            -
               type: splitter
               orientation: horizontal
-              sizes: [ 759, 759 ]
-              children: 
-                - 
+              sizes: [ 760, 760 ]
+              children:
+                -
                   type: pane
-                  views: [ 8, 7, 0 ]
-                  current: 0
-                - 
-                  type: pane
-                  views: [ 5 ]
-            - 
-              type: splitter
-              orientation: horizontal
-              sizes: [ 759, 759 ]
-              children: 
-                - 
-                  type: pane
-                  views: [ 4, 12 ]
-                  current: 4
-                - 
+                  views: [ 9, 8, 1 ]
+                  current: 1
+                -
                   type: pane
                   views: [ 6 ]
-layoutOfToolBars: 
-  rows: 
-    - 
+            -
+              type: splitter
+              orientation: horizontal
+              sizes: [ 760, 760 ]
+              children:
+                -
+                  type: pane
+                  views: [ 5, 13, 0 ]
+                  current: 0
+                -
+                  type: pane
+                  views: [ 7 ]
+layoutOfToolBars:
+  rows:
+    -
       - { name: "FileBar", x: 0, priority: 0 }
       - { name: "ScriptBar", x: 49, priority: 0 }
       - { name: "SimulationBar", x: 97, priority: 1 }
       - { name: "TimeBar", x: 306, priority: 2 }
-    - 
+    -
       - { name: "BodyBar", x: 0, priority: 0 }
       - { name: "KinematicsBar", x: 276, priority: 0 }
       - { name: "SceneBar", x: 671, priority: 1 }

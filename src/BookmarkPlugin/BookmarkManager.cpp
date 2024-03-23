@@ -223,8 +223,8 @@ void BookmarkManager::Impl::removeItem()
 void BookmarkManager::Impl::onAddButtonClicked()
 {
     vector<string> filenames = getOpenFileNames(_("Open a project"), "cnoid");
-    for(size_t i = 0; i < filenames.size(); ++i) {
-        addItem(filenames[i].c_str());
+    for(auto& filename : filenames) {
+        addItem(filename.c_str());
     }
 }
 

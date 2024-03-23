@@ -45,7 +45,7 @@ void FluidAreaItem::initializeClass(ExtensionManager* ext)
 }
 
 
-Item* FluidAreaItem::doDuplicate() const
+Item* FluidAreaItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new FluidAreaItem(*this);
 }

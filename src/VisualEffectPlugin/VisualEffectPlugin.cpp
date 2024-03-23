@@ -5,7 +5,7 @@
 #include <cnoid/Plugin>
 #include <fmt/format.h>
 #include "VEAreaItem.h"
-#include "VisualEffectorItem.h"
+#include "VEVisionSimulatorItem.h"
 
 using namespace cnoid;
 
@@ -23,7 +23,7 @@ public:
     virtual bool initialize() override
     {
         VEAreaItem::initializeClass(this);
-        VisualEffectorItem::initializeClass(this);
+        VEVisionSimulatorItem::initializeClass(this);
         return true;
     }
 

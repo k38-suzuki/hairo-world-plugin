@@ -20,7 +20,7 @@ public:
     virtual bool initializeSimulation(SimulatorItem* simulatorItem) override;
 
 protected:
-    virtual Item* doDuplicate() const override;
+    virtual Item* doCloneItem(CloneMap* cloneMap) const override;
     virtual void doPutProperties(PutPropertyFunction& putProperty) override;
     virtual bool store(Archive& archive) override;
     virtual bool restore(const Archive& archive) override;
