@@ -19,8 +19,10 @@ set(sources
   EnergyFilter.cpp
   GammaCamera.cpp
   GammaData.cpp
+  GammaEffect.cpp
   GammaImageGenerator.cpp
   GammaImagerItem.cpp
+  GammaVisionSimulatorItem.cpp
   OrthoNodeData.cpp
   PHITSPlugin.cpp
   PHITSRunner.cpp
@@ -43,8 +45,10 @@ set(headers
   EnergyFilter.h
   GammaCamera.h
   GammaData.h
+  GammaEffect.h
   GammaImageGenerator.h
   GammaImagerItem.h
+  GammaVisionSimulatorItem.h
   OrthoNodeData.h
   PHITSRunner.h
   PHITSWriter.h

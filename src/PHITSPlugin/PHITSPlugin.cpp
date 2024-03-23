@@ -7,6 +7,7 @@
 #include "CrossSectionItem.h"
 #include "DoseSimulatorItem.h"
 #include "GammaImagerItem.h"
+#include "GammaVisionSimulatorItem.h"
 
 using namespace cnoid;
 
@@ -26,6 +27,7 @@ public:
         CrossSectionItem::initializeClass(this);
         DoseSimulatorItem::initializeClass(this);
         GammaImagerItem::initializeClass(this);
+        // GammaVisionSimulatorItem::initializeClass(this);
         return true;
     }
 

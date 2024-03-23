@@ -19,7 +19,7 @@ GammaCamera::GammaCamera()
 
 
 GammaCamera::GammaCamera(const GammaCamera& org, bool copyStateOnly)
-: Camera(org, copyStateOnly)
+    : Camera(org, copyStateOnly)
 {
     if(!copyStateOnly) {
 
@@ -118,4 +118,5 @@ registerHolderDevice(
     {
         return camera->writeSpecifications(info);
     });
+
 }

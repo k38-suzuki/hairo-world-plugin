@@ -148,3 +148,6 @@ msgstr "PHITSが終了しました．"
 
 msgid "QAD has been finished."
 msgstr "QADが終了しました．"
+
+msgid "GammaVisionSimulatorItem"
+msgstr "ガンマビジョンシミュレータアイテム"
