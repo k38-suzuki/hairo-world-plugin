@@ -37,9 +37,8 @@ namespace cnoid {
 class ImageGenerator::Impl
 {
 public:
-    ImageGenerator* self;
 
-    Impl(ImageGenerator* self);
+    Impl();
 
     random_device seed_gen;
     default_random_engine engine;
@@ -53,12 +52,11 @@ public:
 
 ImageGenerator::ImageGenerator()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-ImageGenerator::Impl::Impl(ImageGenerator* self)
-    : self(self)
+ImageGenerator::Impl::Impl()
 {
     std::default_random_engine engineImpl(seed_gen());
     std::normal_distribution<> distImpl(0.0, 1.0);
@@ -475,7 +473,7 @@ void ImageGenerator::Impl::differentialFilter(Image& image, const double kernel[
 }
 
 
-Image ImageGenerator::toCnoidImage(const QImage& image)
+Image toCnoidImage(const QImage& image)
 {
     Image cimage;
     cimage.setSize(image.width(), image.height(), 3);
@@ -493,7 +491,7 @@ Image ImageGenerator::toCnoidImage(const QImage& image)
 }
 
 
-QImage ImageGenerator::toQImage(const Image& image)
+QImage toQImage(const Image& image)
 {
     QImage qimage(image.width(), image.height(), QImage::Format_RGB888);
     const unsigned char* pixels = image.pixels();

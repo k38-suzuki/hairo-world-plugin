@@ -19,9 +19,8 @@ namespace cnoid {
 class NetEm::Impl
 {
 public:
-    NetEm* self;
 
-    Impl(NetEm* self);
+    Impl();
     ~Impl();
 
     vector<string> interfaces;
@@ -50,12 +49,11 @@ public:
 
 NetEm::NetEm()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-NetEm::Impl::Impl(NetEm* self)
-    : self(self)
+NetEm::Impl::Impl()
 {
     interfaces.clear();
     ifbdevices.clear();

@@ -6,6 +6,7 @@
 #include <cnoid/Camera>
 #include <cnoid/EigenUtil>
 #include <cnoid/Link>
+#include <cnoid/ImageGenerator>
 #include <QImage>
 #include <QPainter>
 #include <fmt/format.h>
@@ -131,41 +132,6 @@ void drawGammaData(QPainter& painter, const QRect& rect, const GammaDataInfo& da
         }
     }
     return;
-}
-
-QImage fromCImage(const Image& image)
-{
-    int width = image.width();
-    int height = image.height();
-    QImage qImage(width, height, QImage::Format_ARGB32);
-    const unsigned char* pixels = image.pixels();
-    for(int j = 0 ; j < height ; j++) {
-        for(int i = 0 ; i < width ; i++) {
-            int index = i * 3 + j * width * 3;
-            QColor color(pixels[index], pixels[index + 1], pixels[index + 2]);
-            qImage.setPixelColor(i, j, color);
-        }
-    }
-    return qImage;
-}
-
-Image fromQImage(const QImage& qImage)
-{
-    int width = qImage.width();
-    int height = qImage.height();
-    Image image;
-    image.setSize(width, height, 3);
-    unsigned char* pixels = image.pixels();
-    for(int j = 0 ; j < height ; j++) {
-        for(int i = 0 ; i < width ; i++) {
-            int index = i * 3 + j * width * 3;
-            QRgb rgba = qImage.pixel(i,j);
-            pixels[index] = qRed(rgba);
-            pixels[index + 1] = qGreen(rgba);
-            pixels[index + 2] = qBlue(rgba);
-        }
-    }
-    return image;
 }
 
 struct DirClippingInfo {
@@ -399,9 +365,8 @@ namespace cnoid {
 class GammaImageGenerator::Impl
 {
 public:
-    GammaImageGenerator* self;
 
-    Impl(GammaImageGenerator* self);
+    Impl();
 
     QImage g_qimage;
     Image g_image;
@@ -425,12 +390,11 @@ public:
 
 GammaImageGenerator::GammaImageGenerator()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-GammaImageGenerator::Impl::Impl(GammaImageGenerator* self)
-    : self(self)
+GammaImageGenerator::Impl::Impl()
 {
     effectiveDist = 1.0;
 }
@@ -455,7 +419,7 @@ void GammaImageGenerator::Impl::generateImage(Camera* camera, std::shared_ptr<Im
     }
     this->camera = camera;
 
-    QImage qImage = fromCImage(*image.get());
+    QImage qImage = toQImage(*image.get());
     if(camera) {
         onGenerateGammaImage(*image.get());
         if(!qImage.isNull() && !g_qimage.isNull()) {
@@ -466,7 +430,7 @@ void GammaImageGenerator::Impl::generateImage(Camera* camera, std::shared_ptr<Im
             painter.end();
         }
     }
-    *image.get() = fromQImage(qImage);
+    *image.get() = toCnoidImage(qImage);
 }
 
 

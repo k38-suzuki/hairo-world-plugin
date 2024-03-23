@@ -28,9 +28,8 @@ namespace cnoid {
 class JoystickStarter::Impl
 {
 public:
-  JoystickStarter* self;
 
-  Impl(JoystickStarter* self);
+  Impl();
 
   bool startState;
   bool pauseState;
@@ -47,13 +46,12 @@ public:
 
 JoystickStarter::JoystickStarter()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-JoystickStarter::Impl::Impl(JoystickStarter* self)
-    : self(self),
-      sb(SimulationBar::instance())
+JoystickStarter::Impl::Impl()
+    : sb(SimulationBar::instance())
 {
     startState = false;
     pauseState = false;

@@ -29,9 +29,8 @@ namespace cnoid {
 class SystemTrayManager::Impl
 {
 public:
-    SystemTrayManager* self;
 
-    Impl(SystemTrayManager* self);
+    Impl();
 };
 
 }
@@ -39,12 +38,11 @@ public:
 
 SystemTrayManager::SystemTrayManager()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-SystemTrayManager::Impl::Impl(SystemTrayManager* self)
-    : self(self)
+SystemTrayManager::Impl::Impl()
 {
 
 }

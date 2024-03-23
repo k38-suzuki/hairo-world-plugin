@@ -69,9 +69,8 @@ namespace cnoid {
 class KIOSKManager::Impl
 {
 public:
-    KIOSKManager* self;
 
-    Impl(KIOSKManager* self);
+    Impl();
 
     JoystickCapture joystick;
     SimulatorItem* simulatorItem;
@@ -87,12 +86,11 @@ public:
 
 KIOSKManager::KIOSKManager(ExtensionManager* ext)
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-KIOSKManager::Impl::Impl(KIOSKManager* self)
-    : self(self)
+KIOSKManager::Impl::Impl()
 {
     joystick.setDevice("/dev/input/js0");
     joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });

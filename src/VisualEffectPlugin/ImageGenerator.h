@@ -28,13 +28,13 @@ public:
     void sobelFilter(Image& image);
     void prewittFilter(Image& image);
 
-    Image toCnoidImage(const QImage& image);
-    QImage toQImage(const Image& image);
-
 private:
     class Impl;
     Impl* impl;
 };
+
+CNOID_EXPORT Image toCnoidImage(const QImage& image);
+CNOID_EXPORT QImage toQImage(const Image& image);
 
 }
 
