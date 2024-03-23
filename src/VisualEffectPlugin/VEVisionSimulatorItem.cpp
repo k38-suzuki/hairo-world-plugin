@@ -83,7 +83,7 @@ VEVisionSimulatorItem::Impl::Impl(VEVisionSimulatorItem* self, const Impl& org)
 
 VEVisionSimulatorItem::~VEVisionSimulatorItem()
 {
-
+    delete impl;
 }
 
 
