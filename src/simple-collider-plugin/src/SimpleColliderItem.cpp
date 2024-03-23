@@ -1,0 +1,540 @@
+/**
+   @author Kenta Suzuki
+*/
+
+#include "SimpleColliderItem.h"
+#include <cnoid/ExtensionManager>
+#include <cnoid/WorldItem>
+#include <cnoid/SceneGraph>
+#include <cnoid/SceneDrawables>
+#include <cnoid/Selection>
+#include <cnoid/ItemManager>
+#include <cnoid/MeshGenerator>
+#include <cnoid/EigenUtil>
+#include <cnoid/PutPropertyFunction>
+#include <cnoid/Archive>
+#include <cnoid/EigenArchive>
+#include <fmt/format.h>
+#include "gettext.h"
+
+using namespace std;
+using namespace fmt;
+using namespace cnoid;
+
+namespace {
+
+class ColliderLocation : public LocationProxy
+{
+public:
+    SimpleColliderItem::Impl* impl;
+    Signal<void()> sigLocationChanged_;
+
+    ColliderLocation(SimpleColliderItem::Impl* impl);
+    virtual Item* getCorrespondingItem() override;
+    virtual Isometry3 getLocation() const override;
+    virtual bool setLocation(const Isometry3& T) override;
+    virtual SignalProxy<void()> sigLocationChanged() override;
+};
+
+}
+
+namespace cnoid {
+
+class SimpleColliderItem::Impl
+{
+public:
+    SimpleColliderItem* self;
+
+    Impl(SimpleColliderItem* self);
+    Impl(SimpleColliderItem* self, const Impl& org);
+
+    void createScene();
+    void updateScenePosition();
+    void updateSceneShape();
+    void updateSceneMaterial();
+
+    WorldItem* worldItem;
+    Isometry3 position_;
+    SgPosTransformPtr scene;
+    Selection sceneTypeSelection;
+    SgShapePtr sceneShape;
+    SgMaterialPtr sceneMaterial;
+    Vector3 size_;
+    double radius_;
+    double height_;
+    Vector3 diffuseColor_;
+    double specularExponent_;
+    double transparency_;
+    ref_ptr<ColliderLocation> colliderLocation;
+};
+
+}
+
+
+void SimpleColliderItem::initializeClass(ExtensionManager* ext)
+{
+    ext->itemManager()
+        .registerClass<SimpleColliderItem>(N_("SimpleColliderItem"))
+        .addCreationPanel<SimpleColliderItem>();
+}
+
+
+SimpleColliderItem::SimpleColliderItem()
+{
+    impl = new Impl(this);
+}
+
+
+SimpleColliderItem::Impl::Impl(SimpleColliderItem* self)
+    : self(self)
+{
+    worldItem = nullptr;
+    position_.setIdentity();
+    sceneTypeSelection.setSymbol(BOX, N_("Box"));
+    sceneTypeSelection.setSymbol(CYLINDER, N_("Cylinder"));
+    sceneTypeSelection.setSymbol(SPHERE, N_("Sphere"));
+    sceneTypeSelection.select(BOX);
+    size_ << 1.0, 1.0, 1.0;
+    radius_ = 0.5;
+    height_ = 1.0;
+    diffuseColor_ << 0.5, 0.5, 0.5;
+    specularExponent_ = 25.0f;
+    transparency_ = 0.5;
+}
+
+
+SimpleColliderItem::SimpleColliderItem(const SimpleColliderItem& org)
+    : Item(org)
+{
+    impl = new Impl(this, *org.impl);
+}
+
+
+SimpleColliderItem::Impl::Impl(SimpleColliderItem* self, const Impl& org)
+    : self(self)
+{
+    worldItem = nullptr;
+    position_ = org.position_;
+    sceneTypeSelection = org.sceneTypeSelection;
+    size_ = org.size_;
+    radius_ = org.radius_;
+    height_ = org.height_;
+    diffuseColor_ = org.diffuseColor_;
+    specularExponent_ = org.specularExponent_;
+    transparency_ = org.transparency_;
+}
+
+
+SimpleColliderItem::~SimpleColliderItem()
+{
+    delete impl;
+}
+
+
+SgNode* SimpleColliderItem::getScene()
+{
+    if(!impl->scene) {
+        impl->createScene();
+    }
+    return impl->scene;
+}
+
+
+void SimpleColliderItem::setPosition(const Isometry3& T)
+{
+    impl->position_ = T;
+    impl->updateScenePosition();
+    notifyUpdate();
+    if(impl->colliderLocation) {
+        impl->colliderLocation->sigLocationChanged_();
+    }
+}
+
+
+const Isometry3& SimpleColliderItem::position() const
+{
+    return impl->position_;
+}
+
+
+bool SimpleColliderItem::setSceneType(int sceneId)
+{
+    if(!impl->sceneTypeSelection.select(sceneId)) {
+        return false;
+    }
+    impl->updateSceneShape();
+    notifyUpdate();
+    return true;
+}
+
+
+double SimpleColliderItem::sceneType() const
+{
+    return impl->sceneTypeSelection.which();
+}
+
+
+void SimpleColliderItem::setSize(const Vector3& size)
+{
+    impl->size_ = size;
+    impl->updateSceneShape();
+}
+
+
+const Vector3& SimpleColliderItem::size() const
+{
+    return impl->size_;
+}
+
+
+void SimpleColliderItem::setRadius(const double& radius)
+{
+    impl->radius_ = radius;
+    impl->updateSceneShape();
+}
+
+
+const double& SimpleColliderItem::radius() const
+{
+    return impl->radius_;
+}
+
+
+void SimpleColliderItem::setHeight(const double& height)
+{
+    impl->height_ = height;
+    impl->updateSceneShape();
+}
+
+
+const double& SimpleColliderItem::height() const
+{
+    return impl->height_;
+}
+
+
+void SimpleColliderItem::setDiffuseColor(const Vector3& diffuseColor)
+{
+    impl->diffuseColor_ = diffuseColor;
+    impl->updateSceneMaterial();
+}
+
+
+void SimpleColliderItem::setTransparency(const double& transparency)
+{
+    impl->transparency_ = transparency;
+    impl->updateSceneMaterial();
+}
+
+
+LocationProxyPtr SimpleColliderItem::getLocationProxy()
+{
+    if(!impl->colliderLocation) {
+        impl->colliderLocation = new ColliderLocation(impl);
+    }
+    return impl->colliderLocation;
+}
+
+
+void SimpleColliderItem::Impl::createScene()
+{
+    if(!scene) {
+        scene = new SgPosTransform;
+        updateScenePosition();
+        sceneShape = new SgShape;
+        updateSceneShape();
+        sceneMaterial = new SgMaterial;
+        updateSceneMaterial();
+    } else {
+        scene->clearChildren();
+    }
+
+    sceneShape->setMaterial(sceneMaterial);
+    auto scenePos = new SgPosTransform;
+    auto p = position_.translation();
+    scenePos->setTranslation(p);
+    scenePos->setRotation(position_.linear());
+    scenePos->addChild(sceneShape);
+    scene->addChild(scenePos);
+}
+
+
+void SimpleColliderItem::Impl::updateScenePosition()
+{
+    if(scene) {
+        auto p = position_.translation();
+        scene->setTranslation(p);
+        scene->setRotation(position_.linear());
+        scene->notifyUpdate();
+    }
+}
+
+
+void SimpleColliderItem::Impl::updateSceneShape()
+{
+    if(sceneShape) {
+        MeshGenerator meshGenerator;
+
+        switch(sceneTypeSelection.which()) {
+        case BOX:
+            sceneShape->setMesh(meshGenerator.generateBox(size_));
+            break;
+        case CYLINDER:
+            sceneShape->setMesh(meshGenerator.generateCylinder(radius_, height_));
+            break;
+        case SPHERE:
+            sceneShape->setMesh(meshGenerator.generateSphere(radius_));
+            break;
+        default:
+            break;
+        }
+        sceneShape->notifyUpdate();
+    }
+}
+
+
+void SimpleColliderItem::Impl::updateSceneMaterial()
+{
+    if(sceneMaterial) {
+        sceneMaterial->setDiffuseColor(diffuseColor_);
+        sceneMaterial->setSpecularExponent(specularExponent_);
+        sceneMaterial->setTransparency(transparency_);
+        sceneMaterial->notifyUpdate();
+    }
+}
+
+
+Item* SimpleColliderItem::doCloneItem(CloneMap* cloneMap) const
+{
+    return new SimpleColliderItem(*this);
+}
+
+
+void SimpleColliderItem::onTreePathChanged()
+{
+    auto newWorldItem = findOwnerItem<WorldItem>();
+    if(newWorldItem && newWorldItem != impl->worldItem) {
+        impl->worldItem = newWorldItem;
+        mvout()
+            << format(_("SimpleColliderItem \"{0}\" has been attached to {1}."),
+                      name(), impl->worldItem->name())
+            << endl;
+    }
+}
+
+
+void SimpleColliderItem::doPutProperties(PutPropertyFunction& putProperty)
+{
+    auto p = impl->position_.translation();
+    putProperty(_("translation"), format("{0:.3g} {1:.3g} {2:.3g}", p.x(), p.y(), p.z()),
+                [this](const string& text) {
+                    Vector3 p;
+                    if(toVector3(text, p)) {
+                        impl->position_.translation() = p;
+                        setPosition(impl->position_);
+                        return true;
+                    }
+                    return false;
+                });
+
+    auto r = degree(rpyFromRot(impl->position_.linear()));
+    putProperty(_("rotation"), format("{0:.0f} {1:.0f} {2:.0f}", r.x(), r.y(), r.z()),
+                [this](const string& text) {
+                    Vector3 rpy;
+                    if(toVector3(text, rpy)) {
+                        impl->position_.linear() = rotFromRpy(radian(rpy));
+                        setPosition(impl->position_);
+                        return true;
+                    }
+                    return false;
+                });
+
+    putProperty(_("collider type"), impl->sceneTypeSelection,
+                [this](int which) { return setSceneType(which); });
+
+    auto s = impl->size_;
+    auto sceneId = impl->sceneTypeSelection.which();
+    switch(sceneId) {
+    case BOX:
+        putProperty(_("size"), format("{0:.3g} {1:.3g} {2:.3g}", s.x(), s.y(), s.z()),
+                    [this](const string& text) {
+                        Vector3 s;
+                        if(toVector3(text, s)) {
+                            setSize(s);
+                            return true;
+                        }
+                        return false;
+                    });
+        break;
+    case CYLINDER:
+    case SPHERE:
+        putProperty.min(0.0).max(999.)(_("radius"), impl->radius_,
+                    [this](double value) {
+                        setRadius(value);
+                        return true;
+                    });
+        if(sceneId == CYLINDER) {
+            putProperty.min(0.0).max(999.0)(_("height"), impl->height_,
+                        [this](double value) {
+                            setHeight(value);
+                            return true;
+                        });
+        }
+        break;
+    default:
+        break;
+    }
+
+    auto c = impl->diffuseColor_;
+    putProperty(_("diffuseColor"), format("{0:.3g} {1:.3g} {2:.3g}", c.x(), c.y(), c.z()),
+                [this](const string& text) {
+                    Vector3 c;
+                    if(toVector3(text, c)) {
+                        setDiffuseColor(c);
+                        return true;
+                    }
+                    return false;
+                });
+
+    // putProperty.min(0.0).max(100.0)(_("specularExponent"), specularExponent_,
+    //             [this](double value) {
+    //                 specularExponent_ = value;
+    //                 updateSceneMaterial();
+    //                 return true;
+    //             });
+
+    putProperty.min(0.0).max(1.0)(_("transparency"), impl->transparency_,
+                [this](double value) {
+                    setTransparency(value);
+                    return true;
+                });
+}
+
+
+bool SimpleColliderItem::store(Archive& archive)
+{
+    write(archive, "translation", Vector3(impl->position_.translation()));
+    write(archive, "rotation", degree(rpyFromRot(impl->position_.linear())));
+    write(archive, "size", impl->size_);
+    write(archive, "diffuse_color", impl->diffuseColor_);
+    archive.write("radius", impl->radius_);
+    archive.write("height", impl->height_);
+    archive.write("specular_exponent", impl->specularExponent_);
+    archive.write("transparency", impl->transparency_);
+    archive.write("scene_type", impl->sceneTypeSelection.selectedSymbol());
+    return true;
+}
+
+
+bool SimpleColliderItem::restore(const Archive& archive)
+{
+    Vector3 v;
+    if(read(archive, "translation", v)) {
+        impl->position_.translation() = v;
+    }
+    if(read(archive, "rotation", v)) {
+        impl->position_.linear() = rotFromRpy(radian(v));
+    }
+    if(read(archive, "size", v)) {
+        impl->size_ = v;
+    }
+    if(read(archive, "diffuse_color", v)) {
+        impl->diffuseColor_ = v;
+    }
+    archive.read("radius", impl->radius_);
+    archive.read("height", impl->height_);
+    archive.read("specular_exponent", impl->specularExponent_);
+    archive.read("transparency", impl->transparency_);
+    string type;
+    if(archive.read("scene_type", type)) {
+        impl->sceneTypeSelection.select(type);
+    }
+    return true;
+}
+
+
+ColliderLocation::ColliderLocation(SimpleColliderItem::Impl* impl)
+    : LocationProxy(GlobalLocation),
+      impl(impl)
+{
+
+}
+
+
+Item* ColliderLocation::getCorrespondingItem()
+{
+    return impl->self;
+}
+
+
+Isometry3 ColliderLocation::getLocation() const
+{
+    return impl->position_;
+}
+
+
+bool ColliderLocation::setLocation(const Isometry3& T)
+{
+    impl->self->setPosition(T);
+    impl->self->notifyUpdate();
+    return true;
+}
+
+
+SignalProxy<void()> ColliderLocation::sigLocationChanged()
+{
+    return sigLocationChanged_;
+}
+
+
+bool collision(SimpleColliderItem* colliderItem, const Vector3& point)
+{
+    auto p = colliderItem->position().translation();
+    auto R = colliderItem->position().linear();
+    auto size = colliderItem->size();
+    auto radius = colliderItem->radius();
+    auto height = colliderItem->height();
+
+    // box
+    Vector3 min = p - size / 2.0;
+    Vector3 max = p + size / 2.0;
+    Vector3 p2 = R.inverse() * (point - p) + p;
+
+    // cylinder
+    Vector3 a = R * (Vector3::UnitY() * height / 2.0) + p;
+    Vector3 b = R * (Vector3::UnitY() * height / 2.0 * -1.0) + p;
+    Vector3 c = a - b;
+    Vector3 d = point - b;
+    double c_dot_d = c.dot(d);
+
+    // sphere
+    Vector3 r = p - point;
+
+    int sceneId = colliderItem->sceneType();
+    switch(sceneId) {
+    case SimpleColliderItem::BOX:
+        if((min[0] <= p2[0]) && (p2[0] <= max[0])
+                && (min[1] <= p2[1]) && (p2[1] <= max[1])
+                && (min[2] <= p2[2]) && (p2[2] <= max[2])) {
+            return true;
+        }
+        break;
+    case SimpleColliderItem::CYLINDER:
+        if((0.0 < c_dot_d) && (c_dot_d < c.dot(c))) {
+            double l2 = d.dot(d) - d.dot(c) * d.dot(c) / c.dot(c);
+            double r2 = radius * radius;
+            if(l2 < r2) {
+                return true;
+            }
+        }
+        break;
+    case SimpleColliderItem::SPHERE:
+        if(r.norm() <= radius) {
+            return true;
+        }
+        break;
+    default:
+        break;
+    }
+    return false;
+}

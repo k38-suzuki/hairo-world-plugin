@@ -1,0 +1,60 @@
+# Japanese translations for SimpleColliderPlugin package.
+# Copyright (C) 2024 THE SimpleColliderPlugin'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the SimpleColliderPlugin package.
+# k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SimpleColliderPlugin\n"
+"Report-Msgid-Bugs-To: suzuki.kenta38@jaea.go.jp\n"
+"POT-Creation-Date: 2024-03-24 00:24-0800\n"
+"PO-Revision-Date: 2024-03-24 00:24-0800\n"
+"Last-Translator: k38-suzuki <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "SimpleColliderItem"
+msgstr "シンプルコライダアイテム"
+
+msgid "Box"
+msgstr "ボックス"
+
+msgid "Cylinder"
+msgstr "シリンダ"
+
+msgid "Sphere"
+msgstr "スフィア"
+
+msgid "SimpleColliderItem \"{0}\" has been attached to {1}."
+msgstr "シンプルコライダアイテム \"{0}\" が {1} に取り付けられました．"
+
+msgid "translation"
+msgstr "位置"
+
+msgid "rotation"
+msgstr "姿勢"
+
+msgid "collider type"
+msgstr "コライダタイプ"
+
+msgid "size"
+msgstr "サイズ"
+
+msgid "radius"
+msgstr "半径"
+
+msgid "height"
+msgstr "高さ"
+
+msgid "diffuseColor"
+msgstr "コライダの色"
+
+msgid "specularExponent"
+msgstr "スペキュラ指数"
+
+msgid "transparency"
+msgstr "透明度"
