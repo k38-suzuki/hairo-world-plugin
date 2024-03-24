@@ -64,3 +64,6 @@ msgstr "スペキュラ指数"
 
 msgid "transparency"
 msgstr "透明度"
+
+msgid "This combination is not supported."
+msgstr "この組み合わせはサポートされていません．"

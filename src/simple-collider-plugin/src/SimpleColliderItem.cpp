@@ -26,6 +26,13 @@ using namespace cnoid;
 
 namespace {
 
+void notSupportText()
+{
+    // mvout()
+    //     << format(_("This combination is not supported."))
+    //     << endl;    
+}
+
 class ColliderLocation : public LocationProxy
 {
 public:
@@ -599,36 +606,54 @@ bool collision(SimpleColliderItem* colliderItem1, SimpleColliderItem* colliderIt
     auto size2 = colliderItem2->size();
     auto radius1 = colliderItem1->radius();
     auto radius2 = colliderItem2->radius();
-    auto height1 = colliderItem2->height();
+    auto height1 = colliderItem1->height();
     auto height2 = colliderItem2->height();
 
+    // box1 x box2
+
+    // box1 x cylinder2
+
+    // box1 x sphere2
+
+    // cylinder1 x box2
+
+    // cylinder1 x cylinder2
+
+    // cylinder1 x sphere2
+
+    // sphere1 x box2
+
+    // sphere1 x cylinder2
+
+    // sphere1 x sphere2
+
     int sceneId1 = colliderItem1->sceneType();
-    int sceneId2 = colliderItem1->sceneType();
+    int sceneId2 = colliderItem2->sceneType();
 
     switch(sceneId1) {
     case SimpleColliderItem::BOX:
         if(sceneId2 == SimpleColliderItem::BOX) {
-
+            notSupportText();
         } else if(sceneId2 == SimpleColliderItem::CYLINDER) {
-
+            notSupportText();
         } else if(sceneId2 == SimpleColliderItem::SPHERE) {
-
+            notSupportText();
         }
         break;
     case SimpleColliderItem::CYLINDER:
         if(sceneId2 == SimpleColliderItem::BOX) {
-
+            notSupportText();
         } else if(sceneId2 == SimpleColliderItem::CYLINDER) {
-
+            notSupportText();
         } else if(sceneId2 == SimpleColliderItem::SPHERE) {
-
+            notSupportText();
         }
         break;
     case SimpleColliderItem::SPHERE:
         if(sceneId2 == SimpleColliderItem::BOX) {
-
+            notSupportText();
         } else if(sceneId2 == SimpleColliderItem::CYLINDER) {
-
+            notSupportText();
         } else if(sceneId2 == SimpleColliderItem::SPHERE) {
             if((p1 - p2).norm() <= (radius1 + radius2)) {
                 return true;
