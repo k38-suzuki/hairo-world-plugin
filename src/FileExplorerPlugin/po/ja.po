@@ -20,8 +20,8 @@ msgstr ""
 msgid "Open"
 msgstr "開く"
 
-msgid "File"
+msgid "gedit"
 msgstr "ファイル"
 
-msgid "Directory"
+msgid "Nautilus"
 msgstr "ディレクトリ"

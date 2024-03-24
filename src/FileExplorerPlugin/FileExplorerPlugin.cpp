@@ -30,11 +30,11 @@ public:
         ItemTreeView::instance()->customizeContextMenu<BodyItem>(
             [&](BodyItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
                 menuManager.setPath("/").setPath(_("Open"));
-                menuManager.addItem(_("File"))->sigTriggered().connect(
+                menuManager.addItem(_("gedit"))->sigTriggered().connect(
                     [&, item](){
                         QProcess::startDetached("gedit",
                             QStringList() << item->filePath().c_str()); });
-                menuManager.addItem(_("Directory"))->sigTriggered().connect(
+                menuManager.addItem(_("Nautilus"))->sigTriggered().connect(
                     [&, item](){
                         filesystem::path path(item->filePath().c_str());
                         QProcess::startDetached("nautilus",
