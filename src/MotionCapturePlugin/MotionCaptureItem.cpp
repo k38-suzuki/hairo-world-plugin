@@ -43,9 +43,6 @@ public:
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void finalizeSimulation();
     void onPreDynamics();
-    void doPutProperties(PutPropertyFunction& putProperty);
-    bool store(Archive& archive);
-    bool restore(const Archive& archive);
 };
 
 }
@@ -93,7 +90,7 @@ MotionCaptureItem::~MotionCaptureItem()
 void MotionCaptureItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<MotionCaptureItem>(N_("MotionCaptureItem"))
+            .registerClass<MotionCaptureItem, SubSimulatorItem>(N_("MotionCaptureItem"))
             .addCreationPanel<MotionCaptureItem>();
 }
 
@@ -235,25 +232,13 @@ Item* MotionCaptureItem::doCloneItem(CloneMap* cloneMap) const
 void MotionCaptureItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     SubSimulatorItem::doPutProperties(putProperty);
-    impl->doPutProperties(putProperty);
-}
-
-
-void MotionCaptureItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
-{
-    putProperty(_("Record motion data"), isMotionDataRecordingEnabled, changeProperty(isMotionDataRecordingEnabled));
+    putProperty(_("Record motion data"), impl->isMotionDataRecordingEnabled, changeProperty(impl->isMotionDataRecordingEnabled));
 }
 
 
 bool MotionCaptureItem::store(Archive& archive)
 {
     SubSimulatorItem::store(archive);
-    return impl->store(archive);
-}
-
-
-bool MotionCaptureItem::Impl::store(Archive& archive)
-{
     return true;
 }
 
@@ -261,11 +246,5 @@ bool MotionCaptureItem::Impl::store(Archive& archive)
 bool MotionCaptureItem::restore(const Archive& archive)
 {
     SubSimulatorItem::restore(archive);
-    return impl->restore(archive);
-}
-
-
-bool MotionCaptureItem::Impl::restore(const Archive& archive)
-{
     return true;
 }

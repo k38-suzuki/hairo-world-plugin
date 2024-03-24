@@ -74,9 +74,6 @@ public:
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void extract(SgNode* node, Link* link, Vector3 color);
     void onPostDynamics();
-    void doPutProperties(PutPropertyFunction& putProperty);
-    bool store(Archive& archive);
-    bool restore(const Archive& archive);
 };
 
 }
@@ -125,7 +122,7 @@ CollisionVisualizerItem::~CollisionVisualizerItem()
 void CollisionVisualizerItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<CollisionVisualizerItem>(N_("CollisionVisualizerItem"))
+            .registerClass<CollisionVisualizerItem, SubSimulatorItem>(N_("CollisionVisualizerItem"))
             .addCreationPanel<CollisionVisualizerItem>();
 }
 
@@ -225,27 +222,15 @@ Item* CollisionVisualizerItem::doCloneItem(CloneMap* cloneMap) const
 void CollisionVisualizerItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     SubSimulatorItem::doPutProperties(putProperty);
-    impl->doPutProperties(putProperty);
-}
-
-
-void CollisionVisualizerItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
-{
-    putProperty(_("Target bodies"), bodyNameListString,
-                [&](const string& names){ return updateNames(names, bodyNameListString, bodyNames); });
+    putProperty(_("Target bodies"), impl->bodyNameListString,
+                [&](const string& names){ return updateNames(names, impl->bodyNameListString, impl->bodyNames); });
 }
 
 
 bool CollisionVisualizerItem::store(Archive& archive)
 {
     SubSimulatorItem::store(archive);
-    return impl->store(archive);
-}
-
-
-bool CollisionVisualizerItem::Impl::store(Archive& archive)
-{
-    writeElements(archive, "target_bodies", bodyNames, true);
+    writeElements(archive, "target_bodies", impl->bodyNames, true);
     return true;
 }
 
@@ -253,13 +238,7 @@ bool CollisionVisualizerItem::Impl::store(Archive& archive)
 bool CollisionVisualizerItem::restore(const Archive& archive)
 {
     SubSimulatorItem::restore(archive);
-    return impl->restore(archive);
-}
-
-
-bool CollisionVisualizerItem::Impl::restore(const Archive& archive)
-{
-    readElements(archive, "target_bodies", bodyNames);
-    bodyNameListString = getNameListString(bodyNames);
+    readElements(archive, "target_bodies", impl->bodyNames);
+    impl->bodyNameListString = getNameListString(impl->bodyNames);
     return true;
 }

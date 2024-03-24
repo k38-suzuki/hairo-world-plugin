@@ -71,14 +71,10 @@ public:
     Selection interface;
     Selection ifbDevice;
     int prevItemID;
-    SimulatorItem* simulatorItem;
+    ItemList<TCAreaItem> areaItems;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
-    void finalizeSimulation();
     void onPreDynamics();
-    void doPutProperties(PutPropertyFunction& putProperty);
-    bool store(Archive& archive);
-    bool restore(const Archive& archive);
 };
 
 }
@@ -96,14 +92,12 @@ NetworkEmulatorItem::Impl::Impl(NetworkEmulatorItem* self)
     netem = new NetEm;
     bodies.clear();
     prevItemID = INT_MAX;
-    simulatorItem = nullptr;
+    areaItems.clear();
 
-    interface.clear();
     for(size_t i = 0; i < netem->interfaces().size(); ++i) {
         interface.setSymbol(i, netem->interfaces()[i]);
     }
 
-    ifbDevice.clear();
     ifbDevice.setSymbol(0, N_("ifb0"));
     ifbDevice.setSymbol(1, N_("ifb1"));
 }
@@ -134,7 +128,7 @@ NetworkEmulatorItem::~NetworkEmulatorItem()
 void NetworkEmulatorItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<NetworkEmulatorItem>(N_("NetworkEmulatorItem"))
+            .registerClass<NetworkEmulatorItem, SubSimulatorItem>(N_("NetworkEmulatorItem"))
             .addCreationPanel<NetworkEmulatorItem>();
 }
 
@@ -149,14 +143,19 @@ bool NetworkEmulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorIte
 {
     bodies.clear();
     prevItemID = INT_MAX;
-    this->simulatorItem = simulatorItem;
-    
-    const vector<SimulationBody*>& simuBodies = simulatorItem->simulationBodies();
-    for(auto& simBody : simuBodies) {
+    areaItems.clear();
+
+    const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
+    for(auto& simBody : simBodies) {
         bodies.push_back(simBody->body());
     }
 
-    if(simuBodies.size()) {
+    WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
+    if(worldItem) {
+        areaItems = worldItem->descendantItems<TCAreaItem>();
+    }
+
+    if(simBodies.size()) {
         netem->start(interface.which(), ifbDevice.which());
         simulatorItem->addPreDynamicsFunction([&](){ onPreDynamics(); });
     }
@@ -166,24 +165,12 @@ bool NetworkEmulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorIte
 
 void NetworkEmulatorItem::finalizeSimulation()
 {
-    impl->finalizeSimulation();
-}
-
-
-void NetworkEmulatorItem::Impl::finalizeSimulation()
-{
-    netem->stop();
+    impl->netem->stop();
 }
 
 
 void NetworkEmulatorItem::Impl::onPreDynamics()
 {
-    ItemList<TCAreaItem> areaItems;
-    WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
-    if(worldItem) {
-        areaItems = worldItem->descendantItems<TCAreaItem>();
-    }
-
     TCAreaItem* currentItem = new TCAreaItem;
     int currentItemID = INT_MAX;
     for(auto& body : bodies) {
@@ -238,30 +225,18 @@ Item* NetworkEmulatorItem::doCloneItem(CloneMap* cloneMap) const
 void NetworkEmulatorItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     SubSimulatorItem::doPutProperties(putProperty);
-    impl->doPutProperties(putProperty);
-}
-
-
-void NetworkEmulatorItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
-{
-    putProperty(_("Interface"), interface,
-                [&](int index){ return interface.select(index); });
-    putProperty(_("IFB Device"), ifbDevice,
-                [&](int index){ return ifbDevice.select(index); });
+    putProperty(_("Interface"), impl->interface,
+                [&](int which){ return impl->interface.select(which); });
+    putProperty(_("IFB Device"), impl->ifbDevice,
+                [&](int which){ return impl->ifbDevice.select(which); });
 }
 
 
 bool NetworkEmulatorItem::store(Archive& archive)
 {
     SubSimulatorItem::store(archive);
-    return impl->store(archive);
-}
-
-
-bool NetworkEmulatorItem::Impl::store(Archive& archive)
-{
-    archive.write("interface", interface.selectedSymbol(), DOUBLE_QUOTED);
-    archive.write("ifb_device", ifbDevice.selectedSymbol(), DOUBLE_QUOTED);
+    archive.write("interface", impl->interface.selectedSymbol());
+    archive.write("ifb_device", impl->ifbDevice.selectedSymbol());
     return true;
 }
 
@@ -269,13 +244,12 @@ bool NetworkEmulatorItem::Impl::store(Archive& archive)
 bool NetworkEmulatorItem::restore(const Archive& archive)
 {
     SubSimulatorItem::restore(archive);
-    return impl->restore(archive);
-}
-
-
-bool NetworkEmulatorItem::Impl::restore(const Archive& archive)
-{
-    interface.select(archive.get("interface", ""));
-    ifbDevice.select(archive.get("ifb_device", ""));
+    string interface;
+    if(archive.read("interface", interface)) {
+        impl->interface.select(interface);
+    }
+    if(archive.read("ifb_device", interface)) {
+        impl->ifbDevice.select(interface);
+    }
     return true;
 }

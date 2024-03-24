@@ -82,9 +82,6 @@ public:
     bool midPlannerFunction(const ob::State* state);
     void postPlannerFunction(og::PathGeometric& pathes);
     void onTreePathChanged();
-    void doPutProperties(PutPropertyFunction& putProperty);
-    bool store(Archive& archive);
-    bool restore(const Archive& archive);
 };
 
 }
@@ -141,7 +138,7 @@ IKPlannerItem::~IKPlannerItem()
 void IKPlannerItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<IKPlannerItem>(N_("IKPlannerItem"))
+            .registerClass<IKPlannerItem, SubSimulatorItem>(N_("IKPlannerItem"))
             .addCreationPanel<IKPlannerItem>();
 
     ItemTreeView::instance()->customizeContextMenu<IKPlannerItem>(
@@ -363,30 +360,18 @@ void IKPlannerItem::Impl::onTreePathChanged()
 void IKPlannerItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     SimpleSetupItem::doPutProperties(putProperty);
-    impl->doPutProperties(putProperty);
-}
-
-
-void IKPlannerItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
-{
-    putProperty(_("Base link"), baseName, changeProperty(baseName));
-    putProperty(_("End link"), wristName, changeProperty(wristName));
-    putProperty(_("Time length"), timeLength, changeProperty(timeLength));
+    putProperty(_("Base link"), impl->baseName, changeProperty(impl->baseName));
+    putProperty(_("End link"), impl->wristName, changeProperty(impl->wristName));
+    putProperty(_("Time length"), impl->timeLength, changeProperty(impl->timeLength));
 }
 
 
 bool IKPlannerItem::store(Archive& archive)
 {
     SimpleSetupItem::store(archive);
-    return impl->store(archive);
-}
-
-
-bool IKPlannerItem::Impl::store(Archive& archive)
-{
-    archive.write("base_name", baseName);
-    archive.write("wrist_name", wristName);
-    archive.write("time_length", timeLength);
+    archive.write("base_name", impl->baseName);
+    archive.write("wrist_name", impl->wristName);
+    archive.write("time_length", impl->timeLength);
     return true;
 }
 
@@ -394,14 +379,8 @@ bool IKPlannerItem::Impl::store(Archive& archive)
 bool IKPlannerItem::restore(const Archive& archive)
 {
     SimpleSetupItem::restore(archive);
-    return impl->restore(archive);
-}
-
-
-bool IKPlannerItem::Impl::restore(const Archive& archive)
-{
-    archive.read("base_name", baseName);
-    archive.read("wrist_name", wristName);
-    archive.read("time_length", timeLength);
+    archive.read("base_name", impl->baseName);
+    archive.read("wrist_name", impl->wristName);
+    archive.read("time_length", impl->timeLength);
     return true;
 }

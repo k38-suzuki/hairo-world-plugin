@@ -88,9 +88,6 @@ public:
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void addBody(CFDBody* cfdBody);
     void onPreDynamics();
-    void doPutProperties(PutPropertyFunction& putProperty);
-    bool store(Archive& archive);
-    bool restore(const Archive& archive);
 };
 
 }
@@ -238,10 +235,6 @@ CFDSimulatorItem::CFDSimulatorItem(const CFDSimulatorItem& org)
 CFDSimulatorItemImpl::CFDSimulatorItemImpl(CFDSimulatorItem* self, const CFDSimulatorItemImpl& org)
     : self(self)
 {
-    cfdBodies = org.cfdBodies;
-    thrusters = org.thrusters;
-    rotors = org.rotors;
-
     gravity = org.gravity;
 }
 
@@ -255,7 +248,7 @@ CFDSimulatorItem::~CFDSimulatorItem()
 void CFDSimulatorItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<CFDSimulatorItem>(N_("CFDSimulatorItem"))
+            .registerClass<CFDSimulatorItem, SubSimulatorItem>(N_("CFDSimulatorItem"))
             .addCreationPanel<CFDSimulatorItem>();
 }
 
@@ -465,25 +458,12 @@ Item* CFDSimulatorItem::doCloneItem(CloneMap* cloneMap) const
 void CFDSimulatorItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     SubSimulatorItem::doPutProperties(putProperty);
-    impl->doPutProperties(putProperty);
-}
-
-        
-void CFDSimulatorItemImpl::doPutProperties(PutPropertyFunction& putProperty)
-{
-
 }
 
 
 bool CFDSimulatorItem::store(Archive& archive)
 {
     SubSimulatorItem::store(archive);
-    return impl->store(archive);
-}
-
-
-bool CFDSimulatorItemImpl::store(Archive& archive)
-{
     return true;
 }
 
@@ -491,11 +471,5 @@ bool CFDSimulatorItemImpl::store(Archive& archive)
 bool CFDSimulatorItem::restore(const Archive& archive)
 {
     SubSimulatorItem::restore(archive);
-    return impl->restore(archive);
-}
-
-
-bool CFDSimulatorItemImpl::restore(const Archive& archive)
-{
     return true;
 }

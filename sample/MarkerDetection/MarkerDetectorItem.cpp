@@ -31,9 +31,6 @@ public:
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void onPreDynamics();
-    void doPutProperties(PutPropertyFunction& putProperty);
-    bool store(Archive& archive);
-    bool restore(const Archive& archive);
 };
 
 }
@@ -77,8 +74,9 @@ MarkerDetectorItem::~MarkerDetectorItem()
 
 void MarkerDetectorItem::initializeClass(ExtensionManager* ext)
 {
-    ext->itemManager().registerClass<MarkerDetectorItem>(N_("MarkerDetectorItem"));
-    ext->itemManager().addCreationPanel<MarkerDetectorItem>();
+    ext->itemManager()
+            .registerClass<MarkerDetectorItem>(N_("MarkerDetectorItem"))
+            .addCreationPanel<MarkerDetectorItem>();
 }
 
 
@@ -177,25 +175,12 @@ Item* MarkerDetectorItem::doCloneItem(CloneMap* cloneMap) const
 void MarkerDetectorItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     SubSimulatorItem::doPutProperties(putProperty);
-    impl->doPutProperties(putProperty);
-}
-
-
-void MarkerDetectorItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
-{
-
 }
 
 
 bool MarkerDetectorItem::store(Archive& archive)
 {
     SubSimulatorItem::store(archive);
-    return impl->store(archive);
-}
-
-
-bool MarkerDetectorItem::Impl::store(Archive& archive)
-{
     return true;
 }
 
@@ -203,11 +188,5 @@ bool MarkerDetectorItem::Impl::store(Archive& archive)
 bool MarkerDetectorItem::restore(const Archive& archive)
 {
     SubSimulatorItem::restore(archive);
-    return impl->restore(archive);
-}
-
-
-bool MarkerDetectorItem::Impl::restore(const Archive& archive)
-{
     return true;
 }

@@ -55,9 +55,6 @@ public:
     void setDefaultShieldFile(const string& filename);
     bool onColorScalePropertyChanged(const int& index);
     void onGammaDataLoaded();
-    void doPutProperties(PutPropertyFunction& putProperty);
-    bool store(Archive& archive);
-    bool restore(const Archive& archive);
 };
 
 }
@@ -65,8 +62,9 @@ public:
 
 void DoseSimulatorItem::initializeClass(ExtensionManager* ext)
 {
-    ext->itemManager().registerClass<DoseSimulatorItem, SubSimulatorItem>(N_("DoseSimulatorItem"));
-    ext->itemManager().addCreationPanel<DoseSimulatorItem>();
+    ext->itemManager()
+            .registerClass<DoseSimulatorItem, SubSimulatorItem>(N_("DoseSimulatorItem"))
+            .addCreationPanel<DoseSimulatorItem>();
 }
 
 
@@ -262,32 +260,20 @@ Item* DoseSimulatorItem::doCloneItem(CloneMap* cloneMap) const
 void DoseSimulatorItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     SubSimulatorItem::doPutProperties(putProperty);
-    impl->doPutProperties(putProperty);
-}
-
-
-void DoseSimulatorItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
-{
-    putProperty(_("ColorScale"), colorScale,
-                [&](int index){ return onColorScalePropertyChanged(index); });
+    putProperty(_("ColorScale"), impl->colorScale,
+                [&](int index){ return impl->onColorScalePropertyChanged(index); });
     FilePathProperty shieldFileProperty(
-                defaultShieldTableFile, { _("Shield definition file (*.yaml)") });
+                impl->defaultShieldTableFile, { _("Shield definition file (*.yaml)") });
     putProperty(_("Default shield table"), shieldFileProperty,
-                  [&](const string& filename){ setDefaultShieldFile(filename); return true; });
+                  [&](const string& filename){ impl->setDefaultShieldFile(filename); return true; });
 }
 
 
 bool DoseSimulatorItem::store(Archive& archive)
 {
     SubSimulatorItem::store(archive);
-    return impl->store(archive);
-}
-
-
-bool DoseSimulatorItem::Impl::store(Archive& archive)
-{
-    archive.write("color_scale", colorScale.selectedIndex());
-    archive.writeRelocatablePath("default_shield_table_file", defaultShieldTableFile);
+    archive.write("color_scale", impl->colorScale.selectedIndex());
+    archive.writeRelocatablePath("default_shield_table_file", impl->defaultShieldTableFile);
     return true;
 }
 
@@ -295,13 +281,7 @@ bool DoseSimulatorItem::Impl::store(Archive& archive)
 bool DoseSimulatorItem::restore(const Archive& archive)
 {
     SubSimulatorItem::restore(archive);
-    return impl->restore(archive);
-}
-
-
-bool DoseSimulatorItem::Impl::restore(const Archive& archive)
-{
-    colorScale.selectIndex(archive.get("color_scale", 0));
-    archive.readRelocatablePath("default_shield_table_file", defaultShieldTableFile);
+    impl->colorScale.selectIndex(archive.get("color_scale", 0));
+    archive.readRelocatablePath("default_shield_table_file", impl->defaultShieldTableFile);
     return true;
 }

@@ -48,9 +48,6 @@ public:
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void onPostDynamics();
-    void doPutProperties(PutPropertyFunction& putProperty);
-    bool store(Archive& archive);
-    bool restore(const Archive& archive);
 };
 
 }
@@ -192,25 +189,12 @@ Item* BeepItem::doCloneItem(CloneMap* cloneMap) const
 void BeepItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     SubSimulatorItem::doPutProperties(putProperty);
-    impl->doPutProperties(putProperty);
-}
-
-
-void BeepItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
-{
-
 }
 
 
 bool BeepItem::store(Archive& archive)
 {
     SubSimulatorItem::store(archive);
-    return impl->store(archive);
-}
-
-
-bool BeepItem::Impl::store(Archive& archive)
-{
     return true;
 }
 
@@ -218,11 +202,5 @@ bool BeepItem::Impl::store(Archive& archive)
 bool BeepItem::restore(const Archive& archive)
 {
     SubSimulatorItem::restore(archive);
-    return impl->restore(archive);
-}
-
-
-bool BeepItem::Impl::restore(const Archive& archive)
-{
     return true;
 }

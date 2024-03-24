@@ -33,9 +33,6 @@ public:
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void onPostDynamics();
-    void doPutProperties(PutPropertyFunction& putProperty);
-    bool store(Archive& archive);
-    bool restore(const Archive& archive);
 };
 
 }
@@ -80,7 +77,7 @@ JoystickLoggerItem::~JoystickLoggerItem()
 void JoystickLoggerItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<JoystickLoggerItem>(N_("JoystickLoggerItem"))
+            .registerClass<JoystickLoggerItem, SubSimulatorItem>(N_("JoystickLoggerItem"))
             .addCreationPanel<JoystickLoggerItem>();
 }
 
@@ -141,26 +138,14 @@ Item* JoystickLoggerItem::doCloneItem(CloneMap* cloneMap) const
 void JoystickLoggerItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     SubSimulatorItem::doPutProperties(putProperty);
-    impl->doPutProperties(putProperty);
-}
-
-
-void JoystickLoggerItem::Impl::doPutProperties(PutPropertyFunction& putProperty)
-{
-    putProperty(_("Device"), device, changeProperty(device));
+    putProperty(_("Device"), impl->device, changeProperty(impl->device));
 }
 
 
 bool JoystickLoggerItem::store(Archive& archive)
 {
     SubSimulatorItem::store(archive);
-    return impl->store(archive);
-}
-
-
-bool JoystickLoggerItem::Impl::store(Archive& archive)
-{
-    archive.write("device", device);
+    archive.write("device", impl->device);
     return true;
 }
 
@@ -168,12 +153,6 @@ bool JoystickLoggerItem::Impl::store(Archive& archive)
 bool JoystickLoggerItem::restore(const Archive& archive)
 {
     SubSimulatorItem::restore(archive);
-    return impl->restore(archive);
-}
-
-
-bool JoystickLoggerItem::Impl::restore(const Archive& archive)
-{
-    archive.read("device", device);
+    archive.read("device", impl->device);
     return true;
 }
