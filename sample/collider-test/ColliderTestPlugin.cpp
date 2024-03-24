@@ -26,6 +26,8 @@ public:
             if(bar->name() == "FileBar") {
                 auto button1 = bar->addButton("C");
                 button1->sigClicked().connect([&](){ onButtonClicked(); });
+                auto button2 = bar->addButton("R/G");
+                button2->sigClicked().connect([&](){ onButtonClicked2(); });
             }
         }
         return true;
@@ -44,6 +46,18 @@ private:
             } else {
                 colliders[0]->setDiffuseColor(Vector3(0.5, 0.5, 0.5));
                 colliders[1]->setDiffuseColor(Vector3(0.5, 0.5, 0.5));
+            }
+        }
+    }
+
+    void onButtonClicked2()
+    {
+        auto colliders = RootItem::instance()->checkedItems<SimpleColliderItem>();
+        for(auto& collider : colliders) {
+            if(collision(collider, Vector3(0.0, 0.0, 0.0))) {
+                collider->setDiffuseColor(Vector3(0.0, 1.0, 0.0));
+            } else {
+                collider->setDiffuseColor(Vector3(1.0, 0.0, 0.0));
             }
         }
     }
