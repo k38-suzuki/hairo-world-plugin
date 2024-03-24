@@ -16,6 +16,7 @@
 #include <cnoid/Archive>
 #include <cnoid/EigenArchive>
 #include <cnoid/ConnectionSet>
+#include <cnoid/MathUtil>
 #include <fmt/format.h>
 #include "gettext.h"
 
@@ -533,6 +534,8 @@ SignalProxy<void()> ColliderLocation::sigLocationChanged()
 }
 
 
+namespace cnoid {
+
 bool collision(SimpleColliderItem* colliderItem, const Vector3& point)
 {
     auto p = colliderItem->position().translation();
@@ -583,4 +586,60 @@ bool collision(SimpleColliderItem* colliderItem, const Vector3& point)
         break;
     }
     return false;
+}
+
+
+bool collision(SimpleColliderItem* colliderItem1, SimpleColliderItem* colliderItem2)
+{
+    auto p1 = colliderItem1->position().translation();
+    auto p2 = colliderItem2->position().translation();
+    auto R1 = colliderItem1->position().linear();
+    auto R2 = colliderItem2->position().linear();
+    auto size1 = colliderItem1->size();
+    auto size2 = colliderItem2->size();
+    auto radius1 = colliderItem1->radius();
+    auto radius2 = colliderItem2->radius();
+    auto height1 = colliderItem2->height();
+    auto height2 = colliderItem2->height();
+
+    int sceneId1 = colliderItem1->sceneType();
+    int sceneId2 = colliderItem1->sceneType();
+
+    switch(sceneId1) {
+    case SimpleColliderItem::BOX:
+        if(sceneId2 == SimpleColliderItem::BOX) {
+
+        } else if(sceneId2 == SimpleColliderItem::CYLINDER) {
+
+        } else if(sceneId2 == SimpleColliderItem::SPHERE) {
+
+        }
+        break;
+    case SimpleColliderItem::CYLINDER:
+        if(sceneId2 == SimpleColliderItem::BOX) {
+
+        } else if(sceneId2 == SimpleColliderItem::CYLINDER) {
+
+        } else if(sceneId2 == SimpleColliderItem::SPHERE) {
+
+        }
+        break;
+    case SimpleColliderItem::SPHERE:
+        if(sceneId2 == SimpleColliderItem::BOX) {
+
+        } else if(sceneId2 == SimpleColliderItem::CYLINDER) {
+
+        } else if(sceneId2 == SimpleColliderItem::SPHERE) {
+            if((p1 - p2).norm() <= (radius1 + radius2)) {
+                return true;
+            }
+        }
+        break;
+    default:
+        break;
+    }
+
+    return false;
+}
+
 }

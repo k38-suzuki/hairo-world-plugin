@@ -57,6 +57,7 @@ private:
 };
 
 CNOID_EXPORT bool collision(SimpleColliderItem* colliderItem, const Vector3& point);
+CNOID_EXPORT bool collision(SimpleColliderItem* colliderItem1, SimpleColliderItem* colliderItem2);
 
 }
 
