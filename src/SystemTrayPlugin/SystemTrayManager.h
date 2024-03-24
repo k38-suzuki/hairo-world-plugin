@@ -15,10 +15,10 @@ class ExtensionManager;
 class CNOID_EXPORT SystemTrayManager
 {
 public:
+    static void initializeClass(ExtensionManager* ext);
+
     SystemTrayManager();
     virtual ~SystemTrayManager();
-
-    static void initializeClass(ExtensionManager* ext);
 
     static SystemTrayIcon* addIcon();
     static SystemTrayIcon* addIcon(const QIcon& icon);

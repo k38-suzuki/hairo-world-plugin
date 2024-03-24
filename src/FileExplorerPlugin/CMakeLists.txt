@@ -4,11 +4,9 @@ endif()
 
 set(sources
   FileExplorerPlugin.cpp
-  Notepad.cpp
 )
 
 set(headers
-  Notepad.h
   exportdecl.h
 )
 

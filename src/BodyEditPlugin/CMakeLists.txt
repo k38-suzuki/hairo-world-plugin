@@ -14,6 +14,7 @@ set(sources
   SlopeGenerator.cpp
   StairsGenerator.cpp
   TerrainGenerator.cpp
+  Notepad.cpp
 )
 
 set(headers
@@ -27,6 +28,8 @@ set(headers
   SlopeGenerator.h
   StairsGenerator.h
   TerrainGenerator.h
+  Notepad.h
+  exportdecl.h
 )
 
 set(target CnoidBodyEditPlugin)

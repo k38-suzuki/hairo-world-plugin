@@ -36,24 +36,6 @@ public:
 }
 
 
-SystemTrayManager::SystemTrayManager()
-{
-    impl = new Impl;
-}
-
-
-SystemTrayManager::Impl::Impl()
-{
-
-}
-
-
-SystemTrayManager::~SystemTrayManager()
-{
-    delete impl;
-}
-
-
 void SystemTrayManager::initializeClass(ExtensionManager* ext)
 {
     if(!SystemTrayIcon::isSystemTrayAvailable()) {
@@ -71,6 +53,24 @@ void SystemTrayManager::initializeClass(ExtensionManager* ext)
         systrayIcon->setToolTip(_("Exit Choreonoid"));
         systrayIcon->show();
     }
+}
+
+
+SystemTrayManager::SystemTrayManager()
+{
+    impl = new Impl;
+}
+
+
+SystemTrayManager::Impl::Impl()
+{
+
+}
+
+
+SystemTrayManager::~SystemTrayManager()
+{
+    delete impl;
 }
 
 
