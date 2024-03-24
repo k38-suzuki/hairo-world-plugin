@@ -3,10 +3,16 @@
 */
 
 #include <cnoid/Plugin>
+#include <cnoid/BodyItem>
+#include <cnoid/ItemTreeView>
+#include <cnoid/MenuManager>
+#include <cnoid/Process>
+#include <cnoid/stdx/filesystem>
 #include <fmt/format.h>
-#include "FileExplorer.h"
+#include "gettext.h"
 
 using namespace cnoid;
+namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
@@ -21,7 +27,22 @@ public:
 
     virtual bool initialize() override
     {
-        FileExplorer::initializeClass(this);
+        ItemTreeView::instance()->customizeContextMenu<BodyItem>(
+            [&](BodyItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
+                menuManager.setPath("/").setPath(_("Open"));
+                menuManager.addItem(_("File"))->sigTriggered().connect(
+                    [&, item](){
+                        QProcess::startDetached("gedit",
+                            QStringList() << item->filePath().c_str()); });
+                menuManager.addItem(_("Directory"))->sigTriggered().connect(
+                    [&, item](){
+                        filesystem::path path(item->filePath().c_str());
+                        QProcess::startDetached("nautilus",
+                            QStringList() << path.parent_path().string().c_str()); });
+                menuManager.setPath("/");
+                menuManager.addSeparator();
+                menuFunction.dispatchAs<Item>(item);
+            });
         return true;
     }
 
