@@ -29,6 +29,12 @@ msgstr "シリンダ"
 msgid "Sphere"
 msgstr "スフィア"
 
+msgid "The current position of {0} has been stored to {1}."
+msgstr "{0} の現在位置が {1} に保存されました．"
+
+msgid "The position of {0} has been restored from {1}."
+msgstr "{0} の位置が {1} から復元されました．"
+
 msgid "SimpleColliderItem \"{0}\" has been attached to {1}."
 msgstr "シンプルコライダアイテム \"{0}\" が {1} に取り付けられました．"
 

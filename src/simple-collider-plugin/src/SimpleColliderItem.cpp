@@ -4,6 +4,7 @@
 
 #include "SimpleColliderItem.h"
 #include <cnoid/ExtensionManager>
+#include <cnoid/BodyItem>
 #include <cnoid/WorldItem>
 #include <cnoid/SceneGraph>
 #include <cnoid/SceneDrawables>
@@ -14,6 +15,7 @@
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/Archive>
 #include <cnoid/EigenArchive>
+#include <cnoid/ConnectionSet>
 #include <fmt/format.h>
 #include "gettext.h"
 
@@ -53,6 +55,7 @@ public:
     void updateSceneShape();
     void updateSceneMaterial();
 
+    BodyItem* bodyItem;
     WorldItem* worldItem;
     Isometry3 position_;
     SgPosTransformPtr scene;
@@ -65,6 +68,7 @@ public:
     Vector3 diffuseColor_;
     double specularExponent_;
     double transparency_;
+    ScopedConnectionSet connections;
     ref_ptr<ColliderLocation> colliderLocation;
 };
 
@@ -88,6 +92,7 @@ SimpleColliderItem::SimpleColliderItem()
 SimpleColliderItem::Impl::Impl(SimpleColliderItem* self)
     : self(self)
 {
+    bodyItem = nullptr;
     worldItem = nullptr;
     position_.setIdentity();
     sceneTypeSelection.setSymbol(BOX, N_("Box"));
@@ -113,6 +118,7 @@ SimpleColliderItem::SimpleColliderItem(const SimpleColliderItem& org)
 SimpleColliderItem::Impl::Impl(SimpleColliderItem* self, const Impl& org)
     : self(self)
 {
+    bodyItem = nullptr;
     worldItem = nullptr;
     position_ = org.position_;
     sceneTypeSelection = org.sceneTypeSelection;
@@ -128,6 +134,33 @@ SimpleColliderItem::Impl::Impl(SimpleColliderItem* self, const Impl& org)
 SimpleColliderItem::~SimpleColliderItem()
 {
     delete impl;
+}
+
+
+void SimpleColliderItem::storeBodyPosition()
+{
+    if(impl->bodyItem) {
+        impl->position_ = impl->bodyItem->body()->rootLink()->position();
+        impl->updateScenePosition();
+        notifyUpdate();
+        // mvout()
+        //     << format(_("The current position of {0} has been stored to {1}."),
+        //               impl->bodyItem->name(), name())
+        //     << endl;
+    }
+}
+
+
+void SimpleColliderItem::restoreBodyPosition()
+{
+    if(impl->bodyItem) {
+        impl->bodyItem->body()->rootLink()->position() = impl->position_;
+        impl->bodyItem->notifyKinematicStateChange(true);
+        mvout()
+            << format(_("The position of {0} has been restored from {1}."),
+                      impl->bodyItem->name(), name())
+            << endl;
+    }
 }
 
 
@@ -251,8 +284,7 @@ void SimpleColliderItem::Impl::createScene()
 
     sceneShape->setMaterial(sceneMaterial);
     auto scenePos = new SgPosTransform;
-    auto p = position_.translation();
-    scenePos->setTranslation(p);
+    scenePos->setTranslation(Vector3::Zero());
     scenePos->setRotation(position_.linear());
     scenePos->addChild(sceneShape);
     scene->addChild(scenePos);
@@ -312,6 +344,20 @@ Item* SimpleColliderItem::doCloneItem(CloneMap* cloneMap) const
 
 void SimpleColliderItem::onTreePathChanged()
 {
+    impl->connections.disconnect();
+
+    auto newBodyItem = findOwnerItem<BodyItem>();
+    if(newBodyItem && newBodyItem != impl->bodyItem) {
+        impl->bodyItem = newBodyItem;
+        storeBodyPosition();
+        impl->connections.add(impl->bodyItem->sigKinematicStateChanged().connect(
+            [&](){ storeBodyPosition(); }));
+        mvout()
+            << format(_("SimpleColliderItem \"{0}\" has been attached to {1}."),
+                      name(), impl->bodyItem->name())
+            << endl;
+    }
+
     auto newWorldItem = findOwnerItem<WorldItem>();
     if(newWorldItem && newWorldItem != impl->worldItem) {
         impl->worldItem = newWorldItem;

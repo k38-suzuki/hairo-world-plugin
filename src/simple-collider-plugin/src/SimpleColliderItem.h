@@ -23,6 +23,8 @@ public:
     SimpleColliderItem(const SimpleColliderItem& org);
     ~SimpleColliderItem();
 
+    void storeBodyPosition();
+    void restoreBodyPosition();
     virtual SgNode* getScene() override;
     void setPosition(const Isometry3& T);
     const Isometry3& position() const;
