@@ -320,8 +320,7 @@ void CFDSimulatorItemImpl::onPreDynamics()
             double density = 0.0;
             double viscosity = 0.0;
             Vector3 sf = Vector3::Zero();
-            for(size_t k = 0; k < areaItems.size(); ++k) {
-                FluidAreaItem* areaItem = areaItems[k];
+            for(auto& areaItem : areaItems) {
                 const Isometry3& regionOffset = areaItem->regionOffset();
                 auto rot = regionOffset.linear();
                 if(areaItem->isCollided(T.translation())) {

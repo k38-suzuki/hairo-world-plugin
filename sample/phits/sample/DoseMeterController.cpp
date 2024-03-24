@@ -25,8 +25,8 @@ public:
         doseMeters = body->devices();
         prevButtonState[0] = prevButtonState[1] = false;
 
-        for(size_t i = 0; i < doseMeters.size(); i++) {
-            io->enableInput(doseMeters[i]);
+        for(auto& doseMeter : doseMeters) {
+            io->enableInput(doseMeter);
         }
 
         return true;

@@ -155,9 +155,11 @@ void HistoryManager::Impl::updatePresetFiles()
             if(recentFiles[i].isString()) {
                 qFile << recentFiles[i].toString().c_str();
                 auto file = recentFiles[i].toString();
-                Action* action = new Action;
-                action->setText(file);
-                currentMenu->addAction(action);
+                if(!file.empty()) {
+                    Action* action = new Action;
+                    action->setText(file);
+                    currentMenu->addAction(action);
+                }
             }
         }
     }

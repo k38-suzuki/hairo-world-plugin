@@ -207,8 +207,7 @@ void CollisionVisualizerItem::Impl::onPostDynamics()
         }
     }
 
-    for(size_t i = 0; i < sensors.size(); ++i) {
-        CollisionSensor* sensor = sensors[i];
+    for(auto& sensor : sensors) {
         Link* link = sensor->link();
         auto& contacts = link->contactPoints();
         sensor->on(!contacts.empty());

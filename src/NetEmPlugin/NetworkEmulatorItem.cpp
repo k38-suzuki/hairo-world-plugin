@@ -152,10 +152,11 @@ bool NetworkEmulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorIte
     this->simulatorItem = simulatorItem;
     
     const vector<SimulationBody*>& simuBodies = simulatorItem->simulationBodies();
+    for(auto& simBody : simuBodies) {
+        bodies.push_back(simBody->body());
+    }
+
     if(simuBodies.size()) {
-        for(size_t i = 0; i < simuBodies.size(); i++) {
-            bodies.push_back(simuBodies[i]->body());
-        }
         netem->start(interface.which(), ifbDevice.which());
         simulatorItem->addPreDynamicsFunction([&](){ onPreDynamics(); });
     }

@@ -74,8 +74,7 @@ public:
         io->enableInput(gyroSensor);
         io->enableInput(accSensor);
 
-        for(size_t i = 0; i < rotors.size(); i++) {
-            Rotor* rotor = rotors[i];
+        for(auto& rotor : rotors) {
             io->enableInput(rotor);
         }
 

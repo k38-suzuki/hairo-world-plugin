@@ -289,8 +289,7 @@ bool IKPlannerItem::Impl::midPlannerFunction(const ob::State* state)
             if(worldItem) {
                 worldItem->updateCollisions();
                 vector<CollisionLinkPairPtr> collisions = bodyItem->collisions();
-                for(size_t i = 0; i < collisions.size(); ++i) {
-                    CollisionLinkPairPtr collision = collisions[i];
+                for(auto& collision : collisions) {
                     if((collision->link(0)->body() == body) || (collision->link(1)->body() == body)) {
                         if(!collision->isSelfCollision()) {
                             return false;

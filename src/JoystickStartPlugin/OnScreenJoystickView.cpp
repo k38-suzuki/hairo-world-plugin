@@ -354,13 +354,13 @@ bool OnScreenJoystickView::Impl::getButtonState(int button) const
 
 bool OnScreenJoystickView::Impl::isActive() const
 {
-    for(size_t i = 0; i < axisPositions.size(); ++i) {
-        if(axisPositions[i] != 0.0) {
+    for(auto& axisPosition : axisPositions) {
+        if(axisPosition != 0.0) {
             return true;
         }
     }
-    for(size_t i = 0; i < buttonStates.size(); ++i) {
-        if(buttonStates[i]) {
+    for(auto buttonState : buttonStates) {
+        if(buttonState) {
             return true;
         }
     }
