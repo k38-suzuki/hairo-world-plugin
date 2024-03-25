@@ -12,7 +12,7 @@ using namespace cnoid;
 
 NoisyCamera::NoisyCamera()
     : spec(new Spec),
-      CameraEffect()
+      CameraEffects()
 {
     setImageType(NO_IMAGE);
     generator = new ImageGenerator;
@@ -21,7 +21,7 @@ NoisyCamera::NoisyCamera()
 
 NoisyCamera::NoisyCamera(const NoisyCamera& org, bool copyStateOnly)
     : Camera(org, copyStateOnly),
-      CameraEffect()
+      CameraEffects(org)
 {
     if(!copyStateOnly) {
         spec = make_unique<Spec>();
@@ -72,19 +72,19 @@ void NoisyCamera::clearState()
 
 const Image& NoisyCamera::constImage() const
 {
-    double hue = CameraEffect::hsv()[0];
-    double saturation = CameraEffect::hsv()[1];
-    double value = CameraEffect::hsv()[2];
-    double red = CameraEffect::rgb()[0];
-    double green = CameraEffect::rgb()[1];
-    double blue = CameraEffect::rgb()[2];
-    double coefB = CameraEffect::coefB();
-    double coefD = CameraEffect::coefD();
-    double stdDev = CameraEffect::stdDev();
-    double salt = CameraEffect::salt();
-    double pepper = CameraEffect::pepper();
-    bool flipped = CameraEffect::flipped();
-    FilterType filterType = CameraEffect::filterType();
+    double hue = CameraEffects::hsv()[0];
+    double saturation = CameraEffects::hsv()[1];
+    double value = CameraEffects::hsv()[2];
+    double red = CameraEffects::rgb()[0];
+    double green = CameraEffects::rgb()[1];
+    double blue = CameraEffects::rgb()[2];
+    double coefB = CameraEffects::coefB();
+    double coefD = CameraEffects::coefD();
+    double stdDev = CameraEffects::stdDev();
+    double salt = CameraEffects::salt();
+    double pepper = CameraEffects::pepper();
+    bool flipped = CameraEffects::flipped();
+    FilterType filterType = CameraEffects::filterType();
 
     Image image = *Camera::sharedImage();
     if(hue > 0.0 || saturation > 0.0 || value > 0.0) {

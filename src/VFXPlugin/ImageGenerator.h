@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_VFX_PLUGIN_IMAGE_GENERATOR_H
-#define CNOID_VFX_PLUGIN_IMAGE_GENERATOR_H
+#ifndef CNOID_VFXPLUGIN_IMAGE_GENERATOR_H
+#define CNOID_VFXPLUGIN_IMAGE_GENERATOR_H
 
 #include <cnoid/Image>
 #include <QImage>

@@ -4,7 +4,7 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "VEAreaItem.h"
+#include "VFXColliderItem.h"
 #include "VFXVisionSimulatorItem.h"
 
 using namespace cnoid;
@@ -22,7 +22,7 @@ public:
 
     virtual bool initialize() override
     {
-        VEAreaItem::initializeClass(this);
+        VFXColliderItem::initializeClass(this);
         VFXVisionSimulatorItem::initializeClass(this);
         return true;
     }
@@ -32,7 +32,7 @@ public:
         static std::string text =
             fmt::format("VFX Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
-            "Copyright (c) 2020 Japan Atomic Energy Agency.\n"
+            "Copyright (c) 2024 Japan Atomic Energy Agency.\n"
             "\n" +
             MITLicenseText();
         return text.c_str();

@@ -184,9 +184,9 @@ items:
                 antialiasing: false
         -
           id: 9
-          name: "VEArea"
+          name: "VFXCollider"
           plugin: VFX
-          class: VEAreaItem
+          class: VFXColliderItem
           data:
             type: 0
             size: [ 10, 10, 10 ]

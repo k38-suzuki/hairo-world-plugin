@@ -8,10 +8,10 @@
 #include <cnoid/ItemManager>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
-#include "CameraEffect.h"
+#include "CameraEffects.h"
 #include "ImageGenerator.h"
 #include "NoisyCamera.h"
-#include "VEAreaItem.h"
+#include "VFXColliderItem.h"
 #include "gettext.h"
 
 using namespace std;
@@ -26,11 +26,10 @@ public:
 
     Impl(VFXVisionSimulatorItem* self);
     Impl(VFXVisionSimulatorItem* self, const Impl& org);
-    ~Impl();
 
     DeviceList<Camera> cameras;
     DeviceList<NoisyCamera> noisyCameras;
-    ItemList<VEAreaItem> areaItems;
+    ItemList<VFXColliderItem> colliders;
 
     ImageGenerator generator;
 
@@ -60,7 +59,7 @@ VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self)
 {
     cameras.clear();
     noisyCameras.clear();
-    areaItems.clear();
+    colliders.clear();
 }
 
 
@@ -77,7 +76,7 @@ VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self, const Impl& org
 {
     cameras.clear();
     noisyCameras.clear();
-    areaItems.clear();
+    colliders.clear();
 }
 
 
@@ -100,7 +99,7 @@ bool VFXVisionSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulator
 {
     cameras.clear();
     noisyCameras.clear();
-    areaItems.clear();
+    colliders.clear();
 
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
     for(auto& simBody : simBodies) {
@@ -111,7 +110,7 @@ bool VFXVisionSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulator
 
     WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
     if(worldItem) {
-        areaItems = worldItem->descendantItems<VEAreaItem>();
+        colliders = worldItem->descendantItems<VFXColliderItem>();
     }
 
     if(cameras.size() || noisyCameras.size()) {
@@ -138,24 +137,23 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
         double salt = camera->salt();
         double pepper = camera->pepper();
         bool flipped = camera->flipped();
-        CameraEffect::FilterType filterType = camera->filterType();
+        CameraEffects::FilterType filterType = camera->filterType();
 
-        for(auto& areaItem : areaItems) {
-            bool is_collided = areaItem->isCollided(link->T().translation());
-            if(is_collided) {
-                hue = areaItem->hsv()[0];
-                saturation = areaItem->hsv()[1];
-                value = areaItem->hsv()[2];
-                red = areaItem->rgb()[0];
-                green = areaItem->rgb()[1];
-                blue = areaItem->rgb()[2];
-                coefB = areaItem->coefB();
-                coefD = areaItem->coefD();
-                stdDev = areaItem->stdDev();
-                salt = areaItem->salt();
-                pepper = areaItem->pepper();
-                flipped = areaItem->flipped();
-                filterType = (CameraEffect::FilterType)areaItem->filter();
+        for(auto& collider : colliders) {
+            if(collision(collider, link->T().translation())) {
+                hue = collider->hsv()[0];
+                saturation = collider->hsv()[1];
+                value = collider->hsv()[2];
+                red = collider->rgb()[0];
+                green = collider->rgb()[1];
+                blue = collider->rgb()[2];
+                coefB = collider->coefB();
+                coefD = collider->coefD();
+                stdDev = collider->stdDev();
+                salt = collider->salt();
+                pepper = collider->pepper();
+                flipped = collider->flipped();
+                filterType = (CameraEffects::FilterType)collider->filterType();
             }
         }
 
@@ -178,13 +176,13 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
         if(salt > 0.0 || pepper > 0.0) {
             generator.saltPepperNoise(image, salt, pepper);
         }
-        if(filterType == CameraEffect::GAUSSIAN_3X3) {
+        if(filterType == CameraEffects::GAUSSIAN_3X3) {
             generator.gaussianFilter(image, 3);
-        } else if(filterType == CameraEffect::GAUSSIAN_5X5) {
+        } else if(filterType == CameraEffects::GAUSSIAN_5X5) {
             generator.gaussianFilter(image, 5);
-        } else if(filterType == CameraEffect::SOBEL) {
+        } else if(filterType == CameraEffects::SOBEL) {
             generator.sobelFilter(image);
-        } else if(filterType == CameraEffect::PREWITT) {
+        } else if(filterType == CameraEffects::PREWITT) {
             generator.prewittFilter(image);
         }
         if(coefB < 0.0 || coefD > 1.0) {
@@ -211,24 +209,23 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
         double salt = 0.0;
         double pepper = 0.0;
         bool flipped = false;
-        CameraEffect::FilterType filterType = CameraEffect::NO_FILTER;
+        CameraEffects::FilterType filterType = CameraEffects::NO_FILTER;
 
-        for(auto& areaItem : areaItems) {
-            bool is_collided = areaItem->isCollided(link->T().translation());
-            if(is_collided) {
-                hue = areaItem->hsv()[0];
-                saturation = areaItem->hsv()[1];
-                value = areaItem->hsv()[2];
-                red = areaItem->rgb()[0];
-                green = areaItem->rgb()[1];
-                blue = areaItem->rgb()[2];
-                coefB = areaItem->coefB();
-                coefD = areaItem->coefD();
-                stdDev = areaItem->stdDev();
-                salt = areaItem->salt();
-                pepper = areaItem->pepper();
-                flipped = areaItem->flipped();
-                filterType = (CameraEffect::FilterType)areaItem->filter();
+        for(auto& collider : colliders) {
+            if(collision(collider, link->T().translation())) {
+                hue = collider->hsv()[0];
+                saturation = collider->hsv()[1];
+                value = collider->hsv()[2];
+                red = collider->rgb()[0];
+                green = collider->rgb()[1];
+                blue = collider->rgb()[2];
+                coefB = collider->coefB();
+                coefD = collider->coefD();
+                stdDev = collider->stdDev();
+                salt = collider->salt();
+                pepper = collider->pepper();
+                flipped = collider->flipped();
+                filterType = (CameraEffects::FilterType)collider->filterType();
             }
         }
 
@@ -251,13 +248,13 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
         if(salt > 0.0 || pepper > 0.0) {
             generator.saltPepperNoise(image, salt, pepper);
         }
-        if(filterType == CameraEffect::GAUSSIAN_3X3) {
+        if(filterType == CameraEffects::GAUSSIAN_3X3) {
             generator.gaussianFilter(image, 3);
-        } else if(filterType == CameraEffect::GAUSSIAN_5X5) {
+        } else if(filterType == CameraEffects::GAUSSIAN_5X5) {
             generator.gaussianFilter(image, 5);
-        } else if(filterType == CameraEffect::SOBEL) {
+        } else if(filterType == CameraEffects::SOBEL) {
             generator.sobelFilter(image);
-        } else if(filterType == CameraEffect::PREWITT) {
+        } else if(filterType == CameraEffects::PREWITT) {
             generator.prewittFilter(image);
         }
         if(coefB < 0.0 || coefD > 1.0) {

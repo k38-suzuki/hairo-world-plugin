@@ -71,13 +71,7 @@ msgstr "黒色ノイズ"
 msgid "Filter"
 msgstr "フィルタ"
 
-msgid "&Reset"
-msgstr "リセット(&R)"
-
-msgid "&Ok"
-msgstr "了解(&O)"
-
-msgid "VEAreaItem"
+msgid "VFXColliderItem"
 msgstr "視覚効果領域アイテム"
 
 msgid "VFXVisionSimulatorItem"

@@ -2,7 +2,7 @@
    @author Kenta Suzuki
 */
 
-#include "VEAreaItem.h"
+#include "VFXColliderItem.h"
 #include <cnoid/Archive>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenUtil>
@@ -10,7 +10,6 @@
 #include <cnoid/ItemManager>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/RootItem>
-#include "CameraEffect.h"
 #include "gettext.h"
 
 using namespace std;
@@ -32,7 +31,7 @@ void onSelectedItemChanged(const ItemList<>& selectedItems)
     GeneralSliderView* sliderView = GeneralSliderView::instance();
     sliders.clear();
 
-    ItemList<VEAreaItem> areaItems = selectedItems;
+    ItemList<VFXColliderItem> areaItems = selectedItems;
     for(auto& areaItem : areaItems) {
         const Vector3& hsv = areaItem->hsv();
         const Vector3& rgb = areaItem->rgb();
@@ -120,7 +119,21 @@ void onSelectedItemChanged(const ItemList<>& selectedItems)
 }
 
 
-VEAreaItem::VEAreaItem()
+void VFXColliderItem::initializeClass(ExtensionManager* ext)
+{
+    ext->itemManager()
+        .registerClass<VFXColliderItem>(N_("VFXColliderItem"))
+        .addCreationPanel<VFXColliderItem>();
+
+    auto rootItem = RootItem::instance();
+    rootItem->sigSelectedItemsChanged().connect(
+        [&](const ItemList<>& selectedItems){ onSelectedItemChanged(selectedItems); });
+}
+
+
+VFXColliderItem::VFXColliderItem()
+    : SimpleColliderItem(),
+      CameraEffects()
 {
     setDiffuseColor(Vector3(0.0, 1.0, 0.0));
 
@@ -131,18 +144,19 @@ VEAreaItem::VEAreaItem()
     std_dev_ = 0.0;
     salt_ = 0.0;
     pepper_ = 0.0;
-    flip_ = false;
+    flipped_ = false;
 
-    filter_.setSymbol(CameraEffect::NO_FILTER, N_("No filter"));
-    filter_.setSymbol(CameraEffect::GAUSSIAN_3X3, N_("Gaussian 3x3"));
-    filter_.setSymbol(CameraEffect::GAUSSIAN_5X5, N_("Gaussian 5x5"));
-    filter_.setSymbol(CameraEffect::SOBEL, N_("Sobel"));
-    filter_.setSymbol(CameraEffect::PREWITT, N_("Prewitt"));
+    filter_.setSymbol(CameraEffects::NO_FILTER, N_("No filter"));
+    filter_.setSymbol(CameraEffects::GAUSSIAN_3X3, N_("Gaussian 3x3"));
+    filter_.setSymbol(CameraEffects::GAUSSIAN_5X5, N_("Gaussian 5x5"));
+    filter_.setSymbol(CameraEffects::SOBEL, N_("Sobel"));
+    filter_.setSymbol(CameraEffects::PREWITT, N_("Prewitt"));
 }
 
 
-VEAreaItem::VEAreaItem(const VEAreaItem& org)
-    : AreaItem(org)
+VFXColliderItem::VFXColliderItem(const VFXColliderItem& org)
+    : SimpleColliderItem(org),
+      CameraEffects(org)
 {
     hsv_ = org.hsv_;
     rgb_ = org.rgb_;
@@ -151,83 +165,144 @@ VEAreaItem::VEAreaItem(const VEAreaItem& org)
     std_dev_ = org.std_dev_;
     salt_ = org.salt_;
     pepper_ = org.pepper_;
-    flip_ = org.flip_;
+    flipped_ = org.flipped_;
     filter_ = org.filter_;
 }
 
 
-VEAreaItem::~VEAreaItem()
+Item* VFXColliderItem::doCloneItem(CloneMap* cloneMap) const
 {
-
+    return new VFXColliderItem(*this);
 }
 
 
-void VEAreaItem::initializeClass(ExtensionManager* ext)
+void VFXColliderItem::doPutProperties(PutPropertyFunction& putProperty)
 {
-    ext->itemManager()
-        .registerClass<VEAreaItem>(N_("VEAreaItem"))
-        .addCreationPanel<VEAreaItem>();
-
-    auto rootItem = RootItem::instance();
-    rootItem->sigSelectedItemsChanged().connect(
-        [&](const ItemList<>& selectedItems){ onSelectedItemChanged(selectedItems); });
-}
-
-
-Item* VEAreaItem::doCloneItem(CloneMap* cloneMap) const
-{
-    return new VEAreaItem(*this);
-}
-
-
-void VEAreaItem::doPutProperties(PutPropertyFunction& putProperty)
-{
-    AreaItem::doPutProperties(putProperty);
-    putProperty(_("HSV"), str(hsv_), [&](const string& v){ return toVector3(v, hsv_); });
-    putProperty(_("RGB"), str(rgb_), [&](const string& v){ return toVector3(v, rgb_); });
+    SimpleColliderItem::doPutProperties(putProperty);
+    putProperty(_("HSV"), str(hsv_), [&](const string& v){
+                    toVector3(v, hsv_);
+                    setHsv(hsv_);
+                    return true;
+                });
+    putProperty(_("RGB"), str(rgb_), [&](const string& v){
+                    toVector3(v, rgb_);
+                    setRgb(rgb_);
+                    return true;
+                });
     putProperty.min(-1.0).max(0.0)(_("CoefB"), coef_b_,
-                [&](const double& value){ coef_b_ = value; return true; });
+                [&](const double& value){
+                    coef_b_ = value;
+                    setCoefB(coef_b_);
+                    return true;
+                });
     putProperty.min(1.0).max(32.0)(_("CoefD"), coef_d_,
-                [&](const double& value){ coef_d_ = value; return true; });
+                [&](const double& value){
+                    coef_d_ = value;
+                    setCoefD(coef_d_);
+                    return true;
+                });
     putProperty.min(0.0).max(1.0)(_("Std_dev"), std_dev_,
-                [&](const double& value){ std_dev_ = value; return true; });
+                [&](const double& value){
+                    std_dev_ = value;
+                    setStdDev(std_dev_);    
+                    return true;
+                });
     putProperty.min(0.0).max(1.0)(_("Salt"), salt_,
-                [&](const double& value){ salt_ = value; return true; });
+                [&](const double& value){
+                    salt_ = value;
+                    setSalt(salt_);
+                    return true;
+                });
     putProperty.min(0.0).max(1.0)(_("Pepper"), pepper_,
-                [&](const double& value){ pepper_ = value; return true; });
-    putProperty(_("Flip"), flip_, changeProperty(flip_));
+                [&](const double& value){
+                    pepper_ = value;
+                    setPepper(pepper_);
+                    return true;
+                });
+    putProperty(_("Flip"), flipped_, changeProperty(flipped_));
     putProperty(_("Filter"), filter_,
-                [&](const int& index){ return filter_.selectIndex(index); });
+                [&](const int& which){
+                    switch(which) {
+                    case 0:
+                        setFilterType(CameraEffects::NO_FILTER);
+                        break;
+                    case 1:
+                        setFilterType(CameraEffects::GAUSSIAN_3X3);
+                        break;
+                    case 2:
+                        setFilterType(CameraEffects::GAUSSIAN_5X5);
+                        break;
+                    case 3:
+                        setFilterType(CameraEffects::SOBEL);
+                        break;
+                    case 4:
+                        setFilterType(CameraEffects::PREWITT);
+                        break;
+                    default:
+                        break;
+                    }
+                    return filter_.selectIndex(which);
+                });
 }
 
 
-bool VEAreaItem::store(Archive& archive)
+bool VFXColliderItem::store(Archive& archive)
 {
-    AreaItem::store(archive);
-    write(archive, "hsv", hsv_);
-    write(archive, "rgb", rgb_);
+    SimpleColliderItem::store(archive);
+    write(archive, "hsv", Vector3(hsv_));
+    write(archive, "rgb", Vector3(rgb_));
     archive.write("coef_b", coef_b_);
     archive.write("coef_d", coef_d_);
     archive.write("std_dev", std_dev_);
     archive.write("salt", salt_);
     archive.write("pepper", pepper_);
-    archive.write("flip", flip_);
+    archive.write("flip", flipped_);
     archive.write("filter", filter_.which());
     return true;
 }
 
 
-bool VEAreaItem::restore(const Archive& archive)
+bool VFXColliderItem::restore(const Archive& archive)
 {
-    AreaItem::restore(archive);
-    read(archive, "hsv", hsv_);
-    read(archive, "rgb", rgb_);
+    SimpleColliderItem::restore(archive);
+    if(read(archive, "hsv", hsv_)) {
+        setHsv(hsv_);
+    }
+    if(read(archive, "rgb", rgb_)) {
+        setRgb(rgb_);
+    }
     archive.read("coef_b", coef_b_);
+    setCoefB(coef_b_);
     archive.read("coef_d", coef_d_);
+    setCoefD(coef_d_);
     archive.read("std_dev", std_dev_);
+    setStdDev(std_dev_);
     archive.read("salt", salt_);
+    setSalt(salt_);
     archive.read("pepper", pepper_);
-    archive.read("flip", flip_);
+    setPepper(pepper_);
+    archive.read("flip", flipped_);
+    setFlipped(flipped_);
     filter_.selectIndex(archive.get("filter", 0));
+    int which = filter_.selectedIndex();
+    switch(which) {
+    case 0:
+        setFilterType(CameraEffects::NO_FILTER);
+        break;
+    case 1:
+        setFilterType(CameraEffects::GAUSSIAN_3X3);
+        break;
+    case 2:
+        setFilterType(CameraEffects::GAUSSIAN_5X5);
+        break;
+    case 3:
+        setFilterType(CameraEffects::SOBEL);
+        break;
+    case 4:
+        setFilterType(CameraEffects::PREWITT);
+        break;
+    default:
+        break;
+    }
     return true;
 }

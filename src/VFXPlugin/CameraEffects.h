@@ -2,19 +2,20 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_VFX_PLUGIN_CAMERA_EFFECT_H
-#define CNOID_VFX_PLUGIN_CAMERA_EFFECT_H
+#ifndef CNOID_VFXPLUGIN_CAMERA_EFFECTS_H
+#define CNOID_VFXPLUGIN_CAMERA_EFFECTS_H
 
 #include <cnoid/EigenTypes>
 #include "exportdecl.h"
 
 namespace cnoid {
 
-class CNOID_EXPORT CameraEffect
+class CNOID_EXPORT CameraEffects
 {
 public:
-    CameraEffect();
-    ~CameraEffect();
+    CameraEffects();
+    CameraEffects(const CameraEffects& org);
+    ~CameraEffects();
 
     enum FilterType { NO_FILTER, GAUSSIAN_3X3, GAUSSIAN_5X5, SOBEL, PREWITT };
 
@@ -32,8 +33,8 @@ public:
     double salt() const { return salt_; }
     void setPepper(const double& pepper) { pepper_ = pepper; }
     double pepper() const { return pepper_; }
-    void setFlipped(const bool& flip) { flip_ = flip; }
-    bool flipped() const { return flip_; }
+    void setFlipped(const bool& flip) { flipped_ = flip; }
+    bool flipped() const { return flipped_; }
     void setFilterType(const FilterType& filterType) { filterType_ = filterType; }
     FilterType filterType() const { return filterType_; }
 
@@ -45,10 +46,10 @@ private:
     double std_dev_;
     double salt_;
     double pepper_;
-    bool flip_;
+    bool flipped_;
     FilterType filterType_;
 };
 
 }
 
-#endif
+#endif // CNOID_VFXPLUGIN_CAMERA_EFFECTS_H

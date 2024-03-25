@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_VFX_PLUGIN_VE_VISION_SIMULATOR_ITEM_H
-#define CNOID_VFX_PLUGIN_VE_VISION_SIMULATOR_ITEM_H
+#ifndef CNOID_VFXPLUGIN_VE_VISION_SIMULATOR_ITEM_H
+#define CNOID_VFXPLUGIN_VE_VISION_SIMULATOR_ITEM_H
 
 #include <cnoid/GLVisionSimulatorItem>
 #include "exportdecl.h"
