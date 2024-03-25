@@ -85,6 +85,7 @@ public:
     double transparency_;
     ScopedConnectionSet connections;
     ref_ptr<ColliderLocation> colliderLocation;
+    MappingPtr info;
 };
 
 }
@@ -129,6 +130,7 @@ SimpleColliderItem::Impl::Impl(SimpleColliderItem* self)
     diffuseColor_ << 0.5, 0.5, 0.5;
     specularExponent_ = 25.0f;
     transparency_ = 0.5;
+    info = new Mapping;
 }
 
 
@@ -152,6 +154,7 @@ SimpleColliderItem::Impl::Impl(SimpleColliderItem* self, const Impl& org)
     diffuseColor_ = org.diffuseColor_;
     specularExponent_ = org.specularExponent_;
     transparency_ = org.transparency_;
+    info = org.info;
 }
 
 
@@ -303,6 +306,62 @@ LocationProxyPtr SimpleColliderItem::getLocationProxy()
         impl->colliderLocation = new ColliderLocation(impl);
     }
     return impl->colliderLocation;
+}
+
+
+const Mapping* SimpleColliderItem::info() const
+{
+    return impl->info;
+}
+
+
+Mapping* SimpleColliderItem::info()
+{
+    return impl->info;
+}
+
+
+template<> double SimpleColliderItem::info(const std::string& key) const
+{
+    return impl->info->get(key).toDouble();
+}
+
+
+template<> double SimpleColliderItem::info(const std::string& key, const double& defaultValue) const
+{
+    double value;
+    if(impl->info->read(key, value)) {
+        return value;
+    }
+    return defaultValue;
+}
+
+
+template<> bool SimpleColliderItem::info(const std::string& key, const bool& defaultValue) const
+{
+    bool value;
+    if(impl->info->read(key, value)) {
+        return value;
+    }
+    return defaultValue;
+}
+
+
+template<> void SimpleColliderItem::setInfo(const std::string& key, const double& value)
+{
+    impl->info->write(key, value);
+}
+
+
+template<> void SimpleColliderItem::setInfo(const std::string& key, const bool& value)
+{
+    impl->info->write(key, value);
+}
+
+
+void SimpleColliderItem::resetInfo(Mapping* info)
+{
+    impl->info = info;
 }
 
 

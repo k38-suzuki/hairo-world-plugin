@@ -46,6 +46,13 @@ public:
     // LocatableItem function
     virtual LocationProxyPtr getLocationProxy() override;
 
+    const Mapping* info() const;
+    Mapping* info();
+    template<typename T> T info(const std::string& key) const;
+    template<typename T> T info(const std::string& key, const T& defaultValue) const;
+    template<typename T> void setInfo(const std::string& key, const T& value);
+    void resetInfo(Mapping* info);
+
     class Impl;
 
 protected:
