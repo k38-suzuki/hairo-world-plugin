@@ -15,7 +15,6 @@ class CNOID_EXPORT CameraEffects
 public:
     CameraEffects();
     CameraEffects(const CameraEffects& org);
-    ~CameraEffects();
 
     enum FilterType { NO_FILTER, GAUSSIAN_3X3, GAUSSIAN_5X5, SOBEL, PREWITT };
 

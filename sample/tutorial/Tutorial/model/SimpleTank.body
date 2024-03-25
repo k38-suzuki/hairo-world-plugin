@@ -131,7 +131,7 @@ links:
         stdDev: 0.0
         salt: 0.05
         pepper: 0.0
-        flip: false
+        flipped: false
         filterType: NO_FILTER
         elements:
           Shape:

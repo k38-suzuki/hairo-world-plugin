@@ -164,26 +164,18 @@ bool NoisyCamera::readSpecifications(const Mapping* info)
     }
 
     Vector3 v;
-    read(info, "hsv", v);
-    setHsv(v);
-    read(info, "rgb", v);
-    setRgb(v);
-
-    double d;
-    info->read({ "coef_b", "coefB" }, d);
-    setCoefB(d);
-    info->read({ "coef_d", "coefD" }, d);
-    setCoefD(d);
-    info->read({ "std_dev", "stdDev" }, d);
-    setStdDev(d);
-    info->read("salt", d);
-    setSalt(d);
-    info->read("pepper", d);
-    setPepper(d);
-
-    bool b;
-    info->read("flip", b);
-    setFlipped(b);
+    if(read(info, "hsv", v)) {
+        setHsv(v);
+    }
+    if(read(info, "rgb", v)) {
+        setRgb(v);
+    }
+    setCoefB(info->get({ "coef_b", "coefB" }, 0.0));
+    setCoefD(info->get({ "coef_d", "coefD" }, 1.0));
+    setStdDev(info->get({ "std_dev", "stdDev" }, 0.0));
+    setSalt(info->get("salt", 0.0));
+    setPepper(info->get("pepper", 0.0));
+    setFlipped(info->get("flipped", false));
 
     string symbol;
     if(info->read({ "filter_type", "filterType" }, symbol)) {
@@ -210,14 +202,14 @@ bool NoisyCamera::writeSpecifications(Mapping* info) const
         return false;
     }
 
-    write(info, "hsv", hsv());
-    write(info, "rgb", rgb());
+    write(info, "hsv", Vector3(hsv()));
+    write(info, "rgb", Vector3(rgb()));
     info->write("coef_b", coefB());
     info->write("coef_d", coefD());
     info->write("std_dev", stdDev());
     info->write("salt", salt());
     info->write("pepper", pepper());
-    info->write("flip", flipped());
+    info->write("flipped", flipped());
     if(filterType() == NO_FILTER) {
         info->write("filter_type", "NO_FILTER");
     } else if(filterType() == GAUSSIAN_3X3) {

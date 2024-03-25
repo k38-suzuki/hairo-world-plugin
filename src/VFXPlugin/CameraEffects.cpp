@@ -33,9 +33,3 @@ CameraEffects::CameraEffects(const CameraEffects& org)
     flipped_ = org.flipped_;
     filterType_ = org.filterType_;
 }
-
-
-CameraEffects::~CameraEffects()
-{
-
-}

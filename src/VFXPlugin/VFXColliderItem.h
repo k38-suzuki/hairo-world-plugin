@@ -26,15 +26,7 @@ protected:
     virtual bool restore(const Archive& archive) override;
 
 private:
-    Vector3 hsv_;
-    Vector3 rgb_;
-    double coef_b_;
-    double coef_d_;
-    double std_dev_;
-    double salt_;
-    double pepper_;
-    bool flipped_;
-    Selection filter_;
+    Selection filterTypeSelection_;
 };
 
 }
