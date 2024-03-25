@@ -17,11 +17,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "TCAreaItem"
-msgstr "通信領域アイテム"
-
-msgid "TC Area"
-msgstr "通信領域"
+msgid "TCColliderItem"
+msgstr "通信障害領域アイテム"
 
 msgid "InboundDelay"
 msgstr "内向き遅延"
@@ -46,30 +43,6 @@ msgstr "送信元IPアドレス"
 
 msgid "Destination IP"
 msgstr "送信先IPアドレス"
-
-msgid "Shape"
-msgstr "形状"
-
-msgid "Size"
-msgstr "サイズ"
-
-msgid "Radius"
-msgstr "半径"
-
-msgid "Height"
-msgstr "高さ"
-
-msgid "Translation"
-msgstr "位置"
-
-msgid "Rotation"
-msgstr "回転"
-
-msgid "DiffuseColor"
-msgstr "拡散色"
-
-msgid "Transparency"
-msgstr "透過度"
 
 msgid "ifb0"
 msgstr ""

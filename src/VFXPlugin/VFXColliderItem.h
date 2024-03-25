@@ -7,11 +7,11 @@
 
 #include <cnoid/Selection>
 #include <cnoid/SimpleColliderItem>
-#include "CameraEffects.h"
+#include "VisualEffects.h"
 
 namespace cnoid {
 
-class VFXColliderItem : public SimpleColliderItem, public CameraEffects
+class VFXColliderItem : public SimpleColliderItem, public VisualEffects
 {
 public:
     static void initializeClass(ExtensionManager* ext);

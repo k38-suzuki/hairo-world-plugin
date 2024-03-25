@@ -2,12 +2,12 @@
    @author Kenta Suzuki
 */
 
-#include "CameraEffects.h"
+#include "VisualEffects.h"
 
 using namespace std;
 using namespace cnoid;
 
-CameraEffects::CameraEffects()
+VisualEffects::VisualEffects()
 {
     hsv_ << 0.0, 0.0, 0.0;
     rgb_ << 0.0, 0.0, 0.0;
@@ -21,7 +21,7 @@ CameraEffects::CameraEffects()
 }
 
 
-CameraEffects::CameraEffects(const CameraEffects& org)
+VisualEffects::VisualEffects(const VisualEffects& org)
 {
     hsv_ = org.hsv_;
     rgb_ = org.rgb_;

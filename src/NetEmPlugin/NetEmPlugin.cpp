@@ -5,7 +5,7 @@
 #include <cnoid/Plugin>
 #include <fmt/format.h>
 #include "NetworkEmulator.h"
-#include "TCAreaItem.h"
+#include "TCColliderItem.h"
 #include "NetworkEmulatorItem.h"
 
 using namespace cnoid;
@@ -24,7 +24,7 @@ public:
     virtual bool initialize() override
     {
         NetworkEmulator::initializeClass(this);
-        TCAreaItem::initializeClass(this);
+        TCColliderItem::initializeClass(this);
         NetworkEmulatorItem::initializeClass(this);
         return true;
     }

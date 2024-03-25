@@ -3,7 +3,7 @@ if(NOT ENABLE_GUI)
 endif()
 
 set(sources
-  CameraEffects.cpp
+  VisualEffects.cpp
   ImageGenerator.cpp
   NoisyCamera.cpp
   VFXColliderItem.cpp
@@ -12,7 +12,7 @@ set(sources
 )
 
 set(headers
-  CameraEffects.h
+  VisualEffects.h
   ImageGenerator.h
   NoisyCamera.h
   VFXColliderItem.h
@@ -20,7 +20,7 @@ set(headers
   exportdecl.h
 )
 
-choreonoid_make_header_public(CameraEffects.h)
+choreonoid_make_header_public(VisualEffects.h)
 choreonoid_make_header_public(ImageGenerator.h)
 choreonoid_make_header_public(NoisyCamera.h)
 

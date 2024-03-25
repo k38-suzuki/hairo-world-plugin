@@ -46,6 +46,19 @@ public:
 }
 
 
+void NetworkEmulator::initializeClass(ExtensionManager* ext)
+{
+    if(!emulatorInstance) {
+        emulatorInstance = ext->manage(new NetworkEmulator);
+
+        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
+        mm.addItem(_("NetworkEmulator"))->sigTriggered().connect(
+                    [&](){ emulatorInstance->impl->show(); });
+    }
+}
+
+
+
 NetworkEmulator::NetworkEmulator()
 {
     impl = new Impl;
@@ -114,17 +127,6 @@ NetworkEmulator::Impl::Impl()
 NetworkEmulator::~NetworkEmulator()
 {
     delete impl;
-}
-
-
-void NetworkEmulator::initializeClass(ExtensionManager* ext)
-{
-    if(!emulatorInstance) {
-        emulatorInstance = ext->manage(new NetworkEmulator);
-    }
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
-    mm.addItem(_("NetworkEmulator"))->sigTriggered().connect(
-                [&](){ emulatorInstance->impl->show(); });
 }
 
 

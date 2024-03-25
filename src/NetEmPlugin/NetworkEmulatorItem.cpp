@@ -11,11 +11,11 @@
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
 #include "NetEm.h"
-#include "TCAreaItem.h"
+#include "TCColliderItem.h"
 #include "gettext.h"
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 namespace {
 
@@ -70,13 +70,20 @@ public:
     vector<Body*> bodies;
     Selection interface;
     Selection ifbDevice;
-    int prevItemID;
-    ItemList<TCAreaItem> areaItems;
+    ItemList<TCColliderItem> colliders;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void onPreDynamics();
 };
 
+}
+
+
+void NetworkEmulatorItem::initializeClass(ExtensionManager* ext)
+{
+    ext->itemManager()
+        .registerClass<NetworkEmulatorItem, SubSimulatorItem>(N_("NetworkEmulatorItem"))
+        .addCreationPanel<NetworkEmulatorItem>();
 }
 
 
@@ -91,8 +98,7 @@ NetworkEmulatorItem::Impl::Impl(NetworkEmulatorItem* self)
 {
     netem = new NetEm;
     bodies.clear();
-    prevItemID = INT_MAX;
-    areaItems.clear();
+    colliders.clear();
 
     for(size_t i = 0; i < netem->interfaces().size(); ++i) {
         interface.setSymbol(i, netem->interfaces()[i]);
@@ -125,14 +131,6 @@ NetworkEmulatorItem::~NetworkEmulatorItem()
 }
 
 
-void NetworkEmulatorItem::initializeClass(ExtensionManager* ext)
-{
-    ext->itemManager()
-        .registerClass<NetworkEmulatorItem, SubSimulatorItem>(N_("NetworkEmulatorItem"))
-        .addCreationPanel<NetworkEmulatorItem>();
-}
-
-
 bool NetworkEmulatorItem::initializeSimulation(SimulatorItem* simulatorItem)
 {
     return impl->initializeSimulation(simulatorItem);
@@ -142,8 +140,7 @@ bool NetworkEmulatorItem::initializeSimulation(SimulatorItem* simulatorItem)
 bool NetworkEmulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     bodies.clear();
-    prevItemID = INT_MAX;
-    areaItems.clear();
+    colliders.clear();
 
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
     for(auto& simBody : simBodies) {
@@ -152,7 +149,7 @@ bool NetworkEmulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorIte
 
     WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
     if(worldItem) {
-        areaItems = worldItem->descendantItems<TCAreaItem>();
+        colliders = worldItem->descendantItems<TCColliderItem>();
     }
 
     if(simBodies.size()) {
@@ -171,48 +168,36 @@ void NetworkEmulatorItem::finalizeSimulation()
 
 void NetworkEmulatorItem::Impl::onPreDynamics()
 {
-    TCAreaItem* currentItem = new TCAreaItem;
-    int currentItemID = INT_MAX;
     for(auto& body : bodies) {
         if(!body->isStaticModel()) {
             Link* link = body->rootLink();
-            for(size_t j = 0; j <  areaItems.size(); ++j) {
-                TCAreaItem* areaItem = areaItems[j];
-                if(areaItem->isCollided(link->T().translation())) {
-                    currentItem = areaItem;
-                    currentItemID = j;
+            for(auto& collider : colliders) {
+                if(collision(collider, link->T().translation())) {
+                    const int delays[] = { (int)collider->inboundDelay(), (int)collider->outboundDelay() };
+                    const int rates[] = { (int)collider->inboundRate(), (int)collider->outboundRate() };
+                    const double losses[] = { collider->inboundLoss(), collider->outboundLoss() };
+                    for(int i = 0; i < 2; ++i) {
+                        if(delays[i] >= 0) {
+                            netem->setDelay(i, delays[i]);
+                        }
+                        if(rates[i] >= 0) {
+                            netem->setRate(i, rates[i]);
+                        }
+                        if(losses[i] >= 0.0) {
+                            netem->setLoss(i, losses[i]);
+                        }
+                    }
+                    if(checkIP(collider->source())) {
+                        netem->setSourceIP(collider->source());
+                    }
+                    if(checkIP(collider->destination())) {
+                        netem->setSourceIP(collider->destination());
+                    }
+                    callLater([&](){ netem->update(); });
                 }
             }
         }
     }
-
-    if(currentItemID != prevItemID) {
-        static const double DELAY_MAX = 100000;
-        static const double RATE_MAX = 11000000;
-        static const double LOSS_MAX = 100.0;
-        const int delays[] = { (int)currentItem->inboundDelay(), (int)currentItem->outboundDelay() };
-        const int rates[] = { (int)currentItem->inboundRate(), (int)currentItem->outboundRate() };
-        const double losses[] = { currentItem->inboundLoss(), currentItem->outboundLoss() };
-        for(int i = 0; i < 2; ++i) {
-            if(delays[i] >= 0 && delays[i] <= DELAY_MAX) {
-                netem->setDelay(i, delays[i]);
-            }
-            if(rates[i] >= 0 && rates[i] <= RATE_MAX) {
-                netem->setRate(i, rates[i]);
-            }
-            if(losses[i] >= 0.0 && losses[i] <= LOSS_MAX) {
-                netem->setLoss(i, losses[i]);
-            }
-        }
-        if(checkIP(currentItem->source())) {
-            netem->setSourceIP(currentItem->source());
-        }
-        if(checkIP(currentItem->destination())) {
-            netem->setSourceIP(currentItem->destination());
-        }
-        callLater([&](){ netem->update(); });
-    }
-    prevItemID = currentItemID;
 }
 
 

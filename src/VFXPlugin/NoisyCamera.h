@@ -6,13 +6,13 @@
 #define CNOID_VFXPLUGIN_NOISY_CAMERA_H
 
 #include <cnoid/Camera>
-#include "CameraEffects.h"
+#include "VisualEffects.h"
 #include "ImageGenerator.h"
 #include "exportdecl.h"
 
 namespace cnoid {
 
-class CNOID_EXPORT NoisyCamera : public Camera, public CameraEffects
+class CNOID_EXPORT NoisyCamera : public Camera, public VisualEffects
 {
 public:
     NoisyCamera();

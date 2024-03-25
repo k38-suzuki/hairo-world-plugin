@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_NETEM_PLUGIN_NETEM_H
-#define CNOID_NETEM_PLUGIN_NETEM_H
+#ifndef CNOID_NETEMPLUGIN_NETEM_H
+#define CNOID_NETEMPLUGIN_NETEM_H
 
 #include <cnoid/Referenced>
 #include <vector>

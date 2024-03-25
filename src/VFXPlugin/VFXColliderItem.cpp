@@ -135,21 +135,21 @@ void VFXColliderItem::initializeClass(ExtensionManager* ext)
 
 VFXColliderItem::VFXColliderItem()
     : SimpleColliderItem(),
-      CameraEffects()
+      VisualEffects()
 {
     setDiffuseColor(Vector3(0.0, 1.0, 0.0));
 
-    filterTypeSelection_.setSymbol(CameraEffects::NO_FILTER, N_("No filter"));
-    filterTypeSelection_.setSymbol(CameraEffects::GAUSSIAN_3X3, N_("Gaussian 3x3"));
-    filterTypeSelection_.setSymbol(CameraEffects::GAUSSIAN_5X5, N_("Gaussian 5x5"));
-    filterTypeSelection_.setSymbol(CameraEffects::SOBEL, N_("Sobel"));
-    filterTypeSelection_.setSymbol(CameraEffects::PREWITT, N_("Prewitt"));
+    filterTypeSelection_.setSymbol(VisualEffects::NO_FILTER, N_("No filter"));
+    filterTypeSelection_.setSymbol(VisualEffects::GAUSSIAN_3X3, N_("Gaussian 3x3"));
+    filterTypeSelection_.setSymbol(VisualEffects::GAUSSIAN_5X5, N_("Gaussian 5x5"));
+    filterTypeSelection_.setSymbol(VisualEffects::SOBEL, N_("Sobel"));
+    filterTypeSelection_.setSymbol(VisualEffects::PREWITT, N_("Prewitt"));
 }
 
 
 VFXColliderItem::VFXColliderItem(const VFXColliderItem& org)
     : SimpleColliderItem(org),
-      CameraEffects(org)
+      VisualEffects(org)
 {
     filterTypeSelection_ = org.filterTypeSelection_;
 }
@@ -223,20 +223,20 @@ void VFXColliderItem::doPutProperties(PutPropertyFunction& putProperty)
     putProperty(_("Filter"), filterTypeSelection_,
                 [this](int which){
                     switch(which) {
-                    case CameraEffects::NO_FILTER:
-                        setFilterType(CameraEffects::NO_FILTER);
+                    case VisualEffects::NO_FILTER:
+                        setFilterType(VisualEffects::NO_FILTER);
                         break;
-                    case CameraEffects::GAUSSIAN_3X3:
-                        setFilterType(CameraEffects::GAUSSIAN_3X3);
+                    case VisualEffects::GAUSSIAN_3X3:
+                        setFilterType(VisualEffects::GAUSSIAN_3X3);
                         break;
-                    case CameraEffects::GAUSSIAN_5X5:
-                        setFilterType(CameraEffects::GAUSSIAN_5X5);
+                    case VisualEffects::GAUSSIAN_5X5:
+                        setFilterType(VisualEffects::GAUSSIAN_5X5);
                         break;
-                    case CameraEffects::SOBEL:
-                        setFilterType(CameraEffects::SOBEL);
+                    case VisualEffects::SOBEL:
+                        setFilterType(VisualEffects::SOBEL);
                         break;
-                    case CameraEffects::PREWITT:
-                        setFilterType(CameraEffects::PREWITT);
+                    case VisualEffects::PREWITT:
+                        setFilterType(VisualEffects::PREWITT);
                         break;
                     default:
                         break;

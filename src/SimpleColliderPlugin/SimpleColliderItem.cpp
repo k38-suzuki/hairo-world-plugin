@@ -129,7 +129,7 @@ SimpleColliderItem::Impl::Impl(SimpleColliderItem* self)
     height_ = 1.0;
     diffuseColor_ << 0.5, 0.5, 0.5;
     specularExponent_ = 25.0f;
-    transparency_ = 0.5;
+    transparency_ = 0.8;
     info = new Mapping;
 }
 

@@ -2,19 +2,19 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_VFXPLUGIN_CAMERA_EFFECTS_H
-#define CNOID_VFXPLUGIN_CAMERA_EFFECTS_H
+#ifndef CNOID_VFXPLUGIN_VISUAL_EFFECTS_H
+#define CNOID_VFXPLUGIN_VISUAL_EFFECTS_H
 
 #include <cnoid/EigenTypes>
 #include "exportdecl.h"
 
 namespace cnoid {
 
-class CNOID_EXPORT CameraEffects
+class CNOID_EXPORT VisualEffects
 {
 public:
-    CameraEffects();
-    CameraEffects(const CameraEffects& org);
+    VisualEffects();
+    VisualEffects(const VisualEffects& org);
 
     enum FilterType { NO_FILTER, GAUSSIAN_3X3, GAUSSIAN_5X5, SOBEL, PREWITT };
 
@@ -51,4 +51,4 @@ private:
 
 }
 
-#endif // CNOID_VFXPLUGIN_CAMERA_EFFECTS_H
+#endif // CNOID_VFXPLUGIN_VISUAL_EFFECTS_H
