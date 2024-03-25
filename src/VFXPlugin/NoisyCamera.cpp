@@ -83,7 +83,7 @@ const Image& NoisyCamera::constImage() const
     double stdDev = CameraEffect::stdDev();
     double salt = CameraEffect::salt();
     double pepper = CameraEffect::pepper();
-    bool flipped = CameraEffect::flip();
+    bool flipped = CameraEffect::flipped();
     FilterType filterType = CameraEffect::filterType();
 
     Image image = *Camera::sharedImage();
@@ -137,7 +137,7 @@ const double* NoisyCamera::readState(const double* buf)
     setStdDev(buf[8]);
     setSalt(buf[9]);
     setPepper(buf[10]);
-    setFlip(buf[11]);
+    setFlipped(buf[11]);
     return buf + 12;
 }
 
@@ -152,7 +152,7 @@ double* NoisyCamera::writeState(double* out_buf) const
     out_buf[8] = stdDev();
     out_buf[9] = salt();
     out_buf[10] = pepper();
-    out_buf[11] = flip() ? 1.0 : 0.0;
+    out_buf[11] = flipped() ? 1.0 : 0.0;
     return out_buf + 12;
 }
 
@@ -183,7 +183,7 @@ bool NoisyCamera::readSpecifications(const Mapping* info)
 
     bool b;
     info->read("flip", b);
-    setFlip(b);
+    setFlipped(b);
 
     string symbol;
     if(info->read({ "filter_type", "filterType" }, symbol)) {
@@ -217,7 +217,7 @@ bool NoisyCamera::writeSpecifications(Mapping* info) const
     info->write("std_dev", stdDev());
     info->write("salt", salt());
     info->write("pepper", pepper());
-    info->write("flip", flip());
+    info->write("flip", flipped());
     if(filterType() == NO_FILTER) {
         info->write("filter_type", "NO_FILTER");
     } else if(filterType() == GAUSSIAN_3X3) {
@@ -247,7 +247,7 @@ void NoisyCamera::copyNoisyCameraStateFrom(const NoisyCamera& other, bool doCopy
     setStdDev(other.stdDev());
     setSalt(other.salt());
     setPepper(other.pepper());
-    setFlip(other.flip());
+    setFlipped(other.flipped());
     setFilterType(other.filterType());
 }
 

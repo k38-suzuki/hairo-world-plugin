@@ -137,7 +137,7 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
         double stdDev = camera->stdDev();
         double salt = camera->salt();
         double pepper = camera->pepper();
-        bool flipped = camera->flip();
+        bool flipped = camera->flipped();
         CameraEffect::FilterType filterType = camera->filterType();
 
         for(auto& areaItem : areaItems) {
@@ -154,7 +154,7 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
                 stdDev = areaItem->stdDev();
                 salt = areaItem->salt();
                 pepper = areaItem->pepper();
-                flipped = areaItem->flip();
+                flipped = areaItem->flipped();
                 filterType = (CameraEffect::FilterType)areaItem->filter();
             }
         }
@@ -227,7 +227,7 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
                 stdDev = areaItem->stdDev();
                 salt = areaItem->salt();
                 pepper = areaItem->pepper();
-                flipped = areaItem->flip();
+                flipped = areaItem->flipped();
                 filterType = (CameraEffect::FilterType)areaItem->filter();
             }
         }

@@ -32,8 +32,8 @@ public:
     double salt() const { return salt_; }
     void setPepper(const double& pepper) { pepper_ = pepper; }
     double pepper() const { return pepper_; }
-    void setFlip(const bool& flip) { flip_ = flip; }
-    bool flip() const { return flip_; }
+    void setFlipped(const bool& flip) { flip_ = flip; }
+    bool flipped() const { return flip_; }
     void setFilterType(const FilterType& filterType) { filterType_ = filterType; }
     FilterType filterType() const { return filterType_; }
 
