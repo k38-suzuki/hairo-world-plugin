@@ -20,4 +20,4 @@ public:
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_QAD_WRITER_H

@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_FILE_EXPLORER_PLUGIN_NOTEPAD_H
-#define CNOID_FILE_EXPLORER_PLUGIN_NOTEPAD_H
+#ifndef CNOID_BODYEDIT_PLUGIN_NOTEPAD_H
+#define CNOID_BODYEDIT_PLUGIN_NOTEPAD_H
 
 #include <QMainWindow>
 #include "exportdecl.h"
@@ -25,4 +25,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_BODYEDIT_PLUGIN_NOTEPAD_H

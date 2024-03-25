@@ -10,12 +10,9 @@
 
 using namespace cnoid;
 
-namespace {
-
 class NetEmPlugin : public Plugin
 {
 public:
-
     NetEmPlugin() : Plugin("NetEm")
     {
         require("Body");
@@ -40,7 +37,5 @@ public:
         return text.c_str();
     }
 };
-
-}
 
 CNOID_IMPLEMENT_PLUGIN_ENTRY(NetEmPlugin)

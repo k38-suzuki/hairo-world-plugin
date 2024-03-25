@@ -8,11 +8,8 @@
 #include "OnScreenJoystickView.h"
 #include "JoystickTester.h"
 #include "JoystickStarter.h"
-#include "SimpleSimulationView.h"
 
 using namespace cnoid;
-
-namespace {
 
 class JoystickStartPlugin : public Plugin
 {
@@ -29,7 +26,6 @@ public:
         OnScreenJoystickView::initializeClass(this);
         JoystickTester::initializeClass(this);
         JoystickStarter::initializeClass(this);
-        SimpleSimulationView::initializeClass(this);
         return true;
     }
 
@@ -44,7 +40,5 @@ public:
         return text.c_str();
     }
 };
-
-}
 
 CNOID_IMPLEMENT_PLUGIN_ENTRY(JoystickStartPlugin)

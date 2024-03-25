@@ -35,4 +35,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_SYSTEM_TRAY_PLUGIN_SYSTEM_TRAY_ICON_H

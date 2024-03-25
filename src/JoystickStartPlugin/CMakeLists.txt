@@ -1,7 +1,3 @@
-if(NOT ENABLE_GUI)
-  return()
-endif()
-
 set(sources
   AxisWidget.cpp
   OnScreenJoystickWidget.cpp
@@ -11,8 +7,6 @@ set(sources
   JoystickTester.cpp
   KeyConfig.cpp
   JoystickStarter.cpp
-  SimpleSimulationView.cpp
-  SimpleTimeWidget.cpp
 )
 
 set(headers
@@ -24,8 +18,6 @@ set(headers
   JoystickTester.h
   KeyConfig.h
   JoystickStarter.h
-  SimpleSimulationView.h
-  SimpleTimeWidget.h
   exportdecl.h
 )
 

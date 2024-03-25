@@ -8,12 +8,9 @@
 
 using namespace cnoid;
 
-namespace {
-
 class SimpleColliderPlugin : public Plugin
 {
 public:
-    
     SimpleColliderPlugin() : Plugin("SimpleCollider")
     {
         require("Body");
@@ -36,7 +33,5 @@ public:
         return text.c_str();
     }
 };
-
-}
 
 CNOID_IMPLEMENT_PLUGIN_ENTRY(SimpleColliderPlugin)

@@ -16,6 +16,14 @@
 using namespace std;
 using namespace cnoid;
 
+void LiftSimulatorItem::initializeClass(ExtensionManager* ext)
+{
+    ext->itemManager()
+        .registerClass<LiftSimulatorItem, SubSimulatorItem>("LiftSimulatorItem")
+        .addCreationPanel<LiftSimulatorItem>();
+}
+
+
 LiftSimulatorItem::LiftSimulatorItem()
 {
     simulatorItem = 0;
@@ -30,20 +38,6 @@ LiftSimulatorItem::LiftSimulatorItem(const LiftSimulatorItem& org)
     simulatorItem = 0;
     wings.clear();
     areaItems.clear();
-}
-
-
-LiftSimulatorItem::~LiftSimulatorItem()
-{
-
-}
-
-
-void LiftSimulatorItem::initializeClass(ExtensionManager* ext)
-{
-    ext->itemManager()
-        .registerClass<LiftSimulatorItem, SubSimulatorItem>("LiftSimulatorItem")
-        .addCreationPanel<LiftSimulatorItem>();
 }
 
 

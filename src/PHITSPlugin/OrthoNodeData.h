@@ -70,4 +70,4 @@ typedef ref_ptr<OrthoNodeData> OrthoNodeDataPtr;
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_ORTHO_GRID_NODE_DATA_H

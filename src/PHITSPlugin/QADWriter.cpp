@@ -12,8 +12,8 @@
 #include <sstream>
 #include "PHITSRunner.h"
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 namespace {
 

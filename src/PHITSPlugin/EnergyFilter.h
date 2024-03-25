@@ -50,4 +50,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_ENERGY_FILTER_H

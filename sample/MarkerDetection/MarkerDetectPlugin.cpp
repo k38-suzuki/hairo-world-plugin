@@ -11,7 +11,6 @@ using namespace cnoid;
 class MarkerDetectPlugin : public Plugin
 {
 public:
-
     MarkerDetectPlugin() : Plugin("MarkerDetect")
     {
         require("Body");

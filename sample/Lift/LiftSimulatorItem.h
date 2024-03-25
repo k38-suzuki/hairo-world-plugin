@@ -19,10 +19,8 @@ class LiftSimulatorItem : public SubSimulatorItem
 public:
     LiftSimulatorItem();
     LiftSimulatorItem(const LiftSimulatorItem& org);
-    ~LiftSimulatorItem();
 
     static void initializeClass(ExtensionManager* ext);
-
     virtual bool initializeSimulation(SimulatorItem* simulatorItem) override;
 
 protected:
@@ -43,4 +41,4 @@ typedef ref_ptr<LiftSimulatorItem> LiftSimulatorItemPtr;
 
 }
 
-#endif
+#endif // CNOID_SAMPLE_LIFT_SIMULATOR_ITEM_H

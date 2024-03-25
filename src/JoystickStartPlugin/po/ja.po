@@ -35,57 +35,6 @@ msgstr "仮想ジョイスティック2"
 msgid "On-screen Joystick"
 msgstr "オンスクリーンジョイスティック"
 
-msgid "Play mode"
-msgstr "再生モード"
-
-msgid "Simulation"
-msgstr "シミュレーション"
-
-msgid "Animation"
-msgstr "アニメーション"
-
-msgid "Start simulation from the beginning"
-msgstr "初期位置からのシミュレーションを開始"
-
-msgid "Start simulation from the current state"
-msgstr "現在位置からのシミュレーションを開始"
-
-msgid "Pause simulation"
-msgstr "シミュレーションの一時停止"
-
-msgid "Seek backward"
-msgstr "戻る"
-
-msgid "Seek forward"
-msgstr "進む"
-
-msgid "Stop simulation"
-msgstr "シミュレーションの停止"
-
-msgid "Seek time"
-msgstr "シーク時間"
-
-msgid "SimpleSimulation"
-msgstr "簡易シミュレーション"
-
-msgid "SimpleSimulationView"
-msgstr "簡易シミュレーションビュー"
-
-msgid "Resume playback"
-msgstr "再生再開"
-
-msgid "Start playback"
-msgstr "再生開始"
-
-msgid "Stop animation"
-msgstr "アニメーションの停止"
-
-msgid "Resume animation"
-msgstr "アニメーションの再生・停止"
-
-msgid "Time"
-msgstr "時間"
-
 msgid "Joystick"
 msgstr ""
 

@@ -24,4 +24,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_BOOKMARK_PLUGIN_HISTORY_MANAGER_H

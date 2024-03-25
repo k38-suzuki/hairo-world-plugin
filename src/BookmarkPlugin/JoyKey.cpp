@@ -7,8 +7,8 @@
 #include <cnoid/JoystickCapture>
 #include <vector>
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 namespace {
 

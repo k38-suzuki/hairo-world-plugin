@@ -9,12 +9,9 @@
 
 using namespace cnoid;
 
-namespace {
-
 class VFXPlugin : public Plugin
 {
 public:
-
     VFXPlugin() : Plugin("VFX")
     {
         require("Body");
@@ -38,7 +35,5 @@ public:
         return text.c_str();
     }
 };
-
-}
 
 CNOID_IMPLEMENT_PLUGIN_ENTRY(VFXPlugin)

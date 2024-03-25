@@ -8,12 +8,9 @@
 
 using namespace cnoid;
 
-namespace {
-
 class SystemTrayPlugin : public Plugin
 {
 public:
-
     SystemTrayPlugin() : Plugin("SystemTray")
     {
         require("Body");
@@ -36,7 +33,5 @@ public:
         return text.c_str();
     }
 };
-
-}
 
 CNOID_IMPLEMENT_PLUGIN_ENTRY(SystemTrayPlugin)

@@ -53,4 +53,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_OMPL_PLUGIN_SIMPLE_SETUP_H

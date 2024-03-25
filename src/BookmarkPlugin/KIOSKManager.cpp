@@ -24,8 +24,8 @@
 #include "JoyKey.h"
 #include "gettext.h"
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 namespace {
 

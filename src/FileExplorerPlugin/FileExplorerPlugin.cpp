@@ -14,12 +14,9 @@
 using namespace cnoid;
 namespace filesystem = cnoid::stdx::filesystem;
 
-namespace {
-
 class FileExplorerPlugin : public Plugin
 {
 public:
-
     FileExplorerPlugin() : Plugin("FileExplorer")
     {
         require("Body");
@@ -57,7 +54,5 @@ public:
         return text.c_str();
     }
 };
-
-}
 
 CNOID_IMPLEMENT_PLUGIN_ENTRY(FileExplorerPlugin)

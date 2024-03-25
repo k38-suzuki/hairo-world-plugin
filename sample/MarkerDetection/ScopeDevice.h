@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_MARKER_DETECT_PLUGIN_SCOPE_DEVICE_H
-#define CNOID_MARKER_DETECT_PLUGIN_SCOPE_DEVICE_H
+#ifndef CNOID_MARKERDETECT_PLUGIN_SCOPE_DEVICE_H
+#define CNOID_MARKERDETECT_PLUGIN_SCOPE_DEVICE_H
 
 #include <cnoid/Device>
 #include <cnoid/ValueTree>
@@ -63,4 +63,4 @@ typedef ref_ptr<ScopeDevice> ScopeDevicePtr;
 
 }
 
-#endif
+#endif // CNOID_MARKERDETECT_PLUGIN_SCOPE_DEVICE_H

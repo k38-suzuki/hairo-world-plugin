@@ -53,4 +53,4 @@ typedef ref_ptr<GammaCamera> GammaCameraPtr;
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_GAMMA_CAMERA_H

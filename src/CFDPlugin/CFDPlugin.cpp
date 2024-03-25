@@ -9,12 +9,9 @@
 
 using namespace cnoid;
 
-namespace {
-
 class CFDPlugin : public Plugin
 {
 public:
-
     CFDPlugin() : Plugin("CFD")
     {
         require("Body");
@@ -38,7 +35,5 @@ public:
         return text.c_str();
     }
 };
-
-}
 
 CNOID_IMPLEMENT_PLUGIN_ENTRY(CFDPlugin)

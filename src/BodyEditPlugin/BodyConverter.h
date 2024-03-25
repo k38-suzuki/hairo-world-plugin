@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_BODY_EDIT_PLUGIN_BODY_CONVERTER_H
-#define CNOID_BODY_EDIT_PLUGIN_BODY_CONVERTER_H
+#ifndef CNOID_BODYEDIT_PLUGIN_BODY_CONVERTER_H
+#define CNOID_BODYEDIT_PLUGIN_BODY_CONVERTER_H
 
 namespace cnoid {
 
@@ -25,4 +25,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_BODYEDIT_PLUGIN_BODY_CONVERTER_H

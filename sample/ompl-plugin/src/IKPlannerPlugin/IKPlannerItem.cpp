@@ -22,8 +22,8 @@
 #include <sample/SimpleController/Interpolator.h>
 #include "gettext.h"
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 namespace ob = ompl::base;
 namespace og = ompl::geometric;
@@ -87,6 +87,28 @@ public:
 }
 
 
+void IKPlannerItem::initializeClass(ExtensionManager* ext)
+{
+    ext->itemManager()
+        .registerClass<IKPlannerItem, SubSimulatorItem>(N_("IKPlannerItem"))
+        .addCreationPanel<IKPlannerItem>();
+
+    ItemTreeView::instance()->customizeContextMenu<IKPlannerItem>(
+        [](IKPlannerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
+            menuManager.setPath("/").setPath(_("IK Planner"));
+            menuManager.addItem(_("Set start"))->sigTriggered().connect(
+                        [item](){ item->impl->onStartTriggered(); });
+            menuManager.addItem(_("Set goal"))->sigTriggered().connect(
+                        [item](){ item->impl->onGoalTriggered(); });
+            menuManager.addItem(_(_("Generate a path")))->sigTriggered().connect(
+                        [item](){ item->impl->onGenerateTriggered(); });
+            menuManager.setPath("/");
+            menuManager.addSeparator();
+            menuFunction.dispatchAs<Item>(item);
+        });
+}
+
+
 IKPlannerItem::IKPlannerItem()
 {
     impl = new Impl(this);
@@ -132,28 +154,6 @@ IKPlannerItem::Impl::Impl(IKPlannerItem* self, const Impl& org)
 IKPlannerItem::~IKPlannerItem()
 {
     delete impl;
-}
-
-
-void IKPlannerItem::initializeClass(ExtensionManager* ext)
-{
-    ext->itemManager()
-        .registerClass<IKPlannerItem, SubSimulatorItem>(N_("IKPlannerItem"))
-        .addCreationPanel<IKPlannerItem>();
-
-    ItemTreeView::instance()->customizeContextMenu<IKPlannerItem>(
-        [](IKPlannerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
-            menuManager.setPath("/").setPath(_("IK Planner"));
-            menuManager.addItem(_("Set start"))->sigTriggered().connect(
-                        [item](){ item->impl->onStartTriggered(); });
-            menuManager.addItem(_("Set goal"))->sigTriggered().connect(
-                        [item](){ item->impl->onGoalTriggered(); });
-            menuManager.addItem(_(_("Generate a path")))->sigTriggered().connect(
-                        [item](){ item->impl->onGenerateTriggered(); });
-            menuManager.setPath("/");
-            menuManager.addSeparator();
-            menuFunction.dispatchAs<Item>(item);
-        });
 }
 
 

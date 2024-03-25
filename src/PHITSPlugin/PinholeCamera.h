@@ -45,4 +45,4 @@ typedef ref_ptr<PinholeCamera> PinholeCameraPtr;
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_PINHOLE_CAMERA_H

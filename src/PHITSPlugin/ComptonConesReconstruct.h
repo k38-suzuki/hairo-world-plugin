@@ -127,4 +127,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_COMPTON_CONE_RECONSTRUCT_H

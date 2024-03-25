@@ -54,4 +54,4 @@ typedef ref_ptr<ComptonCamera> ComptonCameraPtr;
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_COMPTON_CAMERA_H

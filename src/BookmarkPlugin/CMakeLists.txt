@@ -1,7 +1,3 @@
-if(NOT ENABLE_GUI)
-  return()
-endif()
-
 set(sources
   BookmarkManager.cpp
   BookmarkPlugin.cpp

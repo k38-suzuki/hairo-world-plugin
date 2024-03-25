@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_BODY_EDIT_PLUGIN_COLOR_BUTTON_H
-#define CNOID_BODY_EDIT_PLUGIN_COLOR_BUTTON_H
+#ifndef CNOID_BODYEDIT_PLUGIN_COLOR_BUTTON_H
+#define CNOID_BODYEDIT_PLUGIN_COLOR_BUTTON_H
 
 #include <cnoid/EigenTypes>
 #include <cnoid/PushButton>
@@ -31,4 +31,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_BODYEDIT_PLUGIN_COLOR_BUTTON_H

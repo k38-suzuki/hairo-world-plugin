@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_NETEMPLUGIN_TC_COLLIDER_ITEM_H
-#define CNOID_NETEMPLUGIN_TC_COLLIDER_ITEM_H
+#ifndef CNOID_NETEM_PLUGIN_TC_COLLIDER_ITEM_H
+#define CNOID_NETEM_PLUGIN_TC_COLLIDER_ITEM_H
 
 #include <cnoid/SimpleColliderItem>
 
@@ -47,4 +47,4 @@ typedef ref_ptr<TCColliderItem> TCColliderItemPtr;
 
 }
 
-#endif
+#endif // CNOID_NETEM_PLUGIN_TC_COLLIDER_ITEM_H

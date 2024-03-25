@@ -156,4 +156,4 @@ using  Boxd = Box<double>;
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_BOX_H

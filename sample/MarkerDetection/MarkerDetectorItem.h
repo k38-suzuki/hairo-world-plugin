@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_MARKER_DETECT_PLUGIN_MARKER_DETECTOR_ITEM_H
-#define CNOID_MARKER_DETECT_PLUGIN_MARKER_DETECTOR_ITEM_H
+#ifndef CNOID_MARKERDETECT_PLUGIN_MARKER_DETECTOR_ITEM_H
+#define CNOID_MARKERDETECT_PLUGIN_MARKER_DETECTOR_ITEM_H
 
 #include <cnoid/SubSimulatorItem>
 
@@ -17,7 +17,6 @@ public:
     virtual ~MarkerDetectorItem();
 
     static void initializeClass(ExtensionManager* ext);
-
     virtual bool initializeSimulation(SimulatorItem* simulatorItem) override;
 
 protected:
@@ -35,4 +34,4 @@ typedef ref_ptr<MarkerDetectorItem> MarkerDetectorItemPtr;
 
 }
 
-#endif
+#endif // CNOID_MARKERDETECT_PLUGIN_MARKER_DETECTOR_ITEM_H

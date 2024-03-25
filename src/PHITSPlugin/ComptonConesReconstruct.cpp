@@ -7,8 +7,8 @@
 #include <vector>
 #include "ComptonCone.h"
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 namespace {
 

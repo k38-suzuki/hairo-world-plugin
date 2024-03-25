@@ -42,4 +42,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_GAMMA_EFFECT_H

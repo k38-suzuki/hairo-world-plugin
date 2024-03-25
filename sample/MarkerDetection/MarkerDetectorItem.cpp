@@ -13,8 +13,8 @@
 #include "ScopeDevice.h"
 #include "gettext.h"
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 namespace cnoid {
 
@@ -33,6 +33,14 @@ public:
     void onPreDynamics();
 };
 
+}
+
+
+void MarkerDetectorItem::initializeClass(ExtensionManager* ext)
+{
+    ext->itemManager()
+        .registerClass<MarkerDetectorItem>(N_("MarkerDetectorItem"))
+        .addCreationPanel<MarkerDetectorItem>();
 }
 
 
@@ -69,14 +77,6 @@ MarkerDetectorItem::Impl::Impl(MarkerDetectorItem* self, const Impl& org)
 MarkerDetectorItem::~MarkerDetectorItem()
 {
     delete impl;
-}
-
-
-void MarkerDetectorItem::initializeClass(ExtensionManager* ext)
-{
-    ext->itemManager()
-        .registerClass<MarkerDetectorItem>(N_("MarkerDetectorItem"))
-        .addCreationPanel<MarkerDetectorItem>();
 }
 
 

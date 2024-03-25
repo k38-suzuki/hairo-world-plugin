@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_JOYSTICK_START_PLUGIN_AXIS_WIDGET_H
-#define CNOID_JOYSTICK_START_PLUGIN_AXIS_WIDGET_H
+#ifndef CNOID_JOYSTICKSTART_PLUGIN_AXIS_WIDGET_H
+#define CNOID_JOYSTICKSTART_PLUGIN_AXIS_WIDGET_H
 
 #include <cnoid/Signal>
 #include <cnoid/Widget>
@@ -35,4 +35,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_JOYSTICKSTART_PLUGIN_AXIS_WIDGET_H

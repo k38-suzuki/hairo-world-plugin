@@ -31,4 +31,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_BOOKMARK_PLUGIN_BOOKMARK_MANAGER_H

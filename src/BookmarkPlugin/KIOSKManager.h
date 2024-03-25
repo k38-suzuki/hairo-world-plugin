@@ -26,4 +26,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_BOOKMARK_PLUGIN_KIOSK_MANAGER_H

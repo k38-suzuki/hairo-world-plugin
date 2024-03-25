@@ -18,11 +18,11 @@ class SimpleSetupItemImpl;
 class CNOID_EXPORT SimpleSetupItem : public Item, public SimpleSetup, public LocatableItem, public RenderableItem
 {
 public:
+    static void initializeClass(ExtensionManager* ext);
+
     SimpleSetupItem();
     SimpleSetupItem(const SimpleSetupItem& org);
     virtual ~SimpleSetupItem();
-
-    static void initializeClass(ExtensionManager* ext);
 
     void setRegionOffset(const Isometry3& T);
     const Isometry3& regionOffset() const;
@@ -49,4 +49,4 @@ typedef ref_ptr<SimpleSetupItem> SimpleSetupItemPtr;
 
 }
 
-#endif
+#endif // CNOID_OMPL_PLUGIN_SIMPLE_SETUP_ITEM_H

@@ -24,8 +24,8 @@
 #include <alloca.h>
 #endif
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 namespace cnoid {
 

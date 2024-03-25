@@ -118,4 +118,4 @@ protected:
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_PHITS_WRITER_H

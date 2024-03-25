@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_IK_PLANNER_PLUGIN_IK_PLANNER_ITEM_H
-#define CNOID_IK_PLANNER_PLUGIN_IK_PLANNER_ITEM_H
+#ifndef CNOID_IKPLANNER_PLUGIN_IK_PLANNER_ITEM_H
+#define CNOID_IKPLANNER_PLUGIN_IK_PLANNER_ITEM_H
 
 #include <cnoid/SimpleSetupItem>
 
@@ -14,11 +14,11 @@ class ExtensionManager;
 class IKPlannerItem : public SimpleSetupItem
 {
 public:
+    static void initializeClass(ExtensionManager* ext);
+
     IKPlannerItem();
     IKPlannerItem(const IKPlannerItem& org);
     virtual ~IKPlannerItem();
-
-    static void initializeClass(ExtensionManager* ext);
 
 protected:
     virtual void prePlannerFunction() override;
@@ -39,4 +39,4 @@ typedef ref_ptr<IKPlannerItem> IKPlannerItemPtr;
 
 }
 
-#endif
+#endif // CNOID_IKPLANNER_PLUGIN_IK_PLANNER_ITEM_H

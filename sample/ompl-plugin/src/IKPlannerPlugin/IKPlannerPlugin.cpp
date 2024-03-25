@@ -8,12 +8,9 @@
 
 using namespace cnoid;
 
-namespace {
-
 class IKPlannerPlugin : public Plugin
 {
 public:
-
     IKPlannerPlugin() : Plugin("IKPlanner")
     {
         require("Body");
@@ -36,7 +33,5 @@ public:
         return text.c_str();
     }
 };
-
-}
 
 CNOID_IMPLEMENT_PLUGIN_ENTRY(IKPlannerPlugin)

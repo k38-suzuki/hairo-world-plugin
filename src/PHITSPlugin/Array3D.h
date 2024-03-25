@@ -53,4 +53,4 @@ typedef Array3D<double> array3d;
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_ARRAY_3D_H

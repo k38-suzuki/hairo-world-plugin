@@ -42,4 +42,4 @@ typedef ref_ptr<GammaImagerItem> GammaImagerItemPtr;
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_GAMMA_IMAGER_ITEM_H

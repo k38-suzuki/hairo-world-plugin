@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_VFXPLUGIN_VFX_COLLIDER_ITEM_H
-#define CNOID_VFXPLUGIN_VFX_COLLIDER_ITEM_H
+#ifndef CNOID_VFX_PLUGIN_VFX_COLLIDER_ITEM_H
+#define CNOID_VFX_PLUGIN_VFX_COLLIDER_ITEM_H
 
 #include <cnoid/Selection>
 #include <cnoid/SimpleColliderItem>
@@ -31,4 +31,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_VFX_PLUGIN_VFX_COLLIDER_ITEM_H

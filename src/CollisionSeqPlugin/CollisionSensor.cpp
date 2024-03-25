@@ -11,8 +11,8 @@
 #include <cnoid/StdBodyFileUtil>
 #include <cnoid/ValueTree>
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 namespace cnoid {
 

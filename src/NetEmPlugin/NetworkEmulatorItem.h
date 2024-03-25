@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_NETEMPLUGIN_NETWORK_EMULATOR_ITEM_H
-#define CNOID_NETEMPLUGIN_NETWORK_EMULATOR_ITEM_H
+#ifndef CNOID_NETEM_PLUGIN_NETWORK_EMULATOR_ITEM_H
+#define CNOID_NETEM_PLUGIN_NETWORK_EMULATOR_ITEM_H
 
 #include <cnoid/SubSimulatorItem>
 
@@ -35,4 +35,4 @@ typedef ref_ptr<NetworkEmulatorItem> NetworkEmulatorItemPtr;
 
 }
 
-#endif
+#endif // CNOID_NETEM_PLUGIN_NETWORK_EMULATOR_ITEM_H

@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_JOYSTICK_START_PLUGIN_JOYSTICK_LOGGER_ITEM_H
-#define CNOID_JOYSTICK_START_PLUGIN_JOYSTICK_LOGGER_ITEM_H
+#ifndef CNOID_JOYSTICKSTART_PLUGIN_JOYSTICK_LOGGER_ITEM_H
+#define CNOID_JOYSTICKSTART_PLUGIN_JOYSTICK_LOGGER_ITEM_H
 
 #include <cnoid/SubSimulatorItem>
 
@@ -34,4 +34,4 @@ typedef ref_ptr<JoystickLoggerItem> JoystickLoggerItemPtr;
 
 }
 
-#endif
+#endif // CNOID_JOYSTICKSTART_PLUGIN_JOYSTICK_LOGGER_ITEM_H

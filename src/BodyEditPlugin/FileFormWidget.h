@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_BODY_EDIT_PLUGIN_FILE_FORM_WIDGET_H
-#define CNOID_BODY_EDIT_PLUGIN_FILE_FORM_WIDGET_H
+#ifndef CNOID_BODYEDIT_PLUGIN_FILE_FORM_WIDGET_H
+#define CNOID_BODYEDIT_PLUGIN_FILE_FORM_WIDGET_H
 
 #include <cnoid/Signal>
 #include <cnoid/Widget>
@@ -28,4 +28,4 @@ std::vector<std::string> getSaveFileNames(const std::string& caption, const std:
 
 }
 
-#endif
+#endif // CNOID_BODYEDIT_PLUGIN_FILE_FORM_WIDGET_H

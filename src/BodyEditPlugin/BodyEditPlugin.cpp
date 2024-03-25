@@ -15,12 +15,9 @@
 
 using namespace cnoid;
 
-namespace {
-
 class BodyEditPlugin : public Plugin
 {
 public:
-
     BodyEditPlugin() : Plugin("BodyEdit")
     {
         require("Body");
@@ -50,7 +47,5 @@ public:
         return text.c_str();
     }
 };
-
-}
 
 CNOID_IMPLEMENT_PLUGIN_ENTRY(BodyEditPlugin)

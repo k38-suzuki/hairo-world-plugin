@@ -35,4 +35,4 @@ typedef ref_ptr<DoseSimulatorItem> DoseSimulatorItemPtr;
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_DOSE_SIMULATOR_ITEM_H

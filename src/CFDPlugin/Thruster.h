@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_CFDPLUGIN_THRUSTER_H
-#define CNOID_CFDPLUGIN_THRUSTER_H
+#ifndef CNOID_CFD_PLUGIN_THRUSTER_H
+#define CNOID_CFD_PLUGIN_THRUSTER_H
 
 #include <cnoid/Device>
 #include <memory>
@@ -68,4 +68,4 @@ typedef ref_ptr<Thruster> ThrusterPtr;
 
 }
 
-#endif
+#endif // CNOID_CFD_PLUGIN_THRUSTER_H

@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_CFDPLUGIN_FLUID_COLLIDER_ITEM_H
-#define CNOID_CFDPLUGIN_FLUID_COLLIDER_ITEM_H
+#ifndef CNOID_CFD_PLUGIN_FLUID_COLLIDER_ITEM_H
+#define CNOID_CFD_PLUGIN_FLUID_COLLIDER_ITEM_H
 
 #include <cnoid/EigenUtil>
 #include <cnoid/SimpleColliderItem>
@@ -42,4 +42,4 @@ typedef ref_ptr<FluidAreaItem> FluidAreaItemPtr;
 
 }
 
-#endif
+#endif // CNOID_CFD_PLUGIN_FLUID_COLLIDER_ITEM_H

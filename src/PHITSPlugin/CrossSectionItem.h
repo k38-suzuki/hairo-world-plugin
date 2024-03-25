@@ -43,4 +43,4 @@ typedef ref_ptr<CrossSectionItem> CrossSectionItemPtr;
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_CROSSSECTION_ITEM_H

@@ -24,4 +24,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_INERTIA_CALCULATOR_PLUGIN_INERTIA_CALCULATOR_H

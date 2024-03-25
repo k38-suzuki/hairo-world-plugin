@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_VFXPLUGIN_VISUAL_EFFECTS_H
-#define CNOID_VFXPLUGIN_VISUAL_EFFECTS_H
+#ifndef CNOID_VFX_PLUGIN_VISUAL_EFFECTS_H
+#define CNOID_VFX_PLUGIN_VISUAL_EFFECTS_H
 
 #include <cnoid/EigenTypes>
 #include "exportdecl.h"
@@ -51,4 +51,4 @@ private:
 
 }
 
-#endif // CNOID_VFXPLUGIN_VISUAL_EFFECTS_H
+#endif // CNOID_VFX_PLUGIN_VISUAL_EFFECTS_H

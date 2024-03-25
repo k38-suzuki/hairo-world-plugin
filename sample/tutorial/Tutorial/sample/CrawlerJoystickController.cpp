@@ -7,8 +7,8 @@
 #include <cnoid/Joystick>
 #include <cnoid/SimpleController>
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 class CrawlerJoystickController : public SimpleController
 {

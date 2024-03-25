@@ -27,4 +27,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_H

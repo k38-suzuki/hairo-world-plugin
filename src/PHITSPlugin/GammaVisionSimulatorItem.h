@@ -35,4 +35,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_GAMMA_VISION_SIMULATOR_ITEM_H

@@ -12,8 +12,8 @@
 #include <cnoid/FluidAreaItem>
 #include <vector>
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 namespace {
 
@@ -30,7 +30,6 @@ class UnsteadyFlowPlugin : public Plugin
     double fz;
 
 public:
-    
     UnsteadyFlowPlugin() : Plugin("UnsteadyFlow")
     {
         require("CFD");

@@ -7,12 +7,9 @@
 
 using namespace cnoid;
 
-namespace {
-
 class LiftSamplePlugin : public Plugin
 {
 public:
-    
     LiftSamplePlugin() : Plugin("LiftSample")
     {
         require("Body");
@@ -24,7 +21,5 @@ public:
         return true;
     }
 };
-
-}
 
 CNOID_IMPLEMENT_PLUGIN_ENTRY(LiftSamplePlugin)

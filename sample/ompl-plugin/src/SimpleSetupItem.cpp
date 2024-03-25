@@ -13,8 +13,8 @@
 #include <cnoid/Selection>
 #include "gettext.h"
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 namespace ob = ompl::base;
 namespace og = ompl::geometric;
@@ -77,6 +77,15 @@ public:
 }
 
 
+void SimpleSetupItem::initializeClass(ExtensionManager* ext)
+{
+    string version = OMPL_VERSION;
+    MessageView::instance()->putln(fmt::format("OMPL version: {0}", version));
+
+    ext->itemManager().registerClass<SimpleSetupItem>(N_("SimpleSetupItem"));
+}
+
+
 SimpleSetupItem::SimpleSetupItem()
 {
     impl = new SimpleSetupItemImpl(this);
@@ -125,15 +134,6 @@ SimpleSetupItemImpl::SimpleSetupItemImpl(SimpleSetupItem* self, const SimpleSetu
 SimpleSetupItem::~SimpleSetupItem()
 {
     delete impl;
-}
-
-
-void SimpleSetupItem::initializeClass(ExtensionManager* ext)
-{
-    string version = OMPL_VERSION;
-    MessageView::instance()->putln(fmt::format("OMPL version: {0}", version));
-
-    ext->itemManager().registerClass<SimpleSetupItem>(N_("SimpleSetupItem"));
 }
 
 

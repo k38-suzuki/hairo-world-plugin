@@ -28,4 +28,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_COLOR_SCALE_H

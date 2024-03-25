@@ -25,4 +25,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_GAMMA_IMAGE_GENERATOR_H

@@ -1,7 +1,3 @@
-if(NOT ENABLE_GUI)
-  return()
-endif()
-
 set(sources
   SimpleColliderItem.cpp
   SimpleColliderPlugin.cpp

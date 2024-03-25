@@ -64,4 +64,4 @@ typedef ref_ptr<DoseMeter> DoseMeterPtr;
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_DOSE_METER_H

@@ -6,8 +6,8 @@
 #include <cnoid/YAMLReader>
 #include "gettext.h"
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 NuclideTable::NuclideTable()
 {

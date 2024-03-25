@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_SYSTEM_TRAY_PLUGIN_SYSTEM_TRAY_MANAGER_H
-#define CNOID_SYSTEM_TRAY_PLUGIN_SYSTEM_TRAY_MANAGER_H
+#ifndef CNOID_SYSTEMTRAY_PLUGIN_SYSTEM_TRAY_MANAGER_H
+#define CNOID_SYSTEMTRAY_PLUGIN_SYSTEM_TRAY_MANAGER_H
 
 #include "SystemTrayIcon.h"
 #include "exportdecl.h"
@@ -30,4 +30,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_SYSTEMTRAY_PLUGIN_SYSTEM_TRAY_MANAGER_H

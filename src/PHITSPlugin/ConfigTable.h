@@ -62,4 +62,4 @@ private:
 
 }
 
-#endif
+#endif // CNOID_PHITS_PLUGIN_CONFIG_TABLE_H

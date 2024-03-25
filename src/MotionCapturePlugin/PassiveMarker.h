@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_MOTION_CAPTURE_PLUGIN_PASSIVE_MARKER_H
-#define CNOID_MOTION_CAPTURE_PLUGIN_PASSIVE_MARKER_H
+#ifndef CNOID_MOTIONCAPTURE_PLUGIN_PASSIVE_MARKER_H
+#define CNOID_MOTIONCAPTURE_PLUGIN_PASSIVE_MARKER_H
 
 #include <cnoid/Device>
 #include <cnoid/SceneMarkers>
@@ -56,4 +56,4 @@ typedef ref_ptr<PassiveMarker> PassiveMarkerPtr;
 
 }
 
-#endif
+#endif // CNOID_MOTIONCAPTURE_PLUGIN_PASSIVE_MARKER_H
