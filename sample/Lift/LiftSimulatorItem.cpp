@@ -41,9 +41,9 @@ LiftSimulatorItem::~LiftSimulatorItem()
 
 void LiftSimulatorItem::initializeClass(ExtensionManager* ext)
 {
-    ItemManager& im = ext->itemManager();
-    im.registerClass<LiftSimulatorItem, SubSimulatorItem>("LiftSimulatorItem");
-    im.addCreationPanel<LiftSimulatorItem>();
+    ext->itemManager()
+        .registerClass<LiftSimulatorItem, SubSimulatorItem>("LiftSimulatorItem")
+        .addCreationPanel<LiftSimulatorItem>();
 }
 
 

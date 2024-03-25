@@ -63,8 +63,8 @@ public:
 void DoseSimulatorItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<DoseSimulatorItem, SubSimulatorItem>(N_("DoseSimulatorItem"))
-            .addCreationPanel<DoseSimulatorItem>();
+        .registerClass<DoseSimulatorItem, SubSimulatorItem>(N_("DoseSimulatorItem"))
+        .addCreationPanel<DoseSimulatorItem>();
 }
 
 

@@ -43,9 +43,9 @@ public:
 
 void VEVisionSimulatorItem::initializeClass(ExtensionManager* ext)
 {
-    ItemManager& im = ext->itemManager();
-    im.registerClass<VEVisionSimulatorItem, SubSimulatorItem>(N_("VEVisionSimulatorItem"));
-    im.addCreationPanel<VEVisionSimulatorItem>();
+    ext->itemManager()
+        .registerClass<VEVisionSimulatorItem, SubSimulatorItem>(N_("VEVisionSimulatorItem"))
+        .addCreationPanel<VEVisionSimulatorItem>();
 }
 
 

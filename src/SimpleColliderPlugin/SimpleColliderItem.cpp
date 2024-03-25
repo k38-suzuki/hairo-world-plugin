@@ -15,6 +15,8 @@
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/Archive>
 #include <cnoid/EigenArchive>
+#include <cnoid/YAMLReader>
+#include <cnoid/YAMLWriter>
 #include <cnoid/ConnectionSet>
 #include <cnoid/MathUtil>
 #include <fmt/format.h>
@@ -25,6 +27,8 @@ using namespace fmt;
 using namespace cnoid;
 
 namespace {
+
+Signal<void()> sigItemsInProjectChanged_;
 
 void notSupportText()
 {
@@ -63,6 +67,9 @@ public:
     void updateSceneShape();
     void updateSceneMaterial();
 
+    bool loadSimpleCollider(const string& filename, ostream& os);
+    bool saveSimpleCollider(const string& filename, ostream& os);
+
     BodyItem* bodyItem;
     WorldItem* worldItem;
     Isometry3 position_;
@@ -87,7 +94,16 @@ void SimpleColliderItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
         .registerClass<SimpleColliderItem>(N_("SimpleColliderItem"))
-        .addCreationPanel<SimpleColliderItem>();
+        .addCreationPanel<SimpleColliderItem>()
+
+        .addLoaderAndSaver<SimpleColliderItem>(
+            _("Simple Collider"), "SIMPLE-COLLIDER", "scol",
+            [](SimpleColliderItem* item, const string& filename, ostream& os, Item*) {
+                return item->impl->loadSimpleCollider(filename, os);
+            },
+            [](SimpleColliderItem* item, const string& filename, ostream& os, Item*) {
+                return item->impl->saveSimpleCollider(filename, os);
+            });
 }
 
 
@@ -268,6 +284,19 @@ void SimpleColliderItem::setTransparency(const double& transparency)
 }
 
 
+void SimpleColliderItem::notifyUpdate()
+{
+    Item::notifyUpdate();
+    suggestFileUpdate();
+}
+
+
+SignalProxy<void()> SimpleColliderItem::sigItemsInProjectChanged()
+{
+    return sigItemsInProjectChanged_;
+}
+
+
 LocationProxyPtr SimpleColliderItem::getLocationProxy()
 {
     if(!impl->colliderLocation) {
@@ -344,6 +373,65 @@ void SimpleColliderItem::Impl::updateSceneMaterial()
 }
 
 
+bool SimpleColliderItem::Impl::loadSimpleCollider(const string& filename, ostream& os)
+{
+    YAMLReader reader;
+    MappingPtr archive;
+    try {
+        archive = reader.loadDocument(filename)->toMapping();
+    }
+    catch(const ValueNode::Exception& ex) {
+        os << ex.message() << endl;
+    }
+    Vector3 v;
+    if(read(archive, "translation", v)) {
+        position_.translation() = v;
+    }
+    if(read(archive, "rotation", v)) {
+        position_.linear() = rotFromRpy(radian(v));
+    }
+    if(read(archive, "size", v)) {
+        size_ = v;
+    }
+    if(read(archive, "diffuse_color", v)) {
+        diffuseColor_ = v;
+    }
+    archive->read("radius", radius_);
+    archive->read("height", height_);
+    archive->read("specular_exponent", specularExponent_);
+    archive->read("transparency", transparency_);
+    string type;
+    if(archive->read("scene_type", type)) {
+        sceneTypeSelection.select(type);
+    }
+    return true;
+}
+
+
+bool SimpleColliderItem::Impl::saveSimpleCollider(const string& filename, ostream& os)
+{
+    YAMLWriter writer;
+    if(!writer.openFile(filename)) {
+        os << format(_("Failed to open \"{0}\"."), filename) << endl;
+        return false;
+    }
+
+    MappingPtr archive = new Mapping;
+    write(archive, "translation", Vector3(position_.translation()));
+    write(archive, "rotation", degree(rpyFromRot(position_.linear())));
+    write(archive, "size", Vector3(size_));
+    write(archive, "diffuse_color", Vector3(diffuseColor_));
+    archive->write("radius", radius_);
+    archive->write("height", height_);
+    archive->write("specular_exponent", specularExponent_);
+    archive->write("transparency", transparency_);
+    archive->write("scene_type", sceneTypeSelection.selectedSymbol());
+    writer.putNode(archive);
+
+    return true;
+}
+
+
 Item* SimpleColliderItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new SimpleColliderItem(*this);
@@ -359,7 +447,7 @@ void SimpleColliderItem::onTreePathChanged()
         impl->bodyItem = newBodyItem;
         storeBodyPosition();
         impl->connections.add(impl->bodyItem->sigKinematicStateChanged().connect(
-            [&](){ storeBodyPosition(); }));
+            [&]() { storeBodyPosition(); }));
         mvout()
             << format(_("SimpleColliderItem \"{0}\" has been attached to {1}."),
                       name(), impl->bodyItem->name())
@@ -467,43 +555,28 @@ void SimpleColliderItem::doPutProperties(PutPropertyFunction& putProperty)
 
 bool SimpleColliderItem::store(Archive& archive)
 {
-    write(archive, "translation", Vector3(impl->position_.translation()));
-    write(archive, "rotation", degree(rpyFromRot(impl->position_.linear())));
-    write(archive, "size", impl->size_);
-    write(archive, "diffuse_color", impl->diffuseColor_);
-    archive.write("radius", impl->radius_);
-    archive.write("height", impl->height_);
-    archive.write("specular_exponent", impl->specularExponent_);
-    archive.write("transparency", impl->transparency_);
-    archive.write("scene_type", impl->sceneTypeSelection.selectedSymbol());
-    return true;
+    bool stored = false;
+    if(overwriteOrSaveWithDialog()) {
+         stored = archive.writeFileInformation(this);
+    }
+    return stored;
 }
 
 
 bool SimpleColliderItem::restore(const Archive& archive)
 {
-    Vector3 v;
-    if(read(archive, "translation", v)) {
-        impl->position_.translation() = v;
-    }
-    if(read(archive, "rotation", v)) {
-        impl->position_.linear() = rotFromRpy(radian(v));
-    }
-    if(read(archive, "size", v)) {
-        impl->size_ = v;
-    }
-    if(read(archive, "diffuse_color", v)) {
-        impl->diffuseColor_ = v;
-    }
-    archive.read("radius", impl->radius_);
-    archive.read("height", impl->height_);
-    archive.read("specular_exponent", impl->specularExponent_);
-    archive.read("transparency", impl->transparency_);
-    string type;
-    if(archive.read("scene_type", type)) {
-        impl->sceneTypeSelection.select(type);
-    }
-    return true;
+    return archive.loadFileTo(this);
+}
+
+
+void SimpleColliderItem::onConnectedToRoot()
+{
+    sigItemsInProjectChanged_();
+}
+
+void SimpleColliderItem::onDisconnectedFromRoot()
+{
+    sigItemsInProjectChanged_();
 }
 
 

@@ -90,8 +90,8 @@ MotionCaptureItem::~MotionCaptureItem()
 void MotionCaptureItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<MotionCaptureItem, SubSimulatorItem>(N_("MotionCaptureItem"))
-            .addCreationPanel<MotionCaptureItem>();
+        .registerClass<MotionCaptureItem, SubSimulatorItem>(N_("MotionCaptureItem"))
+        .addCreationPanel<MotionCaptureItem>();
 }
 
 

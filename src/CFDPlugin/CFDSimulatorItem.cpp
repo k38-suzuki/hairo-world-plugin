@@ -248,8 +248,8 @@ CFDSimulatorItem::~CFDSimulatorItem()
 void CFDSimulatorItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<CFDSimulatorItem, SubSimulatorItem>(N_("CFDSimulatorItem"))
-            .addCreationPanel<CFDSimulatorItem>();
+        .registerClass<CFDSimulatorItem, SubSimulatorItem>(N_("CFDSimulatorItem"))
+        .addCreationPanel<CFDSimulatorItem>();
 }
 
 

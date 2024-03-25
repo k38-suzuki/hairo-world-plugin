@@ -40,8 +40,8 @@ FluidAreaItem::~FluidAreaItem()
 void FluidAreaItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<FluidAreaItem>(N_("FluidAreaItem"))
-            .addCreationPanel<FluidAreaItem>();
+        .registerClass<FluidAreaItem>(N_("FluidAreaItem"))
+        .addCreationPanel<FluidAreaItem>();
 }
 
 

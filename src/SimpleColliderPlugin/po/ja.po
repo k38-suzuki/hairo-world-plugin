@@ -20,6 +20,9 @@ msgstr ""
 msgid "SimpleColliderItem"
 msgstr "シンプルコライダアイテム"
 
+msgid "Simple Collider"
+msgstr "シンプルコライダ"
+
 msgid "Box"
 msgstr "ボックス"
 
@@ -34,6 +37,9 @@ msgstr "{0} の現在位置が {1} に保存されました．"
 
 msgid "The position of {0} has been restored from {1}."
 msgstr "{0} の位置が {1} から復元されました．"
+
+msgid "Failed to open \"{0}\"."
+msgstr "\"{0}\" を開けませんでした．"
 
 msgid "SimpleColliderItem \"{0}\" has been attached to {1}."
 msgstr "シンプルコライダアイテム \"{0}\" が {1} に取り付けられました．"

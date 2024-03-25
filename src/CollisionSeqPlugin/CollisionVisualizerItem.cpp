@@ -122,8 +122,8 @@ CollisionVisualizerItem::~CollisionVisualizerItem()
 void CollisionVisualizerItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<CollisionVisualizerItem, SubSimulatorItem>(N_("CollisionVisualizerItem"))
-            .addCreationPanel<CollisionVisualizerItem>();
+        .registerClass<CollisionVisualizerItem, SubSimulatorItem>(N_("CollisionVisualizerItem"))
+        .addCreationPanel<CollisionVisualizerItem>();
 }
 
 

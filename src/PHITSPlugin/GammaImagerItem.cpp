@@ -131,11 +131,11 @@ public:
 
 void GammaImagerItem::initializeClass(ExtensionManager* ext)
 {
-    ItemManager& im = ext->itemManager();
-    im.registerClass<GammaImagerItem>(N_("GammaImagerItem"));
-    im.addCreationPanel<GammaImagerItem>();
-
-    im.registerClass<GammaImageVisualizerItem>(N_("GammaImageVisualizerItem"));
+    ext->itemManager()
+        .registerClass<GammaImagerItem>(N_("GammaImagerItem"))
+        .addCreationPanel<GammaImagerItem>();
+    ext->itemManager()
+        .registerClass<GammaImageVisualizerItem>(N_("GammaImageVisualizerItem"));
 
     ItemTreeView::instance()->customizeContextMenu<GammaImageVisualizerItem>(
         [](GammaImageVisualizerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {

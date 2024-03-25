@@ -1,4 +1,3 @@
-add_subdirectory(beep-plugin)
 add_subdirectory(hai-rov)
 add_subdirectory(hobby-drone)
 add_subdirectory(Lift)

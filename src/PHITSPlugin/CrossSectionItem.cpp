@@ -245,8 +245,8 @@ CrossSectionItem::~CrossSectionItem()
 void CrossSectionItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<CrossSectionItem>(N_("CrossSectionItem"))
-            .addCreationPanel<CrossSectionItem>()
+        .registerClass<CrossSectionItem>(N_("CrossSectionItem"))
+        .addCreationPanel<CrossSectionItem>()
 
             .addLoader<CrossSectionItem>(
                 _("Dose Distribution"), "GAMMA-DATA", "gbin",

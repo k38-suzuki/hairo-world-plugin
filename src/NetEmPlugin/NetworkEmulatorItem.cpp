@@ -128,8 +128,8 @@ NetworkEmulatorItem::~NetworkEmulatorItem()
 void NetworkEmulatorItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<NetworkEmulatorItem, SubSimulatorItem>(N_("NetworkEmulatorItem"))
-            .addCreationPanel<NetworkEmulatorItem>();
+        .registerClass<NetworkEmulatorItem, SubSimulatorItem>(N_("NetworkEmulatorItem"))
+        .addCreationPanel<NetworkEmulatorItem>();
 }
 
 

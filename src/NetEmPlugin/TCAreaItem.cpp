@@ -49,8 +49,8 @@ TCAreaItem::~TCAreaItem()
 void TCAreaItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<TCAreaItem>(N_("TCAreaItem"))
-            .addCreationPanel<TCAreaItem>();
+        .registerClass<TCAreaItem>(N_("TCAreaItem"))
+        .addCreationPanel<TCAreaItem>();
 }
 
 

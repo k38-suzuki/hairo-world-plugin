@@ -138,8 +138,8 @@ IKPlannerItem::~IKPlannerItem()
 void IKPlannerItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<IKPlannerItem, SubSimulatorItem>(N_("IKPlannerItem"))
-            .addCreationPanel<IKPlannerItem>();
+        .registerClass<IKPlannerItem, SubSimulatorItem>(N_("IKPlannerItem"))
+        .addCreationPanel<IKPlannerItem>();
 
     ItemTreeView::instance()->customizeContextMenu<IKPlannerItem>(
         [](IKPlannerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {

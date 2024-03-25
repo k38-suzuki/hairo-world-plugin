@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_SIMPLE_COLLIDER_PLUGIN_SIMPLE_COLLIDER_ITEM_H
-#define CNOID_SIMPLE_COLLIDER_PLUGIN_SIMPLE_COLLIDER_ITEM_H
+#ifndef CNOID_SIMPLECOLLIDER_PLUGIN_SIMPLE_COLLIDER_ITEM_H
+#define CNOID_SIMPLECOLLIDER_PLUGIN_SIMPLE_COLLIDER_ITEM_H
 
 #include <cnoid/Item>
 #include <cnoid/RenderableItem>
@@ -22,7 +22,6 @@ public:
     SimpleColliderItem();
     SimpleColliderItem(const SimpleColliderItem& org);
     ~SimpleColliderItem();
-
     void storeBodyPosition();
     void restoreBodyPosition();
     virtual SgNode* getScene() override;
@@ -40,6 +39,10 @@ public:
     void setDiffuseColor(const Vector3& diffuseColor);
     void setTransparency(const double& transparency);
 
+    virtual void notifyUpdate() override;
+
+    static SignalProxy<void()> sigItemsInProjectChanged();
+
     // LocatableItem function
     virtual LocationProxyPtr getLocationProxy() override;
 
@@ -52,13 +55,18 @@ protected:
     virtual bool store(Archive& archive) override;
     virtual bool restore(const Archive& archive) override;
 
+    virtual void onConnectedToRoot() override;
+    virtual void onDisconnectedFromRoot() override;
+
 private:
     Impl* impl;
 };
+
+typedef cnoid::ref_ptr<SimpleColliderItem> SimpleColliderItemPtr;
 
 CNOID_EXPORT bool collision(SimpleColliderItem* colliderItem, const Vector3& point);
 CNOID_EXPORT bool collision(SimpleColliderItem* colliderItem1, SimpleColliderItem* colliderItem2);
 
 }
 
-#endif
+#endif // CNOID_SIMPLECOLLIDER_PLUGIN_SIMPLE_COLLIDER_ITEM_H

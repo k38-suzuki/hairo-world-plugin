@@ -75,8 +75,8 @@ MarkerDetectorItem::~MarkerDetectorItem()
 void MarkerDetectorItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<MarkerDetectorItem>(N_("MarkerDetectorItem"))
-            .addCreationPanel<MarkerDetectorItem>();
+        .registerClass<MarkerDetectorItem>(N_("MarkerDetectorItem"))
+        .addCreationPanel<MarkerDetectorItem>();
 }
 
 

@@ -165,8 +165,8 @@ VEAreaItem::~VEAreaItem()
 void VEAreaItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-            .registerClass<VEAreaItem>(N_("VEAreaItem"))
-            .addCreationPanel<VEAreaItem>();
+        .registerClass<VEAreaItem>(N_("VEAreaItem"))
+        .addCreationPanel<VEAreaItem>();
 
     auto rootItem = RootItem::instance();
     rootItem->sigSelectedItemsChanged().connect(
