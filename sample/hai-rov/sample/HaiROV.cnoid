@@ -109,13 +109,14 @@ items:
           is_checked: true
           data:
             translation: [ 0, 0, -2.5 ]
-            type: 0
+            rotation: [ 0, -0, 0 ]
             size: [ 5.4, 5.4, 5 ]
+            diffuse_color: [ 0, 0.5, 1 ]
             radius: 1
             height: 1
-            diffuse_color: [ 0, 0.5, 1 ]
-            shininess: 0
+            specular_exponent: 25
             transparency: 0.7
+            scene_type: Box
             density: 1000
             viscosity: 0.001
             steady_flow: [ 0, 0, 0 ]
@@ -183,13 +184,15 @@ items:
           plugin: VFX
           class: VFXColliderItem
           data:
-            type: 0
+            translation: [ 0, 0, 0 ]
+            rotation: [ 0, -0, 0 ]
             size: [ 10, 10, 10 ]
+            diffuse_color: [ 0, 1, 0 ]
             radius: 0.5
             height: 1
-            diffuse_color: [ 0, 1, 0 ]
-            shininess: 0
+            specular_exponent: 25
             transparency: 0.8
+            scene_type: Box
             hsv: [ 0, 0, 0 ]
             rgb: [ 0, 0, 0 ]
             coef_b: -0.3
@@ -197,8 +200,8 @@ items:
             std_dev: 0
             salt: 0.01
             pepper: 0
-            flip: false
-            filter: 0
+            flipped: false
+            filter_type: No filter
 views:
   -
     id: 0

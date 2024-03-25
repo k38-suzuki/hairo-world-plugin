@@ -19,8 +19,8 @@
 #include "Thruster.h"
 #include "gettext.h"
 
-using namespace cnoid;
 using namespace std;
+using namespace cnoid;
 
 namespace {
 
@@ -83,7 +83,7 @@ public:
     DeviceList<Thruster> thrusters;
     DeviceList<Rotor> rotors;
     Vector3 gravity;
-    ItemList<FluidAreaItem> areaItems;
+    ItemList<FluidAreaItem> colliders;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void addBody(CFDBody* cfdBody);
@@ -206,6 +206,14 @@ void CFDBody::updateDevices()
 }
 
 
+void CFDSimulatorItem::initializeClass(ExtensionManager* ext)
+{
+    ext->itemManager()
+        .registerClass<CFDSimulatorItem, SubSimulatorItem>(N_("CFDSimulatorItem"))
+        .addCreationPanel<CFDSimulatorItem>();
+}
+
+
 CFDSimulatorItem::CFDSimulatorItem()
 {
     impl = new CFDSimulatorItemImpl(this);
@@ -218,7 +226,7 @@ CFDSimulatorItemImpl::CFDSimulatorItemImpl(CFDSimulatorItem* self)
     cfdBodies.clear();
     thrusters.clear();
     rotors.clear();
-    areaItems.clear();
+    colliders.clear();
 
     gravity << 0.0, 0.0, -DEFAULT_GRAVITY_ACCELERATION;
 }
@@ -245,14 +253,6 @@ CFDSimulatorItem::~CFDSimulatorItem()
 }
 
 
-void CFDSimulatorItem::initializeClass(ExtensionManager* ext)
-{
-    ext->itemManager()
-        .registerClass<CFDSimulatorItem, SubSimulatorItem>(N_("CFDSimulatorItem"))
-        .addCreationPanel<CFDSimulatorItem>();
-}
-
-
 bool CFDSimulatorItem::initializeSimulation(SimulatorItem* simulatorItem)
 {
     return impl->initializeSimulation(simulatorItem);
@@ -264,7 +264,7 @@ bool CFDSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
     cfdBodies.clear();
     thrusters.clear();
     rotors.clear();
-    areaItems.clear();
+    colliders.clear();
     gravity = simulatorItem->getGravity();
 
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
@@ -280,10 +280,10 @@ bool CFDSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 
     WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
     if(worldItem) {
-        areaItems = worldItem->descendantItems<FluidAreaItem>();
+        colliders = worldItem->descendantItems<FluidAreaItem>();
     }
-    for(auto& areaItem : areaItems) {
-        areaItem->setUnsteadyFlow(Vector3(0.0, 0.0, 0.0));
+    for(auto& collider : colliders) {
+        collider->setUnsteadyFlow(Vector3(0.0, 0.0, 0.0));
     }
 
     if(cfdBodies.size()) {
@@ -313,14 +313,13 @@ void CFDSimulatorItemImpl::onPreDynamics()
             double density = 0.0;
             double viscosity = 0.0;
             Vector3 sf = Vector3::Zero();
-            for(auto& areaItem : areaItems) {
-                const Isometry3& regionOffset = areaItem->regionOffset();
-                auto rot = regionOffset.linear();
-                if(areaItem->isCollided(T.translation())) {
-                    density = areaItem->density();
-                    viscosity = areaItem->viscosity();
-                    sf += rot * areaItem->steadyFlow();
-                    sf += rot * areaItem->unsteadyFlow();
+            for(auto& collider : colliders) {
+                auto rot = collider->position().linear();
+                if(collision(collider, T.translation())) {
+                    density = collider->density();
+                    viscosity = collider->viscosity();
+                    sf += rot * collider->steadyFlow();
+                    sf += rot * collider->unsteadyFlow();
                 }
             }
 
@@ -382,9 +381,9 @@ void CFDSimulatorItemImpl::onPreDynamics()
     for(auto& thruster : thrusters) {
         Link* link = thruster->link();
         FluidAreaItem* item = nullptr;
-        for(auto& areaItem : areaItems) {
-            if(areaItem->isCollided(link->T().translation())) {
-                item = areaItem;
+        for(auto& collider : colliders) {
+            if(collision(collider, link->T().translation())) {
+                item = collider;
             }
         }
 
@@ -408,9 +407,9 @@ void CFDSimulatorItemImpl::onPreDynamics()
     for(auto& rotor : rotors) {
         Link* link = rotor->link();
         FluidAreaItem* item = nullptr;
-        for(auto& areaItem : areaItems) {
-            if(areaItem->isCollided(link->T().translation())) {
-                item = areaItem;
+        for(auto& collider : colliders) {
+            if(collision(collider, link->T().translation())) {
+                item = collider;
             }
         }
 

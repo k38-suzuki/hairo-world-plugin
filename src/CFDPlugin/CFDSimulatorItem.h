@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_CFD_PLUGIN_CFD_SIMULATOR_ITEM_H
-#define CNOID_CFD_PLUGIN_CFD_SIMULATOR_ITEM_H
+#ifndef CNOID_CFDPLUGIN_CFD_SIMULATOR_ITEM_H
+#define CNOID_CFDPLUGIN_CFD_SIMULATOR_ITEM_H
 
 #include <cnoid/SubSimulatorItem>
 

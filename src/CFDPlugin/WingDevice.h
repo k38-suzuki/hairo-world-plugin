@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_CFD_PLUGIN_WING_DEVICE_H
-#define CNOID_CFD_PLUGIN_WING_DEVICE_H
+#ifndef CNOID_CFDPLUGIN_WING_DEVICE_H
+#define CNOID_CFDPLUGIN_WING_DEVICE_H
 
 #include <cnoid/Device>
 #include <memory>

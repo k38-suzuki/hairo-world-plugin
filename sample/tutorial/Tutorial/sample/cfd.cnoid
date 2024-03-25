@@ -101,13 +101,15 @@ items:
           class: FluidAreaItem
           is_checked: true
           data:
-            type: 0
+            translation: [ 0, 0, 0 ]
+            rotation: [ 0, -0, 0 ]
             size: [ 3, 3, 1 ]
+            diffuse_color: [ 0, 1, 1 ]
             radius: 1
             height: 1
-            diffuse_color: [ 0, 1, 1 ]
-            shininess: 0
+            specular_exponent: 25
             transparency: 0.8
+            scene_type: Box
             density: 1000
             viscosity: 0.001
             steady_flow: [ 0, 0, 0 ]

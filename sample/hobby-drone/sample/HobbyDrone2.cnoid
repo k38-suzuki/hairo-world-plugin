@@ -1,105 +1,105 @@
-items: 
+items:
   id: 0
   name: "RootItem"
   plugin: Base
   class: RootItem
   is_builtin_item: true
-  children: 
-    - 
+  children:
+    -
       id: 1
       name: "World"
       plugin: Body
       class: WorldItem
-      data: 
+      data:
         collision_detection: false
         collision_detector: AISTCollisionDetector
         default_material_table_file: "${SHARE}/default/materials.yaml"
-      children: 
-        - 
+      children:
+        -
           id: 2
           name: "HobbyDrone2"
           plugin: Body
           class: BodyItem
           is_checked: true
-          data: 
+          data:
             file: "${SHARE}/HobbyDrone/model/HobbyDrone2.body"
             format: CHOREONOID-BODY
             rootPosition: [ -4, 0, 0.2 ]
-            rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            rootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
             jointDisplacements: [ 0 ]
             jointPositions: [ 0 ]
             initialRootPosition: [ -4, 0, 0.2 ]
-            initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            initialRootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
             initialJointPositions: [ 0 ]
             fix_root: false
             collisionDetection: true
             selfCollisionDetection: false
-            location_editable: true
+            lock_location: false
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
-          children: 
-            - 
+          children:
+            -
               id: 3
               name: "JoystickController"
               plugin: Body
               class: SimpleControllerItem
-              data: 
+              data:
                 isNoDelayMode: false
                 controllerOptions: ""
                 controller: "HobbyDroneJoystickController"
                 base_directory: "Controller directory"
                 reloading: false
                 export_symbols: false
-            - 
+            -
               id: 4
               name: "CameraController"
               plugin: Body
               class: SimpleControllerItem
-              data: 
+              data:
                 isNoDelayMode: false
                 controllerOptions: ""
                 controller: "TiltCameraJoystickController"
                 base_directory: "Controller directory"
                 reloading: false
                 export_symbols: false
-        - 
+        -
           id: 5
           name: "Floor"
           plugin: Body
           class: BodyItem
           is_checked: true
-          data: 
+          data:
             file: "${SHARE}/HobbyDrone/model/floor.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, -0.1 ]
-            rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            rootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
-            jointPositions: [  ]
+            jointPositions: [ ]
             initialRootPosition: [ 0, 0, -0.1 ]
-            initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            initialRootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
             fix_root: true
             collisionDetection: true
             selfCollisionDetection: false
-            location_editable: true
+            lock_location: false
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
-        - 
+        -
           id: 6
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
-          data: 
+          data:
             time_step: 0.001
             realtime_sync_mode: compensatory
             recording: full
@@ -126,84 +126,86 @@ items:
             kinematicWalking: false
             2Dmode: false
             oldAccelSensorMode: false
-          children: 
-            - 
+          children:
+            -
               id: 7
               name: "CFDSimulator"
               plugin: CFD
               class: CFDSimulatorItem
-              data: 
+              data:
                 enabled: true
-        - 
+        -
           id: 8
           name: "FluidArea"
           plugin: CFD
           class: FluidAreaItem
           is_checked: true
-          data: 
-            type: 0
+          data:
+            translation: [ 0, 0, 0 ]
+            rotation: [ 0, -0, 0 ]
             size: [ 10, 10, 10 ]
+            diffuse_color: [ 1, 1, 1 ]
             radius: 0.5
             height: 1
-            diffuse_color: [ 1, 1, 1 ]
-            shininess: 0
+            specular_exponent: 25
             transparency: 1
+            scene_type: Box
             density: 1.2
-            viscosity: 0.00002
+            viscosity: 2e-05
             steady_flow: [ 0, 0, 0 ]
-views: 
-  - 
+views:
+  -
     id: 0
     name: "Image"
     plugin: Base
     class: ImageView
-  - 
+  -
     id: 1
     plugin: Base
     class: ItemPropertyView
     mounted: true
-  - 
+  -
     id: 2
     plugin: Base
     class: ItemTreeView
     mounted: true
-    state: 
+    state:
       expanded: [ 1, 2, 6 ]
-  - 
+  -
     id: 3
     plugin: Base
     class: LocationView
     mounted: true
-    state: 
+    state:
       show_rpy: true
       unique_rpy: false
       show_quaternion: false
       show_rotation_matrix: false
       coordinate: world
-  - 
+  -
     id: 4
     plugin: Base
     class: MessageView
     mounted: true
-  - 
+  -
     id: 5
     plugin: Base
     class: SceneView
     mounted: true
-    state: 
+    state:
       editMode: false
       viewpointOperationMode: thirdPerson
       visible_polygon_elements: [ face ]
       highlighting: false
       collisionLines: false
-      cameras: 
-        - 
+      cameras:
+        -
           camera: [ System, Perspective ]
           isCurrent: true
           eye: [ -7.56099, -6.02623, 4.73683 ]
           direction: [ 0.637769, 0.624942, -0.450221 ]
           up: [ 0.321572, 0.315104, 0.892917 ]
-        - 
+        -
           camera: [ System, Orthographic ]
           orthoHeight: 20
       lighting_mode: normal
@@ -216,7 +218,7 @@ views:
       head_light: true
       head_light_intensity: 0.75
       world_light_shadow: true
-      shadow_lights: 
+      shadow_lights:
         - { index: 0, enabled: false }
         - { index: 1, enabled: false }
       background_color: [ 0.1, 0.1, 0.3 ]
@@ -236,28 +238,28 @@ views:
       xy_grid_color: [ 0.9, 0.9, 0.9 ]
       xz_grid_color: [ 0.9, 0.9, 0.9 ]
       yz_grid_color: [ 0.9, 0.9, 0.9 ]
-  - 
+  -
     id: 6
     name: "シーン 2"
     plugin: Base
     class: SceneView
     mounted: true
-    state: 
+    state:
       editMode: false
       viewpointOperationMode: thirdPerson
       visible_polygon_elements: [ face ]
       highlighting: false
       collisionLines: false
-      cameras: 
-        - 
+      cameras:
+        -
           camera: [ System, Perspective ]
           eye: [ 3, 1.5, 1.2 ]
           direction: [ -0.880451, -0.440225, -0.17609 ]
           up: [ -0.1575, -0.0787495, 0.984374 ]
-        - 
+        -
           camera: [ System, Orthographic ]
           orthoHeight: 20
-        - 
+        -
           camera: [ HobbyDrone2, Camera ]
           isCurrent: true
       lighting_mode: normal
@@ -270,7 +272,7 @@ views:
       head_light: true
       head_light_intensity: 0.75
       world_light_shadow: false
-      shadow_lights: 
+      shadow_lights:
         - { index: 0, enabled: false }
         - { index: 1, enabled: false }
       background_color: [ 0.1, 0.1, 0.3 ]
@@ -290,24 +292,23 @@ views:
       xy_grid_color: [ 0.9, 0.9, 0.9 ]
       xz_grid_color: [ 0.9, 0.9, 0.9 ]
       yz_grid_color: [ 0.9, 0.9, 0.9 ]
-  - 
+  -
     id: 7
     plugin: Base
     class: VirtualJoystickView
     mounted: true
-  - 
+  -
     id: 8
     plugin: Body
     class: BodyLinkView
-    state: 
+    state:
       showRotationMatrix: false
-  - 
+  -
     id: 9
     plugin: Body
     class: JointDisplacementView
     mounted: true
-    state: 
-      show_selected_joints: false
+    state:
       show_joint_ids: true
       show_joint_names: false
       overlap_joint_names: false
@@ -315,25 +316,26 @@ views:
       show_dials: false
       show_phases: true
       limit_ranges: false
-  - 
+      show_selected_joints: false
+  -
     id: 10
     plugin: Body
     class: LinkDeviceListView
     mounted: true
-    state: 
+    state:
       element_type: all
       listing_mode: list
       current_body_item: 2
-      body_items: 
-        - 
+      body_items:
+        -
           id: 2
           selected_links: [ 0 ]
-  - 
+  -
     id: 11
     plugin: Body
     class: LinkPositionView
     mounted: true
-    state: 
+    state:
       coordinate_mode: world
       preferred_coordinate_mode: base
       show_rpy: true
@@ -341,18 +343,18 @@ views:
       show_quaternion: false
       show_rotation_matrix: false
       target_link_type: ik_link
-  - 
+  -
     id: 12
     plugin: Body
     class: LinkPropertyView
     mounted: true
-  - 
+  -
     id: 13
     plugin: Python
     class: PythonConsoleView
     mounted: true
-toolbars: 
-  "TimeBar": 
+toolbars:
+  "TimeBar":
     current_time: 0
     min_time: 0
     max_time: 30
@@ -362,9 +364,9 @@ toolbars:
     playback_speed_ratio: 1
     sync_to_ongoing_updates: true
     auto_expansion: true
-  "LeggedBodyBar": 
+  "LeggedBodyBar":
     stanceWidth: 0.15
-  "KinematicsBar": 
+  "KinematicsBar":
     forward_kinematics: true
     inverse_kinematics: true
     preset_kinematics: true
@@ -374,11 +376,11 @@ toolbars:
     snapDistance: 0.025
     penetrationBlockDepth: 0.0005
     lazyCollisionDetectionMode: true
-Body: 
-  "BodySelectionManager": 
+Body:
+  "BodySelectionManager":
     current_body_item: 2
     current_link: "CHASSIS"
-  "KinematicFaultChecker": 
+  "KinematicFaultChecker":
     checkJointPositions: true
     angleMargin: 0
     translationMargin: 0
@@ -387,81 +389,83 @@ Body:
     targetJoints: all
     checkSelfCollisions: true
     onlyTimeBarRange: false
-  "OperableSceneBody": 
-    scene_bodies: 
-      - 
+  "OperableSceneBody":
+    scene_bodies:
+      -
         body_item: 2
         show_cm: false
         show_cm_projection: false
         show_zmp: false
-      - 
+      -
         body_item: 5
         show_cm: false
         show_cm_projection: false
         show_zmp: false
-  "SplineFilterDialog": 
+  "SplineFilterDialog":
     isInputFrameRateSpecified: false
     inputFrameRate: 200
     isOutputFrameRateSpecified: false
     outputFrameRate: 200
-viewAreas: 
-  - 
+TaskCreator:
+  "TaskCreator": { }
+viewAreas:
+  -
     type: embedded
     tabs: true
-    contents: 
+    contents:
       type: splitter
       orientation: horizontal
-      sizes: [ 322, 1522 ]
-      children: 
-        - 
+      sizes: [ 322, 1524 ]
+      children:
+        -
           type: splitter
           orientation: vertical
           sizes: [ 504, 504 ]
-          children: 
-            - 
+          children:
+            -
               type: pane
               views: [ 2 ]
-            - 
+            -
               type: pane
               views: [ 1, 12, 10 ]
               current: 1
-        - 
+        -
           type: splitter
           orientation: vertical
           sizes: [ 720, 288 ]
-          children: 
-            - 
+          children:
+            -
               type: splitter
               orientation: horizontal
-              sizes: [ 671, 847 ]
-              children: 
-                - 
+              sizes: [ 672, 848 ]
+              children:
+                -
                   type: pane
                   views: [ 3, 11, 9, 6 ]
                   current: 6
-                - 
+                -
                   type: pane
                   views: [ 5 ]
-            - 
+            -
               type: splitter
               orientation: horizontal
-              sizes: [ 759, 759 ]
-              children: 
-                - 
+              sizes: [ 760, 760 ]
+              children:
+                -
                   type: pane
                   views: [ 4, 13 ]
                   current: 4
-                - 
+                -
                   type: pane
                   views: [ 7 ]
-layoutOfToolBars: 
-  rows: 
-    - 
+layoutOfToolBars:
+  rows:
+    -
       - { name: "FileBar", x: 0, priority: 0 }
       - { name: "ScriptBar", x: 49, priority: 1 }
       - { name: "SimulationBar", x: 98, priority: 2 }
       - { name: "TimeBar", x: 307, priority: 3 }
-    - 
+    -
       - { name: "BodyBar", x: 0, priority: 0 }
       - { name: "KinematicsBar", x: 273, priority: 1 }
       - { name: "SceneBar", x: 520, priority: 2 }

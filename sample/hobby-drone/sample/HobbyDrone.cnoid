@@ -113,37 +113,20 @@ items:
           plugin: CFD
           class: FluidAreaItem
           data:
-            type: 0
+            translation: [ 0, 0, 0 ]
+            rotation: [ 0, -0, 0 ]
             size: [ 20, 20, 20 ]
+            diffuse_color: [ 1, 1, 1 ]
             radius: 1
             height: 1
-            diffuse_color: [ 1, 1, 1 ]
-            shininess: 0
+            specular_exponent: 25
             transparency: 0.7
+            scene_type: Box
             density: 1.2
-            viscosity: 0.00002
+            viscosity: 2e-05
             steady_flow: [ 0, 0, 0 ]
         -
           id: 7
-          name: "FluidArea"
-          plugin: CFD
-          class: FluidAreaItem
-          is_checked: true
-          data:
-            translation: [ 0, 0, 2 ]
-            rotation: [ 0, -0, -1, 90 ]
-            type: 1
-            size: [ 1, 1, 1 ]
-            radius: 1
-            height: 3
-            diffuse_color: [ 0, 1, 1 ]
-            shininess: 0
-            transparency: 0.8
-            density: 1.2
-            viscosity: 0.00002
-            steady_flow: [ 1, 0, 0 ]
-        -
-          id: 8
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
@@ -176,14 +159,14 @@ items:
             oldAccelSensorMode: false
           children:
             -
-              id: 9
+              id: 8
               name: "CFDSimulator"
               plugin: CFD
               class: CFDSimulatorItem
               data:
                 enabled: true
             -
-              id: 10
+              id: 9
               name: "VFXVisionSimulator"
               plugin: VFX
               class: VFXVisionSimulatorItem
@@ -201,18 +184,20 @@ items:
                 enable_additional_lights: true
                 antialiasing: false
         -
-          id: 11
+          id: 10
           name: "VFXCollider"
           plugin: VFX
           class: VFXColliderItem
           data:
-            type: 0
+            translation: [ 0, 0, 0 ]
+            rotation: [ 0, -0, 0 ]
             size: [ 10, 10, 10 ]
+            diffuse_color: [ 0, 1, 0 ]
             radius: 0.5
             height: 1
-            diffuse_color: [ 0, 1, 0 ]
-            shininess: 0
+            specular_exponent: 25
             transparency: 0.8
+            scene_type: Box
             hsv: [ 0, 0, 0 ]
             rgb: [ 0, 0, 0 ]
             coef_b: -0.3
@@ -220,8 +205,8 @@ items:
             std_dev: 0
             salt: 0.01
             pepper: 0
-            flip: false
-            filter: 0
+            flipped: false
+            filter_type: No filter
 views:
   -
     id: 0
@@ -247,7 +232,7 @@ views:
     class: ItemTreeView
     mounted: true
     state:
-      expanded: [ 1, 2, 4, 8, 9 ]
+      expanded: [ 1, 2, 4, 7, 8 ]
   -
     id: 4
     plugin: Base

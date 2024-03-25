@@ -95,16 +95,16 @@ void SimpleColliderItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
         .registerClass<SimpleColliderItem>(N_("SimpleColliderItem"))
-        .addCreationPanel<SimpleColliderItem>()
+        .addCreationPanel<SimpleColliderItem>();
 
-        .addLoaderAndSaver<SimpleColliderItem>(
-            _("Simple Collider"), "SIMPLE-COLLIDER", "scol",
-            [](SimpleColliderItem* item, const string& filename, ostream& os, Item*) {
-                return item->impl->loadSimpleCollider(filename, os);
-            },
-            [](SimpleColliderItem* item, const string& filename, ostream& os, Item*) {
-                return item->impl->saveSimpleCollider(filename, os);
-            });
+        // .addLoaderAndSaver<SimpleColliderItem>(
+        //     _("Simple Collider"), "SIMPLE-COLLIDER", "scol",
+        //     [](SimpleColliderItem* item, const string& filename, ostream& os, Item*) {
+        //         return item->impl->loadSimpleCollider(filename, os);
+        //     },
+        //     [](SimpleColliderItem* item, const string& filename, ostream& os, Item*) {
+        //         return item->impl->saveSimpleCollider(filename, os);
+        //     });
 }
 
 
@@ -614,17 +614,51 @@ void SimpleColliderItem::doPutProperties(PutPropertyFunction& putProperty)
 
 bool SimpleColliderItem::store(Archive& archive)
 {
-    bool stored = false;
-    if(overwriteOrSaveWithDialog()) {
-         stored = archive.writeFileInformation(this);
-    }
-    return stored;
+    write(archive, "translation", Vector3(impl->position_.translation()));
+    write(archive, "rotation", degree(rpyFromRot(impl->position_.linear())));
+    write(archive, "size", Vector3(impl->size_));
+    write(archive, "diffuse_color", Vector3(impl->diffuseColor_));
+    archive.write("radius", impl->radius_);
+    archive.write("height", impl->height_);
+    archive.write("specular_exponent", impl->specularExponent_);
+    archive.write("transparency", impl->transparency_);
+    archive.write("scene_type", impl->sceneTypeSelection.selectedSymbol());
+    return true;
+
+    // bool stored = false;
+    // if(overwriteOrSaveWithDialog()) {
+    //      stored = archive.writeFileInformation(this);
+    // }
+    // return stored;
 }
 
 
 bool SimpleColliderItem::restore(const Archive& archive)
 {
-    return archive.loadFileTo(this);
+    Vector3 v;
+    if(read(archive, "translation", v)) {
+        impl->position_.translation() = v;
+    }
+    if(read(archive, "rotation", v)) {
+        impl->position_.linear() = rotFromRpy(radian(v));
+    }
+    if(read(archive, "size", v)) {
+        impl->size_ = v;
+    }
+    if(read(archive, "diffuse_color", v)) {
+        impl->diffuseColor_ = v;
+    }
+    archive.read("radius", impl->radius_);
+    archive.read("height", impl->height_);
+    archive.read("specular_exponent", impl->specularExponent_);
+    archive.read("transparency", impl->transparency_);
+    string type;
+    if(archive.read("scene_type", type)) {
+        impl->sceneTypeSelection.select(type);
+    }
+    return true;
+
+    // return archive.loadFileTo(this);
 }
 
 

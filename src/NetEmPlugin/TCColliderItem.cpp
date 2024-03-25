@@ -21,6 +21,7 @@ void TCColliderItem::initializeClass(ExtensionManager* ext)
 
 
 TCColliderItem::TCColliderItem()
+    : SimpleColliderItem()
 {
     setDiffuseColor(Vector3(1.0, 1.0, 0.0));
     inboundDelay_ = 0.0;

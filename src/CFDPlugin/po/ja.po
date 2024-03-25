@@ -29,41 +29,11 @@ msgstr ""
 msgid "FluidAreaItem"
 msgstr "流体領域アイテム"
 
-msgid "Fluid Area"
-msgstr "流体領域"
-
 msgid "Density"
 msgstr "密度"
 
 msgid "Viscosity"
 msgstr "粘度"
-
-msgid "Shape"
-msgstr "形状"
-
-msgid "Size"
-msgstr "サイズ"
-
-msgid "Radius"
-msgstr "半径"
-
-msgid "Height"
-msgstr "高さ"
-
-msgid "Translation"
-msgstr "位置"
-
-msgid "RPY"
-msgstr ""
-
-msgid "DiffuseColor"
-msgstr "拡散色"
-
-msgid "Shininess"
-msgstr "輝度"
-
-msgid "Transparency"
-msgstr "透過度"
 
 msgid "SteadyFlow"
 msgstr "定常流"

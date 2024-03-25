@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_CFD_PLUGIN_ROTOR_H
-#define CNOID_CFD_PLUGIN_ROTOR_H
+#ifndef CNOID_CFDPLUGIN_ROTOR_H
+#define CNOID_CFDPLUGIN_ROTOR_H
 
 #include "Thruster.h"
 #include "exportdecl.h"

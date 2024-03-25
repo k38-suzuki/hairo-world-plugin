@@ -22,7 +22,6 @@ public:
 
     virtual bool initialize() override
     {
-        AreaItem::initializeClass(this);
         FluidAreaItem::initializeClass(this);
         CFDSimulatorItem::initializeClass(this);
         return true;
