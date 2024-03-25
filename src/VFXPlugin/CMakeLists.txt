@@ -7,8 +7,8 @@ set(sources
   ImageGenerator.cpp
   NoisyCamera.cpp
   VEAreaItem.cpp
-  VEVisionSimulatorItem.cpp
-  VisualEffectPlugin.cpp
+  VFXVisionSimulatorItem.cpp
+  VFXPlugin.cpp
 )
 
 set(headers
@@ -16,14 +16,14 @@ set(headers
   ImageGenerator.h
   NoisyCamera.h
   VEAreaItem.h
-  VEVisionSimulatorItem.h
+  VFXVisionSimulatorItem.h
   exportdecl.h
 )
 
 choreonoid_make_header_public(ImageGenerator.h)
 choreonoid_make_header_public(NoisyCamera.h)
 
-set(target CnoidVisualEffectPlugin)
+set(target CnoidVFXPlugin)
 make_gettext_mofiles(${target} mofiles)
 choreonoid_add_plugin(${target} ${sources} ${mofiles} HEADERS ${headers})
 target_link_libraries(${target} PUBLIC CnoidBodyPlugin CnoidCFDPlugin CnoidSimpleColliderPlugin)

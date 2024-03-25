@@ -5,17 +5,17 @@
 #include <cnoid/Plugin>
 #include <fmt/format.h>
 #include "VEAreaItem.h"
-#include "VEVisionSimulatorItem.h"
+#include "VFXVisionSimulatorItem.h"
 
 using namespace cnoid;
 
 namespace {
 
-class VisualEffectPlugin : public Plugin
+class VFXPlugin : public Plugin
 {
 public:
 
-    VisualEffectPlugin() : Plugin("VisualEffect")
+    VFXPlugin() : Plugin("VFX")
     {
         require("Body");
     }
@@ -23,14 +23,14 @@ public:
     virtual bool initialize() override
     {
         VEAreaItem::initializeClass(this);
-        VEVisionSimulatorItem::initializeClass(this);
+        VFXVisionSimulatorItem::initializeClass(this);
         return true;
     }
 
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("VisualEffect Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            fmt::format("VFX Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyright (c) 2020 Japan Atomic Energy Agency.\n"
             "\n" +
@@ -41,4 +41,4 @@ public:
 
 }
 
-CNOID_IMPLEMENT_PLUGIN_ENTRY(VisualEffectPlugin)
+CNOID_IMPLEMENT_PLUGIN_ENTRY(VFXPlugin)

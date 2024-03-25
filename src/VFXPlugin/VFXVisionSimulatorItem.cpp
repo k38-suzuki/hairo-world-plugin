@@ -2,7 +2,7 @@
    @author Kenta Suzuki
 */
 
-#include "VEVisionSimulatorItem.h"
+#include "VFXVisionSimulatorItem.h"
 #include <cnoid/Body>
 #include <cnoid/DeviceList>
 #include <cnoid/ItemManager>
@@ -19,13 +19,13 @@ using namespace cnoid;
 
 namespace cnoid {
 
-class VEVisionSimulatorItem::Impl
+class VFXVisionSimulatorItem::Impl
 {
 public:
-    VEVisionSimulatorItem* self;
+    VFXVisionSimulatorItem* self;
 
-    Impl(VEVisionSimulatorItem* self);
-    Impl(VEVisionSimulatorItem* self, const Impl& org);
+    Impl(VFXVisionSimulatorItem* self);
+    Impl(VFXVisionSimulatorItem* self, const Impl& org);
     ~Impl();
 
     DeviceList<Camera> cameras;
@@ -41,21 +41,21 @@ public:
 }
 
 
-void VEVisionSimulatorItem::initializeClass(ExtensionManager* ext)
+void VFXVisionSimulatorItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-        .registerClass<VEVisionSimulatorItem, SubSimulatorItem>(N_("VEVisionSimulatorItem"))
-        .addCreationPanel<VEVisionSimulatorItem>();
+        .registerClass<VFXVisionSimulatorItem, SubSimulatorItem>(N_("VFXVisionSimulatorItem"))
+        .addCreationPanel<VFXVisionSimulatorItem>();
 }
 
 
-VEVisionSimulatorItem::VEVisionSimulatorItem()
+VFXVisionSimulatorItem::VFXVisionSimulatorItem()
     : GLVisionSimulatorItem()
 {
     impl = new Impl(this);
 }
 
-VEVisionSimulatorItem::Impl::Impl(VEVisionSimulatorItem* self)
+VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self)
     : self(self)
 {
     cameras.clear();
@@ -64,7 +64,7 @@ VEVisionSimulatorItem::Impl::Impl(VEVisionSimulatorItem* self)
 }
 
 
-VEVisionSimulatorItem::VEVisionSimulatorItem(const VEVisionSimulatorItem& org)
+VFXVisionSimulatorItem::VFXVisionSimulatorItem(const VFXVisionSimulatorItem& org)
     : GLVisionSimulatorItem(org),
       impl(new Impl(this, *org.impl))
 {
@@ -72,7 +72,7 @@ VEVisionSimulatorItem::VEVisionSimulatorItem(const VEVisionSimulatorItem& org)
 }
 
 
-VEVisionSimulatorItem::Impl::Impl(VEVisionSimulatorItem* self, const Impl& org)
+VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self, const Impl& org)
     : self(self)
 {
     cameras.clear();
@@ -81,13 +81,13 @@ VEVisionSimulatorItem::Impl::Impl(VEVisionSimulatorItem* self, const Impl& org)
 }
 
 
-VEVisionSimulatorItem::~VEVisionSimulatorItem()
+VFXVisionSimulatorItem::~VFXVisionSimulatorItem()
 {
     delete impl;
 }
 
 
-bool VEVisionSimulatorItem::initializeSimulation(SimulatorItem* simulatorItem)
+bool VFXVisionSimulatorItem::initializeSimulation(SimulatorItem* simulatorItem)
 {
     if(!GLVisionSimulatorItem::initializeSimulation(simulatorItem)) {
         return false;
@@ -96,7 +96,7 @@ bool VEVisionSimulatorItem::initializeSimulation(SimulatorItem* simulatorItem)
 }
 
 
-bool VEVisionSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
+bool VFXVisionSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     cameras.clear();
     noisyCameras.clear();
@@ -122,7 +122,7 @@ bool VEVisionSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorI
 }
 
 
-void VEVisionSimulatorItem::Impl::onPostDynamics()
+void VFXVisionSimulatorItem::Impl::onPostDynamics()
 {
     for(auto& camera : noisyCameras) {
         Link* link = camera->link();
@@ -272,19 +272,19 @@ void VEVisionSimulatorItem::Impl::onPostDynamics()
 }
 
 
-Item* VEVisionSimulatorItem::doCloneItem(CloneMap* cloneMap) const
+Item* VFXVisionSimulatorItem::doCloneItem(CloneMap* cloneMap) const
 {
-    return new VEVisionSimulatorItem(*this);
+    return new VFXVisionSimulatorItem(*this);
 }
 
 
-void VEVisionSimulatorItem::doPutProperties(PutPropertyFunction& putProperty)
+void VFXVisionSimulatorItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     GLVisionSimulatorItem::doPutProperties(putProperty);
 }
 
 
-bool VEVisionSimulatorItem::store(Archive& archive)
+bool VFXVisionSimulatorItem::store(Archive& archive)
 {
     if(!GLVisionSimulatorItem::store(archive)) {
         return false;
@@ -293,7 +293,7 @@ bool VEVisionSimulatorItem::store(Archive& archive)
 }
 
 
-bool VEVisionSimulatorItem::restore(const Archive& archive)
+bool VFXVisionSimulatorItem::restore(const Archive& archive)
 {
     if(!GLVisionSimulatorItem::restore(archive)) {
         return false;

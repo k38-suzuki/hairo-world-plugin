@@ -1,11 +1,11 @@
-# Japanese translations for VisualEffectPlugin package.
-# Copyright (C) 2023 THE VisualEffectPlugin'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the VisualEffectPlugin package.
+# Japanese translations for VFXPlugin package.
+# Copyright (C) 2023 THE VFXPlugin'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the VFXPlugin package.
 # k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2023.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: VisualEffectPlugin\n"
+"Project-Id-Version: VFXPlugin\n"
 "Report-Msgid-Bugs-To: suzuki.kenta38@jaea.go.jp\n"
 "POT-Creation-Date: 2023-01-11 05:08-0800\n"
 "PO-Revision-Date: 2023-01-11 05:08-0800\n"
@@ -77,14 +77,8 @@ msgstr "リセット(&R)"
 msgid "&Ok"
 msgstr "了解(&O)"
 
-msgid "Effect Config"
-msgstr "視覚効果の設定"
-
-msgid "Visual Effect"
-msgstr "視覚効果"
-
 msgid "VEAreaItem"
 msgstr "視覚効果領域アイテム"
 
-msgid "VEVisionSimulatorItem"
-msgstr "VEビジョンシミュレータ"
+msgid "VFXVisionSimulatorItem"
+msgstr "VFXビジョンシミュレータ"

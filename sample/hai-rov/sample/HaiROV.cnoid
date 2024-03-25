@@ -161,9 +161,9 @@ items:
                 enabled: true
             -
               id: 9
-              name: "VEVisionSimulator"
-              plugin: VisualEffect
-              class: VEVisionSimulatorItem
+              name: "VFXVisionSimulator"
+              plugin: VFX
+              class: VFXVisionSimulatorItem
               data:
                 enabled: true
                 max_frame_rate: 1000
@@ -180,7 +180,7 @@ items:
         -
           id: 10
           name: "VEArea"
-          plugin: VisualEffect
+          plugin: VFX
           class: VEAreaItem
           data:
             type: 0

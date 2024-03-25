@@ -4,7 +4,7 @@ add_subdirectory(CollisionSeqPlugin)
 add_subdirectory(JoystickStartPlugin)
 add_subdirectory(MotionCapturePlugin)
 add_subdirectory(SystemTrayPlugin)
-add_subdirectory(VisualEffectPlugin)
+add_subdirectory(VFXPlugin)
 add_subdirectory(SimpleColliderPlugin)
 add_subdirectory(TaskCreatorPlugin)
 

@@ -2,23 +2,21 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_VISUAL_EFFECT_PLUGIN_VE_AREA_ITEM_H
-#define CNOID_VISUAL_EFFECT_PLUGIN_VE_AREA_ITEM_H
+#ifndef CNOID_VFX_PLUGIN_CAMERA_EFFECT_H
+#define CNOID_VFX_PLUGIN_CAMERA_EFFECT_H
 
 #include <cnoid/EigenTypes>
-#include <cnoid/Selection>
-#include <cnoid/AreaItem>
+#include "exportdecl.h"
 
 namespace cnoid {
 
-class VEAreaItem : public AreaItem
+class CNOID_EXPORT CameraEffect
 {
 public:
-    VEAreaItem();
-    VEAreaItem(const VEAreaItem& org);
-    ~VEAreaItem();
+    CameraEffect();
+    ~CameraEffect();
 
-    static void initializeClass(ExtensionManager* ext);
+    enum FilterType { NO_FILTER, GAUSSIAN_3X3, GAUSSIAN_5X5, SOBEL, PREWITT };
 
     void setHsv(const Vector3& hsv) { hsv_ = hsv; }
     Vector3 hsv() const { return hsv_; }
@@ -36,14 +34,8 @@ public:
     double pepper() const { return pepper_; }
     void setFlip(const bool& flip) { flip_ = flip; }
     bool flip() const { return flip_; }
-    void setFilter(const int& filter) { filter_.selectIndex(filter); }
-    int filter() const { return filter_.which(); }
-
-protected:
-    virtual Item* doCloneItem(CloneMap* cloneMap) const override;
-    virtual void doPutProperties(PutPropertyFunction& putProperty) override;
-    virtual bool store(Archive& archive) override;
-    virtual bool restore(const Archive& archive) override;
+    void setFilterType(const FilterType& filterType) { filterType_ = filterType; }
+    FilterType filterType() const { return filterType_; }
 
 private:
     Vector3 hsv_;
@@ -54,7 +46,7 @@ private:
     double salt_;
     double pepper_;
     bool flip_;
-    Selection filter_;
+    FilterType filterType_;
 };
 
 }

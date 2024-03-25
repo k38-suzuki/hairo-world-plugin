@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_VISUAL_EFFECT_PLUGIN_NOISY_CAMERA_H
-#define CNOID_VISUAL_EFFECT_PLUGIN_NOISY_CAMERA_H
+#ifndef CNOID_VFX_PLUGIN_NOISY_CAMERA_H
+#define CNOID_VFX_PLUGIN_NOISY_CAMERA_H
 
 #include <cnoid/Camera>
 #include "CameraEffect.h"
