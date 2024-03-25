@@ -8,6 +8,7 @@
 #include <cnoid/ItemManager>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
+#include <mutex>
 #include "VisualEffects.h"
 #include "ImageGenerator.h"
 #include "NoisyCamera.h"
@@ -30,6 +31,7 @@ public:
     DeviceList<Camera> cameras;
     DeviceList<NoisyCamera> noisyCameras;
     ItemList<VFXColliderItem> colliders;
+    std::mutex convertMutex;
 
     ImageGenerator generator;
 
@@ -157,41 +159,43 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
             }
         }
 
-        Image image = *camera->sharedImage();
+        {
+            std::lock_guard<std::mutex> lock(convertMutex);
+            Image image = *camera->sharedImage();
 
-        // convert image
-        if(hue > 0.0 || saturation > 0.0 || value > 0.0) {
-            generator.hsv(image, hue, saturation, value);
-        }
-        if(red > 0.0 || green > 0.0 || blue > 0.0) {
-            generator.rgb(image, red, green, blue);
-        }
-        if(flipped) {
-            generator.flippedImage(image);
-        }
+            // convert image
+            if(hue > 0.0 || saturation > 0.0 || value > 0.0) {
+                generator.hsv(image, hue, saturation, value);
+            }
+            if(red > 0.0 || green > 0.0 || blue > 0.0) {
+                generator.rgb(image, red, green, blue);
+            }
+            if(flipped) {
+                generator.flippedImage(image);
+            }
+            if(stdDev > 0.0) {
+                generator.gaussianNoise(image, stdDev);
+            }
+            if(salt > 0.0 || pepper > 0.0) {
+                generator.saltPepperNoise(image, salt, pepper);
+            }
+            if(filterType == VisualEffects::GAUSSIAN_3X3) {
+                generator.gaussianFilter(image, 3);
+            } else if(filterType == VisualEffects::GAUSSIAN_5X5) {
+                generator.gaussianFilter(image, 5);
+            } else if(filterType == VisualEffects::SOBEL) {
+                generator.sobelFilter(image);
+            } else if(filterType == VisualEffects::PREWITT) {
+                generator.prewittFilter(image);
+            }
+            if(coefB < 0.0 || coefD > 1.0) {
+                generator.barrelDistortion(image, coefB, coefD);
+            }
 
-        if(stdDev > 0.0) {
-            generator.gaussianNoise(image, stdDev);
-        }
-        if(salt > 0.0 || pepper > 0.0) {
-            generator.saltPepperNoise(image, salt, pepper);
-        }
-        if(filterType == VisualEffects::GAUSSIAN_3X3) {
-            generator.gaussianFilter(image, 3);
-        } else if(filterType == VisualEffects::GAUSSIAN_5X5) {
-            generator.gaussianFilter(image, 5);
-        } else if(filterType == VisualEffects::SOBEL) {
-            generator.sobelFilter(image);
-        } else if(filterType == VisualEffects::PREWITT) {
-            generator.prewittFilter(image);
-        }
-        if(coefB < 0.0 || coefD > 1.0) {
-            generator.barrelDistortion(image, coefB, coefD);
-        }
-
-        if(!image.empty()) {
-            std::shared_ptr<Image> sharedImage = std::make_shared<Image>(image);
-            camera->setImage(sharedImage);
+            if(!image.empty()) {
+                std::shared_ptr<Image> sharedImage = std::make_shared<Image>(image);
+                camera->setImage(sharedImage);
+            }
         }
     }
 
@@ -229,41 +233,43 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
             }
         }
 
-        Image image = *camera->sharedImage();
+        {
+            std::lock_guard<std::mutex> lock(convertMutex);
+            Image image = *camera->sharedImage();
 
-        // convert image
-        if(hue > 0.0 || saturation > 0.0 || value > 0.0) {
-            generator.hsv(image, hue, saturation, value);
-        }
-        if(red > 0.0 || green > 0.0 || blue > 0.0) {
-            generator.rgb(image, red, green, blue);
-        }
-        if(flipped) {
-            generator.flippedImage(image);
-        }
+            // convert image
+            if(hue > 0.0 || saturation > 0.0 || value > 0.0) {
+                generator.hsv(image, hue, saturation, value);
+            }
+            if(red > 0.0 || green > 0.0 || blue > 0.0) {
+                generator.rgb(image, red, green, blue);
+            }
+            if(flipped) {
+                generator.flippedImage(image);
+            }
+            if(stdDev > 0.0) {
+                generator.gaussianNoise(image, stdDev);
+            }
+            if(salt > 0.0 || pepper > 0.0) {
+                generator.saltPepperNoise(image, salt, pepper);
+            }
+            if(filterType == VisualEffects::GAUSSIAN_3X3) {
+                generator.gaussianFilter(image, 3);
+            } else if(filterType == VisualEffects::GAUSSIAN_5X5) {
+                generator.gaussianFilter(image, 5);
+            } else if(filterType == VisualEffects::SOBEL) {
+                generator.sobelFilter(image);
+            } else if(filterType == VisualEffects::PREWITT) {
+                generator.prewittFilter(image);
+            }
+            if(coefB < 0.0 || coefD > 1.0) {
+                generator.barrelDistortion(image, coefB, coefD);
+            }
 
-        if(stdDev > 0.0) {
-            generator.gaussianNoise(image, stdDev);
-        }
-        if(salt > 0.0 || pepper > 0.0) {
-            generator.saltPepperNoise(image, salt, pepper);
-        }
-        if(filterType == VisualEffects::GAUSSIAN_3X3) {
-            generator.gaussianFilter(image, 3);
-        } else if(filterType == VisualEffects::GAUSSIAN_5X5) {
-            generator.gaussianFilter(image, 5);
-        } else if(filterType == VisualEffects::SOBEL) {
-            generator.sobelFilter(image);
-        } else if(filterType == VisualEffects::PREWITT) {
-            generator.prewittFilter(image);
-        }
-        if(coefB < 0.0 || coefD > 1.0) {
-            generator.barrelDistortion(image, coefB, coefD);
-        }
-
-        if(!image.empty()) {
-            std::shared_ptr<Image> sharedImage = std::make_shared<Image>(image);
-            camera->setImage(sharedImage);
+            if(!image.empty()) {
+                std::shared_ptr<Image> sharedImage = std::make_shared<Image>(image);
+                camera->setImage(sharedImage);
+            }
         }
     }
 }
