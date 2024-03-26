@@ -29,6 +29,8 @@ private:
     Selection filterTypeSelection_;
 };
 
+typedef ref_ptr<VFXColliderItem> VFXColliderItemPtr;
+
 }
 
 #endif // CNOID_VFX_PLUGIN_VFX_COLLIDER_ITEM_H

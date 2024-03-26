@@ -69,7 +69,7 @@ private:
     Impl* impl;
 };
 
-typedef cnoid::ref_ptr<SimpleColliderItem> SimpleColliderItemPtr;
+typedef ref_ptr<SimpleColliderItem> SimpleColliderItemPtr;
 
 CNOID_EXPORT bool collision(SimpleColliderItem* colliderItem, const Vector3& point);
 CNOID_EXPORT bool collision(SimpleColliderItem* colliderItem1, SimpleColliderItem* colliderItem2);

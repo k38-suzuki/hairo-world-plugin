@@ -32,6 +32,8 @@ private:
     Impl* impl;
 };
 
+typedef ref_ptr<MotionCaptureItem> MotionCaptureItemPtr;
+
 }
 
 #endif // CNOID_MOTIONCAPTURE_PLUGIN_MOTION_CAPTURE_ITEM_H

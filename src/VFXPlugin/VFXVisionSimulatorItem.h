@@ -32,6 +32,8 @@ private:
     Impl* impl;
 };
 
+typedef ref_ptr<VFXVisionSimulatorItem> VFXVisionSimulatorItemPtr;
+
 }
 
 #endif // CNOID_VFX_PLUGIN_VE_VISION_SIMULATOR_ITEM_H

@@ -33,6 +33,8 @@ private:
     Impl* impl;
 };
 
+typedef ref_ptr<GammaVisionSimulatorItem> GammaVisionSimulatorItemPtr;
+
 }
 
 #endif // CNOID_PHITS_PLUGIN_GAMMA_VISION_SIMULATOR_ITEM_H
