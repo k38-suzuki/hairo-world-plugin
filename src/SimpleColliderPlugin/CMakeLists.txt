@@ -15,6 +15,7 @@ set(headers
 
 choreonoid_make_header_public(SimpleColliderItem.h)
 choreonoid_make_header_public(MultiColliderItem.h)
+choreonoid_make_header_public(CustomEffects.h)
 
 set(target CnoidSimpleColliderPlugin)
 make_gettext_mofiles(${target} mofiles)

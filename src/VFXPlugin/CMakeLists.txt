@@ -4,7 +4,6 @@ set(sources
   VFXConverter.cpp
   VFXPlugin.cpp
   VFXVisionSimulatorItem.cpp
-  VisualEffects.cpp
 )
 
 set(headers
@@ -12,11 +11,9 @@ set(headers
   NoisyCamera.h
   VFXConverter.h
   VFXVisionSimulatorItem.h
-  VisualEffects.h
   exportdecl.h
 )
 
-choreonoid_make_header_public(VisualEffects.h)
 choreonoid_make_header_public(ImageGenerator.h)
 choreonoid_make_header_public(NoisyCamera.h)
 choreonoid_make_header_public(VFXConverter.h)

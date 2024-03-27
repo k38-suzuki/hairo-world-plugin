@@ -6,13 +6,12 @@
 #define CNOID_VFX_PLUGIN_NOISY_CAMERA_H
 
 #include <cnoid/Camera>
-#include "VisualEffects.h"
-#include "ImageGenerator.h"
+#include <cnoid/CustomEffects>
 #include "exportdecl.h"
 
 namespace cnoid {
 
-class CNOID_EXPORT NoisyCamera : public Camera, public VisualEffects
+class CNOID_EXPORT NoisyCamera : public Camera, public VFXEffects
 {
 public:
     NoisyCamera();
@@ -23,8 +22,6 @@ public:
     virtual DeviceState* cloneState() const override;
     virtual void forEachActualType(std::function<bool(const std::type_info& type)> func) override;
     virtual void clearState() override;
-
-    const Image& constImage() const;
 
     virtual int stateSize() const override;
     virtual const double* readState(const double* buf) override;
@@ -38,7 +35,6 @@ protected:
     virtual Referenced* doClone(CloneMap* cloneMap) const override;
 
 private:
-    ImageGenerator* generator;
 
     struct Spec {
 

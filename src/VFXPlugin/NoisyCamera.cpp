@@ -12,16 +12,16 @@ using namespace cnoid;
 
 NoisyCamera::NoisyCamera()
     : spec(new Spec),
-      VisualEffects()
+      Camera(),
+      VFXEffects()
 {
-    setImageType(NO_IMAGE);
-    generator = new ImageGenerator;
+
 }
 
 
 NoisyCamera::NoisyCamera(const NoisyCamera& org, bool copyStateOnly)
     : Camera(org, copyStateOnly),
-      VisualEffects(org)
+      VFXEffects(org)
 {
     if(!copyStateOnly) {
         spec = make_unique<Spec>();
@@ -70,60 +70,9 @@ void NoisyCamera::clearState()
 }
 
 
-const Image& NoisyCamera::constImage() const
-{
-    double hue = VisualEffects::hsv()[0];
-    double saturation = VisualEffects::hsv()[1];
-    double value = VisualEffects::hsv()[2];
-    double red = VisualEffects::rgb()[0];
-    double green = VisualEffects::rgb()[1];
-    double blue = VisualEffects::rgb()[2];
-    double coefB = VisualEffects::coefB();
-    double coefD = VisualEffects::coefD();
-    double stdDev = VisualEffects::stdDev();
-    double salt = VisualEffects::salt();
-    double pepper = VisualEffects::pepper();
-    bool flipped = VisualEffects::flipped();
-    FilterType filterType = VisualEffects::filterType();
-
-    Image image = *Camera::sharedImage();
-    if(hue > 0.0 || saturation > 0.0 || value > 0.0) {
-        generator->hsv(image, hue, saturation, value);
-    }
-    if(red > 0.0 || green > 0.0 || blue > 0.0) {
-        generator->rgb(image, red, green, blue);
-    }
-    if(flipped) {
-        generator->flippedImage(image);
-    }
-
-    if(stdDev > 0.0) {
-        generator->gaussianNoise(image, stdDev);
-    }
-    if(salt > 0.0 || pepper > 0.0) {
-        generator->saltPepperNoise(image, salt, pepper);
-    }
-    if(filterType == GAUSSIAN_3X3) {
-        generator->gaussianFilter(image, 3);
-    } else if(filterType == GAUSSIAN_5X5) {
-        generator->gaussianFilter(image, 5);
-    } else if(filterType == SOBEL) {
-        generator->sobelFilter(image);
-    } else if(filterType == PREWITT) {
-        generator->prewittFilter(image);
-    }
-    if(coefB < 0.0 || coefD > 1.0) {
-        generator->barrelDistortion(image, coefB, coefD);
-    }
-
-    std::shared_ptr<Image> sharedImage = std::make_shared<Image>(image);
-    return *sharedImage;
-}
-
-
 int NoisyCamera::stateSize() const
 {
-    return Camera::stateSize() + 12;
+    return Camera::stateSize() + 11;
 }
 
 
@@ -137,8 +86,7 @@ const double* NoisyCamera::readState(const double* buf)
     setStdDev(buf[8]);
     setSalt(buf[9]);
     setPepper(buf[10]);
-    setFlipped(buf[11]);
-    return buf + 12;
+    return buf + 11;
 }
 
 
@@ -152,8 +100,7 @@ double* NoisyCamera::writeState(double* out_buf) const
     out_buf[8] = stdDev();
     out_buf[9] = salt();
     out_buf[10] = pepper();
-    out_buf[11] = flipped() ? 1.0 : 0.0;
-    return out_buf + 12;
+    return out_buf + 11;
 }
 
 
@@ -175,22 +122,6 @@ bool NoisyCamera::readSpecifications(const Mapping* info)
     setStdDev(info->get({ "std_dev", "stdDev" }, 0.0));
     setSalt(info->get("salt", 0.0));
     setPepper(info->get("pepper", 0.0));
-    setFlipped(info->get("flipped", false));
-
-    string symbol;
-    if(info->read({ "filter_type", "filterType" }, symbol)) {
-        if(symbol == "NO_FILTER") {
-            setFilterType(NO_FILTER);
-        } else if(symbol == "GAUSSIAN_3X3") {
-            setFilterType(GAUSSIAN_3X3);
-        } else if(symbol == "GAUSSIAN_5X5") {
-            setFilterType(GAUSSIAN_5X5);
-        } else if(symbol == "SOBEL") {
-            setFilterType(SOBEL);
-        } else if(symbol == "PREWITT") {
-            setFilterType(PREWITT);
-        }
-    }
 
     return true;
 }
@@ -209,18 +140,6 @@ bool NoisyCamera::writeSpecifications(Mapping* info) const
     info->write("std_dev", stdDev());
     info->write("salt", salt());
     info->write("pepper", pepper());
-    info->write("flipped", flipped());
-    if(filterType() == NO_FILTER) {
-        info->write("filter_type", "NO_FILTER");
-    } else if(filterType() == GAUSSIAN_3X3) {
-        info->write("filter_type", "GAUSSIAN_3X3");
-    } else if(filterType() == GAUSSIAN_5X5) {
-        info->write("filter_type", "GAUSSIAN_5X5");
-    } else if(filterType() == SOBEL) {
-        info->write("filter_type", "SOBEL");
-    } else if(filterType() == PREWITT) {
-        info->write("filter_type", "PREWITT");
-    }
 
     return true;
 }
@@ -239,8 +158,6 @@ void NoisyCamera::copyNoisyCameraStateFrom(const NoisyCamera& other, bool doCopy
     setStdDev(other.stdDev());
     setSalt(other.salt());
     setPepper(other.pepper());
-    setFlipped(other.flipped());
-    setFilterType(other.filterType());
 }
 
 
