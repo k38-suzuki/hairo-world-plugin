@@ -217,6 +217,41 @@ items:
             std_dev: 0
             salt: 0.01
             pepper: 0
+        -
+          id: 10
+          name: "MultiCollider"
+          plugin: SimpleCollider
+          class: MultiColliderItem
+          is_checked: true
+          data:
+            translation: [ 0, 0, 0 ]
+            rotation: [ 0, -0, 0 ]
+            size: [ 1, 1, 1 ]
+            diffuse_color: [ 1, 1, 0 ]
+            radius: 0.5
+            height: 1
+            specular_exponent: 25
+            transparency: 0.8
+            scene_type: Box
+            collider_type: TC
+            density: 0
+            viscosity: 0
+            steady_flow: [ 0, 0, 0 ]
+            inbound_delay: 200
+            inbound_rate: 0
+            inbound_loss: 0
+            outbound_delay: 0
+            outbound_rate: 0
+            outbound_loss: 0
+            source: 0.0.0.0/0
+            destination: 0.0.0.0/0
+            hsv: [ 0, 0, 0 ]
+            rgb: [ 0, 0, 0 ]
+            coef_b: 0
+            coef_d: 0
+            std_dev: 0
+            salt: 0
+            pepper: 0
 views:
   -
     id: 0
