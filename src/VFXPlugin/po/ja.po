@@ -19,3 +19,12 @@ msgstr ""
 
 msgid "VFXVisionSimulatorItem"
 msgstr "VFXビジョンシミュレータ"
+
+msgid "Salt only"
+msgstr "白色ノイズのみ"
+
+msgid "All process"
+msgstr "全て"
+
+msgid "Dynamics type"
+msgstr "ダイナミクスの種類"

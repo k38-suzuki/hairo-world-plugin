@@ -37,13 +37,13 @@ void notSupportText()
     //     << endl;    
 }
 
-class ColliderLocation : public LocationProxy
+class SceneLocation : public LocationProxy
 {
 public:
     SimpleColliderItem::Impl* impl;
     Signal<void()> sigLocationChanged_;
 
-    ColliderLocation(SimpleColliderItem::Impl* impl);
+    SceneLocation(SimpleColliderItem::Impl* impl);
     virtual Item* getCorrespondingItem() override;
     virtual Isometry3 getLocation() const override;
     virtual bool setLocation(const Isometry3& T) override;
@@ -84,7 +84,7 @@ public:
     double specularExponent_;
     double transparency_;
     ScopedConnectionSet connections;
-    ref_ptr<ColliderLocation> colliderLocation;
+    ref_ptr<SceneLocation> sceneLocation;
     MappingPtr info;
 };
 
@@ -205,8 +205,8 @@ void SimpleColliderItem::setPosition(const Isometry3& T)
     impl->position_ = T;
     impl->updateScenePosition();
     notifyUpdate();
-    if(impl->colliderLocation) {
-        impl->colliderLocation->sigLocationChanged_();
+    if(impl->sceneLocation) {
+        impl->sceneLocation->sigLocationChanged_();
     }
 }
 
@@ -302,10 +302,10 @@ SignalProxy<void()> SimpleColliderItem::sigItemsInProjectChanged()
 
 LocationProxyPtr SimpleColliderItem::getLocationProxy()
 {
-    if(!impl->colliderLocation) {
-        impl->colliderLocation = new ColliderLocation(impl);
+    if(!impl->sceneLocation) {
+        impl->sceneLocation = new SceneLocation(impl);
     }
-    return impl->colliderLocation;
+    return impl->sceneLocation;
 }
 
 
@@ -459,9 +459,9 @@ bool SimpleColliderItem::Impl::loadSimpleCollider(const string& filename, ostrea
     archive->read("height", height_);
     archive->read("specular_exponent", specularExponent_);
     archive->read("transparency", transparency_);
-    string type;
-    if(archive->read("scene_type", type)) {
-        sceneTypeSelection.select(type);
+    string sceneId;
+    if(archive->read("scene_type", sceneId)) {
+        sceneTypeSelection.select(sceneId);
     }
     return true;
 }
@@ -652,9 +652,9 @@ bool SimpleColliderItem::restore(const Archive& archive)
     archive.read("height", impl->height_);
     archive.read("specular_exponent", impl->specularExponent_);
     archive.read("transparency", impl->transparency_);
-    string type;
-    if(archive.read("scene_type", type)) {
-        impl->sceneTypeSelection.select(type);
+    string sceneId;
+    if(archive.read("scene_type", sceneId)) {
+        impl->sceneTypeSelection.select(sceneId);
     }
     return true;
 
@@ -673,7 +673,7 @@ void SimpleColliderItem::onDisconnectedFromRoot()
 }
 
 
-ColliderLocation::ColliderLocation(SimpleColliderItem::Impl* impl)
+SceneLocation::SceneLocation(SimpleColliderItem::Impl* impl)
     : LocationProxy(GlobalLocation),
       impl(impl)
 {
@@ -681,19 +681,19 @@ ColliderLocation::ColliderLocation(SimpleColliderItem::Impl* impl)
 }
 
 
-Item* ColliderLocation::getCorrespondingItem()
+Item* SceneLocation::getCorrespondingItem()
 {
     return impl->self;
 }
 
 
-Isometry3 ColliderLocation::getLocation() const
+Isometry3 SceneLocation::getLocation() const
 {
     return impl->position_;
 }
 
 
-bool ColliderLocation::setLocation(const Isometry3& T)
+bool SceneLocation::setLocation(const Isometry3& T)
 {
     impl->self->setPosition(T);
     impl->self->notifyUpdate();
@@ -701,7 +701,7 @@ bool ColliderLocation::setLocation(const Isometry3& T)
 }
 
 
-SignalProxy<void()> ColliderLocation::sigLocationChanged()
+SignalProxy<void()> SceneLocation::sigLocationChanged()
 {
     return sigLocationChanged_;
 }

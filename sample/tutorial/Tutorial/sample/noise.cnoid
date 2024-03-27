@@ -217,6 +217,7 @@ items:
                 enable_head_light: true
                 enable_additional_lights: true
                 antialiasing: false
+                dynamics_type: Salt only
         -
           id: 10
           name: "MultiCollider"
