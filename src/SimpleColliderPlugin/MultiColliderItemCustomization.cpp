@@ -173,6 +173,12 @@ void MultiColliderItem::initializeClass(ExtensionManager* ext)
         // .addCreationPanel<MultiColliderItem>();
         .addCreationPanel<MultiColliderItem>(new MultiColliderItemCreationPanel);
 
+    ItemManager& im = ext->itemManager();
+    im.addAlias<MultiColliderItem>("FluidAreaItem", "CFD");
+    im.addAlias<MultiColliderItem>("TCAreaItem", "NetEm");
+    im.addAlias<MultiColliderItem>("TCAreaItem", "TC");
+    im.addAlias<MultiColliderItem>("VEAreaItem", "VisualEffect");
+
     auto rootItem = RootItem::instance();
     rootItem->sigSelectedItemsChanged().connect(
         [&](const ItemList<>& selectedItems){ onSelectedItemChanged(selectedItems); });

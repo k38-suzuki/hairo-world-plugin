@@ -9,7 +9,7 @@
 #include <cnoid/ItemList>
 #include <cnoid/SimulatorItem>
 #include <cnoid/SubSimulatorItem>
-#include <cnoid/FluidAreaItem>
+#include <cnoid/MultiColliderItem>
 #include <cnoid/WingDevice>
 
 namespace cnoid {
@@ -32,7 +32,7 @@ protected:
 private:
     SimulatorItem* simulatorItem;
     DeviceList<WingDevice> wings;
-    ItemList<FluidAreaItem> areaItems;
+    ItemList<MultiColliderItem> colliders;
 
     void onPreDynamics();
 };

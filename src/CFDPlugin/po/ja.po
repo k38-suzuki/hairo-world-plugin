@@ -17,26 +17,5 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "Box"
-msgstr ""
-
-msgid "Cylinder"
-msgstr ""
-
-msgid "Sphere"
-msgstr ""
-
-msgid "FluidAreaItem"
-msgstr "流体領域アイテム"
-
-msgid "Density"
-msgstr "密度"
-
-msgid "Viscosity"
-msgstr "粘度"
-
-msgid "SteadyFlow"
-msgstr "定常流"
-
 msgid "CFDSimulatorItem"
 msgstr "CFDシミュレータアイテム"

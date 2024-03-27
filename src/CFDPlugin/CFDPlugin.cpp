@@ -5,7 +5,6 @@
 #include <cnoid/Plugin>
 #include <fmt/format.h>
 #include "CFDSimulatorItem.h"
-#include "FluidAreaItem.h"
 
 using namespace cnoid;
 
@@ -19,7 +18,6 @@ public:
 
     virtual bool initialize() override
     {
-        FluidAreaItem::initializeClass(this);
         CFDSimulatorItem::initializeClass(this);
         return true;
     }

@@ -1,5 +1,4 @@
 set(sources
-  FluidAreaItem.cpp
   CFDPlugin.cpp
   CFDSimulatorItem.cpp
   Rotor.cpp
@@ -8,7 +7,6 @@ set(sources
 )
 
 set(headers
-  FluidAreaItem.h
   CFDSimulatorItem.h
   Rotor.h
   Thruster.h
@@ -16,7 +14,6 @@ set(headers
   exportdecl.h
 )
 
-choreonoid_make_header_public(FluidAreaItem.h)
 choreonoid_make_header_public(Rotor.h)
 choreonoid_make_header_public(Thruster.h)
 choreonoid_make_header_public(WingDevice.h)

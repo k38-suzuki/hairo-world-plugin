@@ -13,8 +13,8 @@
 #include <cnoid/SceneDrawables>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
+#include <cnoid/MultiColliderItem>
 #include <vector>
-#include "FluidAreaItem.h"
 #include "Rotor.h"
 #include "Thruster.h"
 #include "gettext.h"
@@ -83,7 +83,7 @@ public:
     DeviceList<Thruster> thrusters;
     DeviceList<Rotor> rotors;
     Vector3 gravity;
-    ItemList<FluidAreaItem> colliders;
+    ItemList<MultiColliderItem> colliders;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void addBody(CFDBody* cfdBody);
@@ -280,7 +280,12 @@ bool CFDSimulatorItemImpl::initializeSimulation(SimulatorItem* simulatorItem)
 
     WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
     if(worldItem) {
-        colliders = worldItem->descendantItems<FluidAreaItem>();
+        ItemList<MultiColliderItem> list = worldItem->descendantItems<MultiColliderItem>();
+        for(auto& collider : list) {
+            if(collider->colliderType() == MultiColliderItem::CFD) {
+                colliders.push_back(collider);
+            }
+        }
     }
     for(auto& collider : colliders) {
         collider->setUnsteadyFlow(Vector3(0.0, 0.0, 0.0));
@@ -380,7 +385,7 @@ void CFDSimulatorItemImpl::onPreDynamics()
     // thruster
     for(auto& thruster : thrusters) {
         Link* link = thruster->link();
-        FluidAreaItem* item = nullptr;
+        MultiColliderItem* item = nullptr;
         for(auto& collider : colliders) {
             if(collision(collider, link->T().translation())) {
                 item = collider;
@@ -406,7 +411,7 @@ void CFDSimulatorItemImpl::onPreDynamics()
     // rotor
     for(auto& rotor : rotors) {
         Link* link = rotor->link();
-        FluidAreaItem* item = nullptr;
+        MultiColliderItem* item = nullptr;
         for(auto& collider : colliders) {
             if(collision(collider, link->T().translation())) {
                 item = collider;

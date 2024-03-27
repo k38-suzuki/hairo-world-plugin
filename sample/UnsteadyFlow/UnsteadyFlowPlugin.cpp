@@ -9,7 +9,7 @@
 #include <cnoid/Plugin>
 #include <cnoid/RootItem>
 #include <cnoid/TimeBar>
-#include <cnoid/FluidAreaItem>
+#include <cnoid/MultiColliderItem>
 #include <vector>
 
 using namespace std;
@@ -63,8 +63,8 @@ private:
         GeneralSliderView* sliderView = GeneralSliderView::instance();
         sliders.clear();
 
-        ItemList<FluidAreaItem> areaItems = selectedItems;
-        if(areaItems.size()) {
+        ItemList<MultiColliderItem> colliders = selectedItems;
+        if(colliders.size()) {
             GeneralSliderView::SliderPtr slider_pt = sliderView->getOrCreateSlider("T [s]", 1.0, 10.0, 1);
             slider_pt->setValue(pt);
             slider_pt->setCallback([&](double value){ pt = value; });
@@ -94,9 +94,9 @@ private:
         Vector3 flow = Vector3(fx, fy, fz) * sin(w * time);
 
         if(useUnsteadyFlow->isChecked()) {
-            ItemList<FluidAreaItem> areaItems = RootItem::instance()->checkedItems<FluidAreaItem>();
-            for(auto& areaItem : areaItems) {
-                areaItem->setUnsteadyFlow(flow);
+            ItemList<MultiColliderItem> colliders = RootItem::instance()->checkedItems<MultiColliderItem>();
+            for(auto& collider : colliders) {
+                collider->setUnsteadyFlow(flow);
             }
         }
         return true;

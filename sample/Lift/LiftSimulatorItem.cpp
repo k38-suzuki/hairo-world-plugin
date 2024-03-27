@@ -28,7 +28,7 @@ LiftSimulatorItem::LiftSimulatorItem()
 {
     simulatorItem = 0;
     wings.clear();
-    areaItems.clear();
+    colliders.clear();
 }
 
 
@@ -37,7 +37,7 @@ LiftSimulatorItem::LiftSimulatorItem(const LiftSimulatorItem& org)
 {
     simulatorItem = 0;
     wings.clear();
-    areaItems.clear();
+    colliders.clear();
 }
 
 
@@ -45,20 +45,20 @@ bool LiftSimulatorItem::initializeSimulation(SimulatorItem* simulatorItem)
 {
     this->simulatorItem = simulatorItem;
     wings.clear();
-    areaItems.clear();
+    colliders.clear();
 
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
     for(auto& simBody : simBodies) {
-        Body* body = simBody;
+        Body* body = simBody->body();
         wings << body->devices();
     }
 
     WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
     if(worldItem) {
-        areaItems = worldItem->descendantItems<FluidAreaItem>();
+        colliders = worldItem->descendantItems<MultiColliderItem>();
     }
-    for(auto& areaItem : areaItems) {
-        areaItem->setUnsteadyFlow(Vector3(0.0, 0.0, 0.0));
+    for(auto& collider : colliders) {
+        collider->setUnsteadyFlow(Vector3(0.0, 0.0, 0.0));
     }
 
     if(simBodies.size()) {
@@ -75,10 +75,10 @@ void LiftSimulatorItem::onPreDynamics()
         Link* link = wing->link();
         Vector3 cb = link->T() * link->centerOfMass();
 
-        FluidAreaItem* item = nullptr;
-        for(auto& areaItem : areaItems) {
-            if(areaItem->isCollided(link->T().translation())) {
-                item = areaItem;
+        MultiColliderItem* item = nullptr;
+        for(auto& collider : colliders) {
+            if(collision(collider, link->T().translation())) {
+                item = collider;
             }
         }
 
