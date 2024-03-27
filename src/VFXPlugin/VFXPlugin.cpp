@@ -4,7 +4,6 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "VFXColliderItem.h"
 #include "VFXVisionSimulatorItem.h"
 
 using namespace cnoid;
@@ -19,7 +18,6 @@ public:
 
     virtual bool initialize() override
     {
-        VFXColliderItem::initializeClass(this);
         VFXVisionSimulatorItem::initializeClass(this);
         return true;
     }

@@ -184,26 +184,39 @@ items:
                 antialiasing: false
         -
           id: 9
-          name: "VFXCollider"
-          plugin: VFX
-          class: VFXColliderItem
+          name: "MultiCollider"
+          plugin: SimpleCollider
+          class: MultiColliderItem
+          is_checked: true
           data:
-            type: 0
-            size: [ 10, 10, 10 ]
+            translation: [ 0, 0, 0 ]
+            rotation: [ 0, -0, 0 ]
+            size: [ 1, 1, 1 ]
+            diffuse_color: [ 1, 0, 1 ]
             radius: 0.5
             height: 1
-            diffuse_color: [ 0, 1, 0 ]
-            shininess: 0
+            specular_exponent: 25
             transparency: 0.8
+            scene_type: Box
+            collider_type: VFX
+            density: 0
+            viscosity: 0
+            steady_flow: [ 0, 0, 0 ]
+            inbound_delay: 0
+            inbound_rate: 0
+            inbound_loss: 0
+            outbound_delay: 0
+            outbound_rate: 0
+            outbound_loss: 0
+            source: 0.0.0.0/0
+            destination: 0.0.0.0/0
             hsv: [ 0, 0, 0 ]
             rgb: [ 0, 0, 0 ]
-            coef_b: -0.3
-            coef_d: 1
+            coef_b: 0
+            coef_d: 0
             std_dev: 0
             salt: 0.01
             pepper: 0
-            flip: false
-            filter: 0
 views:
   -
     id: 0
@@ -439,7 +452,7 @@ viewAreas:
                 -
                   type: pane
                   views: [ 5, 11, 0 ]
-                  current: 0
+                  current: 5
         -
           type: splitter
           orientation: vertical

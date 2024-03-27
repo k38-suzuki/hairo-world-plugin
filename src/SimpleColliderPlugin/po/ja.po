@@ -73,3 +73,96 @@ msgstr "透明度"
 
 msgid "This combination is not supported."
 msgstr "この組み合わせはサポートされていません．"
+
+msgid "CFD"
+msgstr "流体"
+
+msgid "TC"
+msgstr "通信障害"
+
+msgid "VFX"
+msgstr "視覚効果"
+
+msgid "Collider type"
+msgstr "コライダの種類"
+
+msgid "density"
+msgstr "密度"
+
+msgid "viscosity"
+msgstr "粘度"
+
+msgid "steady flow"
+msgstr "定常流"
+
+msgid "inbound delay"
+msgstr "内向き遅延"
+
+msgid "inbound rate"
+msgstr "内向きレイテンシ"
+
+msgid "inbound loss"
+msgstr "内向きパケット損失"
+
+msgid "outbound delay"
+msgstr "外向き遅延"
+
+msgid "outbound rate"
+msgstr "外向きレイテンシ"
+
+msgid "outbound loss"
+msgstr "外向きパケット損失"
+
+msgid "source IP"
+msgstr "送信元IPアドレス"
+
+msgid "destination IP"
+msgstr "送信先IPアドレス"
+
+msgid "HSV"
+msgstr ""
+
+msgid "RGB"
+msgstr ""
+
+msgid "coef B"
+msgstr "歪み"
+
+msgid "coef D"
+msgstr "拡大率"
+
+msgid "std dev"
+msgstr "標準偏差"
+
+msgid "salt"
+msgstr "白色ノイズ"
+
+msgid "pepper"
+msgstr "黒色ノイズ"
+
+msgid "hue"
+msgstr "色相"
+
+msgid "saturation"
+msgstr "彩度"
+
+msgid "value"
+msgstr "明度"
+
+msgid "red"
+msgstr "赤"
+
+msgid "green"
+msgstr "緑"
+
+msgid "blue"
+msgstr "青"
+
+msgid "Name :"
+msgstr "名前 :"
+
+msgid "Type :"
+msgstr "タイプ :"
+
+msgid "MultiColliderItem"
+msgstr "マルチコライダアイテム"

@@ -12,7 +12,7 @@
 #include "VisualEffects.h"
 #include "ImageGenerator.h"
 #include "NoisyCamera.h"
-#include "VFXColliderItem.h"
+#include <cnoid/MultiColliderItem>
 #include "gettext.h"
 
 using namespace std;
@@ -30,7 +30,7 @@ public:
 
     DeviceList<Camera> cameras;
     DeviceList<NoisyCamera> noisyCameras;
-    ItemList<VFXColliderItem> colliders;
+    ItemList<MultiColliderItem> colliders;
     std::mutex convertMutex;
 
     ImageGenerator generator;
@@ -112,7 +112,12 @@ bool VFXVisionSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulator
 
     WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
     if(worldItem) {
-        colliders = worldItem->descendantItems<VFXColliderItem>();
+        ItemList<MultiColliderItem> list = worldItem->descendantItems<MultiColliderItem>();
+        for(auto& collider : list) {
+            if(collider->colliderType() == MultiColliderItem::VFX) {
+                colliders.push_back(collider);
+            }
+        }
     }
 
     if(cameras.size() || noisyCameras.size()) {
@@ -138,8 +143,6 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
         double stdDev = camera->stdDev();
         double salt = camera->salt();
         double pepper = camera->pepper();
-        bool flipped = camera->flipped();
-        VisualEffects::FilterType filterType = camera->filterType();
 
         for(auto& collider : colliders) {
             if(collision(collider, link->T().translation())) {
@@ -154,8 +157,6 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
                 stdDev = collider->stdDev();
                 salt = collider->salt();
                 pepper = collider->pepper();
-                flipped = collider->flipped();
-                filterType = (VisualEffects::FilterType)collider->filterType();
             }
         }
 
@@ -170,26 +171,11 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
             if(red > 0.0 || green > 0.0 || blue > 0.0) {
                 generator.rgb(image, red, green, blue);
             }
-            if(flipped) {
-                generator.flippedImage(image);
-            }
             if(stdDev > 0.0) {
                 generator.gaussianNoise(image, stdDev);
             }
             if(salt > 0.0 || pepper > 0.0) {
                 generator.saltPepperNoise(image, salt, pepper);
-            }
-            if(filterType == VisualEffects::GAUSSIAN_3X3) {
-                generator.gaussianFilter(image, 3);
-            } else if(filterType == VisualEffects::GAUSSIAN_5X5) {
-                generator.gaussianFilter(image, 5);
-            } else if(filterType == VisualEffects::SOBEL) {
-                generator.sobelFilter(image);
-            } else if(filterType == VisualEffects::PREWITT) {
-                generator.prewittFilter(image);
-            }
-            if(coefB < 0.0 || coefD > 1.0) {
-                generator.barrelDistortion(image, coefB, coefD);
             }
 
             if(!image.empty()) {
@@ -228,8 +214,6 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
                 stdDev = collider->stdDev();
                 salt = collider->salt();
                 pepper = collider->pepper();
-                flipped = collider->flipped();
-                filterType = (VisualEffects::FilterType)collider->filterType();
             }
         }
 
@@ -244,23 +228,11 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
             if(red > 0.0 || green > 0.0 || blue > 0.0) {
                 generator.rgb(image, red, green, blue);
             }
-            if(flipped) {
-                generator.flippedImage(image);
-            }
             if(stdDev > 0.0) {
                 generator.gaussianNoise(image, stdDev);
             }
             if(salt > 0.0 || pepper > 0.0) {
                 generator.saltPepperNoise(image, salt, pepper);
-            }
-            if(filterType == VisualEffects::GAUSSIAN_3X3) {
-                generator.gaussianFilter(image, 3);
-            } else if(filterType == VisualEffects::GAUSSIAN_5X5) {
-                generator.gaussianFilter(image, 5);
-            } else if(filterType == VisualEffects::SOBEL) {
-                generator.sobelFilter(image);
-            } else if(filterType == VisualEffects::PREWITT) {
-                generator.prewittFilter(image);
             }
             if(coefB < 0.0 || coefD > 1.0) {
                 generator.barrelDistortion(image, coefB, coefD);

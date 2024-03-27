@@ -5,6 +5,7 @@
 #include <cnoid/Plugin>
 #include <fmt/format.h>
 #include "SimpleColliderItem.h"
+#include "MultiColliderItem.h"
 
 using namespace cnoid;
 
@@ -19,6 +20,7 @@ public:
     virtual bool initialize()
     {
         SimpleColliderItem::initializeClass(this);
+        MultiColliderItem::initializeClass(this);
         return true;
     }
 

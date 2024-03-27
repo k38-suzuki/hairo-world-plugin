@@ -17,33 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "TCColliderItem"
-msgstr "通信障害領域アイテム"
-
-msgid "InboundDelay"
-msgstr "内向き遅延"
-
-msgid "InboundRate"
-msgstr "内向きレイテンシ"
-
-msgid "InboundLoss"
-msgstr "内向きパケット損失"
-
-msgid "OutboundDelay"
-msgstr "外向き遅延"
-
-msgid "OutboundRate"
-msgstr "外向きレイテンシ"
-
-msgid "OutboundLoss"
-msgstr "外向きパケット損失"
-
-msgid "Source IP"
-msgstr "送信元IPアドレス"
-
-msgid "Destination IP"
-msgstr "送信先IPアドレス"
-
 msgid "ifb0"
 msgstr ""
 

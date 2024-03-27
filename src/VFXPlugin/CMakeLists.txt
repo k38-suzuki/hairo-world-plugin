@@ -2,7 +2,6 @@ set(sources
   VisualEffects.cpp
   ImageGenerator.cpp
   NoisyCamera.cpp
-  VFXColliderItem.cpp
   VFXVisionSimulatorItem.cpp
   VFXPlugin.cpp
 )
@@ -11,7 +10,6 @@ set(headers
   VisualEffects.h
   ImageGenerator.h
   NoisyCamera.h
-  VFXColliderItem.h
   VFXVisionSimulatorItem.h
   exportdecl.h
 )

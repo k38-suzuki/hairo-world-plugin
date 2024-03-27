@@ -3,14 +3,12 @@ set(sources
   NetEmPlugin.cpp
   NetworkEmulator.cpp
   NetworkEmulatorItem.cpp
-  TCColliderItem.cpp
 )
 
 set(headers
   NetEm.h
   NetworkEmulator.h
   NetworkEmulatorItem.h
-  TCColliderItem.h
 )
 
 set(target CnoidNetEmPlugin)

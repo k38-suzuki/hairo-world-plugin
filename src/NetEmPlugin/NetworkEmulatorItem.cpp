@@ -10,8 +10,8 @@
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
+#include <cnoid/MultiColliderItem>
 #include "NetEm.h"
-#include "TCColliderItem.h"
 #include "gettext.h"
 
 using namespace std;
@@ -70,7 +70,7 @@ public:
     vector<Body*> bodies;
     Selection interface;
     Selection ifbDevice;
-    ItemList<TCColliderItem> colliders;
+    ItemList<MultiColliderItem> colliders;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void onPreDynamics();
@@ -149,7 +149,12 @@ bool NetworkEmulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorIte
 
     WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
     if(worldItem) {
-        colliders = worldItem->descendantItems<TCColliderItem>();
+        ItemList<MultiColliderItem> list = worldItem->descendantItems<MultiColliderItem>();
+        for(auto& collider : list) {
+            if(collider->colliderType() == MultiColliderItem::TC) {
+                colliders.push_back(collider);
+            }
+        }
     }
 
     if(simBodies.size()) {
