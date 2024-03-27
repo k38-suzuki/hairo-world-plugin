@@ -131,8 +131,43 @@ items:
                     class: CameraImageVisualizerItem
                     name: FrontCamera
                     is_checked: true
+            -
+              id: 7
+              name: "MultiCollider"
+              plugin: SimpleCollider
+              class: MultiColliderItem
+              is_checked: true
+              data:
+                translation: [ 0, 0, 1 ]
+                rotation: [ 0, -0, 0 ]
+                size: [ 1, 1, 1 ]
+                diffuse_color: [ 1, 0, 1 ]
+                radius: 0.5
+                height: 1
+                specular_exponent: 25
+                transparency: 0.8
+                scene_type: Box
+                collider_type: VFX
+                density: 0
+                viscosity: 0
+                steady_flow: [ 0, 0, 0 ]
+                inbound_delay: 0
+                inbound_rate: 0
+                inbound_loss: 0
+                outbound_delay: 0
+                outbound_rate: 0
+                outbound_loss: 0
+                source: 0.0.0.0/0
+                destination: 0.0.0.0/0
+                hsv: [ 0, 0, 0 ]
+                rgb: [ 0, 0, 0 ]
+                coef_b: 0
+                coef_d: 1
+                std_dev: 0
+                salt: 0.01
+                pepper: 0
         -
-          id: 7
+          id: 8
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
@@ -165,7 +200,7 @@ items:
             oldAccelSensorMode: false
           children:
             -
-              id: 8
+              id: 9
               name: "VFXVisionSimulator"
               plugin: VFX
               class: VFXVisionSimulatorItem
@@ -182,41 +217,6 @@ items:
                 enable_head_light: true
                 enable_additional_lights: true
                 antialiasing: false
-        -
-          id: 9
-          name: "MultiCollider"
-          plugin: SimpleCollider
-          class: MultiColliderItem
-          is_checked: true
-          data:
-            translation: [ 0, 0, 0 ]
-            rotation: [ 0, -0, 0 ]
-            size: [ 1, 1, 1 ]
-            diffuse_color: [ 1, 0, 1 ]
-            radius: 0.5
-            height: 1
-            specular_exponent: 25
-            transparency: 0.8
-            scene_type: Box
-            collider_type: VFX
-            density: 0
-            viscosity: 0
-            steady_flow: [ 0, 0, 0 ]
-            inbound_delay: 0
-            inbound_rate: 0
-            inbound_loss: 0
-            outbound_delay: 0
-            outbound_rate: 0
-            outbound_loss: 0
-            source: 0.0.0.0/0
-            destination: 0.0.0.0/0
-            hsv: [ 0, 0, 0 ]
-            rgb: [ 0, 0, 0 ]
-            coef_b: 0
-            coef_d: 0
-            std_dev: 0
-            salt: 0.01
-            pepper: 0
         -
           id: 10
           name: "MultiCollider"
@@ -265,7 +265,7 @@ views:
     class: ImageView
     mounted: true
     state:
-      imageable_item: [ 3, "NoisyCamera" ]
+      imageable_item: [ 6, "FrontCamera" ]
   -
     id: 2
     plugin: Base
@@ -277,7 +277,7 @@ views:
     class: ItemTreeView
     mounted: true
     state:
-      expanded: [ 1, 2, 3, 5, 6, 7 ]
+      expanded: [ 1, 2, 3, 5, 6, 8 ]
   -
     id: 4
     plugin: Base

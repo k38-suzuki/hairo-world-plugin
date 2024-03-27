@@ -8,11 +8,10 @@
 #include <cnoid/ItemManager>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
-#include <mutex>
-#include "VisualEffects.h"
-#include "ImageGenerator.h"
-#include "NoisyCamera.h"
 #include <cnoid/MultiColliderItem>
+#include <mutex>
+#include "VFXConverter.h"
+#include "NoisyCamera.h"
 #include "gettext.h"
 
 using namespace std;
@@ -33,7 +32,7 @@ public:
     ItemList<MultiColliderItem> colliders;
     std::mutex convertMutex;
 
-    ImageGenerator generator;
+    VFXConverter converter;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void onPostDynamics();
@@ -130,60 +129,49 @@ bool VFXVisionSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulator
 
 void VFXVisionSimulatorItem::Impl::onPostDynamics()
 {
-    for(auto& camera : noisyCameras) {
-        Link* link = camera->link();
-        double hue = camera->hsv()[0];
-        double saturation = camera->hsv()[1];
-        double value = camera->hsv()[2];
-        double red = camera->rgb()[0];
-        double green = camera->rgb()[1];
-        double blue = camera->rgb()[2];
-        double coefB = camera->coefB();
-        double coefD = camera->coefD();
-        double stdDev = camera->stdDev();
-        double salt = camera->salt();
-        double pepper = camera->pepper();
+    // for(auto& camera : noisyCameras) {
+    //     Link* link = camera->link();
+    //     double hue = camera->hsv()[0];
+    //     double saturation = camera->hsv()[1];
+    //     double value = camera->hsv()[2];
+    //     double red = camera->rgb()[0];
+    //     double green = camera->rgb()[1];
+    //     double blue = camera->rgb()[2];
+    //     double coef_b = camera->coefB();
+    //     double coef_d = camera->coefD();
+    //     double std_dev = camera->stdDev();
+    //     double salt = camera->salt();
+    //     double pepper = camera->pepper();
 
-        for(auto& collider : colliders) {
-            if(collision(collider, link->T().translation())) {
-                hue = collider->hsv()[0];
-                saturation = collider->hsv()[1];
-                value = collider->hsv()[2];
-                red = collider->rgb()[0];
-                green = collider->rgb()[1];
-                blue = collider->rgb()[2];
-                coefB = collider->coefB();
-                coefD = collider->coefD();
-                stdDev = collider->stdDev();
-                salt = collider->salt();
-                pepper = collider->pepper();
-            }
-        }
+    //     for(auto& collider : colliders) {
+    //         if(collision(collider, link->T().translation())) {
+    //             hue = collider->hsv()[0];
+    //             saturation = collider->hsv()[1];
+    //             value = collider->hsv()[2];
+    //             red = collider->rgb()[0];
+    //             green = collider->rgb()[1];
+    //             blue = collider->rgb()[2];
+    //             coef_b = collider->coefB();
+    //             coef_d = collider->coefD();
+    //             std_dev = collider->stdDev();
+    //             salt = collider->salt();
+    //             pepper = collider->pepper();
+    //         }
+    //     }
 
-        {
-            std::lock_guard<std::mutex> lock(convertMutex);
-            Image image = *camera->sharedImage();
-
-            // convert image
-            if(hue > 0.0 || saturation > 0.0 || value > 0.0) {
-                generator.hsv(image, hue, saturation, value);
-            }
-            if(red > 0.0 || green > 0.0 || blue > 0.0) {
-                generator.rgb(image, red, green, blue);
-            }
-            if(stdDev > 0.0) {
-                generator.gaussianNoise(image, stdDev);
-            }
-            if(salt > 0.0 || pepper > 0.0) {
-                generator.saltPepperNoise(image, salt, pepper);
-            }
-
-            if(!image.empty()) {
-                std::shared_ptr<Image> sharedImage = std::make_shared<Image>(image);
-                camera->setImage(sharedImage);
-            }
-        }
-    }
+    //     {
+    //         std::lock_guard<std::mutex> lock(convertMutex);
+    //         std::shared_ptr<Image> image = std::make_shared<Image>(*camera->sharedImage());
+    //         converter.initialize(image->width(), image->height());
+    //         converter.hsv(image.get(), hue, saturation, value);
+    //         converter.rgb(image.get(), red, green, blue);
+    //         converter.gaussian_noise(image.get(), std_dev);
+    //         converter.salt(image.get(), salt);
+    //         converter.pepper(image.get(), pepper);
+    //         converter.barrel_distortion(image.get(), coef_b, coef_d);
+    //         camera->setImage(image);
+    //     }
+    // }
 
     for(auto& camera : cameras) {
         Link* link = camera->link();
@@ -193,13 +181,11 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
         double red = 0.0;
         double green = 0.0;
         double blue = 0.0;
-        double coefB = 0.0;
-        double coefD = 0.0;
-        double stdDev = 0.0;
+        double coef_b = 0.0;
+        double coef_d = 1.0;
+        double std_dev = 0.0;
         double salt = 0.0;
         double pepper = 0.0;
-        bool flipped = false;
-        VisualEffects::FilterType filterType = VisualEffects::NO_FILTER;
 
         for(auto& collider : colliders) {
             if(collision(collider, link->T().translation())) {
@@ -209,9 +195,9 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
                 red = collider->rgb()[0];
                 green = collider->rgb()[1];
                 blue = collider->rgb()[2];
-                coefB = collider->coefB();
-                coefD = collider->coefD();
-                stdDev = collider->stdDev();
+                coef_b = collider->coefB();
+                coef_d = collider->coefD();
+                std_dev = collider->stdDev();
                 salt = collider->salt();
                 pepper = collider->pepper();
             }
@@ -219,29 +205,15 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
 
         {
             std::lock_guard<std::mutex> lock(convertMutex);
-            Image image = *camera->sharedImage();
-
-            // convert image
-            if(hue > 0.0 || saturation > 0.0 || value > 0.0) {
-                generator.hsv(image, hue, saturation, value);
-            }
-            if(red > 0.0 || green > 0.0 || blue > 0.0) {
-                generator.rgb(image, red, green, blue);
-            }
-            if(stdDev > 0.0) {
-                generator.gaussianNoise(image, stdDev);
-            }
-            if(salt > 0.0 || pepper > 0.0) {
-                generator.saltPepperNoise(image, salt, pepper);
-            }
-            if(coefB < 0.0 || coefD > 1.0) {
-                generator.barrelDistortion(image, coefB, coefD);
-            }
-
-            if(!image.empty()) {
-                std::shared_ptr<Image> sharedImage = std::make_shared<Image>(image);
-                camera->setImage(sharedImage);
-            }
+            std::shared_ptr<Image> image = std::make_shared<Image>(*camera->sharedImage());
+            converter.initialize(image->width(), image->height());
+            // converter.hsv(image.get(), hue, saturation, value);
+            // converter.rgb(image.get(), red, green, blue);
+            // converter.gaussian_noise(image.get(), std_dev);
+            converter.salt(image.get(), salt);
+            converter.pepper(image.get(), pepper);
+            converter.barrel_distortion(image.get(), coef_b, coef_d);
+            camera->setImage(image);
         }
     }
 }

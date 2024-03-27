@@ -1,22 +1,25 @@
 set(sources
-  VisualEffects.cpp
   ImageGenerator.cpp
   NoisyCamera.cpp
-  VFXVisionSimulatorItem.cpp
+  VFXConverter.cpp
   VFXPlugin.cpp
+  VFXVisionSimulatorItem.cpp
+  VisualEffects.cpp
 )
 
 set(headers
-  VisualEffects.h
   ImageGenerator.h
   NoisyCamera.h
+  VFXConverter.h
   VFXVisionSimulatorItem.h
+  VisualEffects.h
   exportdecl.h
 )
 
 choreonoid_make_header_public(VisualEffects.h)
 choreonoid_make_header_public(ImageGenerator.h)
 choreonoid_make_header_public(NoisyCamera.h)
+choreonoid_make_header_public(VFXConverter.h)
 
 set(target CnoidVFXPlugin)
 make_gettext_mofiles(${target} mofiles)

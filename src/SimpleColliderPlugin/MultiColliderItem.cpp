@@ -147,25 +147,25 @@ void MultiColliderItem::doPutProperties(PutPropertyFunction& putProperty)
                     });
         break;
     case VFX:
-        putProperty(_("HSV"), format("{0:.3g} {1:.3g} {2:.3g}", hsv().x(), hsv().y(), hsv().z()),
-                    [this](const string& text){
-                        Vector3 c;
-                        if(toVector3(text, c)) {
-                            setHsv(c);
-                            return true;
-                        }
-                        return false;
-                    });
+        // putProperty(_("HSV"), format("{0:.3g} {1:.3g} {2:.3g}", hsv().x(), hsv().y(), hsv().z()),
+        //             [this](const string& text){
+        //                 Vector3 c;
+        //                 if(toVector3(text, c)) {
+        //                     setHsv(c);
+        //                     return true;
+        //                 }
+        //                 return false;
+        //             });
 
-        putProperty(_("RGB"),  format("{0:.3g} {1:.3g} {2:.3g}", rgb().x(), rgb().y(), rgb().z()),
-                    [this](const string& text){
-                        Vector3 c;
-                        if(toVector3(text, c)) {
-                            setRgb(c);
-                            return true;                        
-                        }
-                        return false;
-                    });
+        // putProperty(_("RGB"),  format("{0:.3g} {1:.3g} {2:.3g}", rgb().x(), rgb().y(), rgb().z()),
+        //             [this](const string& text){
+        //                 Vector3 c;
+        //                 if(toVector3(text, c)) {
+        //                     setRgb(c);
+        //                     return true;                        
+        //                 }
+        //                 return false;
+        //             });
 
         putProperty.min(-1.0).max(0.0)(_("coef B"), coefB(),
                     [this](double value){
@@ -173,17 +173,17 @@ void MultiColliderItem::doPutProperties(PutPropertyFunction& putProperty)
                         return true;
                     });
 
-        putProperty.min(1.0).max(32.0)(_("coef D"), coefD(),
-                    [this](double value){
-                        setCoefD(value);
-                        return true;
-                    });
+        // putProperty.min(1.0).max(32.0)(_("coef D"), coefD(),
+        //             [this](double value){
+        //                 setCoefD(value);
+        //                 return true;
+        //             });
 
-        putProperty.min(0.0).max(1.0)(_("std dev"), stdDev(),
-                    [this](double value){
-                        setStdDev(value);    
-                        return true;
-                    });
+        // putProperty.min(0.0).max(1.0)(_("std dev"), stdDev(),
+        //             [this](double value){
+        //                 setStdDev(value);    
+        //                 return true;
+        //             });
 
         putProperty.min(0.0).max(1.0)(_("salt"), salt(),
                     [this](double value){
