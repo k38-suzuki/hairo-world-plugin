@@ -31,7 +31,6 @@ public:
     Impl(VFXVisionSimulatorItem* self, const Impl& org);
 
     DeviceList<Camera> cameras;
-    DeviceList<NoisyCamera> noisyCameras;
     ItemList<MultiColliderItem> colliders;
     enum DynamicsId { SALT_ONLY, ALL_PROCESS };
     Selection dynamicsSelection;
@@ -67,7 +66,6 @@ VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self)
     : self(self)
 {
     cameras.clear();
-    noisyCameras.clear();
     colliders.clear();
     dynamicsSelection.setSymbol(SALT_ONLY, N_("Salt only"));
     dynamicsSelection.setSymbol(ALL_PROCESS, N_("All process"));
@@ -87,7 +85,6 @@ VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self, const Impl& org
     : self(self)
 {
     cameras.clear();
-    noisyCameras.clear();
     colliders.clear();
     dynamicsSelection = org.dynamicsSelection;
 }
@@ -111,14 +108,12 @@ bool VFXVisionSimulatorItem::initializeSimulation(SimulatorItem* simulatorItem)
 bool VFXVisionSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     cameras.clear();
-    noisyCameras.clear();
     colliders.clear();
 
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
     for(auto& simBody : simBodies) {
         Body* body = simBody->body();
         cameras << body->devices();
-        noisyCameras << body->devices();
     }
 
     WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
@@ -131,7 +126,7 @@ bool VFXVisionSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulator
         }
     }
 
-    if(cameras.size() || noisyCameras.size()) {
+    if(cameras.size() > 0) {
         switch(dynamicsSelection.which()) {
         case SALT_ONLY:
                 simulatorItem->addPostDynamicsFunction([&](){ onPostDynamics(); });
@@ -152,31 +147,16 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
 {
     for(auto& camera : cameras) {
         Link* link = camera->link();
-        double hue = 0.0;
-        double saturation = 0.0;
-        double value = 0.0;
-        double red = 0.0;
-        double green = 0.0;
-        double blue = 0.0;
-        double coef_b = 0.0;
-        double coef_d = 1.0;
-        double std_dev = 0.0;
         double salt = 0.0;
-        double pepper = 0.0;
+
+        NoisyCamera* noisyCamera = dynamic_cast<NoisyCamera*>(camera.get());
+        if(noisyCamera) {
+            salt = noisyCamera->salt();
+        }
 
         for(auto& collider : colliders) {
             if(collision(collider, link->T().translation())) {
-                hue = collider->hsv()[0];
-                saturation = collider->hsv()[1];
-                value = collider->hsv()[2];
-                red = collider->rgb()[0];
-                green = collider->rgb()[1];
-                blue = collider->rgb()[2];
-                coef_b = collider->coefB();
-                coef_d = collider->coefD();
-                std_dev = collider->stdDev();
                 salt = collider->salt();
-                pepper = collider->pepper();
             }
         }
 
@@ -184,8 +164,9 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
             std::lock_guard<std::mutex> lock(convertMutex);
             std::shared_ptr<Image> image = std::make_shared<Image>(*camera->sharedImage());
             converter.initialize(image->width(), image->height());
-            converter.salt(image.get(), salt);
-            converter.pepper(image.get(), pepper);
+            if(salt > 0.0) {
+                converter.salt(image.get(), salt);
+            }
             camera->setImage(image);
         }
     }
@@ -194,50 +175,6 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
 
 void VFXVisionSimulatorItem::Impl::onPostDynamics2()
 {
-    for(auto& camera : noisyCameras) {
-        Link* link = camera->link();
-        double hue = camera->hsv()[0];
-        double saturation = camera->hsv()[1];
-        double value = camera->hsv()[2];
-        double red = camera->rgb()[0];
-        double green = camera->rgb()[1];
-        double blue = camera->rgb()[2];
-        double coef_b = camera->coefB();
-        double coef_d = camera->coefD();
-        double std_dev = camera->stdDev();
-        double salt = camera->salt();
-        double pepper = camera->pepper();
-
-        for(auto& collider : colliders) {
-            if(collision(collider, link->T().translation())) {
-                hue = collider->hsv()[0];
-                saturation = collider->hsv()[1];
-                value = collider->hsv()[2];
-                red = collider->rgb()[0];
-                green = collider->rgb()[1];
-                blue = collider->rgb()[2];
-                coef_b = collider->coefB();
-                coef_d = collider->coefD();
-                std_dev = collider->stdDev();
-                salt = collider->salt();
-                pepper = collider->pepper();
-            }
-        }
-
-        {
-            std::lock_guard<std::mutex> lock(convertMutex);
-            std::shared_ptr<Image> image = std::make_shared<Image>(*camera->sharedImage());
-            converter.initialize(image->width(), image->height());
-            converter.hsv(image.get(), hue, saturation, value);
-            converter.rgb(image.get(), red, green, blue);
-            converter.gaussian_noise(image.get(), std_dev);
-            converter.salt(image.get(), salt);
-            converter.pepper(image.get(), pepper);
-            converter.barrel_distortion(image.get(), coef_b, coef_d);
-            camera->setImage(image);
-        }
-    }
-
     for(auto& camera : cameras) {
         Link* link = camera->link();
         double hue = 0.0;
@@ -252,6 +189,21 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics2()
         double salt = 0.0;
         double pepper = 0.0;
 
+        NoisyCamera* noisyCamera = dynamic_cast<NoisyCamera*>(camera.get());
+        if(noisyCamera) {
+            hue = noisyCamera->hsv()[0];
+            saturation = noisyCamera->hsv()[1];
+            value = noisyCamera->hsv()[2];
+            red = noisyCamera->rgb()[0];
+            green = noisyCamera->rgb()[1];
+            blue = noisyCamera->rgb()[2];
+            coef_b = noisyCamera->coefB();
+            coef_d = noisyCamera->coefD();
+            std_dev = noisyCamera->stdDev();
+            salt = noisyCamera->salt();
+            pepper = noisyCamera->pepper();
+        }
+
         for(auto& collider : colliders) {
             if(collision(collider, link->T().translation())) {
                 hue = collider->hsv()[0];
@@ -272,12 +224,24 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics2()
             std::lock_guard<std::mutex> lock(convertMutex);
             std::shared_ptr<Image> image = std::make_shared<Image>(*camera->sharedImage());
             converter.initialize(image->width(), image->height());
-            converter.hsv(image.get(), hue, saturation, value);
-            converter.rgb(image.get(), red, green, blue);
-            converter.gaussian_noise(image.get(), std_dev);
-            converter.salt(image.get(), salt);
-            converter.pepper(image.get(), pepper);
-            converter.barrel_distortion(image.get(), coef_b, coef_d);
+            if(hue > 0.0 || saturation > 0.0 || value > 0.0) {
+                converter.hsv(image.get(), hue, saturation, value);
+            }
+            if(red > 0.0 || green > 0.0 || blue > 0.0) {
+                converter.rgb(image.get(), red, green, blue);
+            }
+            if(std_dev > 0.0) {
+                converter.gaussian_noise(image.get(), std_dev);
+            }
+            if(salt > 0.0) {
+                converter.salt(image.get(), salt);
+            }
+            if(pepper > 0.0) {
+                converter.pepper(image.get(), pepper);
+            }
+            if(coef_b < 0.0 || coef_d > 1.0) {
+                converter.barrel_distortion(image.get(), coef_b, coef_d);
+            }
             camera->setImage(image);
         }
     }
