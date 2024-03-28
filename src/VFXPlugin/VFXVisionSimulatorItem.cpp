@@ -32,7 +32,7 @@ public:
 
     DeviceList<Camera> cameras;
     ItemList<MultiColliderItem> colliders;
-    enum DynamicsId { SALT_ONLY, RANDOM_MOSAIC, ALL_PROCESS };
+    enum DynamicsId { RANDOM_SALT_ONLY, RANDOM_MOSAIC_ONLY, ALL_PROCESS };
     Selection dynamicsSelection;
     std::mutex convertMutex;
 
@@ -68,10 +68,10 @@ VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self)
 {
     cameras.clear();
     colliders.clear();
-    dynamicsSelection.setSymbol(SALT_ONLY, N_("Salt only"));
-    dynamicsSelection.setSymbol(RANDOM_MOSAIC, N_("Random mosaic"));
+    dynamicsSelection.setSymbol(RANDOM_SALT_ONLY, N_("Random salt only"));
+    dynamicsSelection.setSymbol(RANDOM_MOSAIC_ONLY, N_("Random mosaic only"));
     dynamicsSelection.setSymbol(ALL_PROCESS, N_("All process"));
-    dynamicsSelection.select(SALT_ONLY);
+    dynamicsSelection.select(RANDOM_SALT_ONLY);
 }
 
 
@@ -130,10 +130,10 @@ bool VFXVisionSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulator
 
     if(cameras.size() > 0) {
         switch(dynamicsSelection.which()) {
-        case SALT_ONLY:
+        case RANDOM_SALT_ONLY:
                 simulatorItem->addPostDynamicsFunction([&](){ onPostDynamics(); });
             break;
-        case RANDOM_MOSAIC:
+        case RANDOM_MOSAIC_ONLY:
                 simulatorItem->addPostDynamicsFunction([&](){ onPostDynamics2(); });
             break;
         case ALL_PROCESS:
@@ -153,15 +153,18 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
     for(auto& camera : cameras) {
         Link* link = camera->link();
         double salt = 0.0;
+        double salt_rate = 1.0;
 
         NoisyCamera* noisyCamera = dynamic_cast<NoisyCamera*>(camera.get());
         if(noisyCamera) {
             salt = noisyCamera->salt();
+            salt_rate = noisyCamera->saltRate();
         }
 
         for(auto& collider : colliders) {
             if(collision(collider, link->T().translation())) {
                 salt = collider->salt();
+                salt_rate = collider->saltRate();
             }
         }
 
@@ -169,8 +172,10 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
             std::lock_guard<std::mutex> lock(convertMutex);
             std::shared_ptr<Image> image = std::make_shared<Image>(*camera->sharedImage());
             converter.initialize(image->width(), image->height());
-            if(salt > 0.0) {
-                converter.salt(image.get(), salt);
+            if(salt_rate > 0.0) {
+                if(salt > 0.0) {
+                    converter.random_salt(image.get(), salt, salt_rate);
+                }
             }
             camera->setImage(image);
         }
@@ -182,18 +187,18 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics2()
 {
     for(auto& camera : cameras) {
         Link* link = camera->link();
-        double mosaic = 0.0;
+        double mosaic_rate = 1.0;
         int kernel = 16;
 
         NoisyCamera* noisyCamera = dynamic_cast<NoisyCamera*>(camera.get());
         if(noisyCamera) {
-            mosaic = noisyCamera->mosaic();
+            mosaic_rate = noisyCamera->mosaicRate();
             kernel = noisyCamera->kernel();
         }
 
         for(auto& collider : colliders) {
             if(collision(collider, link->T().translation())) {
-                mosaic = collider->mosaic();
+                mosaic_rate = collider->mosaicRate();
                 kernel = collider->kernel();
             }
         }
@@ -202,8 +207,8 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics2()
             std::lock_guard<std::mutex> lock(convertMutex);
             std::shared_ptr<Image> image = std::make_shared<Image>(*camera->sharedImage());
             converter.initialize(image->width(), image->height());
-            if(mosaic > 0.0) {
-                converter.random_mosaic(image.get(), mosaic, kernel);
+            if(mosaic_rate > 0.0) {
+                converter.random_mosaic(image.get(), mosaic_rate, kernel);
             }
             camera->setImage(image);
         }
@@ -225,8 +230,10 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics3()
         double coef_d = 1.0;
         double std_dev = 0.0;
         double salt = 0.0;
+        double salt_rate = 1.0;
         double pepper = 0.0;
-        double mosaic = 0.0;
+        double pepper_rate = 1.0;
+        double mosaic_rate = 1.0;
         int kernel = 16;
 
         NoisyCamera* noisyCamera = dynamic_cast<NoisyCamera*>(camera.get());
@@ -241,8 +248,10 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics3()
             coef_d = noisyCamera->coefD();
             std_dev = noisyCamera->stdDev();
             salt = noisyCamera->salt();
+            salt_rate = noisyCamera->saltRate();
             pepper = noisyCamera->pepper();
-            mosaic = noisyCamera->mosaic();
+            pepper_rate = noisyCamera->pepperRate();
+            mosaic_rate = noisyCamera->mosaicRate();
             kernel = noisyCamera->kernel();
         }
 
@@ -258,8 +267,10 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics3()
                 coef_d = collider->coefD();
                 std_dev = collider->stdDev();
                 salt = collider->salt();
+                salt_rate = collider->saltRate();
                 pepper = collider->pepper();
-                mosaic = collider->mosaic();
+                pepper_rate = collider->pepperRate();
+                mosaic_rate = collider->mosaicRate();
                 kernel = collider->kernel();
             }
         }
@@ -277,17 +288,21 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics3()
             if(std_dev > 0.0) {
                 converter.gaussian_noise(image.get(), std_dev);
             }
-            if(salt > 0.0) {
-                converter.salt(image.get(), salt);
+            if(salt_rate > 0.0) {
+                if(salt > 0.0) {
+                    converter.random_salt(image.get(), salt, salt_rate);
+                }
             }
-            if(pepper > 0.0) {
-                converter.pepper(image.get(), pepper);
+            if(pepper_rate > 0.0) {
+                if(pepper > 0.0) {
+                    converter.random_pepper(image.get(), pepper, pepper_rate);
+                }
             }
             if(coef_b < 0.0 || coef_d > 1.0) {
                 converter.barrel_distortion(image.get(), coef_b, coef_d);
             }
-            if(mosaic > 0.0) {
-                converter.random_mosaic(image.get(), mosaic, kernel);
+            if(mosaic_rate > 0.0) {
+                converter.random_mosaic(image.get(), mosaic_rate, kernel);
             }
             camera->setImage(image);
         }

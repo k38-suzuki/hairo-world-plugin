@@ -158,6 +158,18 @@ msgstr "緑"
 msgid "blue"
 msgstr "青"
 
+msgid "salt rate"
+msgstr "白色ノイズの確率"
+
+msgid "pepper rate"
+msgstr "黒色ノイズの確率"
+
+msgid "mosaic rate"
+msgstr "モザイクの確率"
+
+msgid "kernel"
+msgstr "モザイクのサイズ"
+
 msgid "Name :"
 msgstr "名前 :"
 

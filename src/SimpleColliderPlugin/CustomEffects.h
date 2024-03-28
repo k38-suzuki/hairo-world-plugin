@@ -84,10 +84,14 @@ public:
     double stdDev() const { return std_dev_; }
     void setSalt(const double& salt) { salt_ = salt; }
     double salt() const { return salt_; }
+    void setSaltRate(const double& salt_rate) { salt_rate_ = salt_rate; }
+    double saltRate() const { return salt_rate_; }
     void setPepper(const double& pepper) { pepper_ = pepper; }
     double pepper() const { return pepper_; }
-    void setMosaic(const double& mosaic) { mosaic_ = mosaic; }
-    double mosaic() const { return mosaic_; }
+    void setPepperRate(const double& pepper_rate) { pepper_rate_ = pepper_rate; }
+    double pepperRate() const { return pepper_rate_; }
+    void setMosaicRate(const double& mosaic_rate) { mosaic_rate_ = mosaic_rate; }
+    double mosaicRate() const { return mosaic_rate_; }
     void setKernel(const int& kernel) { kernel_ = kernel; }
     int kernel() const { return kernel_; }
 
@@ -98,8 +102,10 @@ private:
     double coef_d_;
     double std_dev_;
     double salt_;
+    double salt_rate_;
     double pepper_;
-    double mosaic_;
+    double pepper_rate_;
+    double mosaic_rate_;
     int kernel_;
 };
 

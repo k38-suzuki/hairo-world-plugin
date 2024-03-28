@@ -4,10 +4,7 @@
 
 #include "ImageGenerator.h"
 #include <cnoid/MathUtil>
-#include <algorithm>
-#include <random>
 #include <vector>
-#include <QColor>
 
 using namespace std;
 using namespace cnoid;
@@ -40,10 +37,6 @@ public:
 
     Impl();
 
-    random_device seed_gen;
-    default_random_engine engine;
-    normal_distribution<> dist;
-
     void differentialFilter(Image& image, const double kernel[2][9]);
 };
 
@@ -58,177 +51,13 @@ ImageGenerator::ImageGenerator()
 
 ImageGenerator::Impl::Impl()
 {
-    std::default_random_engine engineImpl(seed_gen());
-    std::normal_distribution<> distImpl(0.0, 1.0);
-    engine = engineImpl;
-    dist = distImpl;
+
 }
 
 
 ImageGenerator::~ImageGenerator()
 {
     delete impl;
-}
-
-
-void ImageGenerator::barrelDistortion(Image& image, const double& m_coefb, const double& m_coefd)
-{
-    Image cloneImage;
-    cloneImage.setSize(image.width(), image.height(), image.numComponents());
-    int width = image.width();
-    int height = image.height();
-    int nc = image.numComponents();
-
-    double coefa = 0.0;
-    double coefb = m_coefb;
-    double coefc = 0.0;
-    double coefd = m_coefd - coefa - coefb - coefc;
-
-    for(int i = 0; i < width; i++) {
-        for(int j = 0; j < height; j++) {
-            int d = min(width, height) / 2;
-            double cntx = (width - 1) / 2.0;
-            double cnty = (height - 1) / 2.0;
-            double delx = (i - cntx) / d;
-            double dely = (j - cnty) / d;
-            double dstr = sqrt(delx * delx + dely * dely);
-            double srcr = (coefa * dstr * dstr * dstr + coefb * dstr * dstr + coefc * dstr + coefd) * dstr;
-            double fctr = abs(dstr / srcr);
-            double srcxd = cntx + (delx * fctr * d);
-            double srcyd = cnty + (dely * fctr * d);
-            int srcx = (int)srcxd;
-            int srcy = (int)srcyd;
-            if((srcx >= 0) && (srcy >= 0) && (srcx < width) && (srcy < height)) {
-                int index =  nc * (j * width + i);
-                for(int k = 0; k < nc; ++k) {
-                    cloneImage.pixels()[index + k] = image.pixels()[nc * (srcy * width + srcx) + k];
-                }
-            }
-        }
-    }
-    image = cloneImage;
-}
-
-
-void ImageGenerator::gaussianNoise(Image& image, const double& m_std_dev)
-{
-    image.setSize(image.width(), image.height(), image.numComponents());
-    int width = image.width();
-    int height = image.height();
-    int nc = image.numComponents();
-
-    for(int j = 0; j < height; ++j) {
-        for(int i = 0; i < width; ++i) {
-            int index = nc * (i + j * width);
-            double color = impl->dist(impl->engine) * m_std_dev * 255.0;
-            for(int k = 0; k < nc; ++k) {
-                int pixel = image.pixels()[index + k] + (int)color;
-                if(pixel > 255) {
-                    pixel = 255;
-                } else if(pixel < 0) {
-                    pixel = 0;
-                }
-                image.pixels()[index + k] = pixel;
-            }
-        }
-    }
-}
-
-
-void ImageGenerator::hsv(Image& image, const double& m_hue, const double& m_saturation, const double& m_value)
-{
-    image.setSize(image.width(), image.height(), image.numComponents());
-    int width = image.width();
-    int height = image.height();
-    int nc = image.numComponents();
-
-    for(int j = 0; j < height; ++j) {
-        for(int i = 0; i < width; ++i) {
-            int index = nc * (i + j * width);
-            int colors[] = { 0, 0, 0 };
-            for(int k = 0; k < nc; ++k) {
-                colors[k] = (int)image.pixels()[index + k];
-            }
-            QColor rgbColor = QColor::fromRgb(colors[0], colors[1], colors[2]);
-            int h = rgbColor.hue() + m_hue * 360.0;
-            int s = rgbColor.saturation() + m_saturation * 255.0;
-            int v = rgbColor.value() + m_value * 255.0;
-
-            if(h > 359) {
-                h -= 360;
-            } else if(h < 0) {
-                h = 0;
-            }
-
-            if(s > 255) {
-                s = 255;
-            } else if(s < 0) {
-                s = 0;
-            }
-
-            if(v > 255) {
-                v = 255;
-            } else if(v < 0) {
-                v = 0;
-            }
-
-            QColor hsvColor = QColor::fromHsv(h, s, v);
-            int rgb[] = { hsvColor.red(), hsvColor.green(), hsvColor.blue() };
-            for(int k = 0; k < nc; ++k) {
-                image.pixels()[index + k] = rgb[k];
-            }
-        }
-    }
-}
-
-
-void ImageGenerator::rgb(Image& image, const double& m_red, const double& m_green, const double& m_blue)
-{
-    image.setSize(image.width(), image.height(), image.numComponents());
-    int width = image.width();
-    int height = image.height();
-    int nc = image.numComponents();
-
-    double colors[] = { m_red * 255.0,  m_green * 255.0, m_blue * 255.0};
-    for(int j = 0; j < height; ++j) {
-        for(int i = 0; i < width; ++i) {
-            int index = nc * (i + j * width);
-            for(int k = 0; k < nc; ++k) {
-                int pixel = (double)image.pixels()[index + k] + colors[k];
-                if(pixel > 255) {
-                    pixel = 255;
-                } else if(pixel < 0) {
-                    pixel = 0;
-                }
-                image.pixels()[index + k] = pixel;
-            }
-        }
-    }
-}
-
-
-void ImageGenerator::saltPepperNoise(Image& image, const double& m_salt, const double& m_pepper)
-{
-    image.setSize(image.width(), image.height(), image.numComponents());
-    int width = image.width();
-    int height = image.height();
-    int nc = image.numComponents();
-
-    for(int j = 0; j < height; ++j) {
-        for(int i = 0; i < width; ++i) {
-            int index = nc * (i + j * width);
-            double salt = (double)(rand() % 101) / 100.0;
-            double pepper = (double)(rand() % 101) / 100.0;
-            for(int k = 0; k < nc; ++k) {
-                if(salt < m_salt) {
-                    image.pixels()[index + k] = 255;
-                }
-                if(pepper < m_pepper) {
-                    image.pixels()[index + k] = 0;
-                }
-            }
-        }
-    }
 }
 
 

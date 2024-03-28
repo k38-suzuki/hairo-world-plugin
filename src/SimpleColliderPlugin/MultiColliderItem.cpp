@@ -193,9 +193,33 @@ void MultiColliderItem::doPutProperties(PutPropertyFunction& putProperty)
                         return true;
                     });
 
+        putProperty.min(0.0).max(1.0)(_("salt rate"), saltRate(),
+                    [this](double value){
+                        setSaltRate(value);
+                        return true;
+                    });
+
         putProperty.min(0.0).max(1.0)(_("pepper"), pepper(),
                     [this](double value){
                         setPepper(value);
+                        return true;
+                    });
+
+        putProperty.min(0.0).max(1.0)(_("pepper rate"), pepperRate(),
+                    [this](double value){
+                        setPepperRate(value);
+                        return true;
+                    });
+
+        putProperty.min(0.0).max(1.0)(_("mosaic rate"), mosaicRate(),
+                    [this](double value){
+                        setMosaicRate(value);
+                        return true;
+                    });
+
+        putProperty.min(8.0).max(64.0)(_("kernel"), kernel(),
+                    [this](int value){
+                        setKernel(value);
                         return true;
                     });
         break;
@@ -234,7 +258,11 @@ bool MultiColliderItem::store(Archive& archive)
     archive.write("coef_d", coefD());
     archive.write("std_dev", stdDev());
     archive.write("salt", salt());
+    archive.write("salt_rate", saltRate());
     archive.write("pepper", pepper());
+    archive.write("pepper_rate", pepperRate());
+    archive.write("mosaic_rate", mosaicRate());
+    archive.write("kernel", kernel());
     return true;
 }
 
@@ -278,6 +306,11 @@ bool MultiColliderItem::restore(const Archive& archive)
     setCoefD(archive.get("coef_d", 1.0));
     setStdDev(archive.get("std_dev", 0.0));
     setSalt(archive.get("salt", 0.0));
+    setSaltRate(archive.get("salt_rate", 0.0));
     setPepper(archive.get("pepper", 0.0));
+    setPepperRate(archive.get("pepper_rate", 0.0));
+    setMosaicRate(archive.get("mosaic_rate", 0.0));
+    setKernel(archive.get("kernel", 16));
+
     return true;
 }

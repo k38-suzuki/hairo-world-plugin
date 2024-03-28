@@ -58,8 +58,10 @@ VFXEffects::VFXEffects()
     coef_d_ = 0.0;
     std_dev_ = 0.0;
     salt_ = 0.0;
+    salt_rate_ = 1.0;
     pepper_ = 0.0;
-    mosaic_ = 0.0;
+    pepper_rate_ = 1.0;
+    mosaic_rate_ = 1.0;
     kernel_ = 16;
 }
 
@@ -72,7 +74,9 @@ VFXEffects::VFXEffects(const VFXEffects& org)
     coef_d_ = org.coef_d_;
     std_dev_ = org.std_dev_;
     salt_ = org.salt_;
+    salt_rate_ = org.salt_rate_;
     pepper_ = org.pepper_;
-    mosaic_ = org.mosaic_;
+    pepper_rate_ = org.pepper_rate_;
+    mosaic_rate_ = org.mosaic_rate_;
     kernel_ = org.kernel_;
 }

@@ -72,7 +72,7 @@ void NoisyCamera::clearState()
 
 int NoisyCamera::stateSize() const
 {
-    return Camera::stateSize() + 13;
+    return Camera::stateSize() + 15;
 }
 
 
@@ -85,10 +85,12 @@ const double* NoisyCamera::readState(const double* buf)
     setCoefD(buf[7]);
     setStdDev(buf[8]);
     setSalt(buf[9]);
-    setPepper(buf[10]);
-    setMosaic(buf[11]);
-    setKernel(buf[12]);
-    return buf + 13;
+    setSaltRate(buf[10]);
+    setPepper(buf[11]);
+    setPepperRate(buf[12]);
+    setMosaicRate(buf[13]);
+    setKernel(buf[14]);
+    return buf + 15;
 }
 
 
@@ -101,10 +103,12 @@ double* NoisyCamera::writeState(double* out_buf) const
     out_buf[7] = coefD();
     out_buf[8] = stdDev();
     out_buf[9] = salt();
-    out_buf[10] = pepper();
-    out_buf[11] = mosaic();
-    out_buf[12] = kernel();
-    return out_buf + 13;
+    out_buf[10] = saltRate();
+    out_buf[11] = pepper();
+    out_buf[12] = pepperRate();
+    out_buf[13] = mosaicRate();
+    out_buf[14] = kernel();
+    return out_buf + 15;
 }
 
 
@@ -125,8 +129,10 @@ bool NoisyCamera::readSpecifications(const Mapping* info)
     setCoefD(info->get({ "coef_d", "coefD" }, 1.0));
     setStdDev(info->get({ "std_dev", "stdDev" }, 0.0));
     setSalt(info->get("salt", 0.0));
+    setSaltRate(info->get({ "salt_rate", "saltRate" }, 0.0));
     setPepper(info->get("pepper", 0.0));
-    setMosaic(info->get("mosaic", 0.0));
+    setPepperRate(info->get({ "pepper_rate", "pepperRate" }, 0.0));
+    setMosaicRate(info->get({ "mosaic_rate", "mosaicRate" }, 0.0));
     setKernel(info->get("kernel", 16));
 
     return true;
@@ -145,8 +151,10 @@ bool NoisyCamera::writeSpecifications(Mapping* info) const
     info->write("coef_d", coefD());
     info->write("std_dev", stdDev());
     info->write("salt", salt());
+    info->write("salt_rate", saltRate());
     info->write("pepper", pepper());
-    info->write("mosaic", mosaic());
+    info->write("pepper_rate", pepperRate());
+    info->write("mosaic_rate", mosaicRate());
     info->write("kernel", kernel());
 
     return true;
@@ -165,7 +173,11 @@ void NoisyCamera::copyNoisyCameraStateFrom(const NoisyCamera& other, bool doCopy
     setCoefD(other.coefD());
     setStdDev(other.stdDev());
     setSalt(other.salt());
+    setSaltRate(other.saltRate());
     setPepper(other.pepper());
+    setPepperRate(other.pepperRate());
+    setMosaicRate(other.mosaicRate());
+    setKernel(other.kernel());
 }
 
 

@@ -20,20 +20,14 @@ msgstr ""
 msgid "VFXVisionSimulatorItem"
 msgstr "VFXビジョンシミュレータ"
 
-msgid "Salt only"
+msgid "Random salt only"
 msgstr "白色ノイズのみ"
 
-msgid "Random mosaic"
-msgstr "ランダムモザイク"
+msgid "Random mosaic only"
+msgstr "モザイクのみ"
 
 msgid "All process"
 msgstr "全て"
 
 msgid "Dynamics type"
 msgstr "ダイナミクスの種類"
-
-msgid "mosaic rate"
-msgstr "モザイクの確率"
-
-msgid "mosaic kernel"
-msgstr "モザイクのサイズ"
