@@ -34,6 +34,8 @@ public:
     void hsv(Image* image, const double& hue, const double& saturation, const double& value);
     void gaussian_noise(Image* image, const double& std_dev);
     void barrel_distortion(Image* image, const double& coef_b, const double& coef_d);
+    void mosaic(Image* image, int kernel = 16);
+    void random_mosaic(Image* image, const double& rate, int kernel = 16);
 
 private:
     int width_;

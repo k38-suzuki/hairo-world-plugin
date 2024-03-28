@@ -120,9 +120,6 @@ void VFXConverter::black(Image* image)
 
 void VFXConverter::salt(Image* image, const double& rate)
 {
-    if(rate < 0.01 || rate > 1.0) {
-        return;
-    }
     image->setSize(width_, height_, 3);
     unsigned char* pixels = image->pixels();
 
@@ -140,9 +137,6 @@ void VFXConverter::salt(Image* image, const double& rate)
 
 void VFXConverter::pepper(Image* image, const double& rate)
 {
-    if(rate < 0.01 || rate > 1.0) {
-        return;
-    }
     image->setSize(width_, height_, 3);
     unsigned char* pixels = image->pixels();
 
@@ -160,10 +154,6 @@ void VFXConverter::pepper(Image* image, const double& rate)
 
 void VFXConverter::salt_pepper(Image* image, const double& rate1, const double& rate2)
 {
-    if(rate1 < 0.01 || rate1 > 1.0
-        || rate2 < 0.01 || rate2 > 1.0) {
-        return;
-    }
     image->setSize(width_, height_, 3);
     unsigned char* pixels = image->pixels();
 
@@ -185,9 +175,6 @@ void VFXConverter::salt_pepper(Image* image, const double& rate1, const double& 
 
 void VFXConverter::rgb(Image* image, const double& red, const double& green, const double& blue)
 {
-    if(fabs(red) > 1.0 || fabs(green) > 1.0 || fabs(blue) > 1.0) {
-        return;
-    }
     image->setSize(width_, height_, 3);
     unsigned char* pixels = image->pixels();
 
@@ -204,9 +191,6 @@ void VFXConverter::rgb(Image* image, const double& red, const double& green, con
 
 void VFXConverter::hsv(Image* image, const double& hue, const double& saturation, const double& value)
 {
-    if(fabs(hue) > 1.0 || fabs(saturation) > 1.0 || fabs(value) > 1.0) {
-        return;
-    }
     image->setSize(width_, height_, 3);
     unsigned char* pixels = image->pixels();
 
@@ -236,9 +220,6 @@ void VFXConverter::hsv(Image* image, const double& hue, const double& saturation
 
 void VFXConverter::gaussian_noise(Image* image, const double& std_dev)
 {
-    if(std_dev < 0.01 || std_dev > 1.0) {
-        return;
-    }
     image->setSize(width_, height_, 3);
     unsigned char* pixels = image->pixels();
 
@@ -256,10 +237,6 @@ void VFXConverter::gaussian_noise(Image* image, const double& std_dev)
 
 void VFXConverter::barrel_distortion(Image* image, const double& coef_b, const double& coef_d)
 {
-    if(coef_b > -0.01 || coef_b < -1.0
-        || coef_d < 1.0 || coef_d > 32.0) {
-        return;
-    }
     image->setSize(width_, height_, 3);
     unsigned char* pixels = image->pixels();
 
@@ -294,6 +271,59 @@ void VFXConverter::barrel_distortion(Image* image, const double& coef_b, const d
                 pix[2] = pix2[2];
             }
         }
+    }
+}
+
+
+void VFXConverter::mosaic(Image* image, int kernel)
+{
+    image->setSize(width_, height_, 3);
+    unsigned char* pixels = image->pixels();
+
+    std::shared_ptr<Image> srcImage = std::make_shared<Image>(*image);
+    unsigned char* src = srcImage->pixels();
+
+    int r, g, b;
+    int margin_x, margin_y;
+
+    for(int j = 0; j < height_; j += kernel) {
+        for(int i = 0; i < width_; i += kernel) {
+            r = g = b = 0;
+            for(int y = 0; y < kernel; ++y) {
+                if(height_ <= j + y) {
+                    break;
+                }
+                margin_y = y + 1;
+                for(int x = 0; x < kernel; ++x) {
+                    if(width_ <= i + x) {
+                        break;
+                    }
+                    margin_x = x + 1;
+                    unsigned char* pix2 = &src[((i + x) + (j + y) * width_) * 3];
+                    r += pix2[0];
+                    g += pix2[1];
+                    b += pix2[2];
+                }
+            }
+
+            for(int y = 0; y < margin_y; ++y) {
+                for(int x = 0; x < margin_x; ++x) {
+                    unsigned char* pix = &pixels[((i + x) + (j + y) * width_) * 3];
+                    pix[0] = r / (margin_x * margin_y);
+                    pix[1] = g / (margin_x * margin_y);
+                    pix[2] = b / (margin_x * margin_y);
+                }
+            }
+        }
+    }
+}
+
+
+void VFXConverter::random_mosaic(Image* image, const double& rate, int kernel)
+{
+    double r = (double)(rand(0, 100)) / 100.0;
+    if(r < rate) {
+        mosaic(image, kernel);
     }
 }
 
