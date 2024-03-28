@@ -72,7 +72,7 @@ void NoisyCamera::clearState()
 
 int NoisyCamera::stateSize() const
 {
-    return Camera::stateSize() + 11;
+    return Camera::stateSize() + 13;
 }
 
 
@@ -86,7 +86,9 @@ const double* NoisyCamera::readState(const double* buf)
     setStdDev(buf[8]);
     setSalt(buf[9]);
     setPepper(buf[10]);
-    return buf + 11;
+    setMosaic(buf[11]);
+    setKernel(buf[12]);
+    return buf + 13;
 }
 
 
@@ -100,7 +102,9 @@ double* NoisyCamera::writeState(double* out_buf) const
     out_buf[8] = stdDev();
     out_buf[9] = salt();
     out_buf[10] = pepper();
-    return out_buf + 11;
+    out_buf[11] = mosaic();
+    out_buf[12] = kernel();
+    return out_buf + 13;
 }
 
 
@@ -122,6 +126,8 @@ bool NoisyCamera::readSpecifications(const Mapping* info)
     setStdDev(info->get({ "std_dev", "stdDev" }, 0.0));
     setSalt(info->get("salt", 0.0));
     setPepper(info->get("pepper", 0.0));
+    setMosaic(info->get("mosaic", 0.0));
+    setKernel(info->get("kernel", 16));
 
     return true;
 }
@@ -140,6 +146,8 @@ bool NoisyCamera::writeSpecifications(Mapping* info) const
     info->write("std_dev", stdDev());
     info->write("salt", salt());
     info->write("pepper", pepper());
+    info->write("mosaic", mosaic());
+    info->write("kernel", kernel());
 
     return true;
 }

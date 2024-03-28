@@ -36,9 +36,6 @@ public:
     Selection dynamicsSelection;
     std::mutex convertMutex;
 
-    double mosaic_rate;
-    int mosaic_kernel;
-
     VFXConverter converter;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
@@ -75,8 +72,6 @@ VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self)
     dynamicsSelection.setSymbol(RANDOM_MOSAIC, N_("Random mosaic"));
     dynamicsSelection.setSymbol(ALL_PROCESS, N_("All process"));
     dynamicsSelection.select(SALT_ONLY);
-    mosaic_rate = 0.0;
-    mosaic_kernel = 16;
 }
 
 
@@ -94,8 +89,6 @@ VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self, const Impl& org
     cameras.clear();
     colliders.clear();
     dynamicsSelection = org.dynamicsSelection;
-    mosaic_rate = org.mosaic_rate;
-    mosaic_kernel = org.mosaic_kernel;
 }
 
 
@@ -189,10 +182,19 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics2()
 {
     for(auto& camera : cameras) {
         Link* link = camera->link();
+        double mosaic = 0.0;
+        int kernel = 16;
+
+        NoisyCamera* noisyCamera = dynamic_cast<NoisyCamera*>(camera.get());
+        if(noisyCamera) {
+            mosaic = noisyCamera->mosaic();
+            kernel = noisyCamera->kernel();
+        }
 
         for(auto& collider : colliders) {
             if(collision(collider, link->T().translation())) {
-
+                mosaic = collider->mosaic();
+                kernel = collider->kernel();
             }
         }
 
@@ -200,8 +202,8 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics2()
             std::lock_guard<std::mutex> lock(convertMutex);
             std::shared_ptr<Image> image = std::make_shared<Image>(*camera->sharedImage());
             converter.initialize(image->width(), image->height());
-            if(mosaic_rate > 0.0) {
-                converter.random_mosaic(image.get(), mosaic_rate, mosaic_kernel);
+            if(mosaic > 0.0) {
+                converter.random_mosaic(image.get(), mosaic, kernel);
             }
             camera->setImage(image);
         }
@@ -224,6 +226,8 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics3()
         double std_dev = 0.0;
         double salt = 0.0;
         double pepper = 0.0;
+        double mosaic = 0.0;
+        int kernel = 16;
 
         NoisyCamera* noisyCamera = dynamic_cast<NoisyCamera*>(camera.get());
         if(noisyCamera) {
@@ -238,6 +242,8 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics3()
             std_dev = noisyCamera->stdDev();
             salt = noisyCamera->salt();
             pepper = noisyCamera->pepper();
+            mosaic = noisyCamera->mosaic();
+            kernel = noisyCamera->kernel();
         }
 
         for(auto& collider : colliders) {
@@ -253,6 +259,8 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics3()
                 std_dev = collider->stdDev();
                 salt = collider->salt();
                 pepper = collider->pepper();
+                mosaic = collider->mosaic();
+                kernel = collider->kernel();
             }
         }
 
@@ -277,6 +285,9 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics3()
             }
             if(coef_b < 0.0 || coef_d > 1.0) {
                 converter.barrel_distortion(image.get(), coef_b, coef_d);
+            }
+            if(mosaic > 0.0) {
+                converter.random_mosaic(image.get(), mosaic, kernel);
             }
             camera->setImage(image);
         }
@@ -311,17 +322,6 @@ void VFXVisionSimulatorItem::doPutProperties(PutPropertyFunction& putProperty)
     GLVisionSimulatorItem::doPutProperties(putProperty);
     putProperty(_("Dynamics type"), impl->dynamicsSelection,
                 [this](int which){ return impl->setDynamicsType(which); });
-
-    switch(impl->dynamicsSelection.which()) {
-    case VFXVisionSimulatorItem::Impl::SALT_ONLY:
-        break;
-    case VFXVisionSimulatorItem::Impl::RANDOM_MOSAIC:
-        putProperty.min(0.0).max(1.0)(_("mosaic rate"),impl->mosaic_rate , changeProperty(impl->mosaic_rate));
-        putProperty.min(8).max(64)(_("mosaic kernel"),impl->mosaic_kernel , changeProperty(impl->mosaic_kernel));    
-        break;
-    case VFXVisionSimulatorItem::Impl::ALL_PROCESS:
-        break;
-    }
 }
 
 
@@ -331,8 +331,6 @@ bool VFXVisionSimulatorItem::store(Archive& archive)
         return false;
     }
     archive.write("dynamics_type", impl->dynamicsSelection.selectedSymbol());
-    archive.write("mosaic_rate", impl->mosaic_rate);
-    archive.write("mosaic_kernel", impl->mosaic_kernel);
     return true;
 }
 
@@ -346,7 +344,5 @@ bool VFXVisionSimulatorItem::restore(const Archive& archive)
     if(archive.read("dynamics_type", dynamicsId)) {
         impl->dynamicsSelection.select(dynamicsId);
     }
-    archive.read("mosaic_rate", impl->mosaic_rate);
-    archive.read("mosaic_kernel", impl->mosaic_kernel);
     return true;
 }

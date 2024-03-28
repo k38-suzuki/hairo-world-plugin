@@ -86,6 +86,10 @@ public:
     double salt() const { return salt_; }
     void setPepper(const double& pepper) { pepper_ = pepper; }
     double pepper() const { return pepper_; }
+    void setMosaic(const double& mosaic) { mosaic_ = mosaic; }
+    double mosaic() const { return mosaic_; }
+    void setKernel(const int& kernel) { kernel_ = kernel; }
+    int kernel() const { return kernel_; }
 
 private:
     Vector3 hsv_;
@@ -95,6 +99,8 @@ private:
     double std_dev_;
     double salt_;
     double pepper_;
+    double mosaic_;
+    int kernel_;
 };
 
 }
