@@ -282,7 +282,7 @@ void windowsPosition(const uint32_t width, const uint32_t height,
 vector<DirClippingInfo> getDirectionsClipping(
         const GammaData& gammaData, const vector<double>& energyFilter,
         const Vector3d& camEyeVec, const Vector3d& camUpVec,
-        const double& fov,  const double aspectRatio,
+        const double& fov, const double aspectRatio,
         const double& nearClip, const double& farClip)
 {
     //視野変換に使用

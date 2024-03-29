@@ -16,7 +16,7 @@ class CNOID_EXPORT DoseMeter : public Device
 {
 public:
     DoseMeter();
-    DoseMeter(const DoseMeter& org,  bool copyStateOnly = false);
+    DoseMeter(const DoseMeter& org, bool copyStateOnly = false);
     virtual const char* typeName() const override;
     void copyStateFrom(const DoseMeter& other);
     virtual void copyStateFrom(const DeviceState& other) override;

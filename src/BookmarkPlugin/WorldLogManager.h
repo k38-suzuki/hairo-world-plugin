@@ -26,11 +26,12 @@ protected:
     virtual void onItemDoubleClicked(std::string& text) override;
 
 private:
+    void onSimulationAboutToStart(SimulatorItem* simulatorItem);
+    void onPlaybackStopped(double time, bool isStoppedManually);
+
     CheckBox* saveCheck;
     std::string project_filename;
     bool is_started;
-    void onSimulationAboutToStart(SimulatorItem* simulatorItem);
-    void onPlaybackStopped(double time, bool isStoppedManually);
 };
 
 }

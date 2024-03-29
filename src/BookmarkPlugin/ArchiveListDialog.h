@@ -31,16 +31,16 @@ protected:
     virtual void onItemDoubleClicked(std::string& text);
 
 private:
+    void onButtonClicked();
+    void onItemDoubleClicked(QListWidgetItem* item);
+    void clearList();
+    void storeList();
+
     QListWidget* listWidget;
     QDialogButtonBox* buttonBox;
     std::string archive_key_;
     int max_items;
     QHBoxLayout* hbox;
-
-    void onButtonClicked();
-    void onItemDoubleClicked(QListWidgetItem* item);
-    void clearList();
-    void storeList();
 };
 
 }

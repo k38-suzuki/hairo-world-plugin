@@ -94,7 +94,7 @@ void WorldLogManager::onItemDoubleClicked(string& text)
         string extension = path.extension().string();
         if(extension == ".cnoid") {
             ProjectManager* pm = ProjectManager::instance();
-            TimeBar* timeBar = TimeBar::instance();                
+            TimeBar* timeBar = TimeBar::instance();
             bool result = pm->tryToCloseProject();
             if(result) {
                 pm->clearProject();

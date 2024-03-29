@@ -30,20 +30,19 @@ public:
     Impl(VFXVisionSimulatorItem* self);
     Impl(VFXVisionSimulatorItem* self, const Impl& org);
 
-    DeviceList<Camera> cameras;
-    ItemList<MultiColliderItem> colliders;
-    enum DynamicsId { RANDOM_SALT_ONLY, RANDOM_MOSAIC_ONLY, ALL_PROCESS };
-    Selection dynamicsSelection;
-    std::mutex convertMutex;
-
-    VFXConverter converter;
-
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void onPostDynamics();
     void onPostDynamics2();
     void onPostDynamics3();
     bool setDynamicsType(int dynamicsId);
     double dynamicsType() const;
+
+    DeviceList<Camera> cameras;
+    ItemList<MultiColliderItem> colliders;
+    enum DynamicsId { RANDOM_SALT_ONLY, RANDOM_MOSAIC_ONLY, ALL_PROCESS };
+    Selection dynamicsSelection;
+    std::mutex convertMutex;
+    VFXConverter converter;
 };
 
 }

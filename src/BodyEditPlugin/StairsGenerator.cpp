@@ -96,7 +96,7 @@ StairsGenerator::Impl::Impl()
     QGridLayout* gbox = new QGridLayout;
 
     static const char* label[] = {
-        _("Tread [m]"),  _("Stair width [m]"),
+        _("Tread [m]"), _("Stair width [m]"),
         _("Riser [m]"), _("Width of stringer [m]"),
         _("Tread thickness [m]")
     };
@@ -300,7 +300,7 @@ void StairsGenerator::Impl::writeStringerShape(Listing* elementsNode)
     MappingPtr appearanceNode = node->createFlowStyleMapping("appearance");
     MappingPtr materialNode = appearanceNode->createFlowStyleMapping("material");
     Listing& diffuseColorList = *materialNode->createFlowStyleListing("diffuse");
-    Vector3 c = colorButton->color();;
+    Vector3 c = colorButton->color();
     for(int i = 0; i < 3; ++i) {
         diffuseColorList.append(c[i], 3, 3);
     }

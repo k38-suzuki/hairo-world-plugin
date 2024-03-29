@@ -3,12 +3,8 @@
 */
 
 #include "KIOSKManager.h"
-#include <cnoid/Action>
-#include <cnoid/Archive>
-#include <cnoid/ExecutablePath>
 #include <cnoid/ExtensionManager>
 #include <cnoid/Joystick>
-#include <cnoid/JoystickCapture>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/OptionManager>
@@ -64,51 +60,6 @@ void onHideToolBarToggled(const bool& on)
 
 }
 
-namespace cnoid {
-
-class KIOSKManager::Impl
-{
-public:
-
-    Impl();
-
-    JoystickCapture joystick;
-    SimulatorItem* simulatorItem;
-    JoyKey* key;
-
-    void onHideMenuBarToggled(const bool& on);
-    void onButton(const int& id, const bool& isPressed);
-    void onSimulationAboutToStart(SimulatorItem* simulatorItem);
-};
-
-}
-
-
-KIOSKManager::KIOSKManager(ExtensionManager* ext)
-{
-    impl = new Impl;
-}
-
-
-KIOSKManager::Impl::Impl()
-{
-    joystick.setDevice("/dev/input/js0");
-    joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
-
-    key = new JoyKey(true);
-    key->sigUnlocked().connect([&](){ onHideMenuBarToggled(false); });
-
-    simulatorItem = nullptr;
-    SimulationBar::instance()->sigSimulationAboutToStart().connect(
-                [&](SimulatorItem* simulatorItem){ onSimulationAboutToStart(simulatorItem); });
-}
-
-
-KIOSKManager::~KIOSKManager()
-{
-    delete impl;
-}
-
 
 void KIOSKManager::initializeClass(ExtensionManager* ext)
 {
@@ -121,7 +72,7 @@ void KIOSKManager::initializeClass(ExtensionManager* ext)
 
     auto om = OptionManager::instance();
     om->add_flag("--kiosk-mode", doKioskMode, "start kiosk mode automatically");
-    om->sigOptionsParsed(1).connect(onSigOptionsParsed);    
+    om->sigOptionsParsed(1).connect(onSigOptionsParsed);
 
     char* CNOID_USE_KIOSK = getenv("CNOID_USE_KIOSK");
     if(CNOID_USE_KIOSK && (strcmp(CNOID_USE_KIOSK, "0") == 0)) {
@@ -135,13 +86,38 @@ void KIOSKManager::initializeClass(ExtensionManager* ext)
 }
 
 
-void KIOSKManager::Impl::onHideMenuBarToggled(const bool& on)
+KIOSKManager::KIOSKManager(ExtensionManager* ext)
+{
+    joystick.setDevice("/dev/input/js0");
+    joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
+
+    key = new JoyKey(true);
+    key->sigUnlocked().connect([&](){ onHideMenuBarToggled(false); });
+
+    simulatorItem = nullptr;
+    SimulationBar::instance()->sigSimulationAboutToStart().connect(
+                [&](SimulatorItem* simulatorItem){
+                    this->simulatorItem = simulatorItem;
+                    if(kioskCheck->isChecked()) {
+                        BookmarkManager::instance()->hide();
+                    }
+                });
+}
+
+
+KIOSKManager::~KIOSKManager()
+{
+
+}
+
+
+void KIOSKManager::onHideMenuBarToggled(const bool& on)
 {
     MainWindow::instance()->menuBar()->setVisible(!on);
 }
 
 
-void KIOSKManager::Impl::onButton(const int& id, const bool& isPressed)
+void KIOSKManager::onButton(const int& id, const bool& isPressed)
 {
     if(id == Joystick::LOGO_BUTTON && isPressed) {
         if(kioskCheck->isChecked()) {
@@ -158,14 +134,5 @@ void KIOSKManager::Impl::onButton(const int& id, const bool& isPressed)
             timeBar->setTime(0.0);
             BookmarkManager::instance()->show();
         }
-    }
-}
-
-
-void KIOSKManager::Impl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
-{
-    this->simulatorItem = simulatorItem;
-    if(kioskCheck->isChecked()) {
-        BookmarkManager::instance()->hide();
     }
 }

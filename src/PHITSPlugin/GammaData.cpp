@@ -472,7 +472,7 @@ bool GammaData::readQAD(const string& filename, CalcInfo calcInfo, int iSrc)
 
             // trY
             buf = getLineN(str, 11);
-            trY = stod(buf);;
+            trY = stod(buf);
 
             // trZ
             buf = getLineN(str, 13);

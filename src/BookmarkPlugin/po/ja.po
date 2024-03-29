@@ -44,7 +44,7 @@ msgstr "プロジェクトの登録"
 msgid "Show the bookmark manager"
 msgstr "ブックマークマネージャの表示"
 
-msgid "BookmarkManager"
+msgid "Bookmark Manager"
 msgstr "ブックマークマネージャ"
 
 msgid "Autoplay"

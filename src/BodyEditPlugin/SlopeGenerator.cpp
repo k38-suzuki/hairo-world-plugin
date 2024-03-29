@@ -91,8 +91,7 @@ SlopeGenerator::Impl::Impl()
     QGridLayout* gbox = new QGridLayout;
 
     static const char* label0[] = {
-        _("Mass [kg]"),  _("Width [m]"),
-        _("Height [m]"), _("Length [m]")
+        _("Mass [kg]"), _("Width [m]"), _("Height [m]"), _("Length [m]")
     };
 
     for(int i = 0; i < NUM_DSPINS; ++i) {

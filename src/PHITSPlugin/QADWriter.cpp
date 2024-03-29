@@ -353,7 +353,7 @@ string QADWriter::writeQAD(GammaData::CalcInfo& calcInfo, int iSrc)
     // Zone set
     sstr << "  ZON     " << setw(7) << setfill(' ') << 1 << endl;
     for(int io = 0; io < nObstacle; ++io) {
-        sstr << "  ZON     " << setw(7) << setfill(' ') << io + 3 << endl;;
+        sstr << "  ZON     " << setw(7) << setfill(' ') << io + 3 << endl;
     }
 
     sstr << "  ZON     " << setw(7) << setfill(' ') << 2 << setw(7) << setfill(' ') << -1;

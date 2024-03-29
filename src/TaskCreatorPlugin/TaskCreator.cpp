@@ -50,13 +50,6 @@ class TaskCreator::Impl : public Dialog
 {
 public:
 
-    enum { NumProjects = 12 };
-
-    ComboBox* projectCombos[NumProjects];
-    CheckBox* logCheck;
-    QLineEdit* logLine;
-    DoubleSpinBox* posSpin;
-
     Impl();
     ~Impl();
 
@@ -68,6 +61,13 @@ public:
     void onButton1Clicked(const int& id);
     void onButton2Clicked(const int& id);
     void onPosButtonClicked(const int& id);
+
+    enum { NumProjects = 12 };
+
+    ComboBox* projectCombos[NumProjects];
+    CheckBox* logCheck;
+    QLineEdit* logLine;
+    DoubleSpinBox* posSpin;
 };
 
 }

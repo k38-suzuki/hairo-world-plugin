@@ -159,12 +159,12 @@ void MultiColliderItem::doPutProperties(PutPropertyFunction& putProperty)
                         return false;
                     });
 
-        putProperty(_("RGB"),  format("{0:.3g} {1:.3g} {2:.3g}", rgb().x(), rgb().y(), rgb().z()),
+        putProperty(_("RGB"), format("{0:.3g} {1:.3g} {2:.3g}", rgb().x(), rgb().y(), rgb().z()),
                     [this](const string& text){
                         Vector3 c;
                         if(toVector3(text, c)) {
                             setRgb(c);
-                            return true;                        
+                            return true;
                         }
                         return false;
                     });
@@ -183,7 +183,7 @@ void MultiColliderItem::doPutProperties(PutPropertyFunction& putProperty)
 
         putProperty.min(0.0).max(1.0)(_("std dev"), stdDev(),
                     [this](double value){
-                        setStdDev(value);    
+                        setStdDev(value);
                         return true;
                     });
 
