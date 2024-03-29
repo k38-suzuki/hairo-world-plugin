@@ -17,14 +17,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "BookmarkManager"
-msgstr "ブックマークマネージャ"
-
 msgid "Add"
 msgstr "登録"
-
-msgid "Autoplay"
-msgstr "自動再生"
 
 msgid "Remove"
 msgstr "削除"
@@ -32,14 +26,8 @@ msgstr "削除"
 msgid "Open"
 msgstr "開く"
 
-msgid "Open a project"
-msgstr "プロジェクトを開く"
-
 msgid "&Open"
 msgstr "開く(&O)"
-
-msgid "Show the bookmark manager"
-msgstr "ブックマークマネージャの表示"
 
 msgid "Select a Choreonoid project file"
 msgstr "Choreonoidプロジェクトファイルの選択"
@@ -94,3 +82,15 @@ msgstr "ワールドログマネージャの表示"
 
 msgid "Bookmark a current project"
 msgstr "プロジェクトの登録"
+
+msgid "Show the bookmark manager"
+msgstr "ブックマークマネージャの表示"
+
+msgid "BookmarkManager"
+msgstr "ブックマークマネージャ"
+
+msgid "Autoplay"
+msgstr "自動再生"
+
+msgid "Open a project"
+msgstr "プロジェクトを開く"

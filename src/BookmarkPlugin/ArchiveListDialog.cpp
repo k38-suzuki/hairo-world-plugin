@@ -2,26 +2,25 @@
    @author Kenta Suzuki
 */
 
-#include "ArchiveTreeDialog.h"
+#include "ArchiveListDialog.h"
 #include <cnoid/AppConfig>
 #include <cnoid/Buttons>
-#include <cnoid/TreeWidget>
 #include <cnoid/ValueTree>
-#include <QTreeWidgetItem>
 
 using namespace std;
 using namespace cnoid;
 
-ArchiveTreeDialog::ArchiveTreeDialog(QWidget* parent)
+ArchiveListDialog::ArchiveListDialog(QWidget* parent)
     : Dialog(parent)
 {
     archive_key_ = "default_archive_key";
+    max_items = 16;
 
     auto vbox = new QVBoxLayout;
     setLayout(vbox);
 
-    hbox = new QHBoxLayout;
     auto hbox1 = new QHBoxLayout;
+    hbox = new QHBoxLayout;
     auto button = new PushButton;
     button->setIcon(QIcon::fromTheme("user-trash"));
     button->sigClicked().connect([&](){ onButtonClicked(); });
@@ -30,48 +29,39 @@ ArchiveTreeDialog::ArchiveTreeDialog(QWidget* parent)
     hbox1->addWidget(button);
     vbox->addLayout(hbox1);
 
-    treeWidget = new TreeWidget;
-    treeWidget->setHeaderHidden(true);
-    connect(treeWidget, &TreeWidget::itemDoubleClicked,
-        [&](QTreeWidgetItem* item, int column){
-            string text = item->text(column).toStdString();
-            onItemDoubleClicked(text); });
-
-    vbox->addWidget(treeWidget);
+    listWidget = new QListWidget;
+    connect(listWidget, &QListWidget::itemDoubleClicked,
+        [&](QListWidgetItem* item){ onItemDoubleClicked(item); });
+    vbox->addWidget(listWidget);
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
-
     connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(this, &Dialog::finished, [this](int result){ onFinished(result); });
     vbox->addWidget(buttonBox);
 }
 
 
-ArchiveTreeDialog::~ArchiveTreeDialog()
+ArchiveListDialog::~ArchiveListDialog()
 {
 
 }
 
 
-void ArchiveTreeDialog::addItem(const QString& text)
+void ArchiveListDialog::addItem(const QString& text)
 {
     if(!text.isEmpty()) {
-        QTreeWidgetItem* item = new QTreeWidgetItem(treeWidget);
-        item->setText(0, text);
-        treeWidget->setCurrentItem(item);
+        listWidget->addItem(text);
     }
 }
 
 
-void ArchiveTreeDialog::addItems(const QStringList& texts)
+void ArchiveListDialog::addItems(const QStringList& texts)
 {
-    for(auto& text : texts) {
-        addItem(text);
-    }
+    listWidget->addItems(texts);
 }
 
 
-void ArchiveTreeDialog::addWidget(QWidget* widget)
+void ArchiveListDialog::addWidget(QWidget* widget)
 {
     if(widget) {
         hbox->addWidget(widget);
@@ -79,23 +69,30 @@ void ArchiveTreeDialog::addWidget(QWidget* widget)
 }
 
 
-void ArchiveTreeDialog::onButtonClicked()
+void ArchiveListDialog::onButtonClicked()
 {
-    QTreeWidgetItem* item = treeWidget->currentItem();
+    QListWidgetItem* item = listWidget->currentItem();
     if(item) {
-        int index = treeWidget->indexOfTopLevelItem(item);
-        treeWidget->takeTopLevelItem(index);
+        int row = listWidget->currentRow();
+        listWidget->takeItem(row);
     }
 }
 
 
-void ArchiveTreeDialog::storeList()
+void ArchiveListDialog::onItemDoubleClicked(QListWidgetItem* item)
+{
+    string text = item->text().toStdString();
+    onItemDoubleClicked(text);
+}
+
+
+void ArchiveListDialog::storeList()
 {
     ListingPtr recentList = new Listing;
-    for(int i = 0; i < treeWidget->topLevelItemCount(); ++i) {
-        QTreeWidgetItem* item = treeWidget->topLevelItem(i);
+    for(int i = 0; i < listWidget->count(); ++i) {
+        QListWidgetItem* item = listWidget->item(i);
         if(item) {
-            recentList->append(item->text(0).toStdString(), DOUBLE_QUOTED);
+            recentList->append(item->text().toStdString(), DOUBLE_QUOTED);
         }
     }
     // auto oldRecentList = AppConfig::archive()->openListing(archive_key_);
@@ -104,7 +101,7 @@ void ArchiveTreeDialog::storeList()
     //         auto name = node->toString();
     //         if(!name.empty()) {
     //             recentList->append(name, DOUBLE_QUOTED);
-    //             if(recentList->size() >= MaxArchiveSize) {
+    //             if(recentList->size() >= max_items) {
     //                 break;
     //             }
     //         }
@@ -133,41 +130,32 @@ void ArchiveTreeDialog::storeList()
 }
 
 
-void ArchiveTreeDialog::updateList()
+void ArchiveListDialog::updateList()
 {
     QStringList list;
     auto& recentList = *AppConfig::archive()->findListing(archive_key_);
     if(recentList.isValid() && !recentList.empty()) {
-        for(int i = recentList.size() - 1; i >= 0; --i) {
-            if(recentList[i].isString()) {
-                list << recentList[i].toString().c_str();
+        for(auto& node : recentList) {
+            if(node->isString()) {
+                auto name = node->toString();
+                if(!name.empty()) {
+                    list << name.c_str();
+                }
             }
         }
     }
     list.removeDuplicates();
-    addItems(list);
+    listWidget->addItems(list);
 }
 
 
-void ArchiveTreeDialog::onFinished(int result)
+void ArchiveListDialog::onFinished(int result)
 {
     storeList();
 }
 
 
-void ArchiveTreeDialog::onAccepted()
-{
-
-}
-
-
-void ArchiveTreeDialog::onRejected()
-{
-
-}
-
-
-void ArchiveTreeDialog::onItemDoubleClicked(std::string& text)
+void ArchiveListDialog::onItemDoubleClicked(std::string& text)
 {
 
 }

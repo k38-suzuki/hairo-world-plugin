@@ -1,5 +1,5 @@
 set(sources
-  ArchiveTreeDialog.cpp
+  ArchiveListDialog.cpp
   BookmarkManager.cpp
   BookmarkPlugin.cpp
   HistoryManager.cpp
@@ -9,6 +9,7 @@ set(sources
 )
 
 set(headers
+  ArchiveListDialog.h
   BookmarkManager.h
   HistoryManager.h
   JoyKey.h
