@@ -75,15 +75,17 @@ WorldLogManager::WorldLogManager()
     SimulationBar::instance()->sigSimulationAboutToStart().connect(
         [&](SimulatorItem* simulatorItem){ onSimulationAboutToStart(simulatorItem); });
 
-    auto archive = AppConfig::archive()->openMapping("world_log_manager");
-    saveCheck->setChecked(archive->get("save_world_log", false));
+    auto& archive = *AppConfig::archive()->openMapping("world_log_manager");
+    if(archive.isValid()) {
+        saveCheck->setChecked(archive.get("save_world_log", false));
+    }
 }
 
 
 WorldLogManager::~WorldLogManager()
 {
-    auto archive = AppConfig::archive()->openMapping("world_log_manager");
-    archive->write("save_world_log", saveCheck->isChecked());
+    auto& archive = *AppConfig::archive()->openMapping("world_log_manager");
+    archive.write("save_world_log", saveCheck->isChecked());
 }
 
 

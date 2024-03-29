@@ -8,6 +8,7 @@
 #include <cnoid/ExtensionManager>
 #include <cnoid/Joystick>
 #include <cnoid/JoystickCapture>
+#include <cnoid/MainMenu>
 #include <cnoid/MenuManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
@@ -71,19 +72,22 @@ JoystickStarter::~JoystickStarter()
 
 void JoystickStarter::initializeClass(ExtensionManager* ext)
 {
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Options")).setPath(N_("Joystick"));
-    startCheck = mm.addCheckItem(_("Game Start Mode"));
-    startCheck->sigToggled().connect([&](bool on){
-        AppConfig::archive()->openMapping("joystick_starter")->write("game_start_mode", startCheck->isChecked());
-    });
+    if(auto optionsMenu = MainMenu::instance()->get_Options_Menu()) {
+        MenuManager& mm = ext->menuManager();
+        mm.setCurrent(optionsMenu).setPath(N_("Joystick"));
+        startCheck = mm.addCheckItem(_("Game Start Mode"));
+        startCheck->sigToggled().connect([&](bool on){
+            auto& archive = *AppConfig::archive()->openMapping("joystick_starter");
+            archive.write("game_start_mode", startCheck->isChecked()); });
+    }
 
     if(!starterInstance) {
         starterInstance = ext->manage(new JoystickStarter);
     }
 
-    auto config = AppConfig::archive()->openMapping("joystick_starter");
-    if(config->isValid()) {
-        startCheck->setChecked(config->get("game_start_mode", false));
+    auto& archive = *AppConfig::archive()->openMapping("joystick_starter");
+    if(archive.isValid()) {
+        startCheck->setChecked(archive.get("game_start_mode", false));
     }
 }
 

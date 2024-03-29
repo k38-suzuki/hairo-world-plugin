@@ -74,15 +74,17 @@ BookmarkManager::BookmarkManager()
     addWidget(button);
     addWidget(autoCheck);
 
-    auto archive = AppConfig::archive()->openMapping("bookmark_manager");
-    autoCheck->setChecked(archive->get("auto_play", false));
+    auto& archive = *AppConfig::archive()->openMapping("bookmark_manager");
+    if(archive.isValid()) {
+        autoCheck->setChecked(archive.get("auto_play", false));
+    }
 }
 
 
 BookmarkManager::~BookmarkManager()
 {
-    auto archive = AppConfig::archive()->openMapping("bookmark_manager");
-    archive->write("auto_play", autoCheck->isChecked());
+    auto& archive = *AppConfig::archive()->openMapping("bookmark_manager");
+    archive.write("auto_play", autoCheck->isChecked());
 }
 
 
