@@ -3,6 +3,8 @@
 */
 
 #include "BookmarkManager.h"
+#include <cnoid/Archive>
+#include <cnoid/AppConfig>
 #include <cnoid/Buttons>
 #include <cnoid/ExtensionManager>
 #include <cnoid/ItemManager>
@@ -60,7 +62,7 @@ BookmarkManager::BookmarkManager()
     : ArchiveListDialog()
 {
     setWindowTitle(_("BookmarkManager"));
-    setArchiveKey("bookmark_manager");
+    setArchiveKey("bookmark_list");
     setFixedSize(800, 450);
 
     auto button = new PushButton;
@@ -70,12 +72,16 @@ BookmarkManager::BookmarkManager()
     autoCheck->setText(_("Autoplay"));
     addWidget(button);
     addWidget(autoCheck);
+
+    auto archive = AppConfig::archive()->openMapping("bookmark_manager");
+    autoCheck->setChecked(archive->get("auto_play", false));
 }
 
 
 BookmarkManager::~BookmarkManager()
 {
-
+    auto archive = AppConfig::archive()->openMapping("bookmark_manager");
+    archive->write("auto_play", autoCheck->isChecked());
 }
 
 

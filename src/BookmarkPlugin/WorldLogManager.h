@@ -5,11 +5,15 @@
 #ifndef CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_H
 #define CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_H
 
+#include "ArchiveListDialog.h"
+
 namespace cnoid {
 
+class CheckBox;
 class ExtensionManager;
+class SimulatorItem;
 
-class WorldLogManager
+class WorldLogManager : public ArchiveListDialog
 {
 public:
     static void initializeClass(ExtensionManager* ext);
@@ -18,11 +22,15 @@ public:
     WorldLogManager();
     virtual ~WorldLogManager();
 
-    void show();
+protected:
+    virtual void onItemDoubleClicked(std::string& text) override;
 
 private:
-    class Impl;
-    Impl* impl;
+    CheckBox* saveCheck;
+    std::string project_filename;
+    bool is_started;
+    void onSimulationAboutToStart(SimulatorItem* simulatorItem);
+    void onPlaybackStopped(double time, bool isStoppedManually);
 };
 
 }
