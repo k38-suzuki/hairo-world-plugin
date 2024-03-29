@@ -39,6 +39,7 @@ private:
 
     void onButtonClicked();
     void onItemDoubleClicked(QListWidgetItem* item);
+    void clearList();
     void storeList();
 };
 

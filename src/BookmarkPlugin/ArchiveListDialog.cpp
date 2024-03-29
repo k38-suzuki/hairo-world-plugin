@@ -21,12 +21,14 @@ ArchiveListDialog::ArchiveListDialog(QWidget* parent)
 
     auto hbox1 = new QHBoxLayout;
     hbox = new QHBoxLayout;
-    auto button = new PushButton;
-    button->setIcon(QIcon::fromTheme("user-trash"));
-    button->sigClicked().connect([&](){ onButtonClicked(); });
+    auto button1 = new PushButton("C");
+    button1->sigClicked().connect([&](){ onButtonClicked(); });
+    auto button2 = new PushButton("AC");
+    button2->sigClicked().connect([&](){ clearList(); });
     hbox1->addLayout(hbox);
     hbox1->addStretch();
-    hbox1->addWidget(button);
+    hbox1->addWidget(button1);
+    hbox1->addWidget(button2);
     vbox->addLayout(hbox1);
 
     listWidget = new QListWidget;
@@ -69,6 +71,26 @@ void ArchiveListDialog::addWidget(QWidget* widget)
 }
 
 
+void ArchiveListDialog::updateList()
+{
+    QStringList list;
+    auto& recentList = *AppConfig::archive()->findListing(archive_key_);
+    if(recentList.isValid() && !recentList.empty()) {
+        for(auto& node : recentList) {
+            if(node->isString()) {
+                auto name = node->toString();
+                if(!name.empty()) {
+                    list << name.c_str();
+                }
+            }
+        }
+    }
+    list.removeDuplicates();
+    clearList();
+    listWidget->addItems(list);
+}
+
+
 void ArchiveListDialog::onButtonClicked()
 {
     QListWidgetItem* item = listWidget->currentItem();
@@ -83,6 +105,14 @@ void ArchiveListDialog::onItemDoubleClicked(QListWidgetItem* item)
 {
     string text = item->text().toStdString();
     onItemDoubleClicked(text);
+}
+
+
+void ArchiveListDialog::clearList()
+{
+    while(listWidget->count()) {
+        listWidget->takeItem(0);
+    }
 }
 
 
@@ -127,25 +157,6 @@ void ArchiveListDialog::storeList()
         recentList2->append("", DOUBLE_QUOTED);
     }
     AppConfig::archive()->insert(archive_key_, recentList2);
-}
-
-
-void ArchiveListDialog::updateList()
-{
-    QStringList list;
-    auto& recentList = *AppConfig::archive()->findListing(archive_key_);
-    if(recentList.isValid() && !recentList.empty()) {
-        for(auto& node : recentList) {
-            if(node->isString()) {
-                auto name = node->toString();
-                if(!name.empty()) {
-                    list << name.c_str();
-                }
-            }
-        }
-    }
-    list.removeDuplicates();
-    listWidget->addItems(list);
 }
 
 
