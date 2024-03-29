@@ -185,7 +185,7 @@ OnScreenJoystickView::Impl::Impl(OnScreenJoystickView* self)
         vbox->addStretch();
         vbox->addLayout(hbox);
         vbox->addStretch();
-        joystickWidget->setLayout(vbox);   
+        joystickWidget->setLayout(vbox);
     }
 
     topWidget = new QStackedWidget;

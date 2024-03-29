@@ -254,7 +254,7 @@ void StairsGenerator::Impl::writeLinkShape(Listing* elementsNode)
             node->insert("elements", elementsNode2);
         }
 
-        elementsNode->append(node);   
+        elementsNode->append(node);
     }
 
 }

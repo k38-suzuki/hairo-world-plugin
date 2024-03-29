@@ -34,7 +34,7 @@ VFXConverter::VFXConverter()
     std::default_random_engine engine_init(seed_gen_());
     engine_ = engine_init;
     std::normal_distribution<> dist_init(0.0, 1.0);
-    dist_ = dist_init;    
+    dist_ = dist_init;
 }
 
 

@@ -803,7 +803,7 @@ void CrawlerGenerator::Impl::writeBody(Listing* linksNode)
             write(node, "translation", translation[i]);
             node->insert(trackNode);
 
-            linksNode->append(node);   
+            linksNode->append(node);
         }
     }
 

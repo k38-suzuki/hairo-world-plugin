@@ -334,7 +334,7 @@ void CFDSimulatorItemImpl::onPreDynamics()
                 Vector3 b = density * gravity * volume * -1.0;
                 link->f_ext() += b;
                 Vector3 cb = T * cfdLink->centerOfBuoyancy;
-                link->tau_ext() += cb.cross(b);                
+                link->tau_ext() += cb.cross(b);
             }
 
             //flow
@@ -374,7 +374,7 @@ void CFDSimulatorItemImpl::onPreDynamics()
 
             //viscous drag
             Vector3 fv = cfdLink->cv * viscosity * v * -1.0;
-            Vector3 tv = cfdLink->cw * viscosity * w * -1.0;            
+            Vector3 tv = cfdLink->cw * viscosity * w * -1.0;
             link->f_ext() += fv;
             link->tau_ext() += c.cross(fv) + tv;
         }

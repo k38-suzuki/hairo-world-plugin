@@ -306,7 +306,7 @@ void GratingGenerator::Impl::writeLinkShape(Listing* elementsNode)
 
         MappingPtr geometryNode = new Mapping;
         geometryNode->write("type", "Extrusion");
-        Listing& crossSectionList = *geometryNode->createFlowStyleListing("cross_section");  
+        Listing& crossSectionList = *geometryNode->createFlowStyleListing("cross_section");
 
         int n = (verticalGrid * 8 + 14) * horizontalGrid + 18;
 
@@ -336,13 +336,13 @@ void GratingGenerator::Impl::writeLinkShape(Listing* elementsNode)
                 crossSectionList.append(                           x, 2, n);
                 crossSectionList.append(             y + frameHeight, 2, n);
                 crossSectionList.append(                           x, 2, n);
-                crossSectionList.append(y + frameHeight + gridHeight, 2, n);                
+                crossSectionList.append(y + frameHeight + gridHeight, 2, n);
             }
 
             crossSectionList.append(x + gridWidth, 2, n);
             crossSectionList.append(sy + (frameHeight + gridHeight) * verticalGrid, 2, n);
             crossSectionList.append(x + gridWidth, 2, n);
-            crossSectionList.append(sy, 2, n);            
+            crossSectionList.append(sy, 2, n);
         }
 
         crossSectionList.append(-sx, 2, n);
@@ -395,7 +395,7 @@ void GratingGenerator::Impl::writeLinkShape(Listing* elementsNode)
 
         MappingPtr geometryNode = new Mapping;
         geometryNode->write("type", "Extrusion");
-        Listing& crossSectionList = *geometryNode->createFlowStyleListing("cross_section");  
+        Listing& crossSectionList = *geometryNode->createFlowStyleListing("cross_section");
 
         int n = 10;
 

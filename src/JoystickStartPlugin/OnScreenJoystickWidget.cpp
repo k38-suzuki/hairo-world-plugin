@@ -126,7 +126,7 @@ OnScreenJoystickWidget::Impl::Impl(OnScreenJoystickWidget* self)
     QVBoxLayout* vbox = new QVBoxLayout;
     vbox->addStretch();
     vbox->addLayout(hbox);
-    vbox->addStretch();   
+    vbox->addStretch();
     self->setLayout(vbox);
 
     joystick.setDevice("/dev/input/js0");

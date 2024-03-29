@@ -34,7 +34,7 @@ void notSupportText()
 {
     // mvout()
     //     << format(_("This combination is not supported."))
-    //     << endl;    
+    //     << endl;
 }
 
 class SceneLocation : public LocationProxy
