@@ -13,6 +13,7 @@
 #include <cnoid/SimulatorItem>
 #include <cnoid/stdx/filesystem>
 #include <cnoid/TimeBar>
+#include <cnoid/ToolBar>
 #include <cnoid/UTF8>
 #include <cnoid/WorldItem>
 #include <src/BodyPlugin/WorldLogFileItem.h>
@@ -57,7 +58,7 @@ WorldLogManager* WorldLogManager::instance()
 
 WorldLogManager::WorldLogManager()
 {
-    setWindowTitle(_("WorldLogManager"));
+    setWindowTitle(_("WorldLog Manager"));
     setArchiveKey("world_log_list");
     setFixedSize(800, 450);
 

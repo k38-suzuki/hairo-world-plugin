@@ -5,21 +5,25 @@
 #ifndef CNOID_BOOKMARK_PLUGIN_HISTORY_MANAGER_H
 #define CNOID_BOOKMARK_PLUGIN_HISTORY_MANAGER_H
 
+#include "ArchiveListDialog.h"
+
 namespace cnoid {
 
 class ExtensionManager;
 
-class HistoryManager
+class HistoryManager : public ArchiveListDialog
 {
 public:
-    HistoryManager(ExtensionManager* ext);
-    virtual ~HistoryManager();
-
     static void initializeClass(ExtensionManager* ext);
 
+    HistoryManager();
+    virtual ~HistoryManager();
+
+protected:
+    virtual void onItemDoubleClicked(std::string& text) override;
+
 private:
-    class Impl;
-    Impl* impl;
+
 };
 
 }

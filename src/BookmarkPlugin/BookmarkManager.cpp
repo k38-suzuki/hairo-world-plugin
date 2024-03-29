@@ -11,6 +11,7 @@
 #include <cnoid/MainWindow>
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
+#include <cnoid/ToolBar>
 #include <cnoid/stdx/filesystem>
 #include "gettext.h"
 
@@ -61,7 +62,7 @@ BookmarkManager* BookmarkManager::instance()
 BookmarkManager::BookmarkManager()
     : ArchiveListDialog()
 {
-    setWindowTitle(_("BookmarkManager"));
+    setWindowTitle(_("Bookmark Manager"));
     setArchiveKey("bookmark_list");
     setFixedSize(800, 450);
 

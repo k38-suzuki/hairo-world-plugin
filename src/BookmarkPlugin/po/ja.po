@@ -17,68 +17,26 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "Add"
-msgstr "登録"
-
-msgid "Remove"
-msgstr "削除"
-
-msgid "Open"
-msgstr "開く"
-
-msgid "&Open"
-msgstr "開く(&O)"
-
-msgid "Select a Choreonoid project file"
-msgstr "Choreonoidプロジェクトファイルの選択"
-
-msgid "Cancel"
-msgstr "キャンセル"
-
-msgid "Project files (*.cnoid)"
-msgstr "プロジェクトファイル (*.cnoid)"
-
-msgid "Any files (*)"
-msgstr "全てのファイル(*)"
-
-msgid "History"
-msgstr "履歴"
-
-msgid "Tools"
-msgstr ""
-
-msgid "Clear all histories"
-msgstr "全ての履歴を削除"
-
-msgid "View"
-msgstr ""
-
 msgid "Enable KIOSK"
 msgstr "KIOSKモード"
 
 msgid "Hide tool bar"
 msgstr "ツールバーの非表示"
 
-msgid "KIOSK"
-msgstr ""
+msgid "Show the history manager"
+msgstr "履歴の表示"
 
-msgid "WorldLogManager"
-msgstr "ワールドログマネージャ"
-
-msgid "Options"
-msgstr ""
-
-msgid "WorldLog"
-msgstr "ワールドログ"
-
-msgid "Save a WorldLog"
-msgstr "ワールドログの保存"
-
-msgid "&Play"
-msgstr "再生(&P)"
+msgid "History Manager"
+msgstr "履歴"
 
 msgid "Show the worldlog manager"
 msgstr "ワールドログマネージャの表示"
+
+msgid "WorldLog Manager"
+msgstr "ワールドログマネージャ"
+
+msgid "Save a WorldLog"
+msgstr "ワールドログの保存"
 
 msgid "Bookmark a current project"
 msgstr "プロジェクトの登録"

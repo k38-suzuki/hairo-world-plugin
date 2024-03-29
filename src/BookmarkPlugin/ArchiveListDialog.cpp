@@ -32,6 +32,7 @@ ArchiveListDialog::ArchiveListDialog(QWidget* parent)
     vbox->addLayout(hbox1);
 
     listWidget = new QListWidget;
+    listWidget->setDragDropMode(QAbstractItemView::InternalMove);
     connect(listWidget, &QListWidget::itemDoubleClicked,
         [&](QListWidgetItem* item){ onItemDoubleClicked(item); });
     vbox->addWidget(listWidget);
