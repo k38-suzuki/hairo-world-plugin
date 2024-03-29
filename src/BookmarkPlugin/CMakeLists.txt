@@ -1,4 +1,5 @@
 set(sources
+  ArchiveTreeDialog.cpp
   BookmarkManager.cpp
   BookmarkPlugin.cpp
   HistoryManager.cpp
