@@ -79,8 +79,47 @@ items:
                     class: CameraImageVisualizerItem
                     name: FrontCamera
                     is_checked: true
+            -
+              id: 5
+              name: "MultiCollider"
+              plugin: SimpleCollider
+              class: MultiColliderItem
+              is_checked: true
+              data:
+                translation: [ -2, -0.5, 0.3 ]
+                rotation: [ 0, -0, 0 ]
+                size: [ 1, 1, 1 ]
+                diffuse_color: [ 1, 0, 1 ]
+                radius: 0.5
+                height: 1
+                specular_exponent: 25
+                transparency: 1
+                scene_type: Box
+                collider_type: VFX
+                density: 0
+                viscosity: 0
+                steady_flow: [ 0, 0, 0 ]
+                inbound_delay: 0
+                inbound_rate: 0
+                inbound_loss: 0
+                outbound_delay: 0
+                outbound_rate: 0
+                outbound_loss: 0
+                source: 0.0.0.0/0
+                destination: 0.0.0.0/0
+                hsv: [ 0, 0, 0 ]
+                rgb: [ 0, 0, 0 ]
+                coef_b: 0
+                coef_d: 0
+                std_dev: 0
+                salt: 0.01
+                salt_rate: 0.1
+                pepper: 0
+                pepper_rate: 1
+                mosaic_rate: 0.1
+                kernel: 16
         -
-          id: 5
+          id: 6
           name: "Labo1"
           plugin: Body
           class: BodyItem
@@ -108,10 +147,10 @@ items:
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
         -
-          id: 6
+          id: 7
           name: "FluidArea"
-          plugin: CFD
-          class: FluidAreaItem
+          plugin: SimpleCollider
+          class: MultiColliderItem
           data:
             translation: [ 0, 0, 0 ]
             rotation: [ 0, -0, 0 ]
@@ -122,11 +161,31 @@ items:
             specular_exponent: 25
             transparency: 0.7
             scene_type: Box
+            collider_type: CFD
             density: 1.2
             viscosity: 2e-05
             steady_flow: [ 0, 0, 0 ]
+            inbound_delay: 0
+            inbound_rate: 0
+            inbound_loss: 0
+            outbound_delay: 0
+            outbound_rate: 0
+            outbound_loss: 0
+            source: 0.0.0.0/0
+            destination: 0.0.0.0/0
+            hsv: [ 0, 0, 0 ]
+            rgb: [ 0, 0, 0 ]
+            coef_b: 0
+            coef_d: 1
+            std_dev: 0
+            salt: 0
+            salt_rate: 0
+            pepper: 0
+            pepper_rate: 0
+            mosaic_rate: 0
+            kernel: 16
         -
-          id: 7
+          id: 8
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
@@ -159,14 +218,14 @@ items:
             oldAccelSensorMode: false
           children:
             -
-              id: 8
+              id: 9
               name: "CFDSimulator"
               plugin: CFD
               class: CFDSimulatorItem
               data:
                 enabled: true
             -
-              id: 9
+              id: 10
               name: "VFXVisionSimulator"
               plugin: VFX
               class: VFXVisionSimulatorItem
@@ -183,30 +242,45 @@ items:
                 enable_head_light: true
                 enable_additional_lights: true
                 antialiasing: false
+                dynamics_type: All process
         -
-          id: 10
-          name: "VFXCollider"
-          plugin: VFX
-          class: VFXColliderItem
+          id: 11
+          name: "MultiCollider"
+          plugin: SimpleCollider
+          class: MultiColliderItem
           data:
             translation: [ 0, 0, 0 ]
             rotation: [ 0, -0, 0 ]
             size: [ 10, 10, 10 ]
-            diffuse_color: [ 0, 1, 0 ]
+            diffuse_color: [ 0, 1, 1 ]
             radius: 0.5
             height: 1
             specular_exponent: 25
-            transparency: 0.8
+            transparency: 1
             scene_type: Box
+            collider_type: CFD
+            density: 0
+            viscosity: 0
+            steady_flow: [ 0, 0, 0 ]
+            inbound_delay: 0
+            inbound_rate: 0
+            inbound_loss: 0
+            outbound_delay: 0
+            outbound_rate: 0
+            outbound_loss: 0
+            source: 0.0.0.0/0
+            destination: 0.0.0.0/0
             hsv: [ 0, 0, 0 ]
             rgb: [ 0, 0, 0 ]
-            coef_b: -0.3
-            coef_d: 1
+            coef_b: 0
+            coef_d: 0
             std_dev: 0
-            salt: 0.01
+            salt: 0
+            salt_rate: 1
             pepper: 0
-            flipped: false
-            filter_type: No filter
+            pepper_rate: 1
+            mosaic_rate: 1
+            kernel: 16
 views:
   -
     id: 0
@@ -232,7 +306,7 @@ views:
     class: ItemTreeView
     mounted: true
     state:
-      expanded: [ 1, 2, 4, 7, 8 ]
+      expanded: [ 1, 2, 4, 8, 9 ]
   -
     id: 4
     plugin: Base
@@ -398,7 +472,7 @@ Body:
         show_cm_projection: false
         show_zmp: false
       -
-        body_item: 5
+        body_item: 6
         show_cm: false
         show_cm_projection: false
         show_zmp: false

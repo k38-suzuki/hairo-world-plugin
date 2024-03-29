@@ -96,9 +96,9 @@ items:
                 enabled: true
         -
           id: 6
-          name: "FluidArea"
-          plugin: CFD
-          class: FluidAreaItem
+          name: "MultiCollider"
+          plugin: SimpleCollider
+          class: MultiColliderItem
           is_checked: true
           data:
             translation: [ 0, 0, 0 ]
@@ -110,9 +110,29 @@ items:
             specular_exponent: 25
             transparency: 0.8
             scene_type: Box
+            collider_type: CFD
             density: 1000
             viscosity: 0.001
             steady_flow: [ 0, 0, 0 ]
+            inbound_delay: 0
+            inbound_rate: 0
+            inbound_loss: 0
+            outbound_delay: 0
+            outbound_rate: 0
+            outbound_loss: 0
+            source: 0.0.0.0/0
+            destination: 0.0.0.0/0
+            hsv: [ 0, 0, 0 ]
+            rgb: [ 0, 0, 0 ]
+            coef_b: 0
+            coef_d: 1
+            std_dev: 0
+            salt: 0
+            salt_rate: 0
+            pepper: 0
+            pepper_rate: 0
+            mosaic_rate: 0
+            kernel: 16
 views:
   -
     id: 0
