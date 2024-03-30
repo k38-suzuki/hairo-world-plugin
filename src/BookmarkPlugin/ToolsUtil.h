@@ -33,7 +33,7 @@ private:
 };
 
 CNOID_EXPORT QMenu* toolsMenu();
-CNOID_EXPORT CNOID_EXPORT ToolBar* fileBar();
+CNOID_EXPORT ToolBar* fileBar();
 
 }
 
