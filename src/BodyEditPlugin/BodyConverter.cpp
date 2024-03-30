@@ -3,6 +3,7 @@
 */
 
 #include "BodyConverter.h"
+#include <cnoid/Buttons>
 #include <cnoid/ComboBox>
 #include <cnoid/Dialog>
 #include <cnoid/ExtensionManager>
@@ -10,15 +11,13 @@
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <QAction>
+#include <QBoxLayout>
 #include <QDialogButtonBox>
 #include <QFile>
 #include <QFormLayout>
 #include <QGroupBox>
-#include <QMenu>
-#include <QMenuBar>
 #include <QMessageBox>
 #include <QTextStream>
-#include <QVBoxLayout>
 #include "gettext.h"
 
 using namespace cnoid;
@@ -140,18 +139,8 @@ public:
     QString convert(const QString& line) const;
     void saveFile(const QString& fileName);
 
-    void createMenu();
-    void createFormGroupBox();
-
-    QMenuBar* menuBar;
-    QGroupBox* formGroupBox;
     ComboBox* formatCombo;
     QString bodyFileName;
-
-    QMenu* fileMenu;
-    QAction* openAct;
-    QAction* saveAct;
-    QAction* exitAct;
 };
 
 }
@@ -183,16 +172,32 @@ BodyConverter::BodyConverter()
 
 BodyConverter::Impl::Impl()
 {
-    createMenu();
-    createFormGroupBox();
+    auto hbox1 = new QHBoxLayout;
+    auto button1 = new PushButton;
+    button1->setIcon(QIcon::fromTheme("document-open"));
+    button1->sigClicked().connect([&](){ open(); });
+    auto button2 = new PushButton;
+    button2->setIcon(QIcon::fromTheme("document-save"));
+    button2->sigClicked().connect([&](){ save(); });
+    hbox1->addWidget(button1);
+    hbox1->addWidget(button2);
+    hbox1->addStretch();
+
+    formatCombo = new ComboBox;
+    formatCombo->addItems(QStringList() << _("1.0") << _("2.0"));
+    formatCombo->setCurrentIndex(1);
+
+    QGroupBox* formGroupBox = new QGroupBox(_("Convert to"));
+    QFormLayout* layout = new QFormLayout;
+    layout->addRow(_("Format:"), formatCombo);
+    formGroupBox->setLayout(layout);
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
 
     connect(buttonBox, &QDialogButtonBox::accepted, [&](){ accept(); });
-    connect(buttonBox, &QDialogButtonBox::rejected, [&](){ reject(); });
 
     QVBoxLayout* mainLayout = new QVBoxLayout;
-    mainLayout->setMenuBar(menuBar);
+    mainLayout->addLayout(hbox1);
     mainLayout->addWidget(formGroupBox);
     mainLayout->addWidget(new HSeparator);
     mainLayout->addWidget(buttonBox);
@@ -274,33 +279,4 @@ void BodyConverter::Impl::saveFile(const QString& fileName)
     QMessageBox msgBox;
     msgBox.setText(status);
     msgBox.exec();
-}
-
-
-void BodyConverter::Impl::createMenu()
-{
-    menuBar = new QMenuBar;
-
-    fileMenu = new QMenu(_("&File"), this);
-    openAct = fileMenu->addAction(_("&Open"));
-    saveAct = fileMenu->addAction(_("&Save"));
-    exitAct = fileMenu->addAction(_("E&xit"));
-    menuBar->addMenu(fileMenu);
-
-    connect(openAct, &QAction::triggered, [&](){ open(); });
-    connect(saveAct, &QAction::triggered, [&](){ save(); });
-    connect(exitAct, &QAction::triggered, [&](){ accept(); });
-}
-
-
-void BodyConverter::Impl::createFormGroupBox()
-{
-    formatCombo = new ComboBox;
-    formatCombo->addItems(QStringList() << _("1.0") << _("2.0"));
-    formatCombo->setCurrentIndex(1);
-
-    formGroupBox = new QGroupBox(_("Convert to"));
-    QFormLayout* layout = new QFormLayout;
-    layout->addRow(_("Format:"), formatCombo);
-    formGroupBox->setLayout(layout);
 }

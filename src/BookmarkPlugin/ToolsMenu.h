@@ -7,12 +7,13 @@
 
 #include <QAction>
 #include <QMenu>
+#include "exportdecl.h"
 
 namespace cnoid {
 
 class ExtensionManager;
 
-class ToolsMenu
+class CNOID_EXPORT ToolsMenu
 {
 public:
     static void initializeClass(ExtensionManager* ext);
@@ -30,7 +31,7 @@ private:
     int max_actions_;
 };
 
-QMenu* toolsMenu();
+CNOID_EXPORT QMenu* toolsMenu();
 
 }
 

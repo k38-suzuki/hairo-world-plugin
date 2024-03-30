@@ -17,7 +17,10 @@ set(headers
   KIOSKManager.h
   ToolsMenu.h
   WorldLogManager.h
+  exportdecl.h
 )
+
+choreonoid_make_header_public(ToolsMenu.h)
 
 set(target CnoidBookmarkPlugin)
 make_gettext_mofiles(${target} mofiles)

@@ -7,7 +7,7 @@
 #include <cnoid/ComboBox>
 #include <cnoid/Dialog>
 #include <cnoid/ExtensionManager>
-#include <cnoid/MenuManager>
+#include <cnoid/MainMenu>
 #include <cnoid/MessageView>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
@@ -180,13 +180,12 @@ void InertiaCalculator::initializeClass(ExtensionManager* ext)
 {
     if(!calculatorInstance) {
         calculatorInstance = ext->manage(new InertiaCalculator);
-    }
 
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
-    mm.addItem(_("Calculate Inertia"))->sigTriggered().connect([&](){
-        calculatorInstance->impl->mv->clear();
-        calculatorInstance->impl->show();
-    });
+        MainMenu::instance()->add_Tools_Item(
+            _("Calculate Inertia"), [](){
+                calculatorInstance->impl->mv->clear();
+                calculatorInstance->impl->show(); });
+    }
 }
 
 

@@ -7,7 +7,7 @@
 #include <cnoid/ComboBox>
 #include <cnoid/Dialog>
 #include <cnoid/ExtensionManager>
-#include <cnoid/MenuManager>
+#include <cnoid/MainMenu>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
 #include <QDialogButtonBox>
@@ -51,9 +51,8 @@ void NetworkEmulator::initializeClass(ExtensionManager* ext)
     if(!emulatorInstance) {
         emulatorInstance = ext->manage(new NetworkEmulator);
 
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
-        mm.addItem(_("NetworkEmulator"))->sigTriggered().connect(
-                    [&](){ emulatorInstance->impl->show(); });
+        MainMenu::instance()->add_Tools_Item(
+            _("NetworkEmulator"), []() { emulatorInstance->impl->show(); });
     }
 }
 
