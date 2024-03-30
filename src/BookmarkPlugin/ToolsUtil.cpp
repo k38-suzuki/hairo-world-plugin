@@ -2,9 +2,10 @@
    @author Kenta Suzuki
 */
 
-#include "ToolsMenu.h"
+#include "ToolsUtil.h"
 #include <cnoid/Action>
 #include <cnoid/ExtensionManager>
+#include <cnoid/MainWindow>
 #include <cnoid/Menu>
 #include <cnoid/MenuManager>
 #include "gettext.h"
@@ -15,11 +16,7 @@ using namespace cnoid;
 namespace {
 
 Menu* menu_Tools = nullptr;
-
-QMenu* toolsMenu()
-{
-    return menu_Tools;
-}
+ToolBar* fileBar_ = nullptr;
 
 }
 
@@ -66,4 +63,28 @@ void ToolsMenu::clearActions()
     for(auto& action : currentMenu->actions()) {
         currentMenu->removeAction(action);
     }
+}
+
+
+namespace cnoid {
+
+QMenu* toolsMenu()
+{
+    return menu_Tools;
+}
+
+
+ToolBar* fileBar()
+{
+    if(!fileBar_) {
+        vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
+        for(auto& toolBar : toolBars) {
+            if(toolBar->name() == "FileBar") {
+                fileBar_ = toolBar;
+            }
+        }
+    }
+    return fileBar_;
+}
+
 }

@@ -2,9 +2,10 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_BOOKMARK_PLUGIN_TOOLS_MENU_H
-#define CNOID_BOOKMARK_PLUGIN_TOOLS_MENU_H
+#ifndef CNOID_BOOKMARK_PLUGIN_TOOLS_UTIL_H
+#define CNOID_BOOKMARK_PLUGIN_TOOLS_UTIL_H
 
+#include <cnoid/ToolBar>
 #include <QAction>
 #include <QMenu>
 #include "exportdecl.h"
@@ -32,7 +33,8 @@ private:
 };
 
 CNOID_EXPORT QMenu* toolsMenu();
+CNOID_EXPORT CNOID_EXPORT ToolBar* fileBar();
 
 }
 
-#endif // CNOID_BOOKMARK_PLUGIN_TOOLS_MENU_H
+#endif // CNOID_BOOKMARK_PLUGIN_TOOLS_UTIL_H

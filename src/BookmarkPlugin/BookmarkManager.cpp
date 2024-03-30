@@ -8,11 +8,10 @@
 #include <cnoid/Buttons>
 #include <cnoid/ExtensionManager>
 #include <cnoid/ItemManager>
-#include <cnoid/MainWindow>
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
-#include <cnoid/ToolBar>
 #include <cnoid/stdx/filesystem>
+#include <cnoid/ToolsUtil>
 #include "gettext.h"
 
 using namespace std;
@@ -31,24 +30,19 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
     if(!bookmarkInstance) {
         bookmarkInstance = ext->manage(new BookmarkManager);
 
-        vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
-        for(auto& bar : toolBars) {
-            if(bar->name() == "FileBar") {
-                auto button1 = bar->addButton(QIcon::fromTheme("list-add"));
-                button1->setToolTip(_("Bookmark a current project"));
-                button1->sigClicked().connect([&](){ 
-                    const string& filename = ProjectManager::instance()->currentProjectFile();
-                    if(!filename.empty()) {
-                        bookmarkInstance->addItem(filename.c_str());
-                    }
-                    });
-                auto button2 = bar->addButton(QIcon::fromTheme("user-bookmarks"));
-                button2->setToolTip(_("Show the bookmark manager"));
-                button2->sigClicked().connect([&](){
-                    bookmarkInstance->updateList();
-                    bookmarkInstance->show(); });
+        auto button1 = fileBar()->addButton(QIcon::fromTheme("list-add"));
+        button1->setToolTip(_("Bookmark a current project"));
+        button1->sigClicked().connect([&](){ 
+            const string& filename = ProjectManager::instance()->currentProjectFile();
+            if(!filename.empty()) {
+                bookmarkInstance->addItem(filename.c_str());
             }
-        }
+            });
+        auto button2 = fileBar()->addButton(QIcon::fromTheme("user-bookmarks"));
+        button2->setToolTip(_("Show the bookmark manager"));
+        button2->sigClicked().connect([&](){
+            bookmarkInstance->updateList();
+            bookmarkInstance->show(); });
     }
 }
 

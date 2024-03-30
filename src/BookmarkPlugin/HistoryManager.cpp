@@ -4,10 +4,9 @@
 
 #include "HistoryManager.h"
 #include <cnoid/ExtensionManager>
-#include <cnoid/MainWindow>
 #include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
-#include <cnoid/ToolBar>
+#include <cnoid/ToolsUtil>
 #include "gettext.h"
 
 using namespace std;
@@ -24,16 +23,11 @@ void HistoryManager::initializeClass(ExtensionManager* ext)
     if(!historyInstance) {
         historyInstance = ext->manage(new HistoryManager);
 
-        vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
-        for(auto& bar : toolBars) {
-            if(bar->name() == "FileBar") {
-                auto button1 = bar->addButton(QIcon::fromTheme("document-revert"));
-                button1->setToolTip(_("Show the history manager"));
-                button1->sigClicked().connect([&](){
-                    historyInstance->updateList();
-                    historyInstance->show(); });
-            }
-        }       
+        auto button1 = fileBar()->addButton(QIcon::fromTheme("document-revert"));
+        button1->setToolTip(_("Show the history manager"));
+        button1->sigClicked().connect([&](){
+            historyInstance->updateList();
+            historyInstance->show(); });
     }
 }
 

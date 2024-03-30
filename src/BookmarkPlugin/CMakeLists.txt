@@ -5,7 +5,7 @@ set(sources
   HistoryManager.cpp
   JoyKey.cpp
   KIOSKManager.cpp
-  ToolsMenu.cpp
+  ToolsUtil.cpp
   WorldLogManager.cpp
 )
 
@@ -15,12 +15,12 @@ set(headers
   HistoryManager.h
   JoyKey.h
   KIOSKManager.h
-  ToolsMenu.h
+  ToolsUtil.h
   WorldLogManager.h
   exportdecl.h
 )
 
-choreonoid_make_header_public(ToolsMenu.h)
+choreonoid_make_header_public(ToolsUtil.h)
 
 set(target CnoidBookmarkPlugin)
 make_gettext_mofiles(${target} mofiles)

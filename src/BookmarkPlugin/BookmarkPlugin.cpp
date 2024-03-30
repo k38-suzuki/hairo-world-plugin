@@ -7,7 +7,7 @@
 #include "BookmarkManager.h"
 #include "HistoryManager.h"
 #include "KIOSKManager.h"
-#include "ToolsMenu.h"
+#include "ToolsUtil.h"
 #include "WorldLogManager.h"
 
 using namespace cnoid;

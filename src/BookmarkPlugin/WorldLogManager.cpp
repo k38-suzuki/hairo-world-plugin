@@ -7,16 +7,15 @@
 #include <cnoid/AppConfig>
 #include <cnoid/CheckBox>
 #include <cnoid/ExtensionManager>
-#include <cnoid/MainWindow>
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
 #include <cnoid/stdx/filesystem>
 #include <cnoid/TimeBar>
-#include <cnoid/ToolBar>
 #include <cnoid/UTF8>
 #include <cnoid/WorldItem>
 #include <src/BodyPlugin/WorldLogFileItem.h>
+#include <cnoid/ToolsUtil>
 #include <QDateTime>
 #include "gettext.h"
 
@@ -36,16 +35,11 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
     if(!logInstance) {
         logInstance = ext->manage(new WorldLogManager);
 
-        vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
-        for(auto& bar : toolBars) {
-            if(bar->name() == "FileBar") {
-                auto button1 = bar->addButton(QIcon::fromTheme("emblem-documents"));
-                button1->setToolTip(_("Show the worldlog manager"));
-                button1->sigClicked().connect([&](){
-                    logInstance->updateList();
-                    logInstance->show(); });
-            }
-        }
+        auto button1 = fileBar()->addButton(QIcon::fromTheme("emblem-documents"));
+        button1->setToolTip(_("Show the worldlog manager"));
+        button1->sigClicked().connect([&](){
+            logInstance->updateList();
+            logInstance->show(); });
     }
 }
 
