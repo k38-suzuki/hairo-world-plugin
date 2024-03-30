@@ -88,7 +88,7 @@ BookmarkManager::~BookmarkManager()
 }
 
 
-void BookmarkManager::onItemDoubleClicked(string& text)
+void BookmarkManager::onItemDoubleClicked(const string& text)
 {
     if(!text.empty()) {
         filesystem::path path(text);

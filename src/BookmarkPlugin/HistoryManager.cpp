@@ -55,7 +55,7 @@ HistoryManager::~HistoryManager()
 }
 
 
-void HistoryManager::onItemDoubleClicked(string& text)
+void HistoryManager::onItemDoubleClicked(const string& text)
 {
     if(ProjectManager::instance()->tryToCloseProject()) {
         ProjectManager::instance()->clearProject();

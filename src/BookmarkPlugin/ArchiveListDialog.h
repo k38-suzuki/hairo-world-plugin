@@ -28,7 +28,7 @@ public:
 
 protected:
     virtual void onFinished(int result) override;
-    virtual void onItemDoubleClicked(std::string& text);
+    virtual void onItemDoubleClicked(const std::string& text);
 
 private:
     void onButtonClicked();

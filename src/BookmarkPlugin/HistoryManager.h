@@ -20,7 +20,7 @@ public:
     virtual ~HistoryManager();
 
 protected:
-    virtual void onItemDoubleClicked(std::string& text) override;
+    virtual void onItemDoubleClicked(const std::string& text) override;
 
 private:
 

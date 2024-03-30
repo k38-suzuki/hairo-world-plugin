@@ -167,7 +167,7 @@ void ArchiveListDialog::onFinished(int result)
 }
 
 
-void ArchiveListDialog::onItemDoubleClicked(std::string& text)
+void ArchiveListDialog::onItemDoubleClicked(const std::string& text)
 {
 
 }

@@ -23,7 +23,7 @@ public:
     virtual ~WorldLogManager();
 
 protected:
-    virtual void onItemDoubleClicked(std::string& text) override;
+    virtual void onItemDoubleClicked(const std::string& text) override;
 
 private:
     void onSimulationAboutToStart(SimulatorItem* simulatorItem);

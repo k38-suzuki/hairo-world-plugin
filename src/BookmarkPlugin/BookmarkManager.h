@@ -22,7 +22,7 @@ public:
     virtual ~BookmarkManager();
 
 protected:
-    virtual void onItemDoubleClicked(std::string& text) override;
+    virtual void onItemDoubleClicked(const std::string& text) override;
 
 private:
     void onButtonClicked();

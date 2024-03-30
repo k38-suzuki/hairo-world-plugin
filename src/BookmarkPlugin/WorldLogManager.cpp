@@ -89,7 +89,7 @@ WorldLogManager::~WorldLogManager()
 }
 
 
-void WorldLogManager::onItemDoubleClicked(string& text)
+void WorldLogManager::onItemDoubleClicked(const string& text)
 {
     if(!text.empty()) {
         filesystem::path path(text);

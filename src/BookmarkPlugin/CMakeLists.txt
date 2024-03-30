@@ -5,6 +5,7 @@ set(sources
   HistoryManager.cpp
   JoyKey.cpp
   KIOSKManager.cpp
+  ToolsMenu.cpp
   WorldLogManager.cpp
 )
 
@@ -14,6 +15,7 @@ set(headers
   HistoryManager.h
   JoyKey.h
   KIOSKManager.h
+  ToolsMenu.h
   WorldLogManager.h
 )
 
