@@ -55,6 +55,7 @@ void ArchiveListDialog::addItem(const QString& text)
     if(!text.isEmpty()) {
         listWidget->addItem(text);
         storeList();
+        updateList();
     }
 }
 
