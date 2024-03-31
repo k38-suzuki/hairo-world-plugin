@@ -14,9 +14,9 @@
 #include <cnoid/SpinBox>
 #include <cnoid/stdx/filesystem>
 #include <cnoid/YAMLWriter>
+#include <QBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
-#include <QVBoxLayout>
 #include "ColorButton.h"
 #include "FileFormWidget.h"
 #include "gettext.h"

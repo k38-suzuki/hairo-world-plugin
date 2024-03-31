@@ -14,10 +14,9 @@
 #include <cnoid/RootItem>
 #include <cnoid/Separator>
 #include <cnoid/stdx/filesystem>
+#include <QBoxLayout>
 #include <QGridLayout>
-#include <QHBoxLayout>
 #include <QLabel>
-#include <QVBoxLayout>
 #include "gettext.h"
 
 using namespace std;

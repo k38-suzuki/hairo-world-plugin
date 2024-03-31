@@ -21,10 +21,9 @@
 #include <cnoid/Widget>
 #include <cnoid/YAMLReader>
 #include <cnoid/YAMLWriter>
-#include <QHBoxLayout>
+#include <QBoxLayout>
 #include <QLabel>
 #include <QStackedWidget>
-#include <QVBoxLayout>
 #include "ColorButton.h"
 #include "FileFormWidget.h"
 #include "gettext.h"

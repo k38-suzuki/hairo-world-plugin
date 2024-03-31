@@ -4,9 +4,9 @@
 
 #include "AxisWidget.h"
 #include <cnoid/Separator>
+#include <QBoxLayout>
 #include <QGridLayout>
 #include <QPainter>
-#include <QVBoxLayout>
 
 using namespace cnoid;
 

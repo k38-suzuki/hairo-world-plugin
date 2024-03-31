@@ -26,11 +26,10 @@
 #include <cnoid/WorldItem>
 #include <cnoid/stdx/filesystem>
 #include <src/BodyPlugin/WorldLogFileItem.h>
+#include <QBoxLayout>
 #include <QDialogButtonBox>
-#include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
-#include <QVBoxLayout>
 #include <vector>
 #include "gettext.h"
 

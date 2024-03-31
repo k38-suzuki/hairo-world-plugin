@@ -12,13 +12,12 @@
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <cnoid/ToolBar>
+#include <QBoxLayout>
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QGroupBox>
-#include <QHBoxLayout>
 #include <QLabel>
 #include <QProgressBar>
-#include <QVBoxLayout>
 #include <vector>
 #include <fmt/format.h>
 #include "gettext.h"

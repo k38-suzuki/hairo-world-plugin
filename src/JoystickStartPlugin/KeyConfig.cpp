@@ -9,11 +9,10 @@
 #include <cnoid/Dialog>
 #include <cnoid/Joystick>
 #include <cnoid/Separator>
+#include <QBoxLayout>
 #include <QDialogButtonBox>
 #include <QGridLayout>
-#include <QHBoxLayout>
 #include <QLabel>
-#include <QVBoxLayout>
 #include "gettext.h"
 
 using namespace std;

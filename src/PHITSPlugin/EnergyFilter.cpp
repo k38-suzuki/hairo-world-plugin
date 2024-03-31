@@ -15,10 +15,9 @@
 #include <cnoid/TreeWidget>
 #include <cnoid/UTF8>
 #include <cnoid/YAMLReader>
+#include <QBoxLayout>
 #include <QDialogButtonBox>
-#include <QHBoxLayout>
 #include <QLabel>
-#include <QVBoxLayout>
 #include "gettext.h"
 
 using namespace std;

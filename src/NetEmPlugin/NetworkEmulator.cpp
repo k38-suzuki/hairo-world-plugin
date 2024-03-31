@@ -10,10 +10,10 @@
 #include <cnoid/MainMenu>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
+#include <QBoxLayout>
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QLabel>
-#include <QVBoxLayout>
 #include "gettext.h"
 #include "NetEm.h"
 

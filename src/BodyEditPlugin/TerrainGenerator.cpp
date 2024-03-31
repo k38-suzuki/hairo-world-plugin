@@ -15,9 +15,9 @@
 #include <cnoid/SpinBox>
 #include <cnoid/stdx/filesystem>
 #include <cnoid/YAMLWriter>
+#include <QBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
-#include <QVBoxLayout>
 #include <fstream>
 #include <sstream>
 #include <stdio.h>

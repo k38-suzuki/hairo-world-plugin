@@ -12,7 +12,7 @@
 #include <QTextEdit>
 #include <QTextStream>
 #include <QToolBar>
-#include <QVBoxLayout>
+#include <QBoxLayout>
 #include "gettext.h"
 
 using namespace std;

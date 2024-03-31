@@ -9,8 +9,7 @@
 #include <cnoid/JoystickCapture>
 #include <mutex>
 #include <vector>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
+#include <QBoxLayout>
 #include "AxisWidget.h"
 #include "gettext.h"
 
@@ -133,7 +132,7 @@ OnScreenJoystickWidget::Impl::Impl(OnScreenJoystickWidget* self)
     joystick.sigAxis().connect([&](int id, double position){ onAxis(id, position); });
     joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
 
-    ExtJoystick::registerJoystick("OnScreenJoystickWidget", this);
+    ExtJoystick::registerJoystick("OnScreenJoystickView", this);
 }
 
 

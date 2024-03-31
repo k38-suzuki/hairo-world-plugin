@@ -7,6 +7,7 @@ set(sources
   JoystickTester.cpp
   KeyConfig.cpp
   JoystickStarter.cpp
+  VirtualJoystickWidget.cpp
 )
 
 set(headers
@@ -18,6 +19,7 @@ set(headers
   JoystickTester.h
   KeyConfig.h
   JoystickStarter.h
+  VirtualJoystickWidget.h
   exportdecl.h
 )
 

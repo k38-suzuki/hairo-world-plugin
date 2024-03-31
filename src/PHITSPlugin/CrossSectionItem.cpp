@@ -28,6 +28,7 @@
 #include <cnoid/ViewManager>
 #include <cnoid/stdx/filesystem>
 #include <fmt/format.h>
+#include <QBoxLayout>
 #include <QDateTime>
 #include <QDialogButtonBox>
 #include <QDir>
@@ -36,7 +37,6 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QTextStream>
-#include <QVBoxLayout>
 #include <cstdlib>
 #include <iomanip>
 #include "ColorScale.h"

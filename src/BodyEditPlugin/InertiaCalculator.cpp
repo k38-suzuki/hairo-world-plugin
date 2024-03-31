@@ -13,11 +13,11 @@
 #include <cnoid/SpinBox>
 #include <cnoid/EigenTypes>
 #include <fmt/format.h>
+#include <QBoxLayout>
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QLabel>
 #include <QStackedWidget>
-#include <QVBoxLayout>
 #include "gettext.h"
 
 using namespace cnoid;
