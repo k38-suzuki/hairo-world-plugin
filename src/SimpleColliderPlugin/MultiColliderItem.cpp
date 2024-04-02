@@ -187,33 +187,33 @@ void MultiColliderItem::doPutProperties(PutPropertyFunction& putProperty)
                         return true;
                     });
 
-        putProperty.min(0.0).max(1.0)(_("salt"), salt(),
+        putProperty.min(0.0).max(1.0)(_("salt amount"), saltAmount(),
                     [this](double value){
-                        setSalt(value);
+                        setSaltAmount(value);
                         return true;
                     });
 
-        putProperty.min(0.0).max(1.0)(_("salt rate"), saltRate(),
+        putProperty.min(0.0).max(1.0)(_("salt chance"), saltChance(),
                     [this](double value){
                         setSaltRate(value);
                         return true;
                     });
 
-        putProperty.min(0.0).max(1.0)(_("pepper"), pepper(),
+        putProperty.min(0.0).max(1.0)(_("pepper amount"), pepperAmount(),
                     [this](double value){
-                        setPepper(value);
+                        setPepperAmount(value);
                         return true;
                     });
 
-        putProperty.min(0.0).max(1.0)(_("pepper rate"), pepperRate(),
+        putProperty.min(0.0).max(1.0)(_("pepper chance"), pepperChance(),
                     [this](double value){
                         setPepperRate(value);
                         return true;
                     });
 
-        putProperty.min(0.0).max(1.0)(_("mosaic rate"), mosaicRate(),
+        putProperty.min(0.0).max(1.0)(_("mosaic chance"), mosaicChance(),
                     [this](double value){
-                        setMosaicRate(value);
+                        setMosaicChance(value);
                         return true;
                     });
 
@@ -257,11 +257,11 @@ bool MultiColliderItem::store(Archive& archive)
     archive.write("coef_b", coefB());
     archive.write("coef_d", coefD());
     archive.write("std_dev", stdDev());
-    archive.write("salt", salt());
-    archive.write("salt_rate", saltRate());
-    archive.write("pepper", pepper());
-    archive.write("pepper_rate", pepperRate());
-    archive.write("mosaic_rate", mosaicRate());
+    archive.write("salt_amount", saltAmount());
+    archive.write("salt_chance", saltChance());
+    archive.write("pepper_amount", pepperAmount());
+    archive.write("pepper_chance", pepperChance());
+    archive.write("mosaic_chance", mosaicChance());
     archive.write("kernel", kernel());
     return true;
 }
@@ -305,11 +305,11 @@ bool MultiColliderItem::restore(const Archive& archive)
     setCoefB(archive.get("coef_b", 0.0));
     setCoefD(archive.get("coef_d", 1.0));
     setStdDev(archive.get("std_dev", 0.0));
-    setSalt(archive.get("salt", 0.0));
-    setSaltRate(archive.get("salt_rate", 0.0));
-    setPepper(archive.get("pepper", 0.0));
-    setPepperRate(archive.get("pepper_rate", 0.0));
-    setMosaicRate(archive.get("mosaic_rate", 0.0));
+    setSaltAmount(archive.get("salt_amount", 0.0));
+    setSaltRate(archive.get("salt_chance", 0.0));
+    setPepperAmount(archive.get("pepper_amount", 0.0));
+    setPepperRate(archive.get("pepper_chance", 0.0));
+    setMosaicChance(archive.get("mosaic_chance", 0.0));
     setKernel(archive.get("kernel", 16));
 
     return true;

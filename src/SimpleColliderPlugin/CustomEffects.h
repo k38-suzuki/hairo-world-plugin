@@ -82,16 +82,16 @@ public:
     double coefD() const { return coef_d_; }
     void setStdDev(const double& std_dev) { std_dev_ = std_dev; }
     double stdDev() const { return std_dev_; }
-    void setSalt(const double& salt) { salt_ = salt; }
-    double salt() const { return salt_; }
-    void setSaltRate(const double& salt_rate) { salt_rate_ = salt_rate; }
-    double saltRate() const { return salt_rate_; }
-    void setPepper(const double& pepper) { pepper_ = pepper; }
-    double pepper() const { return pepper_; }
-    void setPepperRate(const double& pepper_rate) { pepper_rate_ = pepper_rate; }
-    double pepperRate() const { return pepper_rate_; }
-    void setMosaicRate(const double& mosaic_rate) { mosaic_rate_ = mosaic_rate; }
-    double mosaicRate() const { return mosaic_rate_; }
+    void setSaltAmount(const double& salt_amount) { salt_amount_ = salt_amount; }
+    double saltAmount() const { return salt_amount_; }
+    void setSaltRate(const double& salt_chance) { salt_chance_ = salt_chance; }
+    double saltChance() const { return salt_chance_; }
+    void setPepperAmount(const double& pepper_amount) { pepper_amount_ = pepper_amount; }
+    double pepperAmount() const { return pepper_amount_; }
+    void setPepperRate(const double& pepper_chance) { pepper_chance_ = pepper_chance; }
+    double pepperChance() const { return pepper_chance_; }
+    void setMosaicChance(const double& mosaic_chance) { mosaic_chance_ = mosaic_chance; }
+    double mosaicChance() const { return mosaic_chance_; }
     void setKernel(const int& kernel) { kernel_ = kernel; }
     int kernel() const { return kernel_; }
 
@@ -101,11 +101,11 @@ private:
     double coef_b_;
     double coef_d_;
     double std_dev_;
-    double salt_;
-    double salt_rate_;
-    double pepper_;
-    double pepper_rate_;
-    double mosaic_rate_;
+    double salt_amount_;
+    double salt_chance_;
+    double pepper_amount_;
+    double pepper_chance_;
+    double mosaic_chance_;
     int kernel_;
 };
 

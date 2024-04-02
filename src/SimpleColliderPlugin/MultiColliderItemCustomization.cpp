@@ -93,34 +93,34 @@ void onSelectedItemChanged(const ItemList<>& selectedItems)
             collider->setStdDev(value);
             collider->notifyUpdate(); });
 
-        GeneralSliderView::SliderPtr slider_salt = sliderView->getOrCreateSlider(_("salt"), effect_range[9][0], effect_range[9][1], 2);
-        slider_salt->setValue(collider->salt());
-        slider_salt->setCallback([=](double value){
-            collider->setSalt(value);
+        GeneralSliderView::SliderPtr slider_salt_amount = sliderView->getOrCreateSlider(_("salt amount"), effect_range[9][0], effect_range[9][1], 2);
+        slider_salt_amount->setValue(collider->saltAmount());
+        slider_salt_amount->setCallback([=](double value){
+            collider->setSaltAmount(value);
             collider->notifyUpdate(); });
 
-        GeneralSliderView::SliderPtr slider_salt_rate = sliderView->getOrCreateSlider(_("salt rate"), 0.0, 1.0, 2);
-        slider_salt_rate->setValue(collider->saltRate());
-        slider_salt_rate->setCallback([=](double value){
+        GeneralSliderView::SliderPtr slider_salt_chance = sliderView->getOrCreateSlider(_("salt chance"), 0.0, 1.0, 2);
+        slider_salt_chance->setValue(collider->saltChance());
+        slider_salt_chance->setCallback([=](double value){
             collider->setSaltRate(value);
             collider->notifyUpdate(); });
 
-        GeneralSliderView::SliderPtr slider_pepper = sliderView->getOrCreateSlider(_("pepper"), effect_range[10][0], effect_range[10][1], 2);
-        slider_pepper->setValue(collider->pepper());
-        slider_pepper->setCallback([=](double value){
-            collider->setPepper(value);
+        GeneralSliderView::SliderPtr slider_pepper_amount = sliderView->getOrCreateSlider(_("pepper amount"), effect_range[10][0], effect_range[10][1], 2);
+        slider_pepper_amount->setValue(collider->pepperAmount());
+        slider_pepper_amount->setCallback([=](double value){
+            collider->setPepperAmount(value);
             collider->notifyUpdate(); });
 
-        GeneralSliderView::SliderPtr slider_pepper_rate = sliderView->getOrCreateSlider(_("pepper rate"), 0.0, 1.0, 2);
-        slider_pepper_rate->setValue(collider->pepperRate());
-        slider_pepper_rate->setCallback([=](double value){
+        GeneralSliderView::SliderPtr slider_pepper_chance = sliderView->getOrCreateSlider(_("pepper chance"), 0.0, 1.0, 2);
+        slider_pepper_chance->setValue(collider->pepperChance());
+        slider_pepper_chance->setCallback([=](double value){
             collider->setPepperRate(value);
             collider->notifyUpdate(); });
     
-        GeneralSliderView::SliderPtr slider_mosaic_rate = sliderView->getOrCreateSlider(_("mosaic rate"), 0.0, 1.0, 2);
-        slider_mosaic_rate->setValue(collider->mosaicRate());
-        slider_mosaic_rate->setCallback([=](double value){
-            collider->setMosaicRate(value);
+        GeneralSliderView::SliderPtr slider_mosaic_chance = sliderView->getOrCreateSlider(_("mosaic chance"), 0.0, 1.0, 2);
+        slider_mosaic_chance->setValue(collider->mosaicChance());
+        slider_mosaic_chance->setCallback([=](double value){
+            collider->setMosaicChance(value);
             collider->notifyUpdate(); });
 
         GeneralSliderView::SliderPtr slider_kernel = sliderView->getOrCreateSlider(_("kernel"), 8.0, 64.0, 2);
@@ -138,11 +138,11 @@ void onSelectedItemChanged(const ItemList<>& selectedItems)
         sliders.push_back(slider_coefb);
         sliders.push_back(slider_coefd);
         sliders.push_back(slider_stddev);
-        sliders.push_back(slider_salt);
-        sliders.push_back(slider_salt_rate);
-        sliders.push_back(slider_pepper);
-        sliders.push_back(slider_pepper_rate);
-        sliders.push_back(slider_mosaic_rate);
+        sliders.push_back(slider_salt_amount);
+        sliders.push_back(slider_salt_chance);
+        sliders.push_back(slider_pepper_amount);
+        sliders.push_back(slider_pepper_chance);
+        sliders.push_back(slider_mosaic_chance);
         sliders.push_back(slider_kernel);
     }
 }

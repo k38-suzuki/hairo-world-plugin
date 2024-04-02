@@ -107,11 +107,11 @@ items:
                 coef_b: 0
                 coef_d: 0
                 std_dev: 0
-                salt: 0.01
-                salt_rate: 0.1
-                pepper: 0
-                pepper_rate: 1
-                mosaic_rate: 0.1
+                salt_amount: 0.01
+                salt_chance: 0.1
+                pepper_amount: 0
+                pepper_chance: 1
+                mosaic_chance: 0.1
                 kernel: 16
         -
           id: 6
@@ -172,11 +172,11 @@ items:
             coef_b: 0
             coef_d: 1
             std_dev: 0
-            salt: 0
-            salt_rate: 0
-            pepper: 0
-            pepper_rate: 0
-            mosaic_rate: 0
+            salt_amount: 0
+            salt_chance: 0
+            pepper_amount: 0
+            pepper_chance: 0
+            mosaic_chance: 0
             kernel: 16
         -
           id: 8

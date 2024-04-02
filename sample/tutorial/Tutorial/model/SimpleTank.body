@@ -129,11 +129,11 @@ links:
         coefB: 0.0
         coefD: 1.0
         stdDev: 0.0
-        salt: 0.01
-        saltRate: 0.1
-        pepper: 0.0
-        pepperRate: 0.0
-        mosaicRate: 0.1
+        salt_amount: 0.01
+        saltChance: 0.1
+        pepper_amount: 0.0
+        pepperChance: 0.0
+        mosaicChance: 0.1
         kernel: 16
         elements:
           Shape:

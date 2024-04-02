@@ -26,11 +26,11 @@ public:
     void white(Image* image);
     void black(Image* image);
 
-    void salt(Image* image, const double& salt);
-    void random_salt(Image* image, const double& salt, const double& salt_rate);
-    void pepper(Image* image, const double& pepper);
-    void random_pepper(Image* image, const double& pepper, const double& pepper_rate);
-    void salt_pepper(Image* image, const double& salt, const double& pepper);
+    void salt(Image* image, const double& salt_amount);
+    void random_salt(Image* image, const double& salt_amount, const double& salt_chance);
+    void pepper(Image* image, const double& pepper_amount);
+    void random_pepper(Image* image, const double& pepper_amount, const double& pepper_chance);
+    void salt_pepper(Image* image, const double& salt_amount, const double& pepper_amount);
     void rgb(Image* image, const double& red, const double& green, const double& blue);
     void hsv(Image* image, const double& hue, const double& saturation, const double& value);
     void gaussian_noise(Image* image, const double& std_dev);

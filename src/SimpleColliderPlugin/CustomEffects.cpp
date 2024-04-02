@@ -57,11 +57,11 @@ VFXEffects::VFXEffects()
     coef_b_ = 0.0;
     coef_d_ = 0.0;
     std_dev_ = 0.0;
-    salt_ = 0.0;
-    salt_rate_ = 1.0;
-    pepper_ = 0.0;
-    pepper_rate_ = 1.0;
-    mosaic_rate_ = 1.0;
+    salt_amount_ = 0.0;
+    salt_chance_ = 1.0;
+    pepper_amount_ = 0.0;
+    pepper_chance_ = 1.0;
+    mosaic_chance_ = 1.0;
     kernel_ = 16;
 }
 
@@ -73,10 +73,10 @@ VFXEffects::VFXEffects(const VFXEffects& org)
     coef_b_ = org.coef_b_;
     coef_d_ = org.coef_d_;
     std_dev_ = org.std_dev_;
-    salt_ = org.salt_;
-    salt_rate_ = org.salt_rate_;
-    pepper_ = org.pepper_;
-    pepper_rate_ = org.pepper_rate_;
-    mosaic_rate_ = org.mosaic_rate_;
+    salt_amount_ = org.salt_amount_;
+    salt_chance_ = org.salt_chance_;
+    pepper_amount_ = org.pepper_amount_;
+    pepper_chance_ = org.pepper_chance_;
+    mosaic_chance_ = org.mosaic_chance_;
     kernel_ = org.kernel_;
 }

@@ -134,11 +134,11 @@ msgstr "拡大率"
 msgid "std dev"
 msgstr "標準偏差"
 
-msgid "salt"
-msgstr "白色ノイズ"
+msgid "salt amount"
+msgstr "白色ノイズの量"
 
-msgid "pepper"
-msgstr "黒色ノイズ"
+msgid "pepper amount"
+msgstr "黒色ノイズの量"
 
 msgid "hue"
 msgstr "色相"
@@ -158,13 +158,13 @@ msgstr "緑"
 msgid "blue"
 msgstr "青"
 
-msgid "salt rate"
+msgid "salt chance"
 msgstr "白色ノイズの確率"
 
-msgid "pepper rate"
+msgid "pepper chance"
 msgstr "黒色ノイズの確率"
 
-msgid "mosaic rate"
+msgid "mosaic chance"
 msgstr "モザイクの確率"
 
 msgid "kernel"

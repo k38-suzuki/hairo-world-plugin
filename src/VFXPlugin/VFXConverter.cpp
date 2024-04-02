@@ -118,7 +118,7 @@ void VFXConverter::black(Image* image)
 }
 
 
-void VFXConverter::salt(Image* image, const double& salt)
+void VFXConverter::salt(Image* image, const double& salt_amount)
 {
     image->setSize(width_, height_, 3);
     unsigned char* pixels = image->pixels();
@@ -127,7 +127,7 @@ void VFXConverter::salt(Image* image, const double& salt)
         for(int i = 0; i < width_; ++i) {
             unsigned char* pix = &pixels[(i + j * width_) * 3];
             double r = (double)(rand(0, 100)) / 100.0;
-            if(r < salt) {
+            if(r < salt_amount) {
                 pix[0] = pix[1] = pix[2] = 255;
             }
         }
@@ -135,16 +135,16 @@ void VFXConverter::salt(Image* image, const double& salt)
 }
 
 
-void VFXConverter::random_salt(Image* image, const double& salt, const double& salt_rate)
+void VFXConverter::random_salt(Image* image, const double& salt_amount, const double& salt_chance)
 {
     double r = (double)(rand(0, 100)) / 100.0;
-    if(r < salt_rate) {
-        this->salt(image, salt);
+    if(r < salt_chance) {
+        this->salt(image, salt_amount);
     }
 }
 
 
-void VFXConverter::pepper(Image* image, const double& pepper)
+void VFXConverter::pepper(Image* image, const double& pepper_amount)
 {
     image->setSize(width_, height_, 3);
     unsigned char* pixels = image->pixels();
@@ -153,7 +153,7 @@ void VFXConverter::pepper(Image* image, const double& pepper)
         for(int i = 0; i < width_; ++i) {
             unsigned char* pix = &pixels[(i + j * width_) * 3];
             double r = (double)(rand(0, 100)) / 100.0;
-            if(r < pepper) {
+            if(r < pepper_amount) {
                 pix[0] = pix[1] = pix[2] = 0;
             }
         }
@@ -161,16 +161,16 @@ void VFXConverter::pepper(Image* image, const double& pepper)
 }
 
 
-void VFXConverter::random_pepper(Image* image, const double& pepper, const double& pepper_rate)
+void VFXConverter::random_pepper(Image* image, const double& pepper_amount, const double& pepper_chance)
 {
     double r = (double)(rand(0, 100)) / 100.0;
-    if(r < pepper_rate) {
-        this->pepper(image, pepper);
+    if(r < pepper_chance) {
+        this->pepper(image, pepper_amount);
     }
 }
 
 
-void VFXConverter::salt_pepper(Image* image, const double& rate1, const double& rate2)
+void VFXConverter::salt_pepper(Image* image, const double& salt_amount, const double& pepper_amount)
 {
     image->setSize(width_, height_, 3);
     unsigned char* pixels = image->pixels();
@@ -180,10 +180,10 @@ void VFXConverter::salt_pepper(Image* image, const double& rate1, const double& 
             unsigned char* pix = &pixels[(i + j * width_) * 3];
             double salt = (double)(rand(0, 100)) / 100.0;
             double pepper = (double)(rand(0, 100)) / 100.0;
-            if(salt < rate1) {
+            if(salt < salt_amount) {
                 pix[0] = pix[1] = pix[2] = 255;
             }
-            if(pepper < rate2) {
+            if(pepper < pepper_amount) {
                 pix[0] = pix[1] = pix[2] = 0;
             }
         }
