@@ -57,7 +57,6 @@ WorldLogManager::WorldLogManager()
     setFixedSize(800, 450);
 
     project_filename.clear();
-    is_started = false;
 
     saveCheck = new CheckBox;
     saveCheck->setText(_("Save a WorldLog"));
@@ -105,7 +104,6 @@ void WorldLogManager::onItemDoubleClicked(const string& text)
 
 void WorldLogManager::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
-    is_started = true;
     if(saveCheck->isChecked()) {
         filesystem::path homeDir(fromUTF8(getenv("HOME")));
         ProjectManager* pm = ProjectManager::instance();
@@ -141,9 +139,8 @@ void WorldLogManager::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 
 void WorldLogManager::onPlaybackStopped(double time, bool isStoppedManually)
 {
-    if(is_started) {
+    if(saveCheck->isChecked()) {
         ProjectManager::instance()->saveProject(project_filename);
         addItem(project_filename.c_str());
-        is_started = false;
     }
 }
