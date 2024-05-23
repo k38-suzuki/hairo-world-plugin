@@ -23,7 +23,7 @@ public:
         require("Body");
     }
 
-    virtual bool initialize()
+    virtual bool initialize() override
     {
         BodyConverter::initializeClass(this);
         CrawlerGenerator::initializeClass(this);

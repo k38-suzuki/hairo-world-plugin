@@ -4,33 +4,32 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "CollisionVisualizerItem.h"
+
 using namespace cnoid;
 
-class CollisionSeqPlugin : public Plugin
+class ZBarPlugin : public Plugin
 {
 public:
-    CollisionSeqPlugin() : Plugin("CollisionSeq")
+    ZBarPlugin() : Plugin("ZBar")
     {
         require("Body");
     }
-
+    
     virtual bool initialize() override
     {
-        CollisionVisualizerItem::initializeClass(this);
         return true;
     }
 
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("CollisionSeq Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            fmt::format("ZBar Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
-            "Copyright (c) 2021 Japan Atomic Energy Agency.\n"
+            "Copyright (c) 2024 Japan Atomic Energy Agency.\n"
             "\n" +
             MITLicenseText();
         return text.c_str();
     }
 };
 
-CNOID_IMPLEMENT_PLUGIN_ENTRY(CollisionSeqPlugin)
+CNOID_IMPLEMENT_PLUGIN_ENTRY(ZBarPlugin)

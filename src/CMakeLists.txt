@@ -19,3 +19,4 @@ endif()
 
 add_subdirectory(FileExplorerPlugin)
 add_subdirectory(NetEmPlugin)
+add_subdirectory(ZBarPlugin)

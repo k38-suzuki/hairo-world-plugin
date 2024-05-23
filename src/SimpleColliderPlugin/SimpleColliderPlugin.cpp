@@ -17,7 +17,7 @@ public:
         require("Body");
     }
     
-    virtual bool initialize()
+    virtual bool initialize() override
     {
         SimpleColliderItem::initializeClass(this);
         MultiColliderItem::initializeClass(this);

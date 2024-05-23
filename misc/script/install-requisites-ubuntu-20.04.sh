@@ -1,7 +1,8 @@
 #!/bin/sh
 
 sudo apt-get -y install \
-gedit
+gedit \
+zbar-tools
 
 LOGNAME=$(logname)
 

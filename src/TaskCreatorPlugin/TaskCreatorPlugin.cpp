@@ -16,7 +16,7 @@ public:
         require("Body");
     }
     
-    virtual bool initialize()
+    virtual bool initialize() override
     {
         TaskCreator::initializeClass(this);
         return true;
