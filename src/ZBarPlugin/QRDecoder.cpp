@@ -20,7 +20,7 @@ public:
     Process* myProcess;
     Signal<void(string text)> sigDecoded;
 
-    void decode(const string& filename) const;
+    void decode(const string& filename);
     void onReadyReadStandardOutput();
 };
 
@@ -49,31 +49,36 @@ QRDecoder::~QRDecoder()
 
 QRDecoder::Impl::~Impl()
 {
-
+    if(myProcess->state() != Process::NotRunning) {
+        myProcess->kill();
+        myProcess->waitForFinished(100);
+    }
 }
 
 
-void QRDecoder::decode(const string& filename) const
+void QRDecoder::decode(const string& filename)
 {
     impl->decode(filename);
 }
 
 
-void QRDecoder::Impl::decode(const string& filename) const
+void QRDecoder::Impl::decode(const string& filename)
 {
-    QString program = "zbarimg";
-    QStringList arguments;
-    arguments << "--nodbus" << "--quiet" << filename.c_str();
-    myProcess->start(program, arguments);
+    if(!filename.empty()) {
+        QString program = "zbarimg";
+        QStringList arguments;
+        arguments << "--nodbus" << "--quiet" << filename.c_str();
+        myProcess->start(program, arguments);
+    }
 }
 
 
 void QRDecoder::Impl::onReadyReadStandardOutput()
 {
-    QString output(myProcess->readAllStandardOutput());
-    output.replace("QR-Code:", "");
-    output.replace("\n", "");
-    sigDecoded(output.toStdString());
+    QString text(myProcess->readAllStandardOutput());
+    text.replace("QR-Code:", "");
+    text.replace("\n", "");
+    sigDecoded(text.toStdString());
 }
 
 

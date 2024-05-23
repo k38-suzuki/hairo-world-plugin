@@ -17,7 +17,7 @@ public:
     QRDecoder();
     virtual ~QRDecoder();
 
-    void decode(const std::string& filename) const;
+    void decode(const std::string& filename);
 
     SignalProxy<void(std::string text)> sigDecoded();
 
