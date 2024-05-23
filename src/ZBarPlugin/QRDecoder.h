@@ -6,11 +6,11 @@
 #define CNOID_ZBAR_PLUGIN_QR_DECODER_H
 
 #include <cnoid/Signal>
-#include <string>
+#include "exportdecl.h"
 
 namespace cnoid {
 
-class QRDecoder
+class CNOID_EXPORT QRDecoder
 {
 public:
 

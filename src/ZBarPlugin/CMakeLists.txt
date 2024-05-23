@@ -5,6 +5,7 @@ set(sources
 
 set(headers
   QRDecoder.h
+  exportdecl.h
 )
 
 choreonoid_make_header_public(QRDecoder.h)
