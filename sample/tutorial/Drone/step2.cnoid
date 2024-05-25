@@ -41,8 +41,21 @@ items:
             lock_location: false
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
+          children:
+            -
+              id: 3
+              name: "DroneController"
+              plugin: Body
+              class: SimpleControllerItem
+              data:
+                isNoDelayMode: false
+                controllerOptions: ""
+                controller: "DroneTutorial_DroneController"
+                base_directory: "Controller directory"
+                reloading: false
+                export_symbols: false
         -
-          id: 3
+          id: 4
           name: "Floor"
           plugin: Body
           class: BodyItem
@@ -68,7 +81,7 @@ items:
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
         -
-          id: 4
+          id: 5
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
@@ -101,14 +114,14 @@ items:
             oldAccelSensorMode: false
           children:
             -
-              id: 5
+              id: 6
               name: "CFDSimulator"
               plugin: CFD
               class: CFDSimulatorItem
               data:
                 enabled: true
         -
-          id: 6
+          id: 7
           name: "MultiCollider"
           plugin: SimpleCollider
           class: MultiColliderItem
@@ -120,7 +133,7 @@ items:
             radius: 0.5
             height: 1
             specular_exponent: 25
-            transparency: 0.8
+            transparency: 1
             scene_type: Box
             collider_type: CFD
             density: 0
@@ -166,7 +179,7 @@ views:
     class: ItemTreeView
     mounted: true
     state:
-      expanded: [ 1, 4 ]
+      expanded: [ 1, 2, 5 ]
   -
     id: 4
     plugin: Base
@@ -200,7 +213,7 @@ views:
           isCurrent: true
           eye: [ 3, 1.5, 1.2 ]
           direction: [ -0.880451, -0.440225, -0.17609 ]
-          up: [ -0.1575, -0.0787498, 0.984374 ]
+          up: [ -0.1575, -0.0787495, 0.984374 ]
         -
           camera: [ System, Orthographic ]
           orthoHeight: 20
@@ -238,6 +251,7 @@ views:
     id: 7
     plugin: Base
     class: VirtualJoystickView
+    mounted: true
   -
     id: 8
     plugin: Body
@@ -327,7 +341,7 @@ Body:
         show_cm_projection: false
         show_zmp: false
       -
-        body_item: 3
+        body_item: 4
         show_cm: false
         show_cm_projection: false
         show_zmp: false
@@ -374,8 +388,8 @@ viewAreas:
                   views: [ 6 ]
                 -
                   type: pane
-                  views: [ 5, 12 ]
-                  current: 5
+                  views: [ 5, 12, 7 ]
+                  current: 7
         -
           type: splitter
           orientation: vertical
