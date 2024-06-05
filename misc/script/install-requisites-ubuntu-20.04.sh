@@ -1,6 +1,7 @@
 #!/bin/sh
 
 sudo apt-get -y install \
+beep \
 gedit \
 zbar-tools
 
