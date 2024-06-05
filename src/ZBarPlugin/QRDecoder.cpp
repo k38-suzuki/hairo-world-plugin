@@ -17,10 +17,11 @@ public:
     Impl();
     ~Impl();
 
-    Process* myProcess;
+    Process process;
     Signal<void(string text)> sigDecoded;
 
     void decode(const string& filename);
+    bool terminate();
     void onReadyReadStandardOutput();
 };
 
@@ -35,9 +36,8 @@ QRDecoder::QRDecoder()
 
 QRDecoder::Impl::Impl()
 {
-    myProcess = new Process;
-    Process::connect(myProcess, &Process::readyReadStandardOutput,
-        [=](){ onReadyReadStandardOutput(); });
+    process.sigReadyReadStandardOutput().connect(
+        [&](){ onReadyReadStandardOutput(); });
 }
 
 
@@ -49,10 +49,7 @@ QRDecoder::~QRDecoder()
 
 QRDecoder::Impl::~Impl()
 {
-    if(myProcess->state() != Process::NotRunning) {
-        myProcess->kill();
-        myProcess->waitForFinished(100);
-    }
+    terminate();
 }
 
 
@@ -68,14 +65,30 @@ void QRDecoder::Impl::decode(const string& filename)
         QString program = "zbarimg";
         QStringList arguments;
         arguments << "--nodbus" << "--quiet" << filename.c_str();
-        myProcess->start(program, arguments);
+
+        terminate();
+        process.start(program, arguments);
+
+        if(process.waitForStarted()) {
+
+        }
     }
+}
+
+
+bool QRDecoder::Impl::terminate()
+{
+    if(process.state() != Process::NotRunning) {
+        process.kill();
+        return process.waitForFinished(100);
+    }
+    return false;
 }
 
 
 void QRDecoder::Impl::onReadyReadStandardOutput()
 {
-    QString text(myProcess->readAllStandardOutput());
+    QString text(process.readAllStandardOutput());
     text.replace("QR-Code:", "");
     text.replace("\n", "");
     sigDecoded(text.toStdString());

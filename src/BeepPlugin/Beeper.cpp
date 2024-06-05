@@ -19,13 +19,14 @@ public:
     ~Impl();
 
     Timer* timer;
-    Process* myProcess;
+    Process process;
     Signal<void()> sigBeepStarted;
     Signal<void()> sigBeepStopped;
 
     bool is_active;
 
     void start(const int& frequency, const int& length);
+    bool terminate();
     void onTimeout();
 };
 
@@ -43,8 +44,6 @@ Beeper::Impl::Impl()
 {
     timer = new Timer;
     timer->sigTimeout().connect([&](){ onTimeout(); });
-
-    myProcess = new Process;
 }
 
 
@@ -56,14 +55,7 @@ Beeper::~Beeper()
 
 Beeper::Impl::~Impl()
 {
-    if(timer->isActive()) {
-        timer->stop();
-    }
-
-    if(myProcess->state() != Process::NotRunning) {
-        myProcess->kill();
-        myProcess->waitForFinished(100);
-    }
+    terminate();
 }
 
 
@@ -90,10 +82,28 @@ void Beeper::Impl::start(const int& frequency, const int& length)
         arguments << QString("-l %1").arg(length);
     }
 
-    myProcess->start(program, arguments);
-    timer->start(length);
-    sigBeepStarted();
-    is_active = true;
+    terminate();
+    process.start(program, arguments);
+
+    if(process.waitForStarted()) {
+        timer->start(length);
+        sigBeepStarted();
+        is_active = true;
+    }
+}
+
+
+bool Beeper::Impl::terminate()
+{
+    if(timer->isActive()) {
+        timer->stop();
+    }
+
+    if(process.state() != Process::NotRunning) {
+        process.kill();
+        return process.waitForFinished(100);
+    }
+    return false;
 }
 
 

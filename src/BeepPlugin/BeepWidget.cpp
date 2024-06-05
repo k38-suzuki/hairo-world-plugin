@@ -5,10 +5,9 @@
 #include "BeepWidget.h"
 #include <cnoid/Archive>
 #include <cnoid/Button>
-#include <cnoid/Process>
-#include <QHBoxLayout>
+#include <QBoxLayout>
 #include <QTreeWidgetItem>
-#include <QVBoxLayout>
+#include "Beeper.h"
 #include "gettext.h"
 
 using namespace std;
@@ -28,7 +27,7 @@ public:
 
     TreeWidget* treeWidget;
     PushButton* buttons[NUM_BUTTONS];
-    Process process;
+    Beeper* beeper;
 
     void addItem(const string& link0, const string& link1, const int& frequency);
     void removeCurrentItem();
@@ -52,25 +51,26 @@ BeepWidget::BeepWidget()
 BeepWidget::Impl::Impl(BeepWidget* self)
     : self(self)
 {
+    beeper = new Beeper;
+
     const QStringList label0 = { _("No"), _("Link0"), _("Link1"), _("Frequency") };
     treeWidget = new TreeWidget;
     treeWidget->setHeaderLabels(label0);
 
     static const char* label1[] = { _("+"), _("-"), _("Play") };
-    QVBoxLayout* vbox = new QVBoxLayout;
+    auto vbox = new QVBoxLayout;
     for(int i = 0; i < NUM_BUTTONS; ++i) {
         buttons[i] = new PushButton(label1[i]);
-        PushButton* button = buttons[i];
-        vbox->addWidget(button);
-        button->sigClicked().connect([&, i](){ onButtonClicked(i); });
+        vbox->addWidget(buttons[i]);
+        buttons[i]->sigClicked().connect([&, i](){ onButtonClicked(i); });
     }
     vbox->addStretch();
 
-    QHBoxLayout* hbox = new QHBoxLayout;
+    auto hbox = new QHBoxLayout;
     hbox->addWidget(treeWidget);
     hbox->addLayout(vbox);
 
-    QVBoxLayout* topVbox = new QVBoxLayout;
+    auto topVbox = new QVBoxLayout;
     topVbox->addLayout(hbox);
     self->setLayout(topVbox);
 }
@@ -163,25 +163,8 @@ void BeepWidget::Impl::play(QTreeWidgetItem* item)
         int frequency = item->text(FREQUENCY).toInt();
         int length = 200;
 
-        string actualCommand = "beep";
-        QStringList arguments;
-
-        if(frequency > 0) {
-            string argument = "-f " + to_string(frequency);
-            arguments << argument.c_str();
-        }
-        if(length > 0) {
-            string argument = "-l " + to_string(length);
-            arguments << argument.c_str();
-        }
-
-        if(process.state() != QProcess::NotRunning) {
-            process.kill();
-            process.waitForFinished(100);
-        }
-        process.start(actualCommand.c_str(), arguments);
-        if(process.waitForStarted()) {
-
+        if(!beeper->isActive()) {
+            beeper->start(frequency, length);
         }
     }
 }
