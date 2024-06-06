@@ -193,7 +193,7 @@ EnergyFilterDialog::EnergyFilterDialog()
     rangeFilterRadio.setText(_("Range filter"));
     nuclideFilterRadio.setText(_("Nuclide filter"));
 
-    QHBoxLayout* rangeHbox = new QHBoxLayout();
+    auto rangeHbox = new QHBoxLayout();
     rangeHbox->addWidget(&rangeFilterRadio);
     rangeHbox->addStretch();
     rangeHbox->addWidget(new QLabel(_("Min [Ch]")));
@@ -212,7 +212,7 @@ EnergyFilterDialog::EnergyFilterDialog()
     maxChSpin->setMaximum(100000);
     rangeHbox->addWidget(maxChSpin);
 
-    QHBoxLayout* nuclideHbox = new QHBoxLayout();
+    auto nuclideHbox = new QHBoxLayout();
     nuclideHbox->addWidget(&nuclideFilterRadio);
     nuclideHbox->addStretch();
     nuclideTree = new TreeWidget();
@@ -237,7 +237,7 @@ EnergyFilterDialog::EnergyFilterDialog()
         nuclideTree->setEnabled(on);
     });
 
-    QVBoxLayout* vbox = new QVBoxLayout();
+    auto vbox = new QVBoxLayout();
     vbox->addWidget(&noFilterRadio);
     vbox->addLayout(rangeHbox);
     vbox->addLayout(nuclideHbox);

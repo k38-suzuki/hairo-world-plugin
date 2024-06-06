@@ -57,7 +57,7 @@ Notepad::Impl::Impl(Notepad* self)
 
     textEdit = new QTextEdit;
 
-    QVBoxLayout* layout = new QVBoxLayout;
+    auto layout = new QVBoxLayout;
     layout->addWidget(textEdit);
     widget->setLayout(layout);
 

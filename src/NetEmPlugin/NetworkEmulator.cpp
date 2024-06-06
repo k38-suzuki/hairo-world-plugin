@@ -114,7 +114,7 @@ NetworkEmulator::Impl::Impl()
     buttonBox->addButton(startButton, QDialogButtonBox::ActionRole);
     startButton->sigToggled().connect([&](bool on){ onStartButtonToggled(on); });
 
-    QVBoxLayout* vbox = new QVBoxLayout;
+    auto vbox = new QVBoxLayout;
     vbox->addLayout(gbox);
     vbox->addStretch();
     vbox->addWidget(new HSeparator);

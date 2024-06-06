@@ -52,7 +52,7 @@ OnScreenJoystickView::Impl::Impl(OnScreenJoystickView* self)
     topWidget = new QStackedWidget;
     topWidget->addWidget(new VirtualJoystickWidget);
     // topWidget->addWidget(new OnScreenJoystickWidget);
-    QVBoxLayout* vbox = new QVBoxLayout;
+    auto vbox = new QVBoxLayout;
     vbox->addWidget(topWidget);
     self->setLayout(vbox);
 }

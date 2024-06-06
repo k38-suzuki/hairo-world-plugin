@@ -639,7 +639,7 @@ DoseConfigDialog::DoseConfigDialog()
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
     connect(buttonBox, &QDialogButtonBox::accepted, [this](){ this->accept(); });
 
-    QVBoxLayout* vbox = new QVBoxLayout;
+    auto vbox = new QVBoxLayout;
     vbox->addLayout(new HSeparatorBox(new QLabel("PHITS/QAD")));
     vbox->addWidget(rangeBox);
     vbox->addLayout(gbox0);

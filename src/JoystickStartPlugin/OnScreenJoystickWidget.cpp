@@ -95,7 +95,7 @@ OnScreenJoystickWidget::Impl::Impl(OnScreenJoystickWidget* self)
     axisPositions.resize(Joystick::NUM_STD_AXES, 0.0);
     buttonStates.resize(Joystick::NUM_STD_BUTTONS, false);
 
-    QHBoxLayout* hbox0 = new QHBoxLayout;
+    auto hbox0 = new QHBoxLayout;
     for(int i = 0; i < NUM_AXES; ++i) {
         axes[i] = new AxisWidget;
         AxisWidget* axis = axes[i];
@@ -104,7 +104,7 @@ OnScreenJoystickWidget::Impl::Impl(OnScreenJoystickWidget* self)
         hbox0->addWidget(axis);
     }
 
-    QHBoxLayout* hbox1 = new QHBoxLayout;
+    auto hbox1 = new QHBoxLayout;
     for(int i = 0; i < Joystick::NUM_STD_BUTTONS; ++i) {
         buttons[i] = new ToolButton(to_string(i).c_str());
         ToolButton* button = buttons[i];
@@ -114,15 +114,15 @@ OnScreenJoystickWidget::Impl::Impl(OnScreenJoystickWidget* self)
         hbox1->addWidget(button);
     }
 
-    QVBoxLayout* vbox0 = new QVBoxLayout;
+    auto vbox0 = new QVBoxLayout;
     vbox0->addLayout(hbox0);
     vbox0->addLayout(hbox1);
 
-    QHBoxLayout* hbox = new QHBoxLayout;
+    auto hbox = new QHBoxLayout;
     hbox->addStretch();
     hbox->addLayout(vbox0);
     hbox->addStretch();
-    QVBoxLayout* vbox = new QVBoxLayout;
+    auto vbox = new QVBoxLayout;
     vbox->addStretch();
     vbox->addLayout(hbox);
     vbox->addStretch();

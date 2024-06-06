@@ -388,7 +388,7 @@ CrawlerGenerator::Impl::Impl()
 
     static const char* label4[] = { _("Front SubTrack"), _("Rear SubTrack"), _("AGX") };
     
-    QHBoxLayout* hbox1 = new QHBoxLayout;
+    auto hbox1 = new QHBoxLayout;
     for(int i = 0; i < NUM_CHECKS; ++i) {
         CheckInfo info = checkInfo[i];
         checks[i] = new CheckBox;
@@ -398,7 +398,7 @@ CrawlerGenerator::Impl::Impl()
     }
     hbox1->addStretch();
 
-    QHBoxLayout* hbox = new QHBoxLayout;
+    auto hbox = new QHBoxLayout;
     setting1Radio.setText(_("Setting 1"));
     setting1Radio.setChecked(true);
     hbox->addWidget(&setting1Radio);
@@ -432,20 +432,20 @@ CrawlerGenerator::Impl::Impl()
     initialize();
 
     Widget* page1Widget = new Widget;
-    QVBoxLayout* vbox1 = new QVBoxLayout;
+    auto vbox1 = new QVBoxLayout;
     vbox1->addLayout(gbox[0]);
     vbox1->addStretch();
     page1Widget->setLayout(vbox1);
 
     Widget* page2Widget = new Widget;
-    QVBoxLayout* vbox2 = new QVBoxLayout;
+    auto vbox2 = new QVBoxLayout;
     vbox2->addLayout(hbox1);
     vbox2->addLayout(gbox[1]);
     vbox2->addStretch();
     page2Widget->setLayout(vbox2);
 
     Widget* page3Widget = new Widget;
-    QVBoxLayout* vbox3 = new QVBoxLayout;
+    auto vbox3 = new QVBoxLayout;
     vbox3->addLayout(agbox);
     vbox3->addStretch();
     page3Widget->setLayout(vbox3);
@@ -455,7 +455,7 @@ CrawlerGenerator::Impl::Impl()
     topWidget->addWidget(page2Widget);
     // topWidget->addWidget(page3Widget);
 
-    QVBoxLayout* vbox = new QVBoxLayout;
+    auto vbox = new QVBoxLayout;
     vbox->addLayout(hbox);
     vbox->addWidget(topWidget);
     vbox->addWidget(new HSeparator);

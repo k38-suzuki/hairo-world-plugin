@@ -5,8 +5,8 @@
 #include "BeepView.h"
 #include <cnoid/ViewManager>
 #include <cnoid/Widget>
+#include <QBoxLayout>
 #include <QScrollArea>
-#include <QVBoxLayout>
 #include "gettext.h"
 
 using namespace cnoid;
@@ -59,7 +59,7 @@ BeepView::Impl::Impl(BeepView* self)
     QWidget* topWidget = new QWidget;
     topWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
 
-    QVBoxLayout* topVBox = new QVBoxLayout;
+    auto topVBox = new QVBoxLayout;
     //topVBox->setContentsMargins(4);
     topWidget->setLayout(topVBox);
 
@@ -68,7 +68,7 @@ BeepView::Impl::Impl(BeepView* self)
     scrollArea.setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea.setWidget(topWidget);
     topWidget->setAutoFillBackground(false);
-    QVBoxLayout* baseLayout = new QVBoxLayout;
+    auto baseLayout = new QVBoxLayout;
     scrollArea.setWidgetResizable(true);
     baseLayout->addWidget(&scrollArea);
     self->setLayout(baseLayout);

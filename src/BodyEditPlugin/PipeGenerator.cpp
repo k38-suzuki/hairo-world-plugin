@@ -140,7 +140,7 @@ PipeGenerator::Impl::Impl()
 
     formWidget = new FileFormWidget;
 
-    QVBoxLayout* vbox = new QVBoxLayout;
+    auto vbox = new QVBoxLayout;
     vbox->addLayout(gbox);
     vbox->addStretch();
     vbox->addWidget(new HSeparator);

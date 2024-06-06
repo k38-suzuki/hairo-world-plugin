@@ -154,11 +154,11 @@ VirtualJoystickWidget::Impl::Impl(VirtualJoystickWidget* self)
     joystick.sigAxis().connect([&](int id, double position){ onAxis(id, position); });
     joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
 
-    QHBoxLayout* hbox = new QHBoxLayout;
+    auto hbox = new QHBoxLayout;
     hbox->addStretch();
     hbox->addLayout(&grid);
     hbox->addStretch();
-    QVBoxLayout* vbox = new QVBoxLayout;
+    auto vbox = new QVBoxLayout;
     vbox->addStretch();
     vbox->addLayout(hbox);
     vbox->addStretch();

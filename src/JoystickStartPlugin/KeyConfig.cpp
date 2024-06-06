@@ -92,7 +92,7 @@ KeyConfig::Impl::Impl(KeyConfig* self)
         agbox->addWidget(new QLabel(axisInfo[i].name));
         agbox->addWidget(axisCombos[i], i + 1, 1);
     }
-    QVBoxLayout* avbox = new QVBoxLayout;
+    auto avbox = new QVBoxLayout;
     avbox->addLayout(agbox);
     avbox->addStretch();
 
@@ -109,7 +109,7 @@ KeyConfig::Impl::Impl(KeyConfig* self)
         bgbox->addWidget(new QLabel(buttonInfo[i].name));
         bgbox->addWidget(buttonCombos[i], i + 1, 1);
     }
-    QVBoxLayout* bvbox = new QVBoxLayout;
+    auto bvbox = new QVBoxLayout;
     bvbox->addLayout(bgbox);
     bvbox->addStretch();
 
@@ -118,11 +118,11 @@ KeyConfig::Impl::Impl(KeyConfig* self)
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
     connect(buttonBox, &QDialogButtonBox::accepted, [this](){ this->accept(); });
 
-    QHBoxLayout* hbox = new QHBoxLayout;
+    auto hbox = new QHBoxLayout;
     hbox->addLayout(avbox);
     hbox->addWidget(new VSeparator);
     hbox->addLayout(bvbox);
-    QVBoxLayout* vbox = new QVBoxLayout;
+    auto vbox = new QVBoxLayout;
     vbox->addLayout(hbox);
     vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);

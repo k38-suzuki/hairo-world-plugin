@@ -107,7 +107,7 @@ InertiaCalculator::Impl::Impl()
 
     const QStringList shapeList = { _("Box"), _("Sphere"), _("Cylinder"), _("Cone") };
     combos[SHAPE]->addItems(shapeList);
-    QHBoxLayout* hbox = new QHBoxLayout;
+    auto hbox = new QHBoxLayout;
     hbox->addWidget(new QLabel(_("Shape")));
     hbox->addWidget(combos[SHAPE]);
     hbox->addStretch();
@@ -117,7 +117,7 @@ InertiaCalculator::Impl::Impl()
     for(int i = 0; i < NUM_PAGES; ++i) {
         Widget* pageWidget = new Widget;
         gbox[i] = new QGridLayout;
-        QVBoxLayout* vbox = new QVBoxLayout;
+        auto vbox = new QVBoxLayout;
         vbox->addLayout(gbox[i]);
         vbox->addStretch();
         pageWidget->setLayout(vbox);
@@ -160,7 +160,7 @@ InertiaCalculator::Impl::Impl()
     combos[SHAPE]->sigCurrentIndexChanged().connect(
                 [&](int index){ topWidget->setCurrentIndex(index); });
 
-    QVBoxLayout* vbox = new QVBoxLayout;
+    auto vbox = new QVBoxLayout;
     vbox->addLayout(hbox);
     vbox->addWidget(topWidget);
     vbox->addWidget(mv);

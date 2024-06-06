@@ -59,12 +59,12 @@ FileFormWidget::Impl::Impl(FileFormWidget* self)
     PushButton* saveButton = new PushButton(_("&Save"));
     saveButton->sigClicked().connect([&](){ onSaveButtonClicked(); });
 
-    QHBoxLayout* hbox = new QHBoxLayout;
+    auto hbox = new QHBoxLayout;
     hbox->addWidget(new QLabel(_("File")));
     hbox->addWidget(fileLine);
     hbox->addWidget(saveButton);
 
-    QVBoxLayout* vbox = new QVBoxLayout;
+    auto vbox = new QVBoxLayout;
     vbox->addLayout(hbox);
     self->setLayout(vbox);
 }

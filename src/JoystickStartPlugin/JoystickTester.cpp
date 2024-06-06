@@ -93,7 +93,7 @@ JoystickTester::Impl::Impl()
         [&](int id, bool isPressed){ onButton(id, isPressed); });
 
     QGroupBox* gbox0 = new QGroupBox(_("Axes"));
-    QVBoxLayout* vbox0 = new QVBoxLayout;
+    auto vbox0 = new QVBoxLayout;
     QGridLayout* grid = new QGridLayout;
     for(int i = 0; i < joystick.numAxes(); ++i) {
         QProgressBar* bar = new QProgressBar;
@@ -110,7 +110,7 @@ JoystickTester::Impl::Impl()
     gbox0->setLayout(vbox0);
 
     QGroupBox* gbox1 = new QGroupBox(_("Buttons"));
-    QVBoxLayout* vbox1 = new QVBoxLayout;
+    auto vbox1 = new QVBoxLayout;
     for(int i = 0; i < joystick.numButtons(); ++i) {
         PushButton* button = new PushButton(to_string(i).c_str());
         buttons.push_back(button);
@@ -119,7 +119,7 @@ JoystickTester::Impl::Impl()
     vbox1->addStretch();
     gbox1->setLayout(vbox1);
 
-    QHBoxLayout* hbox = new QHBoxLayout;
+    auto hbox = new QHBoxLayout;
     hbox->addWidget(gbox0);
     hbox->addWidget(gbox1);
 
@@ -129,7 +129,7 @@ JoystickTester::Impl::Impl()
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
 
-    QVBoxLayout* vbox2 = new QVBoxLayout;
+    auto vbox2 = new QVBoxLayout;
     vbox2->addLayout(hbox);
     vbox2->addWidget(new HSeparator);
     vbox2->addWidget(buttonBox);

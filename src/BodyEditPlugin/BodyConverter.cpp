@@ -196,7 +196,7 @@ BodyConverter::Impl::Impl()
 
     connect(buttonBox, &QDialogButtonBox::accepted, [&](){ accept(); });
 
-    QVBoxLayout* mainLayout = new QVBoxLayout;
+    auto mainLayout = new QVBoxLayout;
     mainLayout->addLayout(hbox1);
     mainLayout->addWidget(formGroupBox);
     mainLayout->addWidget(new HSeparator);

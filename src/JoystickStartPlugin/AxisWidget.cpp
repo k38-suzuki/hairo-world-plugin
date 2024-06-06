@@ -74,7 +74,7 @@ AxisWidget::Impl::Impl(AxisWidget *self)
     gbox->addWidget(new HSeparator, 1, 0);
     gbox->addWidget(new HSeparator, 1, 2);
 
-    QVBoxLayout* vbox = new QVBoxLayout;
+    auto vbox = new QVBoxLayout;
     vbox->addLayout(gbox);
     self->setLayout(vbox);
 }
