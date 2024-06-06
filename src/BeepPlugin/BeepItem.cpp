@@ -12,7 +12,6 @@
 #include <cnoid/WorldItem>
 #include <fmt/format.h>
 #include "BeepView.h"
-#include "BeepWidget.h"
 #include "gettext.h"
 
 using namespace std;
@@ -42,7 +41,6 @@ public:
 
     SimulatorItem* simulatorItem;
     WorldItem* worldItem;
-    BeepWidget* beepWidget;
     vector<PairInfo> pairs;
     bool isPlayed;
 
@@ -72,7 +70,6 @@ BeepItem::Impl::Impl(BeepItem* self)
 {
     simulatorItem = nullptr;
     worldItem = nullptr;
-    beepWidget = nullptr;
     pairs.clear();
     isPlayed = false;
 }
@@ -108,14 +105,14 @@ bool BeepItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     this->simulatorItem = simulatorItem;
     worldItem = this->simulatorItem->findOwnerItem<WorldItem>();
-    beepWidget = BeepView::instance()->beepWidget();
+    BeepView* bv = BeepView::instance();
     pairs.clear();
     isPlayed = false;
 
-    if(beepWidget) {
-        int numItems = beepWidget->treeWidget()->topLevelItemCount();
+    if(bv) {
+        int numItems = bv->treeWidget()->topLevelItemCount();
         for(int i = 0; i < numItems; ++i) {
-            QTreeWidgetItem* item = beepWidget->treeWidget()->topLevelItem(i);
+            QTreeWidgetItem* item = bv->treeWidget()->topLevelItem(i);
             string link0 = item->text(1).toStdString();
             string link1 = item->text(2).toStdString();
             PairInfo info = { link0, link1, false };
@@ -172,7 +169,7 @@ void BeepItem::Impl::onPostDynamics()
     }
 
     if(currentTime < startTime + 0.2) {
-        callLater([&, playID](){ beepWidget->play(playID); });
+        callLater([=](){ BeepView::instance()->play(playID); });
         isPlayed = true;
     } else {
         isPlayed = false;

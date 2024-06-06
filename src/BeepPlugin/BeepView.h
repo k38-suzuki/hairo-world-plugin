@@ -5,13 +5,12 @@
 #ifndef CNOID_BEEP_PLUGIN_BEEP_VIEW_H
 #define CNOID_BEEP_PLUGIN_BEEP_VIEW_H
 
+#include <cnoid/TreeWidget>
 #include <cnoid/View>
-#include "BeepWidget.h"
-#include "exportdecl.h"
 
 namespace cnoid {
 
-class CNOID_EXPORT BeepView : public View
+class BeepView : public View
 {
 public:
     static void initializeClass(ExtensionManager* ext);
@@ -20,8 +19,10 @@ public:
     BeepView();
     virtual ~BeepView();
 
-    BeepWidget* beepWidget();
+    TreeWidget* treeWidget();
+    void play(const int& index);
 
+protected:
     virtual bool storeState(Archive& archive) override;
     virtual bool restoreState(const Archive& archive) override;
 

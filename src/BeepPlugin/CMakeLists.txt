@@ -3,20 +3,17 @@ set(sources
   BeepItem.cpp
   BeepPlugin.cpp
   BeepView.cpp
-  BeepWidget.cpp
 )
 
 set(headers
   Beeper.h
   BeepItem.h
   BeepView.h
-  BeepWidget.h
   exportdecl.h
 )
 
 choreonoid_make_header_public(Beeper.h)
 choreonoid_make_header_public(BeepView.h)
-choreonoid_make_header_public(BeepWidget.h)
 
 set(target CnoidBeepPlugin)
 make_gettext_mofiles(${target} mofiles)
