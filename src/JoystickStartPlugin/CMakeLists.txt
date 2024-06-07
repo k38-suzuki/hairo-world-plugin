@@ -13,6 +13,7 @@ set(sources
 set(headers
   AxisWidget.h
   ConfigurableJoystick.h
+  DelayedJoystick.h
   OnScreenJoystickWidget.h
   JoystickLoggerItem.h
   OnScreenJoystickView.h
