@@ -24,6 +24,7 @@ set(headers
 )
 
 choreonoid_make_header_public(ConfigurableJoystick.h)
+choreonoid_make_header_public(DelayedJoystick.h)
 
 set(target CnoidJoystickStartPlugin)
 make_gettext_mofiles(${target} mofiles)
