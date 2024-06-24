@@ -136,11 +136,11 @@ bool MotionCaptureItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
             multiPointSetItem->addSubItem(motionSeqItem);
 
             int numParts = markers.size();
-            shared_ptr<MultiSE3Seq> markerPointSeq = motionSeqItem->seq();
-            markerPointSeq->setSeqContentName("MotionSeq");
-            markerPointSeq->setFrameRate(1.0 / simulatorItem->worldTimeStep());
-            markerPointSeq->setDimension(0, numParts, false);
-            markerPointSeq->setOffsetTime(0.0);
+            shared_ptr<MultiSE3Seq> log = motionSeqItem->seq();
+            log->setNumFrames(0);
+            log->setNumParts(numParts);
+            log->setFrameRate(1.0 / simulatorItem->worldTimeStep());
+            log->setOffsetTime(0.0);
 
             simulatorItem->addPreDynamicsFunction([&](){ onPreDynamics(); });
         }
@@ -171,30 +171,37 @@ void MotionCaptureItem::Impl::finalizeSimulation()
 
         for(size_t i = 0; i < markers.size(); ++i) {
             PassiveMarker* marker = markers[i];
-            vector<Vector3> src;
+
             PointSetItem* pointSetItem = pointSetItems[i];
+            auto pointSet_ = pointSetItem->pointSet();
+
+            vector<Vector3> src;
             for(int i = 0; i < pointSetItem->numAttentionPoints(); ++i) {
                 Vector3 point = pointSetItem->attentionPoint(i);
                 src.push_back(point);
             }
-
-            pointSetItem->clearAttentionPoints();
             SgVertexArray& points = *pointSetItem->pointSet()->getOrCreateVertices();
-            SgColorArray& colors = *pointSetItem->pointSet()->getOrCreateColors();
             const int numPoints = src.size();
             points.resize(numPoints);
-            colors.resize(numPoints);
             for(int j = 0; j < numPoints; ++j) {
-                Vector3f point = Vector3f(src[i][0], src[i][1], src[i][2]);
-                points[j] = point;
+                points[j] = Vector3f(src[j][0], src[j][1], src[j][2]);
+            }
+
+            SgColorArray& colors = *pointSetItem->pointSet()->getOrCreateColors();
+            const int n = numPoints;
+            colors.resize(n);
+            for(int j = 0; j < n; ++j) {
                 Vector3f& c = colors[j];
                 c[0] = marker->color()[0];
                 c[1] = marker->color()[1];
                 c[2] = marker->color()[2];
             }
+            pointSet_->notifyUpdate();
+
+            pointSetItem->clearAttentionPoints();
             pointSetItem->notifyUpdate();
             string filename = toUTF8((dir / pointSetItem->name().c_str()).string()) + suffix + ".pcd";
-            pointSetItem->save(filename);
+            // pointSetItem->save(filename);
         }
 
         string filename0 = toUTF8((dir / multiPointSetItem->name().c_str()).string()) + suffix + ".yaml";
@@ -206,17 +213,15 @@ void MotionCaptureItem::Impl::finalizeSimulation()
 void MotionCaptureItem::Impl::onPreDynamics()
 {
     int currentFrame = simulatorItem->currentFrame();
-    shared_ptr<MultiSE3Seq> motionSeq = motionSeqItem->seq();
-    motionSeq->setNumFrames(currentFrame);
-    MultiSE3Seq::Frame p = motionSeq->frame(currentFrame - 1);
-
+    shared_ptr<MultiSE3Seq> log = motionSeqItem->seq();
+    auto frame = log->appendFrame();
     for(size_t i = 0; i < markers.size(); ++i) {
         PassiveMarker* marker = markers[i];
         if(marker->on()) {
             Link* link = marker->link();
             Vector3 point = link->T() * marker->p_local();
             Matrix3 R = link->R() * marker->R_local();
-            p[i].set(point, R);
+            frame[i].set(point, R);
             pointSetItems[i]->addAttentionPoint(point);
         }
     }

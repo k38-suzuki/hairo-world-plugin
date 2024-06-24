@@ -57,17 +57,17 @@ void JoystickTester::initializeClass(ExtensionManager* ext)
     if(!testerInstance) {
         testerInstance = ext->manage(new JoystickTester);
 
-        // MainMenu::instance()->add_Tools_Item(
-        //     _("Joystick Tester"), [](){ testerInstance->impl->show(); });
+        MainMenu::instance()->add_Tools_Item(
+            _("Joystick Tester"), [](){ testerInstance->impl->show(); });
 
-        vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
-        for(auto& bar : toolBars) {
-            if(bar->name() == "FileBar") {
-                auto button1 = bar->addButton(QIcon::fromTheme("applications-games"));
-                button1->setToolTip(_("Show the joystick tester"));
-                button1->sigClicked().connect([&](){ testerInstance->impl->show(); });
-            }
-        }
+        // vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
+        // for(auto& bar : toolBars) {
+        //     if(bar->name() == "FileBar") {
+        //         auto button1 = bar->addButton(QIcon::fromTheme("applications-games"));
+        //         button1->setToolTip(_("Show the joystick tester"));
+        //         button1->sigClicked().connect([&](){ testerInstance->impl->show(); });
+        //     }
+        // }
     }
 }
 

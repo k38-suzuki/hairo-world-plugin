@@ -1,5 +1,6 @@
 set(sources
   ArchiveListDialog.cpp
+  BookmarkBar.cpp
   BookmarkManager.cpp
   BookmarkPlugin.cpp
   HistoryManager.cpp
@@ -11,6 +12,7 @@ set(sources
 
 set(headers
   ArchiveListDialog.h
+  BookmarkBar.h
   BookmarkManager.h
   HistoryManager.h
   JoyKey.h
@@ -20,6 +22,7 @@ set(headers
   exportdecl.h
 )
 
+choreonoid_make_header_public(BookmarkBar.h)
 choreonoid_make_header_public(ToolsUtil.h)
 
 set(target CnoidBookmarkPlugin)

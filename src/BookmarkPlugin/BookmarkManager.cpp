@@ -12,6 +12,7 @@
 #include <cnoid/SimulationBar>
 #include <cnoid/stdx/filesystem>
 #include <cnoid/ToolsUtil>
+#include "BookmarkBar.h"
 #include "gettext.h"
 
 using namespace std;
@@ -30,19 +31,23 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
     if(!bookmarkInstance) {
         bookmarkInstance = ext->manage(new BookmarkManager);
 
-        auto button1 = fileBar()->addButton(QIcon::fromTheme("list-add"));
+        BookmarkBar* bar = BookmarkBar::instance();
+        auto button1 = bar->addButton(QIcon::fromTheme("list-add"));
         button1->setToolTip(_("Bookmark a current project"));
-        button1->sigClicked().connect([&](){ 
-            const string& filename = ProjectManager::instance()->currentProjectFile();
-            if(!filename.empty()) {
-                bookmarkInstance->addItem(filename.c_str());
-            }
+        button1->sigClicked().connect(
+            [&](){ 
+                const string& filename = ProjectManager::instance()->currentProjectFile();
+                if(!filename.empty()) {
+                    bookmarkInstance->addItem(filename.c_str());
+                }
             });
-        auto button2 = fileBar()->addButton(QIcon::fromTheme("user-bookmarks"));
+        auto button2 = bar->addButton(QIcon::fromTheme("user-bookmarks"));
         button2->setToolTip(_("Show the bookmark manager"));
-        button2->sigClicked().connect([&](){
-            bookmarkInstance->updateList();
-            bookmarkInstance->show(); });
+        button2->sigClicked().connect(
+            [&](){
+                bookmarkInstance->updateList();
+                bookmarkInstance->show();
+            });
     }
 }
 

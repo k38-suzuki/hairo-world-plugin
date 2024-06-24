@@ -17,6 +17,7 @@
 #include <src/BodyPlugin/WorldLogFileItem.h>
 #include <cnoid/ToolsUtil>
 #include <QDateTime>
+#include "BookmarkBar.h"
 #include "gettext.h"
 
 using namespace std;
@@ -35,7 +36,8 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
     if(!logInstance) {
         logInstance = ext->manage(new WorldLogManager);
 
-        auto button1 = fileBar()->addButton(QIcon::fromTheme("emblem-documents"));
+        BookmarkBar* bar = BookmarkBar::instance();
+        auto button1 = bar->addButton(QIcon::fromTheme("emblem-documents"));
         button1->setToolTip(_("Show the worldlog manager"));
         button1->sigClicked().connect([&](){
             logInstance->updateList();
