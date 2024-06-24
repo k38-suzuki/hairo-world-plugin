@@ -5,7 +5,6 @@
 #include "HistoryManager.h"
 #include <cnoid/AppConfig>
 #include <cnoid/ExtensionManager>
-#include <cnoid/MainMenu>
 #include <cnoid/Menu>
 #include <cnoid/MenuManager>
 #include <cnoid/MessageView>
@@ -50,11 +49,6 @@ void HistoryManager::initializeClass(ExtensionManager* ext)
 
     if(!historyInstance) {
         historyInstance = ext->manage(new HistoryManager);
-
-        // MainMenu::instance()->add_Tools_Item(
-        //     _("History Manager"), [](){
-        //         historyInstance->updateList();
-        //         historyInstance->show(); });
 
         // auto button1 = fileBar()->addButton(QIcon::fromTheme("document-revert"));
         // button1->setToolTip(_("Show the history manager"));
@@ -111,6 +105,10 @@ HistoryManager::Impl::~Impl()
     for(int i = 2; i < currentMenu->actions().size(); ++i) {
         string filename = currentMenu->actions().at(i)->text().toStdString();
         recentFiles.append(filename, DOUBLE_QUOTED);
+    }
+
+    if(recentFiles.size() == 0) {
+        AppConfig::archive()->remove("histories");
     }
 }
 

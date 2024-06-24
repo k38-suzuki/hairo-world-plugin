@@ -79,15 +79,13 @@ void ArchiveListDialog::updateList()
     QStringList list;
     auto& recentList = *AppConfig::archive()->findListing(archive_key_);
     if(recentList.isValid() && !recentList.empty()) {
-        for(auto& node : recentList) {
-            if(node->isString()) {
-                auto name = node->toString();
-                if(!name.empty()) {
-                    list << name.c_str();
-                }
+        for(int i = 0; i < recentList.size(); ++i) {
+            if(recentList[i].isString()) {
+                list << recentList[i].toString().c_str();
             }
         }
     }
+
     list.removeDuplicates();
     clearList();
     listWidget->addItems(list);
@@ -121,45 +119,16 @@ void ArchiveListDialog::clearList()
 
 void ArchiveListDialog::storeList()
 {
-    ListingPtr recentList = new Listing;
+    QStringList list;
+    auto& recentList = *AppConfig::archive()->openListing(archive_key_);
+    recentList.clear();
+
     for(int i = 0; i < listWidget->count(); ++i) {
         QListWidgetItem* item = listWidget->item(i);
         if(item) {
-            recentList->append(item->text().toStdString(), DOUBLE_QUOTED);
+            recentList.append(item->text().toStdString(), DOUBLE_QUOTED);
         }
     }
-    // auto oldRecentList = AppConfig::archive()->openListing(archive_key_);
-    // for(auto& node : *oldRecentList) {
-    //     if(node->isString()) {
-    //         auto name = node->toString();
-    //         if(!name.empty()) {
-    //             recentList->append(name, DOUBLE_QUOTED);
-    //             if(recentList->size() >= max_items) {
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }
-
-    QStringList list;
-    for(auto& node : *recentList) {
-        if(node->isString()) {
-            auto name = node->toString();
-            if(!name.empty()) {
-                list << name.c_str();
-            }
-        }
-    }
-    list.removeDuplicates();
-
-    ListingPtr recentList2 = new Listing;
-    for(auto& text : list) {
-        recentList2->append(text.toStdString(), DOUBLE_QUOTED);
-    }
-    if(recentList2->size() == 0) {
-        recentList2->append("", DOUBLE_QUOTED);
-    }
-    AppConfig::archive()->insert(archive_key_, recentList2);
 }
 
 

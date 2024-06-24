@@ -14,7 +14,6 @@
 #include <cnoid/EigenTypes>
 #include <cnoid/ExtensionManager>
 #include <cnoid/ItemManager>
-#include <cnoid/MainWindow>
 #include <cnoid/MainMenu>
 #include <cnoid/ProjectManager>
 #include <cnoid/RootItem>
@@ -84,15 +83,6 @@ void TaskCreator::initializeClass(ExtensionManager* ext)
 
         MainMenu::instance()->add_Tools_Item(
             _("Task Creator"), [](){ creatorInstance->impl->show(); });
-        
-        // vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
-        // for(auto& bar : toolBars) {
-        //     if(bar->name() == "FileBar") {
-        //         auto button1 = bar->addButton(QIcon::fromTheme("document-new"));
-        //         button1->setToolTip(_("Show the task creator"));
-        //         button1->sigClicked().connect([&](){ creatorInstance->impl->show(); });
-        //     }
-        // }
     }
 }
 
@@ -183,12 +173,12 @@ TaskCreator::Impl::Impl()
     for(int i = 0; i < NumProjects; ++i) {
         string key = "registered_projects_" + to_string(i);
         projectCombos[i]->clear();
+
         auto& projectList = *AppConfig::archive()->findListing(key);
         if(projectList.isValid() && !projectList.empty()) {
             for(int j = 0; j < projectList.size(); ++j) {
-                string filename = projectList[j].toString();
-                if(!filename.empty()) {
-                    projectCombos[i]->addItem(filename.c_str());
+                if(projectList[j].isString()) {
+                    projectCombos[i]->addItem(projectList[j].toString().c_str());
                 }
             }
         }
@@ -207,13 +197,18 @@ TaskCreator::Impl::~Impl()
     // store config
     for(int i = 0; i < NumProjects; ++i) {
         string key = "registered_projects_" + to_string(i);
-        ListingPtr projectList = new Listing;
-        projectList->append("", DOUBLE_QUOTED);
+
+        auto& projectList = *AppConfig::archive()->openListing(key);
+        projectList.clear();
+
         for(int j = 0; j < projectCombos[i]->count(); ++j) {
             string filename = projectCombos[i]->itemText(j).toStdString();
-            projectList->append(filename, DOUBLE_QUOTED);
+            projectList.append(filename, DOUBLE_QUOTED);
         }
-        AppConfig::archive()->insert(key, projectList);
+
+        if(projectList.size() == 0) {
+            AppConfig::archive()->remove(key);
+        }
     }
 }
 
