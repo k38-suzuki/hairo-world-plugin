@@ -44,6 +44,9 @@ msgstr ""
 msgid "Game Start Mode"
 msgstr "ゲームスタートモード"
 
+msgid "Joystick Tester"
+msgstr "ジョイスティックテスタ"
+
 msgid "JoystickTester"
 msgstr "ジョイスティックテスタ"
 

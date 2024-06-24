@@ -162,11 +162,11 @@ bool CollisionVisualizerItem::Impl::initializeSimulation(SimulatorItem* simulato
                 collisionStateSeqItems.push_back(collisionStateSeqItem);
 
                 int numParts = body->numLinks();
-                shared_ptr<MultiValueSeq> collisionStateSeq = collisionStateSeqItem->seq();
-                collisionStateSeq->setSeqContentName("CollisionStateSeq");
-                collisionStateSeq->setFrameRate(1.0 / simulatorItem->worldTimeStep());
-                collisionStateSeq->setDimension(0, numParts, false);
-                collisionStateSeq->setOffsetTime(0.0);
+                shared_ptr<MultiValueSeq> log = collisionStateSeqItem->seq();
+                log->setNumFrames(0);
+                log->setNumParts(numParts);
+                log->setFrameRate(1.0 / simulatorItem->worldTimeStep());
+                log->setOffsetTime(0.0);
 
                 for(int j = 0; j < body->numLinks(); ++j) {
                     Link* link = body->link(j);
@@ -194,13 +194,12 @@ void CollisionVisualizerItem::Impl::onPostDynamics()
     int currentFrame = simulatorItem->currentFrame();
     for(size_t i = 0; i < bodies.size(); ++i) {
         Body* body = bodies[i];
-        shared_ptr<MultiValueSeq> collisionStateSeq = collisionStateSeqItems[i]->seq();
-        collisionStateSeq->setNumFrames(currentFrame);
-        MultiValueSeq::Frame p = collisionStateSeq->frame(currentFrame - 1);
+        shared_ptr<MultiValueSeq> log = collisionStateSeqItems[i]->seq();
+        auto frame = log->appendFrame();
         for(int j = 0; j < body->numLinks(); ++j) {
             Link* link = body->link(j);
             auto& contacts = link->contactPoints();
-            p[j] = !contacts.empty() ? 1 : 0;
+            frame[j] = !contacts.empty() ? 1 : 0;
         }
     }
 

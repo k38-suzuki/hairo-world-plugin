@@ -82,17 +82,17 @@ void TaskCreator::initializeClass(ExtensionManager* ext)
             [](Archive& archive){ return creatorInstance->impl->store(archive); },
             [](const Archive& archive) { return creatorInstance->impl->restore(archive); });
 
-        // MainMenu::instance()->add_Tools_Item(
-        //     _("Task Creator"), [](){ creatorInstance->impl->show(); });
+        MainMenu::instance()->add_Tools_Item(
+            _("Task Creator"), [](){ creatorInstance->impl->show(); });
         
-        vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
-        for(auto& bar : toolBars) {
-            if(bar->name() == "FileBar") {
-                auto button1 = bar->addButton(QIcon::fromTheme("document-new"));
-                button1->setToolTip(_("Show the task creator"));
-                button1->sigClicked().connect([&](){ creatorInstance->impl->show(); });
-            }
-        }
+        // vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
+        // for(auto& bar : toolBars) {
+        //     if(bar->name() == "FileBar") {
+        //         auto button1 = bar->addButton(QIcon::fromTheme("document-new"));
+        //         button1->setToolTip(_("Show the task creator"));
+        //         button1->sigClicked().connect([&](){ creatorInstance->impl->show(); });
+        //     }
+        // }
     }
 }
 

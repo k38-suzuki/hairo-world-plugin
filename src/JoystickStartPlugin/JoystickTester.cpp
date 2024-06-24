@@ -8,6 +8,7 @@
 #include <cnoid/Dialog>
 #include <cnoid/ExtensionManager>
 #include <cnoid/JoystickCapture>
+#include <cnoid/MainMenu>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>
@@ -55,6 +56,9 @@ void JoystickTester::initializeClass(ExtensionManager* ext)
 {
     if(!testerInstance) {
         testerInstance = ext->manage(new JoystickTester);
+
+        // MainMenu::instance()->add_Tools_Item(
+        //     _("Joystick Tester"), [](){ testerInstance->impl->show(); });
 
         vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
         for(auto& bar : toolBars) {

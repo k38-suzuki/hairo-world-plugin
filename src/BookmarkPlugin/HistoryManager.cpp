@@ -4,6 +4,7 @@
 
 #include "HistoryManager.h"
 #include <cnoid/ExtensionManager>
+#include <cnoid/MainMenu>
 #include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include <cnoid/ToolsUtil>
@@ -23,11 +24,16 @@ void HistoryManager::initializeClass(ExtensionManager* ext)
     if(!historyInstance) {
         historyInstance = ext->manage(new HistoryManager);
 
-        auto button1 = fileBar()->addButton(QIcon::fromTheme("document-revert"));
-        button1->setToolTip(_("Show the history manager"));
-        button1->sigClicked().connect([&](){
-            historyInstance->updateList();
-            historyInstance->show(); });
+        MainMenu::instance()->add_Tools_Item(
+            _("History Manager"), [](){
+                historyInstance->updateList();
+                historyInstance->show(); });
+
+        // auto button1 = fileBar()->addButton(QIcon::fromTheme("document-revert"));
+        // button1->setToolTip(_("Show the history manager"));
+        // button1->sigClicked().connect([&](){
+        //     historyInstance->updateList();
+        //     historyInstance->show(); });
     }
 }
 

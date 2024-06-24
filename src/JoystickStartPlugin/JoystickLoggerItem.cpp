@@ -100,11 +100,11 @@ bool JoystickLoggerItem::Impl::initializeSimulation(SimulatorItem* simulatorItem
     self->addSubItem(joystickStateSeqItem);
 
     int numParts = joystick->numAxes() + joystick->numButtons();
-    shared_ptr<MultiValueSeq> joystickStateSeq = joystickStateSeqItem->seq();
-    joystickStateSeq->setSeqContentName("JoystickStaSeq");
-    joystickStateSeq->setFrameRate(1.0 / simulatorItem->worldTimeStep());
-    joystickStateSeq->setDimension(0, numParts, false);
-    joystickStateSeq->setOffsetTime(0.0);
+    shared_ptr<MultiValueSeq> log = joystickStateSeqItem->seq();
+    log->setNumFrames(0);
+    log->setNumParts(numParts);
+    log->setFrameRate(1.0 / simulatorItem->worldTimeStep());
+    log->setOffsetTime(0.0);
 
     if(simulatorItem) {
         simulatorItem->addPostDynamicsFunction([&](){ onPostDynamics(); });
@@ -117,14 +117,13 @@ void JoystickLoggerItem::Impl::onPostDynamics()
 {
     int currentFrame = simulatorItem->currentFrame();
     joystick->readCurrentState();
-    shared_ptr<MultiValueSeq> joystickStateSeq = joystickStateSeqItem->seq();
-    joystickStateSeq->setNumFrames(currentFrame);
-    MultiValueSeq::Frame p = joystickStateSeq->frame(currentFrame - 1);
+    shared_ptr<MultiValueSeq> log = joystickStateSeqItem->seq();
+    auto frame = log->appendFrame();
     for(int i = 0; i < joystick->numAxes(); ++i) {
-        p[i] = joystick->getPosition(i);
+        frame[i] = joystick->getPosition(i);
     }
     for(int i = 0; i < joystick->numButtons(); ++i) {
-        p[i + joystick->numAxes()] = joystick->getButtonState(i) ? 1 : 0;
+        frame[i + joystick->numAxes()] = joystick->getButtonState(i) ? 1 : 0;
     }
 }
 
