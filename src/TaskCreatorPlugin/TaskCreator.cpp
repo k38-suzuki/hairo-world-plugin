@@ -206,7 +206,7 @@ TaskCreator::Impl::~Impl()
             projectList.append(filename, DOUBLE_QUOTED);
         }
 
-        if(projectList.size() == 0) {
+        if(projectList.empty()) {
             AppConfig::archive()->remove(key);
         }
     }

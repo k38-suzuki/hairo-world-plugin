@@ -99,7 +99,7 @@ ArchiveListDialog::Impl::~Impl()
         }
     }
 
-    if(recentList.size() == 0) {
+    if(recentList.empty()) {
         AppConfig::archive()->remove(archive_key_);
     }
 }

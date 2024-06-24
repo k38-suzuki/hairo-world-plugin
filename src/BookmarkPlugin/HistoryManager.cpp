@@ -105,7 +105,7 @@ HistoryManager::Impl::~Impl()
         recentFiles.append(filename, DOUBLE_QUOTED);
     }
 
-    if(recentFiles.size() == 0) {
+    if(recentFiles.empty()) {
         AppConfig::archive()->remove("histories");
     }
 }

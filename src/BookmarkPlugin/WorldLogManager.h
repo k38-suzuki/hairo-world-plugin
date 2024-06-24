@@ -30,8 +30,8 @@ private:
     void onPlaybackStopped(double time, bool isStoppedManually);
 
     CheckBox* saveCheck;
+    bool is_simulation_started;
     std::string project_filename;
-    bool is_started;
 };
 
 }

@@ -56,6 +56,7 @@ WorldLogManager::WorldLogManager()
     setArchiveKey("world_log_list");
     setFixedSize(800, 450);
 
+    is_simulation_started = false;
     project_filename.clear();
 
     saveCheck = new CheckBox;
@@ -105,6 +106,7 @@ void WorldLogManager::onItemDoubleClicked(const string& text)
 void WorldLogManager::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
     if(saveCheck->isChecked()) {
+        is_simulation_started = true;
         filesystem::path homeDir(fromUTF8(getenv("HOME")));
         ProjectManager* pm = ProjectManager::instance();
         QDateTime recordingStartTime = QDateTime::currentDateTime();
@@ -139,8 +141,9 @@ void WorldLogManager::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 
 void WorldLogManager::onPlaybackStopped(double time, bool isStoppedManually)
 {
-    if(saveCheck->isChecked()) {
+    if(saveCheck->isChecked() && is_simulation_started) {
         ProjectManager::instance()->saveProject(project_filename);
         addItem(project_filename.c_str());
     }
+    is_simulation_started = false;
 }
