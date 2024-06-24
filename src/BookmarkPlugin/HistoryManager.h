@@ -23,7 +23,8 @@ protected:
     virtual void onItemDoubleClicked(const std::string& text) override;
 
 private:
-
+    class Impl;
+    Impl* impl;
 };
 
 }
