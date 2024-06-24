@@ -32,7 +32,7 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
         bookmarkInstance = ext->manage(new BookmarkManager);
 
         BookmarkBar* bar = BookmarkBar::instance();
-        auto button1 = bar->addButton(QIcon::fromTheme("list-add"));
+        auto button1 = fileBar()->addButton(QIcon::fromTheme("list-add"));
         button1->setToolTip(_("Bookmark a current project"));
         button1->sigClicked().connect(
             [&](){ 
@@ -41,13 +41,9 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
                     bookmarkInstance->addItem(filename.c_str());
                 }
             });
-        auto button2 = bar->addButton(QIcon::fromTheme("user-bookmarks"));
+        auto button2 = fileBar()->addButton(QIcon::fromTheme("user-bookmarks"));
         button2->setToolTip(_("Show the bookmark manager"));
-        button2->sigClicked().connect(
-            [&](){
-                bookmarkInstance->updateList();
-                bookmarkInstance->show();
-            });
+        button2->sigClicked().connect([&](){ bookmarkInstance->show(); });
     }
 }
 

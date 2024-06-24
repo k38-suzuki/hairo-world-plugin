@@ -52,9 +52,7 @@ void HistoryManager::initializeClass(ExtensionManager* ext)
 
         // auto button1 = fileBar()->addButton(QIcon::fromTheme("document-revert"));
         // button1->setToolTip(_("Show the history manager"));
-        // button1->sigClicked().connect([&](){
-        //     historyInstance->updateList();
-        //     historyInstance->show(); });
+        // button1->sigClicked().connect([&](){ historyInstance->show(); });
     }
 }
 

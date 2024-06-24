@@ -6,10 +6,6 @@
 #define CNOID_BOOKMARK_PLUGIN_ARCHIVE_LIST_DIALOG_H
 
 #include <cnoid/Dialog>
-#include <QBoxLayout>
-#include <QDialogButtonBox>
-#include <QListWidget>
-#include <QListWidgetItem>
 
 namespace cnoid {
 
@@ -22,25 +18,15 @@ public:
     void addItem(const QString& text);
     void addItems(const QStringList& texts);
     void addWidget(QWidget* widget);
-    void updateList();
 
-    void setArchiveKey(const std::string& archive_key) { archive_key_ = archive_key; }
+    void setArchiveKey(const std::string& archive_key);
 
 protected:
-    virtual void onFinished(int result) override;
     virtual void onItemDoubleClicked(const std::string& text);
 
 private:
-    void onButtonClicked();
-    void onItemDoubleClicked(QListWidgetItem* item);
-    void clearList();
-    void storeList();
-
-    QListWidget* listWidget;
-    QDialogButtonBox* buttonBox;
-    std::string archive_key_;
-    int max_items;
-    QHBoxLayout* hbox;
+    class Impl;
+    Impl* impl;
 };
 
 }
