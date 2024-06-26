@@ -39,7 +39,7 @@ public:
 void MarkerDetectorItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-        .registerClass<MarkerDetectorItem>(N_("MarkerDetectorItem"))
+        .registerClass<MarkerDetectorItem, SubSimulatorItem>(N_("MarkerDetectorItem"))
         .addCreationPanel<MarkerDetectorItem>();
 }
 

@@ -197,7 +197,7 @@ public:
 void MultiColliderItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-        .registerClass<MultiColliderItem>(N_("MultiColliderItem"))
+        .registerClass<MultiColliderItem, SimpleColliderItem>(N_("MultiColliderItem"))
         // .addCreationPanel<MultiColliderItem>();
         .addCreationPanel<MultiColliderItem>(new MultiColliderItemCreationPanel)
         .addAlias<MultiColliderItem>("FluidAreaItem", "CFD");
