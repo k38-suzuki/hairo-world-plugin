@@ -47,6 +47,9 @@ msgstr "ワールドログの保存"
 msgid "BookmarkBar"
 msgstr "ブックマークバー"
 
+msgid "Bookmark"
+msgstr "ブックマーク"
+
 msgid "Bookmark a current project"
 msgstr "プロジェクトの登録"
 

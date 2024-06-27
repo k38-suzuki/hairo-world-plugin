@@ -36,7 +36,7 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
     if(!logInstance) {
         logInstance = ext->manage(new WorldLogManager);
 
-        SystemTrayIcon* systrayIcon = SystemTrayIcon::instance();
+        auto systrayIcon = new SystemTrayIcon;
         Action* action = systrayIcon->addAction(QIcon::fromTheme("emblem-documents"), _("WorldLog"));
         action->setToolTip(_("Show the worldlog manager"));
         action->sigTriggered().connect([&](){ logInstance->show(); });

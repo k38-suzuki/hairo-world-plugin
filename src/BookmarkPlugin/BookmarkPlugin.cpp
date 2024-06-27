@@ -24,7 +24,7 @@ public:
     virtual bool initialize() override
     {
         ToolsMenu::initializeClass(this);
-        BookmarkBar::initialize(this);
+        // BookmarkBar::initialize(this);
         BookmarkManager::initializeClass(this);
         WorldLogManager::initializeClass(this);
         HistoryManager::initializeClass(this);

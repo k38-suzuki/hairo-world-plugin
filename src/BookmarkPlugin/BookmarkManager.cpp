@@ -13,6 +13,7 @@
 #include <cnoid/stdx/filesystem>
 #include <cnoid/ToolsUtil>
 #include "BookmarkBar.h"
+#include "SystemTrayIcon.h"
 #include "gettext.h"
 
 using namespace std;
@@ -31,19 +32,20 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
     if(!bookmarkInstance) {
         bookmarkInstance = ext->manage(new BookmarkManager);
 
-        BookmarkBar* bar = BookmarkBar::instance();
-        auto button1 = bar->addButton(QIcon::fromTheme("list-add"));
-        button1->setToolTip(_("Bookmark a current project"));
-        button1->sigClicked().connect(
+        auto icon = new SystemTrayIcon;
+        Action* action1 = icon->addAction(QIcon::fromTheme("list-add"), _("Bookmark"));
+        action1->setToolTip(_("Bookmark a current project"));
+        action1->sigTriggered().connect(
             [&](){ 
                 const string& filename = ProjectManager::instance()->currentProjectFile();
                 if(!filename.empty()) {
                     bookmarkInstance->addItem(filename.c_str());
                 }
             });
-        auto button2 = bar->addButton(QIcon::fromTheme("user-bookmarks"));
-        button2->setToolTip(_("Show the bookmark manager"));
-        button2->sigClicked().connect([&](){ bookmarkInstance->show(); });
+
+        Action* action2 = icon->addAction(QIcon::fromTheme("user-bookmarks"), _("Bookmark Manager"));
+        action2->setToolTip(_("Show the bookmark manager"));
+        action2->sigTriggered().connect([&](){ bookmarkInstance->show(); });
     }
 }
 
