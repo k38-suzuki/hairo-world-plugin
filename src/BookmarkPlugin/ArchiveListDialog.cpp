@@ -8,6 +8,7 @@
 #include <cnoid/ValueTree>
 #include <QBoxLayout>
 #include <QDialogButtonBox>
+#include <QFileInfo>
 #include <QListWidget>
 #include <QListWidgetItem>
 
@@ -108,14 +109,23 @@ ArchiveListDialog::Impl::~Impl()
 void ArchiveListDialog::addItem(const QString& text)
 {
     if(!text.isEmpty()) {
-        impl->listWidget->addItem(text);
+        QFileInfo info(text);
+        if(!info.suffix().isEmpty()) {
+            if(info.exists()) {
+                impl->listWidget->addItem(text);
+            }
+        } else {
+            impl->listWidget->addItem(text);
+        }
     }
 }
 
 
 void ArchiveListDialog::addItems(const QStringList& texts)
 {
-    impl->listWidget->addItems(texts);
+    for(auto& text : texts) {
+        addItem(text);
+    }
 }
 
 
@@ -165,7 +175,7 @@ void ArchiveListDialog::Impl::updateList()
 
     list.removeDuplicates();
     clearList();
-    listWidget->addItems(list);
+    self->addItems(list);
 }
 
 
