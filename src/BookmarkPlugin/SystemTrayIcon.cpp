@@ -14,6 +14,7 @@ using namespace cnoid;
 namespace {
 
 SystemTrayIcon* systrayInstance = nullptr;
+bool is_systemtray_available = true;
 
 }
 
@@ -41,6 +42,12 @@ SystemTrayIcon::~SystemTrayIcon()
 SystemTrayIcon* SystemTrayIcon::instance()
 {
     return systrayInstance;
+}
+
+
+bool SystemTrayIcon::isSystemTrayAvailable()
+{
+    return is_systemtray_available;
 }
 
 
@@ -98,6 +105,7 @@ struct Registration {
     Registration() {
         if(!SystemTrayIcon::isSystemTrayAvailable()) {
             MessageView::instance()->putln(_("I couldn't detect any system tray on this system"));
+            is_systemtray_available = false;
         } else {
             if(!systrayInstance) {
                 systrayInstance = new SystemTrayIcon(QIcon(":/Base/icon/choreonoid.svg"));
