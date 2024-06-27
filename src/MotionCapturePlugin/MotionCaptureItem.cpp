@@ -3,6 +3,7 @@
 */
 
 #include "MotionCaptureItem.h"
+#include <cnoid/Archive>
 #include <cnoid/Body>
 #include <cnoid/DeviceList>
 #include <cnoid/ExecutablePath>
@@ -36,9 +37,8 @@ public:
     DeviceList<PassiveMarker> markers;
     vector<PointSetItem*> pointSetItems;
     MultiPointSetItemPtr multiPointSetItem;
-    SimulatorItem* simulatorItem;
     MultiSE3SeqItemPtr motionSeqItem;
-    bool isMotionDataRecordingEnabled;
+    bool isMotionDataRecordingProperty;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void finalizeSimulation();
@@ -60,9 +60,8 @@ MotionCaptureItem::Impl::Impl(MotionCaptureItem* self)
     markers.clear();
     pointSetItems.clear();
     multiPointSetItem = nullptr;
-    simulatorItem = nullptr;
     motionSeqItem = nullptr;
-    isMotionDataRecordingEnabled = true;
+    isMotionDataRecordingProperty = true;
 }
 
 
@@ -77,7 +76,7 @@ MotionCaptureItem::MotionCaptureItem(const MotionCaptureItem& org)
 MotionCaptureItem::Impl::Impl(MotionCaptureItem *self, const Impl& org)
     : self(self)
 {
-    isMotionDataRecordingEnabled = org.isMotionDataRecordingEnabled;
+    isMotionDataRecordingProperty = org.isMotionDataRecordingProperty;
 }
 
 
@@ -103,7 +102,6 @@ bool MotionCaptureItem::initializeSimulation(SimulatorItem* simulatorItem)
 
 bool MotionCaptureItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 {
-    this->simulatorItem = simulatorItem;
     markers.clear();
     pointSetItems.clear();
     if(multiPointSetItem) {
@@ -116,7 +114,7 @@ bool MotionCaptureItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
         markers << body->devices();
     }
 
-    if(isMotionDataRecordingEnabled) {
+    if(isMotionDataRecordingProperty) {
         if(markers.size()) {
             multiPointSetItem = new MultiPointSetItem;
             multiPointSetItem->setName("Motion");
@@ -157,7 +155,7 @@ void MotionCaptureItem::finalizeSimulation()
 
 void MotionCaptureItem::Impl::finalizeSimulation()
 {
-    if(multiPointSetItem && isMotionDataRecordingEnabled) {
+    if(multiPointSetItem && isMotionDataRecordingProperty) {
         QDateTime recordingStartTime = QDateTime::currentDateTime();
         string suffix = recordingStartTime.toString("-yyyy-MM-dd-hh-mm-ss").toStdString();
 
@@ -176,9 +174,8 @@ void MotionCaptureItem::Impl::finalizeSimulation()
             auto pointSet_ = pointSetItem->pointSet();
 
             vector<Vector3> src;
-            for(int i = 0; i < pointSetItem->numAttentionPoints(); ++i) {
-                Vector3 point = pointSetItem->attentionPoint(i);
-                src.push_back(point);
+            for(int j = 0; j < pointSetItem->numAttentionPoints(); ++j) {
+                src.push_back(pointSetItem->attentionPoint(j));
             }
             SgVertexArray& points = *pointSetItem->pointSet()->getOrCreateVertices();
             const int numPoints = src.size();
@@ -212,17 +209,16 @@ void MotionCaptureItem::Impl::finalizeSimulation()
 
 void MotionCaptureItem::Impl::onPreDynamics()
 {
-    int currentFrame = simulatorItem->currentFrame();
     shared_ptr<MultiSE3Seq> log = motionSeqItem->seq();
     auto frame = log->appendFrame();
     for(size_t i = 0; i < markers.size(); ++i) {
         PassiveMarker* marker = markers[i];
         if(marker->on()) {
             Link* link = marker->link();
-            Vector3 point = link->T() * marker->p_local();
+            Vector3 p = link->T() * marker->p_local();
             Matrix3 R = link->R() * marker->R_local();
-            frame[i].set(point, R);
-            pointSetItems[i]->addAttentionPoint(point);
+            frame[i].set(p, R);
+            pointSetItems[i]->addAttentionPoint(p);
         }
     }
 }
@@ -237,13 +233,15 @@ Item* MotionCaptureItem::doCloneItem(CloneMap* cloneMap) const
 void MotionCaptureItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     SubSimulatorItem::doPutProperties(putProperty);
-    putProperty(_("Record motion data"), impl->isMotionDataRecordingEnabled, changeProperty(impl->isMotionDataRecordingEnabled));
+    putProperty(_("Record motion data"), impl->isMotionDataRecordingProperty,
+                changeProperty(impl->isMotionDataRecordingProperty));
 }
 
 
 bool MotionCaptureItem::store(Archive& archive)
 {
     SubSimulatorItem::store(archive);
+    archive.write("data_recording", impl->isMotionDataRecordingProperty);
     return true;
 }
 
@@ -251,5 +249,6 @@ bool MotionCaptureItem::store(Archive& archive)
 bool MotionCaptureItem::restore(const Archive& archive)
 {
     SubSimulatorItem::restore(archive);
+    archive.read("data_recording", impl->isMotionDataRecordingProperty);
     return true;
 }
