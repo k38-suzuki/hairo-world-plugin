@@ -17,6 +17,8 @@ class Menu;
 class CNOID_EXPORT SystemTrayIcon : public QSystemTrayIcon
 {
 public:
+    static SystemTrayIcon* instance();
+
     SystemTrayIcon(QObject* parent = 0);
     SystemTrayIcon(const QIcon& icon, QObject* parent = 0);
     virtual ~SystemTrayIcon();
