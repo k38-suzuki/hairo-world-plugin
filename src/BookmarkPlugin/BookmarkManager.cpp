@@ -8,12 +8,14 @@
 #include <cnoid/Buttons>
 #include <cnoid/ExtensionManager>
 #include <cnoid/ItemManager>
+#include <cnoid/MainWindow>
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/stdx/filesystem>
 #include <cnoid/ToolsUtil>
 #include "BookmarkBar.h"
 #include "SystemTrayIcon.h"
+#include "WorldLogManager.h"
 #include "gettext.h"
 
 using namespace std;
@@ -33,7 +35,7 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
         bookmarkInstance = ext->manage(new BookmarkManager);
 
         if(SystemTrayIcon::isSystemTrayAvailable()) {
-            auto icon = new SystemTrayIcon;
+            auto icon = new SystemTrayIcon(QIcon(":/Base/icon/choreonoid.svg"));
             Action* action1 = icon->addAction(QIcon::fromTheme("list-add"), _("Bookmark"));
             action1->setToolTip(_("Bookmark a current project"));
             action1->sigTriggered().connect(
@@ -47,6 +49,13 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
             Action* action2 = icon->addAction(QIcon::fromTheme("user-bookmarks"), _("Bookmark Manager"));
             action2->setToolTip(_("Show the bookmark manager"));
             action2->sigTriggered().connect([&](){ bookmarkInstance->show(); });
+
+            Action* action3 = icon->addAction(QIcon::fromTheme("emblem-documents"), _("WorldLog"));
+            action3->setToolTip(_("Show the worldlog manager"));
+            action3->sigTriggered().connect([&](){ WorldLogManager::instance()->show(); });
+
+            Action* action4 = icon->addAction(_("Exit"));
+            action4->sigTriggered().connect([&](){ MainWindow::instance()->close(); });
         }
     }
 }

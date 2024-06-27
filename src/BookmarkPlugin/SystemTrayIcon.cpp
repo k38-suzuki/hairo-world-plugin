@@ -13,7 +13,6 @@ using namespace cnoid;
 
 namespace {
 
-SystemTrayIcon* systrayInstance = nullptr;
 bool is_systemtray_available = true;
 
 }
@@ -39,15 +38,17 @@ SystemTrayIcon::~SystemTrayIcon()
 }
 
 
-SystemTrayIcon* SystemTrayIcon::instance()
-{
-    return systrayInstance;
-}
-
-
 bool SystemTrayIcon::isSystemTrayAvailable()
 {
     return is_systemtray_available;
+}
+
+
+Action* SystemTrayIcon::addAction()
+{
+    Action* action = new Action(MainWindow::instance());
+    systrayMenu->addAction(action);
+    return action;
 }
 
 
@@ -64,6 +65,30 @@ Action* SystemTrayIcon::addAction(const QIcon& icon, const QString& text)
     Action* action = new Action(icon, text, MainWindow::instance());
     systrayMenu->addAction(action);
     return action;
+}
+
+
+QAction* SystemTrayIcon::addSection(const QString &text)
+{
+    return systrayMenu->addSection(text);
+}
+
+
+QAction* SystemTrayIcon::addSection(const QIcon &icon, const QString &text)
+{
+    return systrayMenu->addSection(icon, text);
+}
+
+
+QAction* SystemTrayIcon::addSeparator()
+{
+    return systrayMenu->addSeparator();
+}
+
+
+Menu* SystemTrayIcon::menu()
+{
+    return systrayMenu;
 }
 
 
@@ -106,12 +131,6 @@ struct Registration {
         if(!SystemTrayIcon::isSystemTrayAvailable()) {
             MessageView::instance()->putln(_("I couldn't detect any system tray on this system"));
             is_systemtray_available = false;
-        } else {
-            if(!systrayInstance) {
-                systrayInstance = new SystemTrayIcon(QIcon(":/Base/icon/choreonoid.svg"));
-                systrayInstance->addAction(_("Exit"))->sigTriggered().connect(
-                    [&](){ MainWindow::instance()->close(); });
-            }
         }
     }
 } registration;

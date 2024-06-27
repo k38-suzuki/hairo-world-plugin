@@ -6,6 +6,7 @@
 #define CNOID_BOOKMARK_PLUGIN_SYSTEM_TRAY_ICON_H
 
 #include <cnoid/Signal>
+#include <QAction>
 #include <QSystemTrayIcon>
 #include "exportdecl.h"
 
@@ -17,16 +18,21 @@ class Menu;
 class CNOID_EXPORT SystemTrayIcon : public QSystemTrayIcon
 {
 public:
-    static SystemTrayIcon* instance();
-
-    static bool isSystemTrayAvailable();
-
     SystemTrayIcon(QObject* parent = 0);
     SystemTrayIcon(const QIcon& icon, QObject* parent = 0);
     virtual ~SystemTrayIcon();
 
+    static bool isSystemTrayAvailable();
+
+    Action* addAction();
     Action* addAction(const QString& text);
     Action* addAction(const QIcon& icon, const QString& text);
+
+    QAction* addSection(const QString &text);
+    QAction* addSection(const QIcon &icon, const QString &text);
+    QAction* addSeparator();
+
+    Menu* menu();
 
     SignalProxy<void()> sigContextRequested() { return sigContextRequested_; }
     SignalProxy<void()> sigDoubleClicked() { return sigDoubleClicked_; }
