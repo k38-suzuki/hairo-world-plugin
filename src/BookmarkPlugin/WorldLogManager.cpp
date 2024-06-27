@@ -7,6 +7,7 @@
 #include <cnoid/AppConfig>
 #include <cnoid/CheckBox>
 #include <cnoid/ExtensionManager>
+#include <cnoid/MainWindow>
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
@@ -17,7 +18,6 @@
 #include <src/BodyPlugin/WorldLogFileItem.h>
 #include <cnoid/ToolsUtil>
 #include <QDateTime>
-#include "SystemTrayIcon.h"
 #include "gettext.h"
 
 using namespace std;
@@ -35,6 +35,10 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
 {
     if(!logInstance) {
         logInstance = ext->manage(new WorldLogManager);
+
+        auto button = fileBar()->addButton(QIcon::fromTheme("emblem-documents"));
+        button->setToolTip(_("Show the worldlog manager"));
+        button->sigClicked().connect([&](){ logInstance->show(); });
     }
 }
 

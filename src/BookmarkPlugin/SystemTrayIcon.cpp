@@ -131,6 +131,11 @@ struct Registration {
         if(!SystemTrayIcon::isSystemTrayAvailable()) {
             MessageView::instance()->putln(_("I couldn't detect any system tray on this system"));
             is_systemtray_available = false;
+        } else {
+            auto icon = new SystemTrayIcon(QIcon(":/Base/icon/choreonoid.svg"));
+            icon->addAction(_("Exit"))->sigTriggered().connect(
+                [&](){ MainWindow::instance()->close(); });
+            icon->hide();
         }
     }
 } registration;
