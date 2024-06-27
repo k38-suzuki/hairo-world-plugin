@@ -3,6 +3,7 @@
 */
 
 #include "IntervalStarterBar.h"
+#include <cnoid/Archive>
 #include <cnoid/ExtensionManager>
 #include <cnoid/MessageView>
 #include <cnoid/SimulationBar>
@@ -172,4 +173,18 @@ void IntervalStarterBar::Impl::onPlaybackStopped(double time, bool isStoppedManu
         intervalTimer->start(2000);
     }
     is_simulation_started = false;
+}
+
+
+bool IntervalStarterBar::storeState(Archive& archive)
+{
+    archive.write("interval_time", impl->intervalSpin->value());
+    return true;
+}
+
+
+bool IntervalStarterBar::restoreState(const Archive& archive)
+{
+    impl->intervalSpin->setValue(archive.get("interval_time", 5));
+    return true;
 }

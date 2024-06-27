@@ -18,6 +18,9 @@ public:
     static void initialize(ExtensionManager* ext);
     static IntervalStarterBar* instance();
 
+    virtual bool storeState(Archive& archive) override;
+    virtual bool restoreState(const Archive& archive) override;
+
 private:
     class Impl;
     Impl* impl;
