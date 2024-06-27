@@ -61,3 +61,12 @@ msgstr "ジョイスティックテスタ"
 
 msgid "Show the joystick tester"
 msgstr "ジョイスティック状態の表示"
+
+msgid "IntervalStarterBar"
+msgstr "インターバルスターターバー"
+
+msgid "Interval time"
+msgstr "インターバル時間"
+
+msgid "Set the interval timer"
+msgstr "インターバルタイマーをセット"
