@@ -125,7 +125,6 @@ void IntervalStarterBar::Impl::onCountdown()
     } else {
         MessageView::instance()->putln(format(_("Start!!")));
         counter = intervalSpin->value();
-        startTimer->stop();
         sb->startSimulation(true);
     }
 }
@@ -153,6 +152,14 @@ void IntervalStarterBar::Impl::onButtonToggled(bool checked)
 
 void IntervalStarterBar::Impl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
+    if(startTimer->isActive()) {
+        startTimer->stop();
+    }
+
+    if(intervalTimer->isActive()) {
+        intervalTimer->stop();
+    }
+
     this->simulatorItem = simulatorItem;
     is_simulation_started = true;
 }

@@ -110,32 +110,37 @@ void JoystickStarter::Impl::onButton(int id, bool isPressed)
 {
     if(isPressed) {
         if(startCheck->isChecked()) {
-            if(id == Joystick::START_BUTTON) {
-                if(currentStatus == STOP) {
-                    currentStatus == START;
-                    sb->startSimulation(true);
-                    statusBar->showMessage(_("Stop simulation: SELECT button, Pause simulation: START button"));
-                } else {
-                    if(currentStatus == START) {
-                        currentStatus = PAUSE;
-                        simulatoritem->pauseSimulation();
-                        statusBar->showMessage(_("Stop simulation: SELECT button, Restart simulation: START button"));
-                    } else {
+            switch(id) {
+                case Joystick::START_BUTTON:
+                    if(currentStatus == STOP) {
                         currentStatus = START;
-                        simulatoritem->restartSimulation();
+                        sb->startSimulation(true);
                         statusBar->showMessage(_("Stop simulation: SELECT button, Pause simulation: START button"));
+                    } else {
+                        if(currentStatus == START) {
+                            currentStatus = PAUSE;
+                            simulatoritem->pauseSimulation();
+                            statusBar->showMessage(_("Stop simulation: SELECT button, Restart simulation: START button"));
+                        } else {
+                            currentStatus = START;
+                            simulatoritem->restartSimulation();
+                            statusBar->showMessage(_("Stop simulation: SELECT button, Pause simulation: START button"));
+                        }
                     }
-                }
-            } else if(id == Joystick::SELECT_BUTTON) {
-                if(currentStatus == STOP) {
-                    currentStatus = START;
-                    sb->startSimulation(false);
-                    statusBar->showMessage(_("Stop simulation: SELECT button, Pause simulation: START button"));
-                } else {
-                    currentStatus = STOP;
-                    simulatoritem->stopSimulation(true);
-                    statusBar->showMessage(_("Start simulation from the current state: SELECT button, Start simulation from the beginning: START button"));
-                }
+                    break;
+                case Joystick::SELECT_BUTTON:
+                    if(currentStatus == STOP) {
+                        currentStatus = START;
+                        sb->startSimulation(false);
+                        statusBar->showMessage(_("Stop simulation: SELECT button, Pause simulation: START button"));
+                    } else {
+                        currentStatus = STOP;
+                        simulatoritem->stopSimulation(true);
+                        statusBar->showMessage(_("Start simulation from the current state: SELECT button, Start simulation from the beginning: START button"));
+                    }
+                    break;
+                default:
+                    break;
             }
         }
     }

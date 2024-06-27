@@ -37,7 +37,7 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
         logInstance = ext->manage(new WorldLogManager);
 
         BookmarkBar* bar = BookmarkBar::instance();
-        auto button1 = fileBar()->addButton(QIcon::fromTheme("emblem-documents"));
+        auto button1 = bar->addButton(QIcon::fromTheme("emblem-documents"));
         button1->setToolTip(_("Show the worldlog manager"));
         button1->sigClicked().connect([&](){ logInstance->show(); });
     }
