@@ -44,6 +44,15 @@ msgstr ""
 msgid "Game Start Mode"
 msgstr "ゲームスタートモード"
 
+msgid "Stop simulation: SELECT button, Pause simulation: START button"
+msgstr "シミュレーションの停止： SELECT ボタン，シミュレーションの一時停止： START ボタン"
+
+msgid "Stop simulation: SELECT button, Restart simulation: START button"
+msgstr "シミュレーションの停止： SELECT ボタン，シミュレーションの再開： START ボタン"
+
+msgid "Start simulation from the current state: SELECT button, Start simulation from the beginning: START button"
+msgstr "現在位置からのシミュレーションを開始： SELECT ボタン，初期位置からのシミュレーションを開始： START ボタン"
+
 msgid "Joystick Tester"
 msgstr "ジョイスティックテスタ"
 

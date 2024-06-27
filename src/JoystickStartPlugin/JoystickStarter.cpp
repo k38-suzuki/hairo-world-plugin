@@ -9,13 +9,17 @@
 #include <cnoid/Joystick>
 #include <cnoid/JoystickCapture>
 #include <cnoid/MainMenu>
+#include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
+#include <QStatusBar>
+#include <fmt/format.h>
 #include "gettext.h"
 
 using namespace std;
 using namespace cnoid;
+using fmt::format;
 
 namespace {
 
@@ -32,11 +36,14 @@ public:
 
   Impl();
 
-  bool startState;
-  bool pauseState;
   JoystickCapture joystick;
   SimulatorItem* simulatoritem;
   SimulationBar* sb;
+
+  QStatusBar* statusBar;
+
+  bool startState;
+  bool pauseState;
 
   void onButton(const int& id, const bool& isPressed);
   void onSimulationAboutToStart(SimulatorItem* simulatorItem);
@@ -56,6 +63,8 @@ JoystickStarter::Impl::Impl()
 {
     startState = false;
     pauseState = false;
+    statusBar = MainWindow::instance()->statusBar();
+
     joystick.setDevice("/dev/input/js0");
     joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
 
@@ -99,12 +108,15 @@ void JoystickStarter::Impl::onButton(const int& id, const bool& isPressed)
             if(id == Joystick::START_BUTTON) {
                 if(!startState) {
                     sb->startSimulation(true);
+                    statusBar->showMessage(_("Stop simulation: SELECT button, Pause simulation: START button"));
                 } else {
                     if(simulatoritem) {
                         if(!pauseState) {
                             simulatoritem->pauseSimulation();
+                            statusBar->showMessage(_("Stop simulation: SELECT button, Restart simulation: START button"));
                         } else {
                             simulatoritem->restartSimulation();
+                            statusBar->showMessage(_("Stop simulation: SELECT button, Pause simulation: START button"));
                         }
                         pauseState = !pauseState;
                     }
@@ -112,11 +124,13 @@ void JoystickStarter::Impl::onButton(const int& id, const bool& isPressed)
             } else if(id == Joystick::SELECT_BUTTON) {
                 if(!startState) {
                     sb->startSimulation(false);
+                    statusBar->showMessage(_("Stop simulation: SELECT button, Pause simulation: START button"));
                 } else {
                     if(simulatoritem) {
                         simulatoritem->stopSimulation(true);
                         startState = false;
                         pauseState = false;
+                        statusBar->showMessage(_("Start simulation from the current state: SELECT button, Start simulation from the beginning: START button"));
                     }
                 }
             }
