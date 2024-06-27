@@ -6,6 +6,7 @@ set(sources
   HistoryManager.cpp
   JoyKey.cpp
   KIOSKManager.cpp
+  SystemTrayIcon.cpp
   ToolsUtil.cpp
   WorldLogManager.cpp
 )
@@ -17,12 +18,14 @@ set(headers
   HistoryManager.h
   JoyKey.h
   KIOSKManager.h
+  SystemTrayIcon.h
   ToolsUtil.h
   WorldLogManager.h
   exportdecl.h
 )
 
 choreonoid_make_header_public(BookmarkBar.h)
+choreonoid_make_header_public(SystemTrayIcon.h)
 choreonoid_make_header_public(ToolsUtil.h)
 
 set(target CnoidBookmarkPlugin)

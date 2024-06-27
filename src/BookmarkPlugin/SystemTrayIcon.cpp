@@ -11,20 +11,8 @@
 
 using namespace cnoid;
 
-namespace {
-
-SystemTrayIcon* createTrayIcon()
-{
-    SystemTrayIcon* systrayIcon = new SystemTrayIcon(QIcon(":/Base/icon/setup.svg"), MainWindow::instance());
-    systrayIcon->show();
-    return systrayIcon;
-}
-
-}
-
-
 SystemTrayIcon::SystemTrayIcon(QObject* parent)
-    : QSystemTrayIcon(parent)
+    : QSystemTrayIcon(QIcon(":/Base/icon/setup.svg"), parent)
 {
     initialize();
 }
@@ -93,17 +81,16 @@ void SystemTrayIcon::onActivated(QSystemTrayIcon::ActivationReason reason)
 
 namespace {
 
-struct SystrayDetection {
-    SystrayDetection() {
+struct Registration {
+    Registration() {
         if(!SystemTrayIcon::isSystemTrayAvailable()) {
             MessageView::instance()->putln(_("I couldn't detect any system tray on this system"));
         } else {
-            SystemTrayIcon* systrayIcon = createTrayIcon();
-            systrayIcon->setIcon(QIcon(":/Base/icon/choreonoid.svg"));
+            SystemTrayIcon* systrayIcon = new SystemTrayIcon(QIcon(":/Base/icon/choreonoid.svg"));
             systrayIcon->addAction(_("Exit"))->sigTriggered().connect(
                 [&](){ MainWindow::instance()->close(); });
         }
     }
-} systrayDetection;
+} registration;
 
 }

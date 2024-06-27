@@ -58,3 +58,9 @@ msgstr "自動再生"
 
 msgid "Open a project"
 msgstr "プロジェクトを開く"
+
+msgid "I couldn't detect any system tray on this system"
+msgstr ""
+
+msgid "Exit"
+msgstr "終了"
