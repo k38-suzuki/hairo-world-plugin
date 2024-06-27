@@ -10,7 +10,6 @@
 #include <cnoid/SpinBox>
 #include <cnoid/TimeBar>
 #include <cnoid/Timer>
-#include <QLabel>
 #include <fmt/format.h>
 #include "gettext.h"
 
@@ -53,8 +52,7 @@ void IntervalStarterBar::initialize(ExtensionManager* ext)
 {
     static bool initialized = false;
     if(!initialized) {
-        // ext->addToolBar(instance());
-        instance();
+        ext->addToolBar(instance());
         initialized = true;
     }
 }
@@ -86,8 +84,7 @@ IntervalStarterBar::Impl::Impl(IntervalStarterBar* self)
     intervalSpin = new SpinBox;
     intervalSpin->setValue(counter);
     intervalSpin->setToolTip(_("Interval time"));
-    sb->addWidget(new QLabel(" : "));
-    sb->addWidget(intervalSpin);
+    self->addWidget(intervalSpin);
 
     startTimer = new Timer(self);
     startTimer->sigTimeout().connect([&](){ onCountdown(); });
@@ -96,7 +93,7 @@ IntervalStarterBar::Impl::Impl(IntervalStarterBar* self)
     intervalTimer->sigTimeout().connect([&](){ onTimeout(); });
 
     const QIcon startIcon = QIcon::fromTheme("media-playlist-repeat");
-    startButton = sb->addToggleButton(startIcon);
+    startButton = self->addToggleButton(startIcon);
     startButton->setToolTip(_("Set the interval timer"));
     startButton->sigToggled().connect([&](bool checked){ onButtonToggled(checked); });
 
