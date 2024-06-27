@@ -11,6 +11,9 @@
 
 namespace cnoid {
 
+class Action;
+class Menu;
+
 class CNOID_EXPORT SystemTrayIcon : public QSystemTrayIcon
 {
 public:
@@ -18,12 +21,17 @@ public:
     SystemTrayIcon(const QIcon& icon, QObject* parent = 0);
     virtual ~SystemTrayIcon();
 
+    Action* addAction(const QString& text);
+    Action* addAction(const QIcon& icon, const QString& text);
+
     SignalProxy<void()> sigContextRequested() { return sigContextRequested_; }
     SignalProxy<void()> sigDoubleClicked() { return sigDoubleClicked_; }
     SignalProxy<void()> sigTriggered() { return sigTriggered_; }
     SignalProxy<void()> sigMiddleClicked() { return sigMiddleClicked_; }
 
 private:
+    Menu* systrayMenu;
+
     Signal<void(void)> sigContextRequested_;
     Signal<void(void)> sigDoubleClicked_;
     Signal<void(void)> sigTriggered_;

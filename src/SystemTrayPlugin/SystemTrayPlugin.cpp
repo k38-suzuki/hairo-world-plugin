@@ -4,7 +4,6 @@
 
 #include <cnoid/Plugin>
 #include <fmt/format.h>
-#include "SystemTrayManager.h"
 
 using namespace cnoid;
 
@@ -18,7 +17,6 @@ public:
 
     virtual bool initialize() override
     {
-        SystemTrayManager::initializeClass(this);
         return true;
     }
 

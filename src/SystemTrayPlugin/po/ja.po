@@ -22,6 +22,3 @@ msgstr ""
 
 msgid "Exit"
 msgstr "終了"
-
-msgid "Exit Choreonoid"
-msgstr "Choreonoidを終了"
