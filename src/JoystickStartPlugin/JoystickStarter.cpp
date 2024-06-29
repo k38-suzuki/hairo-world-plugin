@@ -13,6 +13,7 @@
 #include <cnoid/MenuManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
+#include <cnoid/TimeBar>
 #include <QStatusBar>
 #include <fmt/format.h>
 #include "gettext.h"
@@ -34,19 +35,21 @@ class JoystickStarter::Impl
 {
 public:
 
-  Impl();
+    Impl();
 
-  JoystickCapture joystick;
-  SimulatorItem* simulatoritem;
-  SimulationBar* sb;
+    enum StatusId { START, STOP, PAUSE };
 
-  QStatusBar* statusBar;
+    JoystickCapture joystick;
+    SimulatorItem* simulatoritem;
+    SimulationBar* sb;
 
-  bool startState;
-  bool pauseState;
+    QStatusBar* statusBar;
 
-  void onButton(const int& id, const bool& isPressed);
-  void onSimulationAboutToStart(SimulatorItem* simulatorItem);
+    StatusId currentStatus;
+
+    void onButton(int id, bool isPressed);
+    void onSimulationAboutToStart(SimulatorItem* simulatorItem);
+    void onPlaybackStopped(double time, bool isStoppedManually);
 };
 
 }
@@ -61,15 +64,17 @@ JoystickStarter::JoystickStarter()
 JoystickStarter::Impl::Impl()
     : sb(SimulationBar::instance())
 {
-    startState = false;
-    pauseState = false;
+    currentStatus = STOP;
     statusBar = MainWindow::instance()->statusBar();
 
     joystick.setDevice("/dev/input/js0");
     joystick.sigButton().connect([&](int id, bool isPressed){ onButton(id, isPressed); });
 
     sb->sigSimulationAboutToStart().connect(
-                [&](SimulatorItem* simulatorItem){ onSimulationAboutToStart(simulatorItem); });
+        [&](SimulatorItem* simulatorItem){ onSimulationAboutToStart(simulatorItem); });
+
+    TimeBar::instance()->sigPlaybackStopped().connect(
+        [&](double time, bool isStoppedManually){ onPlaybackStopped(time, isStoppedManually); });
 }
 
 
@@ -101,37 +106,35 @@ void JoystickStarter::initializeClass(ExtensionManager* ext)
 }
 
 
-void JoystickStarter::Impl::onButton(const int& id, const bool& isPressed)
+void JoystickStarter::Impl::onButton(int id, bool isPressed)
 {
     if(isPressed) {
         if(startCheck->isChecked()) {
             if(id == Joystick::START_BUTTON) {
-                if(!startState) {
+                if(currentStatus == STOP) {
+                    currentStatus == START;
                     sb->startSimulation(true);
                     statusBar->showMessage(_("Stop simulation: SELECT button, Pause simulation: START button"));
                 } else {
-                    if(simulatoritem) {
-                        if(!pauseState) {
-                            simulatoritem->pauseSimulation();
-                            statusBar->showMessage(_("Stop simulation: SELECT button, Restart simulation: START button"));
-                        } else {
-                            simulatoritem->restartSimulation();
-                            statusBar->showMessage(_("Stop simulation: SELECT button, Pause simulation: START button"));
-                        }
-                        pauseState = !pauseState;
+                    if(currentStatus == START) {
+                        currentStatus = PAUSE;
+                        simulatoritem->pauseSimulation();
+                        statusBar->showMessage(_("Stop simulation: SELECT button, Restart simulation: START button"));
+                    } else {
+                        currentStatus = START;
+                        simulatoritem->restartSimulation();
+                        statusBar->showMessage(_("Stop simulation: SELECT button, Pause simulation: START button"));
                     }
                 }
             } else if(id == Joystick::SELECT_BUTTON) {
-                if(!startState) {
+                if(currentStatus == STOP) {
+                    currentStatus = START;
                     sb->startSimulation(false);
                     statusBar->showMessage(_("Stop simulation: SELECT button, Pause simulation: START button"));
                 } else {
-                    if(simulatoritem) {
-                        simulatoritem->stopSimulation(true);
-                        startState = false;
-                        pauseState = false;
-                        statusBar->showMessage(_("Start simulation from the current state: SELECT button, Start simulation from the beginning: START button"));
-                    }
+                    currentStatus = STOP;
+                    simulatoritem->stopSimulation(true);
+                    statusBar->showMessage(_("Start simulation from the current state: SELECT button, Start simulation from the beginning: START button"));
                 }
             }
         }
@@ -141,6 +144,14 @@ void JoystickStarter::Impl::onButton(const int& id, const bool& isPressed)
 
 void JoystickStarter::Impl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
+    currentStatus = START;
     this->simulatoritem = simulatorItem;
-    startState = true;
+}
+
+
+void JoystickStarter::Impl::onPlaybackStopped(double time, bool isStoppedManually)
+{
+    if(currentStatus == START) {
+        currentStatus = STOP;
+    }
 }
