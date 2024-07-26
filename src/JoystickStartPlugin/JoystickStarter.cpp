@@ -14,6 +14,7 @@
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
 #include <cnoid/TimeBar>
+#include <cnoid/ValueTree>
 #include <QStatusBar>
 #include <fmt/format.h>
 #include "gettext.h"
