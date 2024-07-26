@@ -2,9 +2,10 @@
    @author Kenta Suzuki
 */
 
+#include <cnoid/Format>
 #include <cnoid/Plugin>
-#include <fmt/format.h>
 #include "CollisionVisualizerItem.h"
+
 using namespace cnoid;
 
 class CollisionSeqPlugin : public Plugin
@@ -24,7 +25,7 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("CollisionSeq Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            formatC("CollisionSeq Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyright (c) 2021 Japan Atomic Energy Agency.\n"
             "\n" +

@@ -6,6 +6,7 @@
 #include <cnoid/Action>
 #include <cnoid/AppConfig>
 #include <cnoid/ExtensionManager>
+#include <cnoid/Format>
 #include <cnoid/Joystick>
 #include <cnoid/JoystickCapture>
 #include <cnoid/MainMenu>
@@ -16,12 +17,10 @@
 #include <cnoid/TimeBar>
 #include <cnoid/ValueTree>
 #include <QStatusBar>
-#include <fmt/format.h>
 #include "gettext.h"
 
 using namespace std;
 using namespace cnoid;
-using fmt::format;
 
 namespace {
 

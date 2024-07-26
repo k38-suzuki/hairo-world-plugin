@@ -6,12 +6,12 @@
 #include "PHITSWriter.h"
 #include <cnoid/BodyItem>
 #include <cnoid/EigenUtil>
+#include <cnoid/Format>
 #include <cnoid/ItemList>
 #include <cnoid/MessageView>
 #include <cnoid/RootItem>
 #include <cnoid/SceneGraph>
 #include <cnoid/ValueTree>
-#include <fmt/format.h>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -117,7 +117,7 @@ bool PHITSWriter::searchLink(bool flagQAD)
                 ValueNode* nuclideNameNode = info->find("nuclide");
                 ValueNode* energyNode = info->find("energy");
                 if(nuclideNameNode->isValid() || energyNode->isValid()) {
-                    MessageView::instance()->putln(fmt::format(_("{0} has been detected."), link->name()));
+                    MessageView::instance()->putln(formatR(_("{0} has been detected."), link->name()));
                     if(nuclideNameNode->isValid()) {
                         int nNuc;
                         vector<string> strNucNames;

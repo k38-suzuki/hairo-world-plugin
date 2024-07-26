@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
+#include <cnoid/Format>
 #include <cnoid/Plugin>
-#include <fmt/format.h>
 #include "BeepView.h"
 #include "BeepItem.h"
 
@@ -27,7 +27,7 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("Beep Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            formatC("Beep Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyright (c) 2022 Japan Atomic Energy Agency.\n"
             "\n" +

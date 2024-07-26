@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
+#include <cnoid/Format>
 #include <cnoid/Plugin>
-#include <fmt/format.h>
 #include "NetworkEmulator.h"
 #include "NetworkEmulatorItem.h"
 
@@ -27,7 +27,7 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("NetEm Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            formatC("NetEm Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyright (c) 2020 Japan Atomic Energy Agency.\n"
             "\n" +

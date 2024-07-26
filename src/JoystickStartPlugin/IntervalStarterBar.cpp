@@ -5,18 +5,17 @@
 #include "IntervalStarterBar.h"
 #include <cnoid/Archive>
 #include <cnoid/ExtensionManager>
+#include <cnoid/Format>
 #include <cnoid/MessageView>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
 #include <cnoid/SpinBox>
 #include <cnoid/TimeBar>
 #include <cnoid/Timer>
-#include <fmt/format.h>
 #include "gettext.h"
 
 using namespace std;
 using namespace cnoid;
-using fmt::format;
 
 namespace cnoid {
 
@@ -121,10 +120,10 @@ IntervalStarterBar::Impl::~Impl()
 void IntervalStarterBar::Impl::onCountdown()
 {
     if(counter > 0) {
-        MessageView::instance()->putln(format(_("{0}"), counter));
+        MessageView::instance()->putln(formatR(_("{0}"), counter));
         --counter;
     } else {
-        MessageView::instance()->putln(format(_("Start!!")));
+        MessageView::instance()->putln(formatR(_("Start!!")));
         counter = intervalSpin->value();
         sb->startSimulation(true);
     }

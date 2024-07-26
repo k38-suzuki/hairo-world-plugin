@@ -7,9 +7,9 @@
 #include "ComptonCone.h"
 #include <cnoid/BodyItem>
 #include <cnoid/DeviceList>
+#include <cnoid/Format>
 #include <cnoid/ItemList>
 #include <cnoid/RootItem>
-#include <fmt/format.h>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -324,7 +324,7 @@ bool ComptonCone::readComptonCone(string strFName, double Energy, ComptonCamera*
     while(1) {
         if(bDumpPID) {
             pid++;
-            string strPIDName = strFName + "." + fmt::format("{:03d}", pid);
+            string strPIDName = strFName + "." + formatC("{:03d}", pid);
             const char *dmpfilePID = strPIDName.c_str();
             ifs.open(dmpfilePID, ios::in);
             if(!ifs) break;

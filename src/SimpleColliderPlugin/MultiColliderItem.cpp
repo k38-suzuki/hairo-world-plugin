@@ -6,12 +6,11 @@
 #include <cnoid/Archive>
 #include <cnoid/EigenArchive>
 #include <cnoid/EigenUtil>
+#include <cnoid/Format>
 #include <cnoid/PutPropertyFunction>
-#include <fmt/format.h>
 #include "gettext.h"
 
 using namespace std;
-using namespace fmt;
 using namespace cnoid;
 
 MultiColliderItem::MultiColliderItem()
@@ -89,7 +88,7 @@ void MultiColliderItem::doPutProperties(PutPropertyFunction& putProperty)
                         return true;
                     });
 
-        putProperty(_("steady flow"), format("{0:.3g} {1:.3g} {2:.3g}", steadyFlow().x(), steadyFlow().y(), steadyFlow().z()),
+        putProperty(_("steady flow"), formatC("{0:.3g} {1:.3g} {2:.3g}", steadyFlow().x(), steadyFlow().y(), steadyFlow().z()),
                     [this](const string& text){
                         Vector3 f;
                         if(toVector3(text, f)) {
@@ -136,20 +135,20 @@ void MultiColliderItem::doPutProperties(PutPropertyFunction& putProperty)
                         return true;
                     });
 
-        putProperty(_("source IP"), format("{0}", source()),
+        putProperty(_("source IP"), formatC("{0}", source()),
                     [this](const string& text){
                         setSource(text);
                         return true;
                     });
 
-        putProperty(_("destination IP"), format("{0}", destination()),
+        putProperty(_("destination IP"), formatC("{0}", destination()),
                     [this](const string& text){
                         setDestination(text);
                         return true;
                     });
         break;
     case VFX:
-        putProperty(_("HSV"), format("{0:.3g} {1:.3g} {2:.3g}", hsv().x(), hsv().y(), hsv().z()),
+        putProperty(_("HSV"), formatC("{0:.3g} {1:.3g} {2:.3g}", hsv().x(), hsv().y(), hsv().z()),
                     [this](const string& text){
                         Vector3 c;
                         if(toVector3(text, c)) {
@@ -159,7 +158,7 @@ void MultiColliderItem::doPutProperties(PutPropertyFunction& putProperty)
                         return false;
                     });
 
-        putProperty(_("RGB"), format("{0:.3g} {1:.3g} {2:.3g}", rgb().x(), rgb().y(), rgb().z()),
+        putProperty(_("RGB"), formatC("{0:.3g} {1:.3g} {2:.3g}", rgb().x(), rgb().y(), rgb().z()),
                     [this](const string& text){
                         Vector3 c;
                         if(toVector3(text, c)) {

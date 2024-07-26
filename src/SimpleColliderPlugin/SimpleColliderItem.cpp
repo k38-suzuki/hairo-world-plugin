@@ -19,11 +19,10 @@
 #include <cnoid/YAMLWriter>
 #include <cnoid/ConnectionSet>
 #include <cnoid/MathUtil>
-#include <fmt/format.h>
+#include <cnoid/Format>
 #include "gettext.h"
 
 using namespace std;
-using namespace fmt;
 using namespace cnoid;
 
 namespace {
@@ -33,7 +32,7 @@ Signal<void()> sigItemsInProjectChanged_;
 void notSupportText()
 {
     // mvout()
-    //     << format(_("This combination is not supported."))
+    //     << formatR(_("This combination is not supported."))
     //     << endl;
 }
 
@@ -171,7 +170,7 @@ void SimpleColliderItem::storeBodyPosition()
         impl->updateScenePosition();
         notifyUpdate();
         // mvout()
-        //     << format(_("The current position of {0} has been stored to {1}."),
+        //     << formatR(_("The current position of {0} has been stored to {1}."),
         //               impl->bodyItem->name(), name())
         //     << endl;
     }
@@ -184,7 +183,7 @@ void SimpleColliderItem::restoreBodyPosition()
         impl->bodyItem->body()->rootLink()->position() = impl->position_;
         impl->bodyItem->notifyKinematicStateChange(true);
         mvout()
-            << format(_("The position of {0} has been restored from {1}."),
+            << formatR(_("The position of {0} has been restored from {1}."),
                       impl->bodyItem->name(), name())
             << endl;
     }
@@ -471,7 +470,7 @@ bool SimpleColliderItem::Impl::saveSimpleCollider(const string& filename, ostrea
 {
     YAMLWriter writer;
     if(!writer.openFile(filename)) {
-        os << format(_("Failed to open \"{0}\"."), filename) << endl;
+        os << formatR(_("Failed to open \"{0}\"."), filename) << endl;
         return false;
     }
 
@@ -508,7 +507,7 @@ void SimpleColliderItem::onTreePathChanged()
         impl->connections.add(impl->bodyItem->sigKinematicStateChanged().connect(
             [&]() { storeBodyPosition(); }));
         mvout()
-            << format(_("SimpleColliderItem \"{0}\" has been attached to {1}."),
+            << formatR(_("SimpleColliderItem \"{0}\" has been attached to {1}."),
                       name(), impl->bodyItem->name())
             << endl;
     }
@@ -517,7 +516,7 @@ void SimpleColliderItem::onTreePathChanged()
     if(newWorldItem && newWorldItem != impl->worldItem) {
         impl->worldItem = newWorldItem;
         mvout()
-            << format(_("SimpleColliderItem \"{0}\" has been attached to {1}."),
+            << formatR(_("SimpleColliderItem \"{0}\" has been attached to {1}."),
                       name(), impl->worldItem->name())
             << endl;
     }
@@ -527,7 +526,7 @@ void SimpleColliderItem::onTreePathChanged()
 void SimpleColliderItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     auto p = impl->position_.translation();
-    putProperty(_("translation"), format("{0:.3g} {1:.3g} {2:.3g}", p.x(), p.y(), p.z()),
+    putProperty(_("translation"), formatC("{0:.3g} {1:.3g} {2:.3g}", p.x(), p.y(), p.z()),
                 [this](const string& text) {
                     Vector3 p;
                     if(toVector3(text, p)) {
@@ -539,7 +538,7 @@ void SimpleColliderItem::doPutProperties(PutPropertyFunction& putProperty)
                 });
 
     auto r = degree(rpyFromRot(impl->position_.linear()));
-    putProperty(_("rotation"), format("{0:.0f} {1:.0f} {2:.0f}", r.x(), r.y(), r.z()),
+    putProperty(_("rotation"), formatC("{0:.0f} {1:.0f} {2:.0f}", r.x(), r.y(), r.z()),
                 [this](const string& text) {
                     Vector3 rpy;
                     if(toVector3(text, rpy)) {
@@ -557,7 +556,7 @@ void SimpleColliderItem::doPutProperties(PutPropertyFunction& putProperty)
     auto sceneId = impl->sceneTypeSelection.which();
     switch(sceneId) {
     case BOX:
-        putProperty(_("size"), format("{0:.3g} {1:.3g} {2:.3g}", s.x(), s.y(), s.z()),
+        putProperty(_("size"), formatC("{0:.3g} {1:.3g} {2:.3g}", s.x(), s.y(), s.z()),
                     [this](const string& text) {
                         Vector3 s;
                         if(toVector3(text, s)) {
@@ -587,7 +586,7 @@ void SimpleColliderItem::doPutProperties(PutPropertyFunction& putProperty)
     }
 
     auto c = impl->diffuseColor_;
-    putProperty(_("diffuseColor"), format("{0:.3g} {1:.3g} {2:.3g}", c.x(), c.y(), c.z()),
+    putProperty(_("diffuseColor"), formatC("{0:.3g} {1:.3g} {2:.3g}", c.x(), c.y(), c.z()),
                 [this](const string& text) {
                     Vector3 c;
                     if(toVector3(text, c)) {

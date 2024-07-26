@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
+#include <cnoid/Format>
 #include <cnoid/Plugin>
-#include <fmt/format.h>
 #include "MarkerDetectorItem.h"
 
 using namespace cnoid;
@@ -26,7 +26,7 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("MarkerDetect Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            formatC("MarkerDetect Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyright (c) 2022 Japan Atomic Energy Agency.\n"
             "\n" +

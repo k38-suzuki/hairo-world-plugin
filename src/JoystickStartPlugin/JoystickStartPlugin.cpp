@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
+#include <cnoid/Format>
 #include <cnoid/Plugin>
-#include <fmt/format.h>
 #include "IntervalStarterBar.h"
 #include "JoystickLoggerItem.h"
 #include "OnScreenJoystickView.h"
@@ -34,7 +34,7 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("JoystickStart Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            formatC("JoystickStart Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyrigh (c) 2020 Japan Atomic Energy Agency.\n"
             "\n" +

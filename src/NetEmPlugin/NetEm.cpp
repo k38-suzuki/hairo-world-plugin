@@ -3,13 +3,13 @@
 */
 
 #include "NetEm.h"
+#include <cnoid/Format>
 #include <QProcess>
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <fmt/format.h>
 
 using namespace std;
 using namespace cnoid;
@@ -127,7 +127,7 @@ void NetEm::Impl::start()
     }
     write("sudo modprobe ifb;");
     write("sudo modprobe act_mirred;");
-    write(fmt::format("sudo ip link set dev {0} up;",
+    write(formatC("sudo ip link set dev {0} up;",
                       ifbdevices[currentIfbdeviceID]));
     isUpdated = false;
     isFinalized = false;
@@ -144,40 +144,40 @@ void NetEm::Impl::update()
 {
     if(!isFinalized) {
         clear();
-        write(fmt::format("sudo tc qdisc add dev {0} ingress handle ffff:;",
+        write(formatC("sudo tc qdisc add dev {0} ingress handle ffff:;",
                           interfaces[currentInterfaceID]));
-        write(fmt::format("sudo tc filter add dev {0} parent ffff: protocol ip u32 match u32 0 0 action mirred egress redirect dev {1};",
+        write(formatC("sudo tc filter add dev {0} parent ffff: protocol ip u32 match u32 0 0 action mirred egress redirect dev {1};",
                           interfaces[currentInterfaceID], ifbdevices[currentIfbdeviceID]));
 
         string effects[2];
         for(int i = 0 ; i < 2; ++i) {
             if(delays[i] > 0.0) {
-               effects[i] +=  fmt::format(" delay {0:.2f}ms", delays[i]);
+               effects[i] +=  formatC(" delay {0:.2f}ms", delays[i]);
             }
             if(rates[i] > 0.0) {
-                effects[i] +=  fmt::format(" rate {0:.2f}kbps", rates[i]);
+                effects[i] +=  formatC(" rate {0:.2f}kbps", rates[i]);
             }
             if(losses[i] > 0.0) {
-                effects[i] +=  fmt::format(" loss {0:.2f}%", losses[i]);
+                effects[i] +=  formatC(" loss {0:.2f}%", losses[i]);
             }
         }
 
-        write(fmt::format("sudo tc qdisc add dev {0} root handle 1: prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;",
+        write(formatC("sudo tc qdisc add dev {0} root handle 1: prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;",
                           ifbdevices[currentIfbdeviceID]));
-        write(fmt::format("sudo tc qdisc add dev {0} parent 1:1 handle 10: netem limit 2000;",
+        write(formatC("sudo tc qdisc add dev {0} parent 1:1 handle 10: netem limit 2000;",
                           ifbdevices[currentIfbdeviceID]));
-        write(fmt::format("sudo tc qdisc add dev {0} parent 1:2 handle 20: netem limit 2000{1};",
+        write(formatC("sudo tc qdisc add dev {0} parent 1:2 handle 20: netem limit 2000{1};",
                           ifbdevices[currentIfbdeviceID], effects[0]));
-        write(fmt::format("sudo tc filter add dev {0} protocol ip parent 1: prio 2 u32 match ip src {1} match ip dst {2} flowid 1:2;",
+        write(formatC("sudo tc filter add dev {0} protocol ip parent 1: prio 2 u32 match ip src {1} match ip dst {2} flowid 1:2;",
                           ifbdevices[currentIfbdeviceID], destinationIP, sourceIP));
 
-        write(fmt::format("sudo tc qdisc add dev {0} root handle 1: prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;",
+        write(formatC("sudo tc qdisc add dev {0} root handle 1: prio bands 16 priomap 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;",
                           interfaces[currentInterfaceID]));
-        write(fmt::format("sudo tc qdisc add dev {0} parent 1:1 handle 10: netem limit 2000;",
+        write(formatC("sudo tc qdisc add dev {0} parent 1:1 handle 10: netem limit 2000;",
                           interfaces[currentInterfaceID]));
-        write(fmt::format("sudo tc qdisc add dev {0} parent 1:2 handle 20: netem limit 2000{1};",
+        write(formatC("sudo tc qdisc add dev {0} parent 1:2 handle 20: netem limit 2000{1};",
                           interfaces[currentInterfaceID], effects[1]));
-        write(fmt::format("sudo tc filter add dev {0} protocol ip parent 1: prio 2 u32 match ip src {1} match ip dst {2} flowid 1:2;",
+        write(formatC("sudo tc filter add dev {0} protocol ip parent 1: prio 2 u32 match ip src {1} match ip dst {2} flowid 1:2;",
                           interfaces[currentInterfaceID], sourceIP, destinationIP));
         isUpdated = true;
     }
@@ -193,11 +193,11 @@ void NetEm::stop()
 void NetEm::Impl::clear()
 {
     if(isUpdated) {
-        write(fmt::format("sudo tc qdisc del dev {0} ingress;",
+        write(formatC("sudo tc qdisc del dev {0} ingress;",
                           interfaces[currentInterfaceID]));
-        write(fmt::format("sudo tc qdisc del dev {0} root;",
+        write(formatC("sudo tc qdisc del dev {0} root;",
                           ifbdevices[currentIfbdeviceID]));
-        write(fmt::format("sudo tc qdisc del dev {0} root;",
+        write(formatC("sudo tc qdisc del dev {0} root;",
                           interfaces[currentInterfaceID]));
         isUpdated = false;
     }
@@ -208,7 +208,7 @@ void NetEm::Impl::close()
 {
     if(!isFinalized) {
         clear();
-        write(fmt::format("sudo ip link set dev {0} down;",
+        write(formatC("sudo ip link set dev {0} down;",
                           ifbdevices[currentIfbdeviceID]));
         write("sudo rmmod ifb;");
         isFinalized = true;

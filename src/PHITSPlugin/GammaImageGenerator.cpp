@@ -9,7 +9,6 @@
 #include <cnoid/ImageGenerator>
 #include <QImage>
 #include <QPainter>
-#include <fmt/format.h>
 #include <limits>
 #include "Array3D.h"
 #include "ComptonCamera.h"

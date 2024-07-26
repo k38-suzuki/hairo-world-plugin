@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
+#include <cnoid/Format>
 #include <cnoid/Plugin>
-#include <fmt/format.h>
 #include "BookmarkBar.h"
 #include "BookmarkManager.h"
 #include "HistoryManager.h"
@@ -35,7 +35,7 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("Bookmark Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            formatC("Bookmark Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyright (c) 2023 Japan Atomic Energy Agency.\n"
             "\n" +

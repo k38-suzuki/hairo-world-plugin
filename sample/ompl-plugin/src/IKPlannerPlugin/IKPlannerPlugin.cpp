@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
+#include <cnoid/Format>
 #include <cnoid/Plugin>
-#include <fmt/format.h>
 #include "IKPlannerItem.h"
 
 using namespace cnoid;
@@ -25,7 +25,7 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("IKPlanner Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            formatC("IKPlanner Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyrigh (c) 2022 Japan Atomic Energy Agency.\n"
             "\n" +

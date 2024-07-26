@@ -11,11 +11,9 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QComboBox>
-#include <fmt/format.h>
 #include "gettext.h"
 
 using namespace std;
-using namespace fmt;
 using namespace cnoid;
 
 namespace {

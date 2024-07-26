@@ -5,6 +5,7 @@
 #include "SimpleSetupItem.h"
 #include <cnoid/Archive>
 #include <cnoid/EigenArchive>
+#include <cnoid/Format>
 #include <cnoid/ItemManager>
 #include <cnoid/MessageView>
 #include <cnoid/PutPropertyFunction>
@@ -80,7 +81,7 @@ public:
 void SimpleSetupItem::initializeClass(ExtensionManager* ext)
 {
     string version = OMPL_VERSION;
-    MessageView::instance()->putln(fmt::format("OMPL version: {0}", version));
+    MessageView::instance()->putln(formatC("OMPL version: {0}", version));
 
     ext->itemManager().registerClass<SimpleSetupItem>(N_("SimpleSetupItem"));
 }

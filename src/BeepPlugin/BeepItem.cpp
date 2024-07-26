@@ -10,7 +10,6 @@
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
-#include <fmt/format.h>
 #include "BeepView.h"
 #include "gettext.h"
 

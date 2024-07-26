@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
+#include <cnoid/Format>
 #include <cnoid/Plugin>
-#include <fmt/format.h>
 #include "SimpleSetupItem.h"
 
 using namespace cnoid;
@@ -25,7 +25,7 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("OMPL Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            formatC("OMPL Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyrigh (c) 2020 Japan Atomic Energy Agency.\n"
             "\n" +

@@ -4,7 +4,7 @@
 
 #include "PHITSRunner.h"
 #include <cnoid/stdx/filesystem>
-#include <fmt/format.h>
+#include <cnoid/Format>
 #include <QTextStream>
 #include <QThread>
 #include "ComptonCone.h"
@@ -148,9 +148,9 @@ void PHITSRunner::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
     if(exitStatus != QProcess::NormalExit || exitCode != 0) {
         // Bad exit
         if(isPHITS) {
-            mv_->putln(fmt::format(_("PHITS has been terminated. {0}"), exitCode));
+            mv_->putln(formatR(_("PHITS has been terminated. {0}"), exitCode));
         } else {
-            mv_->putln(fmt::format(_("QAD has been terminated. {0}"), exitCode));
+            mv_->putln(formatR(_("QAD has been terminated. {0}"), exitCode));
         }
     } else {
         //Ended naturally

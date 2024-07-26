@@ -5,6 +5,7 @@
 #include "DoseSimulatorItem.h"
 #include <cnoid/Archive>
 #include <cnoid/ExecutablePath>
+#include <cnoid/Format>
 #include <cnoid/ItemManager>
 #include <cnoid/MessageView>
 #include <cnoid/PutPropertyFunction>
@@ -12,7 +13,6 @@
 #include <cnoid/SimulatorItem>
 #include <cnoid/UTF8>
 #include <cnoid/WorldItem>
-#include <fmt/format.h>
 #include <map>
 #include "ColorScale.h"
 #include "CrossSectionItem.h"
@@ -150,7 +150,7 @@ bool DoseSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
             crossSectionItem->sigGammaDataLoaded().connect([&](){ onGammaDataLoaded(); });
         }
     } else {
-        MessageView::instance()->putln(fmt::format(_("GammaData was not found.")));
+        MessageView::instance()->putln(formatR(_("GammaData was not found.")));
         return false;
     }
 

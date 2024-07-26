@@ -5,7 +5,6 @@
 #include "SimpleSetup.h"
 #include <cnoid/BoundingBox>
 #include <cnoid/MessageView>
-#include <fmt/format.h>
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/spaces/SE3StateSpace.h>
 #include <ompl/geometric/planners/rrt/RRT.h>

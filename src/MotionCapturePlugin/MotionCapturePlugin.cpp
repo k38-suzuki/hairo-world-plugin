@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
+#include <cnoid/Format>
 #include <cnoid/Plugin>
-#include <fmt/format.h>
 #include "MotionCaptureItem.h"
 
 using namespace cnoid;
@@ -26,7 +26,7 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("MotionCapture Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            formatC("MotionCapture Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyright (c) 2020 Japan Atomic Energy Agency.\n"
             "\n" +

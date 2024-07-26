@@ -2,13 +2,13 @@
    @author Kenta Suzuki
 */
 
+#include <cnoid/Format>
 #include <cnoid/Plugin>
 #include <cnoid/BodyItem>
 #include <cnoid/ItemTreeView>
 #include <cnoid/MenuManager>
 #include <cnoid/Process>
 #include <cnoid/stdx/filesystem>
-#include <fmt/format.h>
 #include "gettext.h"
 
 using namespace cnoid;
@@ -46,7 +46,7 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("FileExplorer Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            formatC("FileExplorer Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyright (c) 2020 Japan Atomic Energy Agency.\n"
             "\n" +

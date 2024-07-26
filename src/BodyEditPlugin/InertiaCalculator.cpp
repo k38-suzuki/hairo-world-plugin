@@ -6,13 +6,13 @@
 #include <cnoid/Button>
 #include <cnoid/ComboBox>
 #include <cnoid/Dialog>
+#include <cnoid/EigenTypes>
 #include <cnoid/ExtensionManager>
+#include <cnoid/Format>
 #include <cnoid/MainMenu>
 #include <cnoid/MessageView>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
-#include <cnoid/EigenTypes>
-#include <fmt/format.h>
 #include <QBoxLayout>
 #include <QDialogButtonBox>
 #include <QGridLayout>
@@ -214,7 +214,7 @@ void InertiaCalculator::Impl::calcBoxInertia()
     double iy = m / 12.0 * (z * z + x * x);
     double iz = m / 12.0 * (x * x + y * y);
 
-    mv->putln(fmt::format(_("shape: Box, mass: {0} [kg], x: {1} [m], y: {2} [m], z: {3} [m]"),
+    mv->putln(formatR(_("shape: Box, mass: {0} [kg], x: {1} [m], y: {2} [m], z: {3} [m]"),
                                    m, x, y, z));
     printIntertia(Vector3(ix, iy, iz));
 }
@@ -227,7 +227,7 @@ void InertiaCalculator::Impl::calcSphereInertia()
     double ix, iy, iz;
     ix = iy = iz = m * r * r / 5.0 * 2.0;
 
-    mv->putln(fmt::format(_("shape: Sphere, mass: {0} [kg], radius: {1} [m]"),
+    mv->putln(formatR(_("shape: Sphere, mass: {0} [kg], radius: {1} [m]"),
                                    m, r));
     printIntertia(Vector3(ix, iy, iz));
 }
@@ -254,7 +254,7 @@ void InertiaCalculator::Impl::calcCylinderInertia()
         ix = iy = subInertia;
     }
 
-    mv->putln(fmt::format(_("shape: Cylinder, mass: {0} [kg], radius: {1} [m], height: {2} [m], axis: {3} [-]"),
+    mv->putln(formatR(_("shape: Cylinder, mass: {0} [kg], radius: {1} [m], height: {2} [m], axis: {3} [-]"),
                                    m, r, h, combos[CLD_AXIS]->currentText().toStdString()));
     printIntertia(Vector3(ix, iy, iz));
 }
@@ -281,7 +281,7 @@ void InertiaCalculator::Impl::calcConeInertia()
         ix = iy = subInertia;
     }
 
-    mv->putln(fmt::format(_("shape: Cone, mass: {0} [kg], radius: {1} [m], height: {2} [m], axis: {3} [-]"),
+    mv->putln(formatR(_("shape: Cone, mass: {0} [kg], radius: {1} [m], height: {2} [m], axis: {3} [-]"),
                                    m, r, h, combos[CON_AXIS]->currentText().toStdString()));
     printIntertia(Vector3(ix, iy, iz));
 }
@@ -289,6 +289,6 @@ void InertiaCalculator::Impl::calcConeInertia()
 
 void InertiaCalculator::Impl::printIntertia(const Vector3& inertia)
 {
-    mv->putln(fmt::format(_("inertia: [ {0}, 0, 0, 0, {1}, 0, 0, 0, {2} ]\n"),
+    mv->putln(formatR(_("inertia: [ {0}, 0, 0, 0, {1}, 0, 0, 0, {2} ]\n"),
                           inertia[0], inertia[1], inertia[2]));
 }

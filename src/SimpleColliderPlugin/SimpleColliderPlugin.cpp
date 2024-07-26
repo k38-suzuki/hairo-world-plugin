@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
+#include <cnoid/Format>
 #include <cnoid/Plugin>
-#include <fmt/format.h>
 #include "SimpleColliderItem.h"
 #include "MultiColliderItem.h"
 
@@ -27,7 +27,7 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("SimpleCollider Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            formatC("SimpleCollider Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyright (c) 2024 Japan Atomic Energy Agency.\n"
             "\n" +

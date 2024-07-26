@@ -4,7 +4,6 @@
 
 #include "GammaData.h"
 #include <cnoid/EigenUtil>
-#include <fmt/format.h>
 #include <fstream>
 #include <sstream>
 #include <math.h>

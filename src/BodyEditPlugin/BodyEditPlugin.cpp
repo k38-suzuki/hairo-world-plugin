@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
+#include <cnoid/Format>
 #include <cnoid/Plugin>
-#include <fmt/format.h>
 #include "BodyConverter.h"
 #include "CrawlerGenerator.h"
 #include "GratingGenerator.h"
@@ -39,7 +39,7 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("BodyEdit Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            formatC("BodyEdit Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyright (c) 2023 Japan Atomic Energy Agency.\n"
             "\n" +

@@ -2,8 +2,8 @@
    @author Kenta Suzuki
 */
 
+#include <cnoid/Format>
 #include <cnoid/Plugin>
-#include <fmt/format.h>
 #include "CrossSectionItem.h"
 #include "DoseSimulatorItem.h"
 #include "GammaImagerItem.h"
@@ -32,7 +32,7 @@ public:
     virtual const char* description() const override
     {
         static std::string text =
-            fmt::format("PHITS Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
+            formatC("PHITS Plugin Version {}\n", CNOID_FULL_VERSION_STRING) +
             "\n" +
             "Copyrigh (c) 2021 Japan Atomic Energy Agency.\n"
             "\n" +

@@ -12,6 +12,7 @@
 #include <cnoid/EigenTypes>
 #include <cnoid/EigenUtil>
 #include <cnoid/ExecutablePath>
+#include <cnoid/Format>
 #include <cnoid/ItemList>
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
@@ -27,7 +28,6 @@
 #include <cnoid/UTF8>
 #include <cnoid/ViewManager>
 #include <cnoid/stdx/filesystem>
-#include <fmt/format.h>
 #include <QBoxLayout>
 #include <QDateTime>
 #include <QDialogButtonBox>
@@ -687,7 +687,7 @@ bool DoseConfigDialog::readPHITSData(const string& filename)
         result = phitsData.readQAD(filename, calcInfo, numSources);
         if(result) {
             countQAD += 1;
-            MessageView::instance()->putln(fmt::format("QAD process: {0}", countQAD));
+            MessageView::instance()->putln(formatC("QAD process: {0}", countQAD));
             if(countQAD == 1) {
                 qadData = phitsData;
             } else {
