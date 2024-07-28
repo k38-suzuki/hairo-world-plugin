@@ -6,7 +6,7 @@
 #define CNOID_SIMPLECOLLIDER_PLUGIN_MULTI_COLLIDER_ITEM_H
 
 #include <cnoid/Selection>
-#include <cnoid/SimpleColliderItem>
+#include "SimpleColliderItem.h"
 #include "CustomEffects.h"
 #include "exportdecl.h"
 

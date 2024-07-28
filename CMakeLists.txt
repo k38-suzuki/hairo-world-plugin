@@ -1,5 +1,20 @@
-if(NOT ENABLE_GUI)
-  return()
+#if(NOT ENABLE_GUI)
+#  return()
+#endif()
+
+if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
+  # Build inside the Choreonoid project
+
+else()
+  # Stand alone build
+  cmake_minimum_required(VERSION 3.1.0)
+  project(HelloWorldPlugin)
+  find_package(Choreonoid REQUIRED)
+  set(CMAKE_CXX_STANDARD ${CHOREONOID_CXX_STANDARD})
+  set(CMAKE_CXX_EXTENSIONS OFF)
+  include_directories(${CHOREONOID_INCLUDE_DIRS})
+  link_directories(${CHOREONOID_LIBRARY_DIRS})
+
 endif()
 
 option(BUILD_HAIRO_WORLD_PLUGIN "Building HAIROWorldPlugin" ON)
@@ -16,8 +31,15 @@ else()
   set(CHOREONOID_BINARY_SHARE_DIR ${PROJECT_BINARY_DIR}/${CHOREONOID_SHARE_SUBDIR})
 endif()
 
+if(NOT PROJECT_BINARY_DIR STREQUAL PROJECT_SOURCE_DIR)
+  include_directories(${PROJECT_BINARY_DIR})
+  include_directories(${PROJECT_BINARY_DIR}/include)
+endif()
+include_directories(${PROJECT_SOURCE_DIR})
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
 add_subdirectory(src)
-#add_subdirectory(include)
+add_subdirectory(include)
 
 if(UNIX AND BUILD_PHITS_PLUGIN)
   option(ENABLE_QAD "Enable QAD" OFF)
