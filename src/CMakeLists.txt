@@ -1,3 +1,7 @@
+#if(NOT ENABLE_GUI)
+#  return()
+#endif()
+
 add_subdirectory(BodyEditPlugin)
 add_subdirectory(CFDPlugin)
 add_subdirectory(CollisionSeqPlugin)

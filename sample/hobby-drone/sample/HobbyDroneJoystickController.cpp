@@ -250,6 +250,7 @@ public:
         Vector3 rpy = rpyFromRot(T.rotation());
         return Vector4(z, rpy[0], rpy[1], rpy[2]);
     }
+
     Vector2 getXY()
     {
         auto p = ioBody->rootLink()->translation();

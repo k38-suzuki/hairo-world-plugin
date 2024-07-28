@@ -1,7 +1,3 @@
-#if(NOT ENABLE_GUI)
-#  return()
-#endif()
-
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   # Build inside the Choreonoid project
 
