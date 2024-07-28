@@ -27,15 +27,8 @@ else()
   set(CHOREONOID_BINARY_SHARE_DIR ${PROJECT_BINARY_DIR}/${CHOREONOID_SHARE_SUBDIR})
 endif()
 
-if(NOT PROJECT_BINARY_DIR STREQUAL PROJECT_SOURCE_DIR)
-  include_directories(${PROJECT_BINARY_DIR})
-  include_directories(${PROJECT_BINARY_DIR}/include)
-endif()
-include_directories(${PROJECT_SOURCE_DIR})
-include_directories(${PROJECT_SOURCE_DIR}/include)
-
 add_subdirectory(src)
-add_subdirectory(include)
+#add_subdirectory(include)
 
 if(UNIX AND BUILD_PHITS_PLUGIN)
   option(ENABLE_QAD "Enable QAD" OFF)
