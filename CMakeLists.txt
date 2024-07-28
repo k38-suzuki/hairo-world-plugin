@@ -4,7 +4,7 @@ if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
 else()
   # Stand alone build
   cmake_minimum_required(VERSION 3.1.0)
-  project(HelloWorldPlugin)
+  project(hairo_world_plugin)
   find_package(Choreonoid REQUIRED)
   set(CMAKE_CXX_STANDARD ${CHOREONOID_CXX_STANDARD})
   set(CMAKE_CXX_EXTENSIONS OFF)
