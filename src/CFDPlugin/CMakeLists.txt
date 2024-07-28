@@ -31,3 +31,8 @@ else()
   target_link_libraries(${target} ${CHOREONOID_BODY_PLUGIN_LIBRARIES} CnoidSimpleColliderPlugin)
   install(TARGETS ${target} LIBRARY DESTINATION ${CHOREONOID_PLUGIN_DIR})
 endif()
+
+include(CFDBodyBuildFunctions.cmake)
+if(CHOREONOID_INSTALL_SDK)
+  install(FILES CFDBodyBuildFunctions.cmake DESTINATION ${CHOREONOID_CMAKE_CONFIG_SUBDIR}/ext)
+endif()
