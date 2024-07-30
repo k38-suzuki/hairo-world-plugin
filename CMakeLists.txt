@@ -28,7 +28,7 @@ else()
 endif()
 
 add_subdirectory(src)
-#add_subdirectory(include)
+add_subdirectory(include)
 
 if(UNIX AND BUILD_PHITS_PLUGIN)
   option(ENABLE_QAD "Enable QAD" OFF)
