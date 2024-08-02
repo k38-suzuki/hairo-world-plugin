@@ -29,8 +29,10 @@ links:
         elements:
           -
             type: Shape
-            geometry: { type: Resource, uri: "parts/base_link.STL" }
-            appearance: *BodyAppearance
+            translation: [ 0.0, 0.0, 0.065 ]
+            rotation: [ 1, 0, 0, -1.5708 ]
+            geometry: { type: Cylinder, radius: 0.04, height: 0.13 }
+            appearance: &CollisionAppearance { material: { diffuseColor: [ 1.0, 0.0, 0.0 ] } }
   -
     name: J0
     parent: BASE
@@ -61,8 +63,15 @@ links:
         elements:
           -
             type: Shape
-            geometry: { type: Resource, uri: "parts/shoulder_link.STL" }
-            appearance: *BodyAppearance
+            translation: [ 0.0, 0.0, 0.062 ]
+            rotation: [ 1, 0, 0, -1.5708 ]
+            geometry: { type: Cylinder, radius: 0.04, height: 0.12 }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0.0, 0.0, 0.115 ]
+            geometry: { type: Cylinder, radius: 0.04, height: 0.06 }
+            appearance: *CollisionAppearance
   -
     name: J1
     parent: J0
@@ -93,8 +102,21 @@ links:
         elements:
           -
             type: Shape
-            geometry: { type: Resource, uri: "parts/arm_link.STL" }
-            appearance: *BodyAppearance
+            translation: [ 0.0, 0.0, 0.03 ]
+            rotation: [ 1, 0, 0, -1.5708 ]
+            geometry: { type: Cylinder, radius: 0.04, height: 0.06 }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0.0, 0.14, 0.035 ]
+            geometry: { type: Box, size: [ 0.08, 0.28, 0.04 ] }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0.0, 0.28, 0.03 ]
+            rotation: [ 1, 0, 0, -1.5708 ]
+            geometry: { type: Cylinder, radius: 0.04, height: 0.06 }
+            appearance: *CollisionAppearance
   -
     name: J2
     parent: J1
@@ -125,8 +147,16 @@ links:
         elements:
           -
             type: Shape
-            geometry: { type: Resource, uri: "parts/forearm_link.STL" }
-            appearance: *BodyAppearance
+            translation: [ 0.0, -0.07, 0.02 ]
+            rotation: [ 0, 1, 0, -1.5708 ]
+            geometry: { type: Cylinder, radius: 0.033, height: 0.14 }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0.0, 0.0, 0.0275 ]
+            rotation: [ 1, 0, 0, -1.5708 ]
+            geometry: { type: Cylinder, radius: 0.04, height: 0.055 }
+            appearance: *CollisionAppearance
   -
     name: J3
     parent: J2
@@ -157,8 +187,16 @@ links:
         elements:
           -
             type: Shape
-            geometry: { type: Resource, uri: "parts/lower_wrist_link.STL" }
-            appearance: *BodyAppearance
+            translation: [ 0.0, 0.0, 0.055 ]
+            rotation: [ 1, 0, 0, -1.5708 ]
+            geometry: { type: Cylinder, radius: 0.033, height: 0.11 }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0.001, 0.0, 0.105 ]
+            rotation: [ 0, 0, 1, -1.5708 ]
+            geometry: { type: Cylinder, radius: 0.033, height: 0.055 }
+            appearance: *CollisionAppearance
   -
     name: J4
     parent: J3
@@ -189,8 +227,16 @@ links:
         elements:
           -
             type: Shape
-            geometry: { type: Resource, uri: "parts/upper_wrist_link.STL" }
-            appearance: *BodyAppearance
+            translation: [ -0.052, 0.0, 0.028 ]
+            rotation: [ 0, 0, 1, -1.5708 ]
+            geometry: { type: Cylinder, radius: 0.033, height: 0.105 }
+            appearance: *CollisionAppearance
+          -
+            type: Shape
+            translation: [ 0.0, 0.0, 0.03 ]
+            rotation: [ 1, 0, 0, -1.5708 ]
+            geometry: { type: Cylinder, radius: 0.033, height: 0.06 }
+            appearance: *CollisionAppearance
   -
     name: GRIPPER_FRAME
     parent: J4
@@ -200,7 +246,7 @@ links:
     translation: [ -0.105, 0, 0.0285 ]
     rotation: [ 0, 1, 0, -1.5708 ]
     jointRange: [ -2.6, 2.6 ]
-    jointVelocityRange: [ -0.5, 0.5 ]  
+    jointVelocityRange: [ -0.5, 0.5 ]
     centerOfMass: [ 0.00000403, 0.0000108, 0.041397 ]
     mass: 0.1395
     inertia: [
@@ -221,8 +267,27 @@ links:
         elements:
           -
             type: Shape
-            geometry: { type: Resource, uri: "parts/gripper_base_link.STL" }
-            appearance: *BodyAppearance
+            translation: [ 0.0, 0.0, 0.0345 ]
+            rotation: [ 1, 0, 0, -1.5708 ]
+            geometry: { type: Cylinder, radius: 0.033, height: 0.07 }
+            appearance: *CollisionAppearance
+      -
+        type: Camera
+        name: Camera
+        translation: [ 0.05, 0, 0.02 ]
+        rotation: [ [ 1, 0, 0, 3.1416 ], [ 0, 0, 1, 1.5708 ] ]
+        format: COLOR
+        fieldOfView: 62
+        nearClipDistance: 0.02
+        width: 640
+        height: 480
+        frameRate: 30
+#        elements:
+#          -
+#            type: Shape
+#            rotation: [ 1, 0, 0, 1.5708 ]
+#            geometry: { type: Cylinder, radius: 0.01, height: 0.01 }
+#            appearance: { material: { diffuseColor: [ 0.8, 0.2, 0.2 ], transparency: 0.8 } }
   -
     name: RIGHT_FINGER_PROX
     parent: GRIPPER_FRAME
@@ -232,7 +297,7 @@ links:
     translation: [ 0, -0.030501, 0.070003 ]
     rotation: [ 0, 1, 0, 1.5708 ]
     jointRange: [ -0.09, 0.96 ]
-    jointVelocityRange: [ -0.5, 0.5 ]  
+    jointVelocityRange: [ -0.5, 0.5 ]
     centerOfMass: [ 0.020257, 0.0063483, 0.00006991 ]
     mass: 0.018385
     inertia: [
@@ -253,8 +318,10 @@ links:
         elements:
           -
             type: Shape
-            geometry: { type: Resource, uri: "parts/right_finger_prox_link.STL" }
-            appearance: *BodyAppearance
+            translation: [ -0.022, 0.006, 0.0 ]
+            rotation: [ 0, 0, 1, -0.4 ]
+            geometry: { type: Box, size: [ 0.05, 0.02, 0.02 ] }
+            appearance: *CollisionAppearance
   -
     name: RIGHT_FINGER_DIST
     parent: RIGHT_FINGER_PROX
@@ -264,7 +331,7 @@ links:
     translation: [ -0.045636, 0.020423, 0 ]
     rotation: [ 0, 0, 1, 0 ]
     jointRange: [ -0.50, 0.21 ]
-    jointVelocityRange: [ -0.5, 0.5 ]  
+    jointVelocityRange: [ -0.5, 0.5 ]
     centerOfMass: [ 0.018488, 0.0011091, 0 ]
     mass: 0.010748
     inertia: [
@@ -285,8 +352,9 @@ links:
         elements:
           -
             type: Shape
-            geometry: { type: Resource, uri: "parts/right_finger_dist_link.STL" }
-            appearance: *FingerAppearance
+            translation: [ -0.022, 0.005, 0.0 ]
+            geometry: { type: Box, size: [ 0.045, 0.01, 0.02 ] }
+            appearance: *CollisionAppearance
   -
     name: LEFT_FINGER_PROX
     parent: GRIPPER_FRAME
@@ -296,7 +364,7 @@ links:
     translation: [ 0, 0.0305, 0.070003 ]
     rotation: [ 0, 1, 0, 1.5708 ]
     jointRange: [ -0.96, 0.09 ]
-    jointVelocityRange: [ -0.5, 0.5 ]  
+    jointVelocityRange: [ -0.5, 0.5 ]
     centerOfMass: [ 0.020257, 0.0063483, 0.0000699 ]
     mass: 0.018385
     inertia: [
@@ -317,8 +385,10 @@ links:
         elements:
           -
             type: Shape
-            geometry: { type: Resource, uri: "parts/left_finger_prox_link.STL" }
-            appearance: *BodyAppearance
+            translation: [ -0.022, -0.006, 0.0 ]
+            rotation: [ 0, 0, 1, 0.4 ]
+            geometry: { type: Box, size: [ 0.05, 0.02, 0.02 ] }
+            appearance: *CollisionAppearance
   -
     name: LEFT_FINGER_DIST
     parent: LEFT_FINGER_PROX
@@ -328,7 +398,7 @@ links:
     translation: [ -0.045636, -0.020423, 0.000069901 ]
     rotation: [ 0, 0, 1, 0 ]
     jointRange: [ -0.50, 0.21 ]
-    jointVelocityRange: [ -0.5, 0.5 ]  
+    jointVelocityRange: [ -0.5, 0.5 ]
     centerOfMass: [ -0.018488, 0.0011091, 0 ]
     mass: 0.010748
     inertia: [
@@ -349,8 +419,9 @@ links:
         elements:
           -
             type: Shape
-            geometry: { type: Resource, uri: "parts/left_finger_dist_link.STL" }
-            appearance: *FingerAppearance
+            translation: [ -0.022, -0.005, 0.0 ]
+            geometry: { type: Box, size: [ 0.045, 0.01, 0.02 ] }
+            appearance: *CollisionAppearance
   -
     name: WRIST_ORIGIN
     parent: GRIPPER_FRAME
