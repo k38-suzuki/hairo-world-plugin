@@ -275,7 +275,7 @@ links:
         type: Camera
         name: Camera
         translation: [ 0.05, 0, 0.02 ]
-        rotation: [ [ 1, 0, 0, 3.1416 ], [ 0, 0, 1, 1.5708 ] ]
+        rotation: [ 1, 0, 0, 3.1416 ]
         format: COLOR
         fieldOfView: 62
         nearClipDistance: 0.02
