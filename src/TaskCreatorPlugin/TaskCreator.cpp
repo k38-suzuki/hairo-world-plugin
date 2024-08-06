@@ -76,10 +76,10 @@ void TaskCreator::initializeClass(ExtensionManager* ext)
     if(!creatorInstance) {
         creatorInstance = ext->manage(new TaskCreator);
 
-        ext->setProjectArchiver(
-            "TaskCreator",
-            [](Archive& archive){ return creatorInstance->impl->store(archive); },
-            [](const Archive& archive) { return creatorInstance->impl->restore(archive); });
+        // ext->setProjectArchiver(
+        //     "TaskCreator",
+        //     [](Archive& archive){ return creatorInstance->impl->store(archive); },
+        //     [](const Archive& archive) { return creatorInstance->impl->restore(archive); });
 
         MainMenu::instance()->add_Tools_Item(
             _("Task Creator"), [](){ creatorInstance->impl->show(); });

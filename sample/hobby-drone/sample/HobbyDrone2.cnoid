@@ -430,8 +430,6 @@ Body:
     inputFrameRate: 200
     isOutputFrameRateSpecified: false
     outputFrameRate: 200
-TaskCreator:
-  "TaskCreator": { }
 viewAreas:
   -
     type: embedded
