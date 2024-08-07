@@ -72,8 +72,8 @@ NetworkEmulator::Impl::Impl()
 
     static const char* label[] = {
         _("Interface"), _("IFB Device"),
-        _("InboundDelay"), _("InboundRate"),_("InboundLoss"),
-        _("OutboundDelay"), _("OutboundRate"), _("OutboundLoss")
+        _("Inbound Delay [ms]"), _("Inbound Rate [kbit/s]"),_("Inbound Loss [%]"),
+        _("Outbound Delay [ms]"), _("Outbound Rate [kbit/s]"), _("Outbound Loss [%]")
     };
 
     QGridLayout* gbox = new QGridLayout;
@@ -86,8 +86,7 @@ NetworkEmulator::Impl::Impl()
         interfaceCombo->addItem(emulator->interfaces()[i].c_str());
     }
     ifbdeviceCombo = new ComboBox;
-    const QStringList items = { _("ifb0"), _("ifb1") };
-    ifbdeviceCombo->addItems(items);
+    ifbdeviceCombo->addItems(QStringList() << "ifb0" << "ifb1");
     ifbdeviceCombo->setCurrentIndex(1);
 
     for(int i = 0; i < 2; ++i) {

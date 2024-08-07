@@ -17,11 +17,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "ifb0"
-msgstr ""
+msgid "Inbound Delay [ms]"
+msgstr "内向き遅延 [ms]"
 
-msgid "ifb1"
-msgstr ""
+msgid "Inbound Rate [kbit/s]"
+msgstr "内向きレイテンシ [kbit/s]"
+
+msgid "Inbound Loss [%]"
+msgstr "内向きパケット損失 [%]"
+
+msgid "Outbound Delay [ms]"
+msgstr "外向き遅延 [ms]"
+
+msgid "Outbound Rate [kbit/s]"
+msgstr "外向きレイテンシ [kbit/s]"
+
+msgid "Outbound Loss [%]"
+msgstr "外向きパケット損失 [%]"
 
 msgid "NetworkEmulatorItem"
 msgstr "ネットワークエミュレータアイテム"
