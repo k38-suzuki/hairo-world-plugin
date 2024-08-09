@@ -7,4 +7,3 @@ sudo cp -i agx.lic  /opt/Algoryx/AGX-2.37.3.3
 cd ~
 echo "source /opt/Algoryx/AGX-2.37.3.3/setup_env.bash" >> .bashrc
 env | grep -i agx
-

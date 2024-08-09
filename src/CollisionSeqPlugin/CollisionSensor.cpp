@@ -137,7 +137,6 @@ void CollisionSensor::forEachActualType(std::function<bool(const std::type_info&
 }
 
 
-
 void CollisionSensor::clearState()
 {
     ForceSensor::clearState();

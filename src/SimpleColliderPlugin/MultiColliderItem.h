@@ -23,8 +23,7 @@ public:
 
     enum ColliderId { CFD, TC, VFX };
     bool setColliderType(int colliderId);
-    double colliderType() const { return colliderTypeSelection.which(); }
-
+    int colliderType() const { return colliderTypeSelection.which(); }
 
 protected:
     virtual Item* doCloneItem(CloneMap* cloneMap) const override;

@@ -92,7 +92,6 @@ Menu* SystemTrayIcon::menu()
 }
 
 
-
 void SystemTrayIcon::initialize()
 {
     systrayMenu = new Menu(MainWindow::instance());

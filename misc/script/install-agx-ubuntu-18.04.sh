@@ -11,4 +11,3 @@ echo "source /opt/Algoryx/AGX-2.30.4.0/setup_env.bash" >> .profile
 diff .profile .profile_${TODAY}
 source .profile
 env | grep -i agx
-

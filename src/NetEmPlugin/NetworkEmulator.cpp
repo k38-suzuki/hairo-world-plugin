@@ -57,7 +57,6 @@ void NetworkEmulator::initializeClass(ExtensionManager* ext)
 }
 
 
-
 NetworkEmulator::NetworkEmulator()
 {
     impl = new Impl;

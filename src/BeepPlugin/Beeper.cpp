@@ -121,7 +121,6 @@ SignalProxy<void()> Beeper::sigBeepStarted()
 }
 
 
-
 SignalProxy<void()> Beeper::sigBeepStopped()
 {
     return impl->sigBeepStopped;
