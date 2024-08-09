@@ -87,7 +87,7 @@ NetEm::Impl::Impl()
     ifbdevices.push_back("ifb0");
     ifbdevices.push_back("ifb1");
 
-    process.start("bash");
+    process.start("bash", QStringList());
 }
 
 
