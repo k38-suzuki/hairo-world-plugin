@@ -100,7 +100,7 @@ OnScreenJoystickWidget::Impl::Impl(OnScreenJoystickWidget* self)
         axes[i] = new AxisWidget;
         AxisWidget* axis = axes[i];
         axis->sigAxis().connect(
-                    [=](double h_position, double v_position){ onAxis(i, h_position, v_position); });
+                    [this, i](double h_position, double v_position){ onAxis(i, h_position, v_position); });
         hbox0->addWidget(axis);
     }
 
@@ -109,8 +109,8 @@ OnScreenJoystickWidget::Impl::Impl(OnScreenJoystickWidget* self)
         buttons[i] = new ToolButton(to_string(i).c_str());
         ToolButton* button = buttons[i];
         button->setFixedWidth(30);
-        button->sigPressed().connect([=](){ onButtonPressed(i); });
-        button->sigReleased().connect([=](){ onButtonReleased(i); });
+        button->sigPressed().connect([this, i](){ onButtonPressed(i); });
+        button->sigReleased().connect([this, i](){ onButtonReleased(i); });
         hbox1->addWidget(button);
     }
 

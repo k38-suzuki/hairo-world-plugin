@@ -168,7 +168,7 @@ void BeepItem::Impl::onPostDynamics()
     }
 
     if(currentTime < startTime + 0.2) {
-        callLater([=](){ BeepView::instance()->play(playID); });
+        callLater([this, playID](){ BeepView::instance()->play(playID); });
         isPlayed = true;
     } else {
         isPlayed = false;

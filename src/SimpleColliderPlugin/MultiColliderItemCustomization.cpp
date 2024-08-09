@@ -39,91 +39,91 @@ void onSelectedItemChanged(const ItemList<>& selectedItems)
 
         GeneralSliderView::SliderPtr slider_hue = sliderView->getOrCreateSlider(_("hue"), effect_range[0][0], effect_range[0][1], 2);
         slider_hue->setValue(hsv[0]);
-        slider_hue->setCallback([=](double value){
+        slider_hue->setCallback([collider, hsv](double value){
             collider->setHsv(Vector3(value, hsv[1], hsv[2]));
             collider->notifyUpdate(); });
 
         GeneralSliderView::SliderPtr slider_saturation = sliderView->getOrCreateSlider(_("saturation"), effect_range[1][0], effect_range[1][1], 2);
         slider_saturation->setValue(hsv[1]);
-        slider_saturation->setCallback([=](double value){
+        slider_saturation->setCallback([collider, hsv](double value){
             collider->setHsv(Vector3(hsv[0], value, hsv[2]));
             collider->notifyUpdate(); });
 
         GeneralSliderView::SliderPtr slider_value = sliderView->getOrCreateSlider(_("value"), effect_range[2][0], effect_range[2][1], 2);
         slider_value->setValue(hsv[2]);
-        slider_value->setCallback([=](double value){
+        slider_value->setCallback([collider, hsv](double value){
             collider->setHsv(Vector3(hsv[0], hsv[1], value));
             collider->notifyUpdate(); });
 
         GeneralSliderView::SliderPtr slider_red = sliderView->getOrCreateSlider(_("red"), effect_range[3][0], effect_range[3][1], 2);
         slider_red->setValue(rgb[0]);
-        slider_red->setCallback([=](double value){
+        slider_red->setCallback([collider, rgb](double value){
             collider->setRgb(Vector3(value, rgb[1], rgb[2]));
             collider->notifyUpdate(); });
 
         GeneralSliderView::SliderPtr slider_green = sliderView->getOrCreateSlider(_("green"), effect_range[4][0], effect_range[4][1], 2);
         slider_green->setValue(rgb[1]);
-        slider_green->setCallback([=](double value){
+        slider_green->setCallback([collider, rgb](double value){
             collider->setRgb(Vector3(rgb[0], value, rgb[2]));
             collider->notifyUpdate(); });
 
         GeneralSliderView::SliderPtr slider_blue = sliderView->getOrCreateSlider(_("blue"), effect_range[5][0], effect_range[5][1], 2);
         slider_blue->setValue(rgb[2]);
-        slider_blue->setCallback([=](double value){
+        slider_blue->setCallback([collider, rgb](double value){
             collider->setRgb(Vector3(rgb[0], rgb[1], value));
             collider->notifyUpdate(); });
 
         GeneralSliderView::SliderPtr slider_coefb = sliderView->getOrCreateSlider(_("coef B"), effect_range[6][0], effect_range[6][1], 2);
         slider_coefb->setValue(collider->coefB());
-        slider_coefb->setCallback([=](double value){
+        slider_coefb->setCallback([collider](double value){
             collider->setCoefB(value);
             collider->notifyUpdate(); });
 
         GeneralSliderView::SliderPtr slider_coefd = sliderView->getOrCreateSlider(_("coef D"), effect_range[7][0], effect_range[7][1], 2);
         slider_coefd->setValue(collider->coefD());
-        slider_coefd->setCallback([=](double value){
+        slider_coefd->setCallback([collider](double value){
             collider->setCoefD(value);
             collider->notifyUpdate(); });
 
         GeneralSliderView::SliderPtr slider_stddev = sliderView->getOrCreateSlider(_("std dev"), effect_range[8][0], effect_range[8][1], 2);
         slider_stddev->setValue(collider->stdDev());
-        slider_stddev->setCallback([=](double value){
+        slider_stddev->setCallback([collider](double value){
             collider->setStdDev(value);
             collider->notifyUpdate(); });
 
         GeneralSliderView::SliderPtr slider_salt_amount = sliderView->getOrCreateSlider(_("salt amount"), effect_range[9][0], effect_range[9][1], 2);
         slider_salt_amount->setValue(collider->saltAmount());
-        slider_salt_amount->setCallback([=](double value){
+        slider_salt_amount->setCallback([collider](double value){
             collider->setSaltAmount(value);
             collider->notifyUpdate(); });
 
         GeneralSliderView::SliderPtr slider_salt_chance = sliderView->getOrCreateSlider(_("salt chance"), 0.0, 1.0, 2);
         slider_salt_chance->setValue(collider->saltChance());
-        slider_salt_chance->setCallback([=](double value){
+        slider_salt_chance->setCallback([collider](double value){
             collider->setSaltRate(value);
             collider->notifyUpdate(); });
 
         GeneralSliderView::SliderPtr slider_pepper_amount = sliderView->getOrCreateSlider(_("pepper amount"), effect_range[10][0], effect_range[10][1], 2);
         slider_pepper_amount->setValue(collider->pepperAmount());
-        slider_pepper_amount->setCallback([=](double value){
+        slider_pepper_amount->setCallback([collider](double value){
             collider->setPepperAmount(value);
             collider->notifyUpdate(); });
 
         GeneralSliderView::SliderPtr slider_pepper_chance = sliderView->getOrCreateSlider(_("pepper chance"), 0.0, 1.0, 2);
         slider_pepper_chance->setValue(collider->pepperChance());
-        slider_pepper_chance->setCallback([=](double value){
+        slider_pepper_chance->setCallback([collider](double value){
             collider->setPepperRate(value);
             collider->notifyUpdate(); });
     
         GeneralSliderView::SliderPtr slider_mosaic_chance = sliderView->getOrCreateSlider(_("mosaic chance"), 0.0, 1.0, 2);
         slider_mosaic_chance->setValue(collider->mosaicChance());
-        slider_mosaic_chance->setCallback([=](double value){
+        slider_mosaic_chance->setCallback([collider](double value){
             collider->setMosaicChance(value);
             collider->notifyUpdate(); });
 
         GeneralSliderView::SliderPtr slider_kernel = sliderView->getOrCreateSlider(_("kernel"), 8.0, 64.0, 2);
         slider_kernel->setValue(collider->kernel());
-        slider_kernel->setCallback([=](double value){
+        slider_kernel->setCallback([collider](double value){
             collider->setKernel(value);
             collider->notifyUpdate(); });
 

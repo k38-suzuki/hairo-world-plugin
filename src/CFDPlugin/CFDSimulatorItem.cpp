@@ -118,8 +118,8 @@ void CFDLink::calcGeometry(CFDBody* cfdBody)
     if(link->collisionShape()) {
         MeshExtractor* extractor = new MeshExtractor;
 
-        if(extractor->extract(
-            link->collisionShape(), [=](){ calcMesh(extractor, cfdBody); })) {
+        if(extractor->extract(link->collisionShape(),
+            [this, extractor, cfdBody](){ calcMesh(extractor, cfdBody); })) {
 
         }
         delete extractor;

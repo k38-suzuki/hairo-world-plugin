@@ -113,11 +113,11 @@ TaskCreator::Impl::Impl()
         projectCombos[i]->setFixedWidth(480);
 
         auto button1 = new ToolButton("+");
-        button1->sigClicked().connect([=](){ onButton1Clicked(i); });
+        button1->sigClicked().connect([this, i](){ onButton1Clicked(i); });
         auto button2 = new ToolButton("-");
-        button2->sigClicked().connect([=](){ onButton2Clicked(i); });
+        button2->sigClicked().connect([this, i](){ onButton2Clicked(i); });
         auto button3 = new ToolButton("c");
-        button3->sigClicked().connect([=](){ projectCombos[i]->clear(); });
+        button3->sigClicked().connect([this, i](){ projectCombos[i]->clear(); });
 
         hbox->addWidget(new QLabel(QString(_("Project %1")).arg(i)));
         hbox->addWidget(projectCombos[i]);
@@ -136,7 +136,7 @@ TaskCreator::Impl::Impl()
     const QStringList list = { "x+", "x-", "y+", "y-", "z+", "z-" };
     for(int i = 0; i < 6; ++i) {
         PushButton* button = new PushButton(list.at(i));
-        button->sigClicked().connect([=](){ onPosButtonClicked(i); });
+        button->sigClicked().connect([this, i](){ onPosButtonClicked(i); });
         hbox->addWidget(button);
     }
 

@@ -100,7 +100,7 @@ void SystemTrayIcon::initialize()
     this->show();
 
     connect(this, QOverload<QSystemTrayIcon::ActivationReason>::of(&QSystemTrayIcon::activated),
-        [=](QSystemTrayIcon::ActivationReason reason){ onActivated(reason); });
+        [this](QSystemTrayIcon::ActivationReason reason){ onActivated(reason); });
 }
 
 

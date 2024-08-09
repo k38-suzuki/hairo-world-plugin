@@ -100,7 +100,7 @@ BeepView::Impl::Impl(BeepView* self)
     for(int i = 0; i < NUM_BUTTONS; ++i) {
         buttons[i] = new PushButton(label1[i]);
         vbox->addWidget(buttons[i]);
-        buttons[i]->sigClicked().connect([=](){ onButtonClicked(i); });
+        buttons[i]->sigClicked().connect([this, i](){ onButtonClicked(i); });
     }
     vbox->addStretch();
 

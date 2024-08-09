@@ -145,7 +145,7 @@ void HistoryManager::Impl::addProject(const string& filename)
         }
 
         QAction* action = currentMenu->addAction(filename.c_str());
-        self->connect(action, &QAction::triggered, [=](){ loadProject(filename); });
+        self->connect(action, &QAction::triggered, [this, filename](){ loadProject(filename); });
     }
 }
 

@@ -28,7 +28,7 @@ PHITSRunner::PHITSRunner()
 
     process_.sigReadyReadStandardOutput().connect([&](){ onReadyReadStandardOutput(); });
     QObject::connect(&process_, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-                     [=](int exitCode, QProcess::ExitStatus exitStatus){ onProcessFinished(exitCode, exitStatus); });
+                     [this](int exitCode, QProcess::ExitStatus exitStatus){ onProcessFinished(exitCode, exitStatus); });
 }
 
 
