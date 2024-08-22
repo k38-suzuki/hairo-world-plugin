@@ -50,6 +50,9 @@ msgstr "終了(&x)"
 msgid "Pipe"
 msgstr "パイプ"
 
+msgid "BentPipe"
+msgstr "ベントパイプ"
+
 msgid "Grating"
 msgstr "グレーチング"
 
@@ -271,6 +274,18 @@ msgstr "開口角度 [deg]"
 
 msgid "Step angle [deg]"
 msgstr "きざみ角度 [deg]"
+
+msgid "BentPipe Generator"
+msgstr "ベントパイプ生成"
+
+msgid "Bent angle [deg]"
+msgstr "曲げ角度 [deg]"
+
+msgid "Bent radius [m]"
+msgstr "曲げ半径 [m]"
+
+msgid "Bent step angle [deg]"
+msgstr "曲げきざみ角度 [deg]"
 
 msgid "Slope Generator"
 msgstr "スロープ生成"

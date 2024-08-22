@@ -4,6 +4,7 @@
 
 #include <cnoid/Format>
 #include <cnoid/Plugin>
+#include "BentPipeGenerator.h"
 #include "BodyConverter.h"
 #include "CrawlerGenerator.h"
 #include "GratingGenerator.h"
@@ -30,6 +31,7 @@ public:
         GratingGenerator::initializeClass(this);
         InertiaCalculator::initializeClass(this);
         PipeGenerator::initializeClass(this);
+        BentPipeGenerator::initializeClass(this);
         SlopeGenerator::initializeClass(this);
         StairsGenerator::initializeClass(this);
         TerrainGenerator::initializeClass(this);

@@ -10,6 +10,7 @@ set(sources
   SlopeGenerator.cpp
   StairsGenerator.cpp
   TerrainGenerator.cpp
+  BentPipeGenerator.cpp
   Notepad.cpp
 )
 
@@ -24,6 +25,7 @@ set(headers
   SlopeGenerator.h
   StairsGenerator.h
   TerrainGenerator.h
+  BentPipeGenerator.h
   Notepad.h
   exportdecl.h
 )
