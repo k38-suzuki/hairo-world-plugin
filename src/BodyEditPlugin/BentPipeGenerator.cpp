@@ -150,6 +150,7 @@ BentPipeGenerator::Impl::Impl()
     }
 
     colorButton = new ColorButton;
+    colorButton->setColor(Vector3(0.5, 0.5, 0.5));
     gbox->addWidget(new QLabel(_("Color [-]")), 3, 0);
     gbox->addWidget(colorButton, 3, 1);
 
@@ -189,7 +190,6 @@ bool BentPipeGenerator::Impl::save(const string& filename)
 }
 
 
-
 MappingPtr BentPipeGenerator::Impl::writeBody(const string& filename)
 {
     MappingPtr node = new Mapping;
@@ -220,8 +220,8 @@ MappingPtr BentPipeGenerator::Impl::writeLink()
 
     node->write("name", "Root");
     node->write("joint_type", "fixed");
-    // write(node, "center_of_mass", Vector3(0.0, 0.0, 0.0));
-    // node->write("mass", mass);
+    write(node, "center_of_mass", Vector3(0.0, 0.0, 0.0));
+    node->write("mass", mass);
     // write(node, "inertia", calcInertia());
 
     ListingPtr elementsNode = new Listing;

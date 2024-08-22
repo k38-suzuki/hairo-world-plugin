@@ -172,4 +172,3 @@ vector<string> getSaveFileNames(const string& caption, const string& extensions)
 }
 
 }
-

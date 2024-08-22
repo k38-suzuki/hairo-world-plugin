@@ -143,6 +143,7 @@ GratingGenerator::Impl::Impl()
 
     sizeLabel = new QLabel(_(" "));
     colorButton = new ColorButton;
+    colorButton->setColor(Vector3(0.5, 0.5, 0.5));
 
     dspins[MASS]->setValue(1.0);
     dspins[FRAME_WDT]->setValue(0.005);

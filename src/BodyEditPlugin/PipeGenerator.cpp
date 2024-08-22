@@ -134,6 +134,7 @@ PipeGenerator::Impl::Impl()
     }
 
     colorButton = new ColorButton;
+    colorButton->setColor(Vector3(0.5, 0.5, 0.5));
     gbox->addWidget(new QLabel(_("Color [-]")), 3, 0);
     gbox->addWidget(colorButton, 3, 1);
 
@@ -186,20 +187,20 @@ bool PipeGenerator::Impl::save(const string& filename)
 
 void PipeGenerator::Impl::onInnerDiameterChanged(const double& diameter)
 {
-    double outerDiameter = dspins[OUT_DIA]->value();
-    if(diameter >= outerDiameter) {
-        double innerDiameter = outerDiameter - 0.01;
-        dspins[IN_DIA]->setValue(innerDiameter);
+    double d_out = dspins[OUT_DIA]->value();
+    if(diameter >= d_out) {
+        double d_in = d_out - 0.01;
+        dspins[IN_DIA]->setValue(d_in);
     }
 }
 
 
 void PipeGenerator::Impl::onOuterDiameterChanged(const double& diameter)
 {
-    double innerDiameter = dspins[IN_DIA]->value();
-    if(diameter <= innerDiameter) {
-        double outerDiameter = innerDiameter + 0.01;
-        dspins[OUT_DIA]->setValue(outerDiameter);
+    double d_in = dspins[IN_DIA]->value();
+    if(diameter <= d_in) {
+        double d_out = d_in + 0.01;
+        dspins[OUT_DIA]->setValue(d_out);
     }
 }
 
@@ -252,9 +253,12 @@ void PipeGenerator::Impl::writeLinkShape(Listing* elementsNode)
 {
     MappingPtr node = new Mapping;
 
-    double innerDiameter = dspins[IN_DIA]->value();
-    double outerDiameter = dspins[OUT_DIA]->value();
     double length = dspins[LENGTH]->value();
+    double d_in = dspins[IN_DIA]->value();
+    double d_out = dspins[OUT_DIA]->value();
+    double r_in = d_in / 2.0;
+    double r_out = d_out / 2.0;
+
     int angle = spins[ANGLE]->value();
     int step = spins[STEP]->value();
 
@@ -269,8 +273,8 @@ void PipeGenerator::Impl::writeLinkShape(Listing* elementsNode)
     double sx;
     double sy;
     for(int i = 0; i <= range; i += step) {
-        double x = outerDiameter * cos(i * TO_RADIAN);
-        double y = outerDiameter * sin(i * TO_RADIAN);
+        double x = r_out * cos(i * TO_RADIAN);
+        double y = r_out * sin(i * TO_RADIAN);
         if(i == 0) {
             sx = x;
             sy = y;
@@ -279,8 +283,8 @@ void PipeGenerator::Impl::writeLinkShape(Listing* elementsNode)
         crossSectionList.append(y, 2, n);
     }
     for(int i = 0; i <= range; i += step) {
-        double x = innerDiameter * cos((range - i) * TO_RADIAN);
-        double y = innerDiameter * sin((range - i) * TO_RADIAN);
+        double x = r_in * cos((range - i) * TO_RADIAN);
+        double y = r_in * sin((range - i) * TO_RADIAN);
         crossSectionList.append(x, 2, n);
         crossSectionList.append(y, 2, n);
     }
@@ -312,15 +316,17 @@ VectorXd PipeGenerator::Impl::calcInertia()
     outerInertia.resize(9);
 
     double length = dspins[LENGTH]->value();
-    double innerRadius = dspins[IN_DIA]->value();
-    double outerRadius = dspins[OUT_DIA]->value();
+    double d_in = dspins[IN_DIA]->value();
+    double d_out = dspins[OUT_DIA]->value();
+    double r_in = d_in / 2.0;
+    double r_out = d_out / 2.0;
 
-    double innerRate = innerRadius * innerRadius / outerRadius * outerRadius;
+    double innerRate = r_in * r_in / r_out * r_out;
     double outerRate = 1.0 - innerRate;
 
     {
         double mass = dspins[MASS]->value() * innerRate;
-        double radius = innerRadius;
+        double radius = r_in;
         double mainInertia = mass * radius * radius / 2.0;
         double subInertia = mass * (3.0 * radius * radius + length * length) / 12.0;
         double ix, iy, iz;
@@ -331,7 +337,7 @@ VectorXd PipeGenerator::Impl::calcInertia()
 
     {
         double mass = dspins[MASS]->value() * outerRate;
-        double radius = outerRadius;
+        double radius = r_out;
         double mainInertia = mass * radius * radius / 2.0;
         double subInertia = mass * (3.0 * radius * radius + length * length) / 12.0;
         double ix, iy, iz;
@@ -339,7 +345,6 @@ VectorXd PipeGenerator::Impl::calcInertia()
         iy = mainInertia;
         outerInertia << ix, 0.0, 0.0, 0.0, iy, 0.0, 0.0, 0.0, iz;
     }
-    VectorXd inertia = outerInertia - innerInertia;
 
-    return inertia;
+    return outerInertia - innerInertia;
 }

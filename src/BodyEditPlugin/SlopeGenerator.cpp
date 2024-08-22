@@ -106,6 +106,7 @@ SlopeGenerator::Impl::Impl()
     }
 
     colorButton = new ColorButton;
+    colorButton->setColor(Vector3(0.5, 0.5, 0.5));
     gbox->addWidget(new QLabel(_("Color [-]")), 2, 0);
     gbox->addWidget(colorButton, 2, 1);
 

@@ -119,6 +119,7 @@ StairsGenerator::Impl::Impl()
     gbox->addWidget(stepsSpin, 2, 3); 
 
     colorButton = new ColorButton;
+    colorButton->setColor(Vector3(0.5, 0.5, 0.5));
     gbox->addWidget(new QLabel(_("Color [-]")), 3, 0);
     gbox->addWidget(colorButton, 3, 1);
 
