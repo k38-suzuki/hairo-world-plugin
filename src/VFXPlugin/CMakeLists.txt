@@ -17,6 +17,7 @@ set(headers
 choreonoid_make_header_public(ImageGenerator.h)
 choreonoid_make_header_public(NoisyCamera.h)
 choreonoid_make_header_public(VFXConverter.h)
+choreonoid_make_header_public(VFXVisionSimulatorItem.h)
 
 set(target CnoidVFXPlugin)
 make_gettext_mofiles(${target} mofiles)

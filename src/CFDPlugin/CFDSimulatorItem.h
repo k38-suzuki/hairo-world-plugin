@@ -6,12 +6,13 @@
 #define CNOID_CFD_PLUGIN_CFD_SIMULATOR_ITEM_H
 
 #include <cnoid/SubSimulatorItem>
+#include "exportdecl.h"
 
 namespace cnoid {
 
 class CFDSimulatorItemImpl;
 
-class CFDSimulatorItem : public SubSimulatorItem
+class CNOID_EXPORT CFDSimulatorItem : public SubSimulatorItem
 {
 public:
     CFDSimulatorItem();

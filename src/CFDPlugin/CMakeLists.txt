@@ -14,6 +14,7 @@ set(headers
   exportdecl.h
 )
 
+choreonoid_make_header_public(CFDSimulatorItem.h)
 choreonoid_make_header_public(Rotor.h)
 choreonoid_make_header_public(Thruster.h)
 choreonoid_make_header_public(WingDevice.h)
