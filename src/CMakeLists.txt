@@ -9,6 +9,7 @@ add_subdirectory(JoystickStartPlugin)
 add_subdirectory(MotionCapturePlugin)
 add_subdirectory(VFXPlugin)
 add_subdirectory(SimpleColliderPlugin)
+add_subdirectory(WRSUtilPlugin)
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   add_subdirectory(BookmarkPlugin)

@@ -1,0 +1,36 @@
+#ifndef CNOID_WRSUTILPLUGIN_EXPORTDECL_H_INCLUDED
+# define CNOID_WRSUTILPLUGIN_EXPORTDECL_H_INCLUDED
+# if defined _WIN32 || defined __CYGWIN__
+#  define CNOID_WRSUTILPLUGIN_DLLIMPORT __declspec(dllimport)
+#  define CNOID_WRSUTILPLUGIN_DLLEXPORT __declspec(dllexport)
+#  define CNOID_WRSUTILPLUGIN_DLLLOCAL
+# else
+#  if __GNUC__ >= 4
+#   define CNOID_WRSUTILPLUGIN_DLLIMPORT __attribute__ ((visibility("default")))
+#   define CNOID_WRSUTILPLUGIN_DLLEXPORT __attribute__ ((visibility("default")))
+#   define CNOID_WRSUTILPLUGIN_DLLLOCAL  __attribute__ ((visibility("hidden")))
+#  else
+#   define CNOID_WRSUTILPLUGIN_DLLIMPORT
+#   define CNOID_WRSUTILPLUGIN_DLLEXPORT
+#   define CNOID_WRSUTILPLUGIN_DLLLOCAL
+#  endif
+# endif
+
+# ifdef CNOID_WRSUTILPLUGIN_STATIC
+#  define CNOID_WRSUTILPLUGIN_DLLAPI
+#  define CNOID_WRSUTILPLUGIN_LOCAL
+# else
+#  ifdef CnoidWRSUtilPlugin_EXPORTS
+#   define CNOID_WRSUTILPLUGIN_DLLAPI CNOID_WRSUTILPLUGIN_DLLEXPORT
+#  else
+#   define CNOID_WRSUTILPLUGIN_DLLAPI CNOID_WRSUTILPLUGIN_DLLIMPORT
+#  endif
+#  define CNOID_WRSUTILPLUGIN_LOCAL CNOID_WRSUTILPLUGIN_DLLLOCAL
+# endif
+
+#endif
+
+#ifdef CNOID_EXPORT
+# undef CNOID_EXPORT
+#endif
+#define CNOID_EXPORT CNOID_WRSUTILPLUGIN_DLLAPI

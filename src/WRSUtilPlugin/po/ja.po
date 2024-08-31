@@ -1,0 +1,36 @@
+# Japanese translations for Choreonoid package.
+# Copyright (C) 2024 THE Choreonoid'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Choreonoid package.
+# k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Choreonoid\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-08-31 08:00+0900\n"
+"PO-Revision-Date: 2024-08-31 08:00+0900\n"
+"Last-Translator: k38-suzuki <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "WRSUtilBar"
+msgstr "WRSUtilバー"
+
+msgid "Select project"
+msgstr "プロジェクトを選択"
+
+msgid "Open the selected project"
+msgstr "プロジェクトを開く"
+
+msgid "Update projects"
+msgstr "プロジェクトを更新"
+
+msgid "Robots were not found."
+msgstr "ロボットが見つかりませんでした．"
+
+msgid "Projects were updated."
+msgstr "プロジェクトが更新されました．"
