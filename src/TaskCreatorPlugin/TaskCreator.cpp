@@ -60,7 +60,7 @@ public:
     void onButton2Clicked(const int& id);
     void onPosButtonClicked(const int& id);
 
-    enum { NumProjects = 12 };
+    enum { NumProjects = 8 };
 
     ComboBox* projectCombos[NumProjects];
     CheckBox* logCheck;
