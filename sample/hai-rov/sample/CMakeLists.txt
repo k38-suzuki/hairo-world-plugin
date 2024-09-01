@@ -2,4 +2,4 @@ choreonoid_add_simple_controller(HaiROVJoystickController HaiROVJoystickControll
 target_link_libraries(HaiROVJoystickController CnoidCFDPlugin)
 
 install(FILES HaiROV.cnoid
-    DESTINATION ${CNOID_SHARE_SUBDIR}/project)
+    DESTINATION ${CHOREONOID_SHARE_SUBDIR}/project)
