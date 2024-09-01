@@ -229,10 +229,10 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics3()
         double coef_d = 1.0;
         double std_dev = 0.0;
         double salt_amount = 0.0;
-        double salt_chance = 1.0;
+        double salt_chance = 0.0;
         double pepper_amount = 0.0;
-        double pepper_chance = 1.0;
-        double mosaic_chance = 1.0;
+        double pepper_chance = 0.0;
+        double mosaic_chance = 0.0;
         int kernel = 16;
 
         NoisyCamera* noisyCamera = dynamic_cast<NoisyCamera*>(camera.get());

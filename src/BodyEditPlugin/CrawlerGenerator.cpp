@@ -573,7 +573,7 @@ void CrawlerGenerator::Impl::onImportButtonClicked()
 }
 
 
-bool CrawlerGenerator::Impl::load2(const string& filename,std::ostream& os )
+bool CrawlerGenerator::Impl::load2(const string& filename, std::ostream& os)
 {
     try {
         YAMLReader reader;
