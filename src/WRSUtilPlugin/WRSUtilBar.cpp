@@ -13,6 +13,7 @@
 #include <cnoid/ItemTreeView>
 #include <cnoid/MessageView>
 #include <cnoid/NullOut>
+#include <cnoid/OptionManager>
 #include <cnoid/ProjectManager>
 #include <cnoid/RootItem>
 #include <cnoid/SimpleControllerItem>
@@ -29,10 +30,12 @@ using namespace cnoid;
 
 namespace {
 
+vector<string> projectToExecute;
+
 struct ProjectInfo {
     string name;
     string view_project;
-    string task_project;
+    vector<string> task_projects;
     vector<string> simulator_projects;
     vector<string> robot_projects;
     bool is_recording_enabled;
@@ -57,6 +60,8 @@ public:
     string registration_file;
     vector<ProjectInfo> projectInfo;
     bool is_initialized;
+
+    void onSigOptionsParsed();
 
     bool load(const string& filename, ostream& os = nullout());
     void update();
@@ -104,7 +109,13 @@ WRSUtilBar::Impl::Impl(WRSUtilBar* self)
       registration_file(""),
       is_initialized(false)
 {
-    self->setVisibleByDefault(true);
+    self->setVisibleByDefault(false);
+
+    auto om = OptionManager::instance();
+    om->add_option("--wrs-util", projectToExecute, "execute registered project");
+
+    om->sigOptionsParsed(1).connect(
+        [&](OptionManager*){ onSigOptionsParsed(); });
 
     projectCombo = new ComboBox;
     projectCombo->setToolTip(_("Select project"));
@@ -126,13 +137,13 @@ WRSUtilBar::~WRSUtilBar()
 }
 
 
-void WRSUtilBar::setProjectDirectory(const std::string& directory)
+void WRSUtilBar::setProjectDirectory(const string& directory)
 {
     impl->project_dir = directory;
 }
 
 
-void WRSUtilBar::setRegistrationFile(const std::string& filename)
+void WRSUtilBar::setRegistrationFile(const string& filename)
 {
     impl->registration_file = filename;
 }
@@ -149,6 +160,20 @@ void WRSUtilBar::Impl::update()
     if(!registration_file.empty()) {
         load(registration_file);
         is_initialized = true;
+    }
+}
+
+
+void WRSUtilBar::Impl::onSigOptionsParsed()
+{
+    for(auto& project : projectToExecute) {
+        for(int i = 0; i < projectCombo->count(); ++i) {
+            string text = projectCombo->itemText(i).toStdString();
+            if(text == project) {
+                projectCombo->setCurrentIndex(i);
+                onOpenButtonClicked();
+            }
+        }
     }
 }
 
@@ -172,11 +197,16 @@ bool WRSUtilBar::Impl::load(const string& filename, ostream& os)
                     info.name = name;
                     projectCombo->addItem(name.c_str());
 
-                    string task = node->get("task_project", "");
-                    info.task_project = task;
-
                     string view = node->get("view_project", "");
                     info.view_project = view;
+
+                    auto& taskList = *node->findListing("task_project");
+                    if(taskList.isValid()) {
+                        for(int j = 0; j < taskList.size(); ++j) {
+                            string task = taskList[j].toString();
+                            info.task_projects.push_back(task);
+                        }
+                    }
 
                     auto& simulatorList = *node->findListing("simulator_project");
                     if(simulatorList.isValid()) {
@@ -245,10 +275,10 @@ void WRSUtilBar::Impl::onOpenButtonClicked()
     worldItem->setName("World");
     rootItem->addChildItem(worldItem);
 
-    if(!info.task_project.empty()) {
+    for(auto& project : info.task_projects) {
         auto taskItem = new SubProjectItem();
-        taskItem->setName(info.task_project);
-        taskItem->load(project_dir + "/" + info.task_project + ".cnoid");
+        taskItem->setName(project);
+        taskItem->load(project_dir + "/" + project + ".cnoid");
         worldItem->addChildItem(taskItem);
         itemTreeView->setExpanded(taskItem, false);
     }
@@ -303,7 +333,7 @@ void WRSUtilBar::Impl::onOpenButtonClicked()
 
     if(info.is_recording_enabled) {
         auto logItem = new WorldLogFileItem;
-        logItem->setLogFile(info.task_project + ".log");
+        logItem->setLogFile(info.name + ".log");
         logItem->setTimeStampSuffixEnabled(true);
         logItem->setRecordingFrameRate(100);
         worldItem->addChildItem(logItem);
