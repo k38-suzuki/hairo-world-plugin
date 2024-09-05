@@ -58,23 +58,28 @@ public:
         ostream& os = io->os();
         ioBody = io->body();
 
-        ioLeftHand = ioBody->link("LEFT_FINGER_PROX");
-        ioRightHand = ioBody->link("RIGHT_FINGER_PROX");
-
         prevButtonState[0] = prevButtonState[1] = prevButtonState[2] = false;
         prevButtonState2[0] = prevButtonState2[1] = false;
         prevMapState = false;
         jointActuationMode = Link::JointVelocity;
+        string prefix;
+
         for(auto opt : io->options()) {
             if(opt == "position") {
                 jointActuationMode = Link::JointDisplacement;
                 os << "The joint-position command mode is used." << endl;
+            } else {
+                prefix = opt;
+                io->os() << "prefix: " << prefix << endl;
             }
         }
 
+        ioLeftHand = ioBody->link(prefix + "LEFT_FINGER_PROX");
+        ioRightHand = ioBody->link(prefix + "RIGHT_FINGER_PROX");
+
         ikBody = ioBody->clone();
-        ikWrist = ikBody->link("WRIST_ORIGIN");
-        Link* base = ikBody->rootLink();
+        ikWrist = ikBody->link(prefix + "WRIST_ORIGIN");
+        Link* base = ikBody->link(prefix + "BASE");
         baseToWrist = JointPath::getCustomPath(base, ikWrist);
         base->p().setZero();
         base->R().setIdentity();
