@@ -25,39 +25,50 @@
     enum RobotType { GEN2, GEN3, GEN3LITE };
 
     enum Gen2Joint {
-        SHOULDER,
-        ARM_HALF_1,
-        ARM_HALF_2,
-        FOREARM,
-        WRIST_SPHERICAL_1,
-        WRIST_SPHERICAL_2,
-        HAND_3FINGER,
-        NUM_GEN2_JOINTS
+        G2_SHOULDER,
+        G2_ARM_HALF_1,
+        G2_ARM_HALF_2,
+        G2_FOREARM,
+        G2_WRIST_SPHERICAL_1,
+        G2_WRIST_SPHERICAL_2,
+        G2_HAND_3FINGER,
+        NUM_G2_JOINTS
     };
 
     enum Gen2Finger {
-        FINGER_PROXIMAL_1,
-        FINGER_PROXIMAL_2,
-        FINGER_PROXIMAL_3,
-        NUM_GEN2_FINGERS
+        G2_FINGER_PROXIMAL_1,
+        G2_FINGER_PROXIMAL_2,
+        G2_FINGER_PROXIMAL_3,
+        NUM_G2_FINGERS
+    };
+
+    enum Gen3Joint {
+        G3_J0,
+        G3_J1,
+        G3_J2,
+        G3_J3,
+        G3_J4,
+        G3_J5,
+        G3_J6,
+        NUM_G3_JOINTS
     };
 
     enum Gen3liteJoint {
-        J0,
-        J1,
-        J2,
-        J3,
-        J4,
+        G3L_J0,
+        G3L_J1,
+        G3L_J2,
+        G3L_J3,
+        G3L_J4,
         GRIPPER_FRAME,
-        NUM_GEN3LITE_JOINTS
+        NUM_G3L_JOINTS
     };
 
     enum Gen3liteFinger {
-        RIGHT_FINGER_PROX,
-        RIGHT_FINGER_DIST,
-        LEFT_FINGER_PROX,
-        LEFT_FINGER_DIST,
-        NUM_GEN3LITE_FINGERS
+        G3L_RIGHT_FINGER_PROX,
+        G3L_RIGHT_FINGER_DIST,
+        G3L_LEFT_FINGER_PROX,
+        G3L_LEFT_FINGER_DIST,
+        NUM_G3L_FINGERS
     };
 
     SharedJoystickPtr joystick;
@@ -89,17 +100,19 @@ public:
             }
             if(opt == "Gen2") {
                 robotType = GEN2;
-                armJoints.resize(NUM_GEN2_JOINTS);
-                fingerJoints.resize(NUM_GEN2_FINGERS);
-                max_joints = NUM_GEN2_JOINTS - 1;
+                armJoints.resize(NUM_G2_JOINTS);
+                fingerJoints.resize(NUM_G2_FINGERS);
+                max_joints = NUM_G2_JOINTS - 1;
             } else if(opt == "Gen3") {
                 robotType = GEN3;
-
+                armJoints.resize(NUM_G3_JOINTS);
+                fingerJoints.clear();
+                max_joints = NUM_G3_JOINTS - 1;
             } else if(opt == "Gen3lite") {
                 robotType = GEN3LITE;
-                armJoints.resize(NUM_GEN3LITE_JOINTS);
-                fingerJoints.resize(NUM_GEN3LITE_FINGERS);
-                max_joints = NUM_GEN3LITE_JOINTS - 1;
+                armJoints.resize(NUM_G3L_JOINTS);
+                fingerJoints.resize(NUM_G3L_FINGERS);
+                max_joints = NUM_G3L_JOINTS - 1;
             }
         }
 
@@ -117,6 +130,15 @@ public:
                 fingerJoints[1] = body->link("FINGER_PROXIMAL_2");
                 fingerJoints[2] = body->link("FINGER_PROXIMAL_3");
                 break;
+            case GEN3:
+                armJoints[0] = body->link("J0");
+                armJoints[1] = body->link("J1");
+                armJoints[2] = body->link("J2");
+                armJoints[3] = body->link("J3");
+                armJoints[4] = body->link("J4");
+                armJoints[5] = body->link("J5");
+                armJoints[6] = body->link("J6");
+                break;      
             case GEN3LITE:
                 armJoints[0] = body->link("J0");
                 armJoints[1] = body->link("J1");
