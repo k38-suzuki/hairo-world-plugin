@@ -59,8 +59,21 @@ items:
                 base_directory: "Controller directory"
                 reloading: false
                 export_symbols: false
+              children:
+                -
+                  id: 4
+                  name: "Gen2JointMapController"
+                  plugin: Body
+                  class: SimpleControllerItem
+                  data:
+                    isNoDelayMode: false
+                    controllerOptions: "Gen2"
+                    controller: "Gen2JointMapController"
+                    base_directory: "Controller directory"
+                    reloading: false
+                    export_symbols: false
         -
-          id: 4
+          id: 5
           name: "Floor"
           plugin: Body
           class: BodyItem
@@ -84,7 +97,7 @@ items:
             lock_location: false
             scene_sensitive: true
         -
-          id: 5
+          id: 6
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
@@ -131,7 +144,7 @@ views:
     class: ItemTreeView
     mounted: true
     state:
-      expanded: [ 1, 2 ]
+      expanded: [ 1, 2, 3 ]
   -
     id: 3
     plugin: Base
@@ -165,7 +178,7 @@ views:
           isCurrent: true
           eye: [ 3, 1.5, 1.2 ]
           direction: [ -0.880451, -0.440225, -0.17609 ]
-          up: [ -0.1575, -0.0787496, 0.984374 ]
+          up: [ -0.1575, -0.0787495, 0.984374 ]
         -
           camera: [ System, Orthographic ]
           orthoHeight: 20
@@ -293,7 +306,7 @@ Body:
         show_cm_projection: false
         show_zmp: false
       -
-        body_item: 4
+        body_item: 5
         show_cm: false
         show_cm_projection: false
         show_zmp: false
