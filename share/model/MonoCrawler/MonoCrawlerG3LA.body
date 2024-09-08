@@ -1,7 +1,7 @@
 format: ChoreonoidBody
 formatVersion: 1.0
 angleUnit: degree
-name: MonoCrawlerSA
+name: MonoCrawlerG3LA
 rootLink: CHASSIS
 links:
   -
@@ -10,10 +10,9 @@ links:
     jointType: free
   -
     type: SubBody
-    uri: "../Gen2/Gen2.body"
+    uri: "../Gen3lite/GEN3-LITE.body"
 #    prefix: ARM1_
     parent: CHASSIS
     translation: [ 0.15, 0, 0.05 ]
-    rotation: [ 0, 0, 1, 90 ]
     jointType: fixed
     jointIdOffset: 14

@@ -1,23 +1,64 @@
 /**
-    Gen2 Joint Map Controller
+    Joint Map Controller
     Kenta Suzuki
  */
 
  #include <cnoid/SimpleController>
 #include <cnoid/SharedJoystick>
+#include <vector>
 
  using namespace std;
  using namespace cnoid;
 
- class Gen2JointMapController : public SimpleController
+ class JointMapController : public SimpleController
  {
     SimpleControllerIO* io;
     int jointActuationMode;
-    Link* armJoint[7];
-    Link* fingerJoint[3];
+    vector<Link*> armJoints;
+    vector<Link*> fingerJoints;
     double dt;
     bool prevButtonState[2];
     int currentJoint;
+    int robotType;
+    int max_joints;
+
+    enum RobotType { GEN2, GEN3, GEN3LITE };
+
+    enum Gen2Joint {
+        SHOULDER,
+        ARM_HALF_1,
+        ARM_HALF_2,
+        FOREARM,
+        WRIST_SPHERICAL_1,
+        WRIST_SPHERICAL_2,
+        HAND_3FINGER,
+        NUM_GEN2_JOINTS
+    };
+
+    enum Gen2Finger {
+        FINGER_PROXIMAL_1,
+        FINGER_PROXIMAL_2,
+        FINGER_PROXIMAL_3,
+        NUM_GEN2_FINGERS
+    };
+
+    enum Gen3liteJoint {
+        J0,
+        J1,
+        J2,
+        J3,
+        J4,
+        GRIPPER_FRAME,
+        NUM_GEN3LITE_JOINTS
+    };
+
+    enum Gen3liteFinger {
+        RIGHT_FINGER_PROX,
+        RIGHT_FINGER_DIST,
+        LEFT_FINGER_PROX,
+        LEFT_FINGER_DIST,
+        NUM_GEN3LITE_FINGERS
+    };
 
     SharedJoystickPtr joystick;
     int targetMode;
@@ -33,7 +74,10 @@ public:
         // jointActuationMode = Link::JointEffort;
         jointActuationMode = Link::JointVelocity;
         prevButtonState[0] = prevButtonState[1] = false;
+        armJoints.clear();
+        fingerJoints.clear();
         currentJoint = 0;
+        robotType = GEN2;
         for(auto opt : io->options()) {
             if(opt == "position") {
                 jointActuationMode = Link::JointDisplacement;
@@ -44,37 +88,64 @@ public:
                 os << "The joint-velocity command mode is used." << endl;
             }
             if(opt == "Gen2") {
-
+                robotType = GEN2;
+                armJoints.resize(NUM_GEN2_JOINTS);
+                fingerJoints.resize(NUM_GEN2_FINGERS);
+                max_joints = NUM_GEN2_JOINTS - 1;
             } else if(opt == "Gen3") {
+                robotType = GEN3;
 
             } else if(opt == "Gen3lite") {
-
+                robotType = GEN3LITE;
+                armJoints.resize(NUM_GEN3LITE_JOINTS);
+                fingerJoints.resize(NUM_GEN3LITE_FINGERS);
+                max_joints = NUM_GEN3LITE_JOINTS - 1;
             }
         }
 
-        armJoint[0] = body->link("SHOULDER");
-        armJoint[1] = body->link("ARM_HALF_1");
-        armJoint[2] = body->link("ARM_HALF_2");
-        armJoint[3] = body->link("FOREARM");
-        armJoint[4] = body->link("WRIST_SPHERICAL_1");
-        armJoint[5] = body->link("WRIST_SPHERICAL_2");
-        armJoint[6] = body->link("HAND_3FINGER");
-        for(int i = 0; i < 7; ++i) {
-            Link* joint = armJoint[i];
+        switch(robotType) {
+            case GEN2:
+                armJoints[0] = body->link("SHOULDER");
+                armJoints[1] = body->link("ARM_HALF_1");
+                armJoints[2] = body->link("ARM_HALF_2");
+                armJoints[3] = body->link("FOREARM");
+                armJoints[4] = body->link("WRIST_SPHERICAL_1");
+                armJoints[5] = body->link("WRIST_SPHERICAL_2");
+                armJoints[6] = body->link("HAND_3FINGER");
+
+                fingerJoints[0] = body->link("FINGER_PROXIMAL_1");
+                fingerJoints[1] = body->link("FINGER_PROXIMAL_2");
+                fingerJoints[2] = body->link("FINGER_PROXIMAL_3");
+                break;
+            case GEN3LITE:
+                armJoints[0] = body->link("J0");
+                armJoints[1] = body->link("J1");
+                armJoints[2] = body->link("J2");
+                armJoints[3] = body->link("J3");
+                armJoints[4] = body->link("J4");
+                armJoints[5] = body->link("GRIPPER_FRAME");
+
+                fingerJoints[0] = body->link("RIGHT_FINGER_PROX");
+                fingerJoints[1] = body->link("RIGHT_FINGER_DIST");
+                fingerJoints[2] = body->link("LEFT_FINGER_PROX");
+                fingerJoints[3] = body->link("LEFT_FINGER_DIST");
+                break;
+            default:
+                break;
+        }
+
+        for(size_t i = 0; i < armJoints.size(); ++i) {
+            Link* joint = armJoints[i];
             if(!joint) {
                 os << "Arm joint " << i << " is not found." << endl;
                 return false;
             }
-            // joint->q() = home_position[i];
             joint->setActuationMode(jointActuationMode);
             io->enableIO(joint);
         }
 
-        fingerJoint[0] = body->link("FINGER_PROXIMAL_1");
-        fingerJoint[1] = body->link("FINGER_PROXIMAL_2");
-        fingerJoint[2] = body->link("FINGER_PROXIMAL_3");
-        for(int i = 0; i < 3; ++i) {
-            Link* joint = fingerJoint[i];
+        for(size_t i = 0; i < fingerJoints.size(); ++i) {
+            Link* joint = fingerJoints[i];
             if(!joint) {
                 os << "Finger joint " << i << " is not found." << endl;
                 return false;
@@ -109,9 +180,16 @@ public:
             }
         }
 
-        for(int i = 0; i < 3; ++i) {
-            Link* joint = fingerJoint[i];
+        for(size_t i = 0; i < fingerJoints.size(); ++i) {
+            Link* joint = fingerJoints[i];
             double pos2 = pos[0] < 0.2 ? -pos[1] : pos[0];
+            if(robotType == GEN3LITE) {
+                if(i == 0) {
+                    pos2 *= -1.0;
+                } else if(i == 1 || i == 3) {
+                    pos2 = 0.0;
+                }
+            }
 
             if(jointActuationMode == Link::JointDisplacement) {
                 joint->q_target() = joint->q() + pos2 * dt;
@@ -134,17 +212,17 @@ public:
             bool currentState = i == 0 ? (pos < 0.0 ? true : false) : (pos > 0.0 ? true : false);
             if(currentState && !prevButtonState[i]) {
                 if(i == 0) {
-                    currentJoint = currentJoint == 0 ? 6 : currentJoint - 1;
+                    currentJoint = currentJoint == 0 ? max_joints : currentJoint - 1;
                 } else if(i == 1) {
-                    currentJoint = currentJoint == 6 ? 0 : currentJoint + 1;
+                    currentJoint = currentJoint == max_joints ? 0 : currentJoint + 1;
                 }
-                io->os() << "Current joint is " << currentJoint << ": " << armJoint[currentJoint]->name() << "." << endl;
+                io->os() << "Current joint is " << currentJoint << ": " << armJoints[currentJoint]->name() << "." << endl;
             }
             prevButtonState[i] = currentState;
         }
 
-        for(int i = 0; i < 7; ++i) {
-            Link* joint = armJoint[i];
+        for(size_t i = 0; i < armJoints.size(); ++i) {
+            Link* joint = armJoints[i];
             double pos = joystick->getPosition(targetMode,
                 Joystick::L_STICK_H_AXIS);
             pos = i == currentJoint ? pos : 0.0;
@@ -164,4 +242,4 @@ public:
     }
  };
 
- CNOID_IMPLEMENT_SIMPLE_CONTROLLER_FACTORY(Gen2JointMapController)
+ CNOID_IMPLEMENT_SIMPLE_CONTROLLER_FACTORY(JointMapController)

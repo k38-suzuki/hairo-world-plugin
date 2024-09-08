@@ -17,12 +17,12 @@ items:
       children:
         -
           id: 2
-          name: "MonoCrawlerSA"
+          name: "MonoCrawlerG3LA"
           plugin: Body
           class: BodyItem
           is_checked: true
           data:
-            file: "${SHARE}/model/MonoCrawler/MonoCrawlerSA.body"
+            file: "${SHARE}/model/MonoCrawler/MonoCrawlerG3LA.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0.2 ]
             rootAttitude: [
@@ -31,8 +31,8 @@ items:
               0, 0, 1 ]
             jointDisplacements: [
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 103.1, 197.3, 180, 43.6, 265.2, 257.5,
-              288.1, 0, 0, 0 ]
+              0, 0, 0, 0, 0, -20, 90, 80, 60, 0,
+              20, 0, -20, 0 ]
             initialRootPosition: [ 0, 0, 0.2 ]
             initialRootAttitude: [
               1, 0, 0,
@@ -44,7 +44,7 @@ items:
             lock_location: false
             scene_sensitive: true
             link_kinematics:
-              "FINGER_DISTAL_1":
+              "RIGHT_FINGER_DIST":
                 base_frame: 0
                 offset_frame: 0
           children:
@@ -63,13 +63,13 @@ items:
               children:
                 -
                   id: 4
-                  name: "Gen2JointMapController"
+                  name: "JointMapController"
                   plugin: Body
                   class: SimpleControllerItem
                   data:
                     isNoDelayMode: false
-                    controllerOptions: "Gen2"
-                    controller: "Gen2JointMapController"
+                    controllerOptions: "Gen3lite"
+                    controller: "JointMapController"
                     base_directory: "Controller directory"
                     reloading: false
                     export_symbols: false

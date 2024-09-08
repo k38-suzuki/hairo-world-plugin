@@ -1,12 +1,12 @@
 format: ChoreonoidBody
 formatVersion: 1.0
 angleUnit: degree
-name: MonoCrawlerSS
+name: MonoCrawlerG2A
 rootLink: CHASSIS
 links:
   -
     type: SubBody
-    uri: "MonoCrawlerNS.body"
+    uri: "MonoCrawlerNA.body"
     jointType: free
   -
     type: SubBody
@@ -16,4 +16,4 @@ links:
     translation: [ 0.15, 0, 0.05 ]
     rotation: [ 0, 0, 1, 90 ]
     jointType: fixed
-    jointIdOffset: 2
+    jointIdOffset: 14

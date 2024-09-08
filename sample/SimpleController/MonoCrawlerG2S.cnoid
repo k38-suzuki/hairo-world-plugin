@@ -17,12 +17,12 @@ items:
       children:
         -
           id: 2
-          name: "MonoCrawlerSS"
+          name: "MonoCrawlerG2S"
           plugin: Body
           class: BodyItem
           is_checked: true
           data:
-            file: "${SHARE}/model/MonoCrawler/MonoCrawlerSS.body"
+            file: "${SHARE}/model/MonoCrawler/MonoCrawlerG2S.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0.2 ]
             rootAttitude: [
@@ -62,13 +62,13 @@ items:
               children:
                 -
                   id: 4
-                  name: "Gen2JointMapController"
+                  name: "JointMapController"
                   plugin: Body
                   class: SimpleControllerItem
                   data:
                     isNoDelayMode: false
                     controllerOptions: "Gen2"
-                    controller: "Gen2JointMapController"
+                    controller: "JointMapController"
                     base_directory: "Controller directory"
                     reloading: false
                     export_symbols: false
