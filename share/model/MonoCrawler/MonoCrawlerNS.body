@@ -5,7 +5,7 @@ name: MonoCrawlerNS
 links:
   -
     name: CHASSIS
-    translation: [ 0, 0, 0.2 ]
+    translation: [ 0, 0, 0.1 ]
     jointType: free
     centerOfMass: [ 0, 0, 0 ]
     mass: 50
@@ -17,7 +17,7 @@ links:
         appearance: { material: { diffuseColor: [ 0, 0, 0 ] } }
   -
     name: TRACK_L
-    translation: [ 0, 0.2, -0.05 ]
+    translation: [ 0, 0.2, 0 ]
     parent: &A0 CHASSIS
     jointType: &A1 pseudo_continuous_track
     jointAxis: &A2 Y
@@ -45,7 +45,7 @@ links:
         appearance: { material: { diffuseColor: [ 1, 1, 1 ] } }
   -
     name: TRACK_R
-    translation: [ 0, -0.2, -0.05 ]
+    translation: [ 0, -0.2, 0 ]
     parent: *A0
     jointType: *A1
     jointAxis: *A2
@@ -55,7 +55,7 @@ links:
     elements: *A6
   -
     name: SPACER_LF
-    translation: [ 0.25, 0.2565, -0.05 ]
+    translation: [ 0.25, 0.2565, 0 ]
     jointId: 0
     parent: &A7 CHASSIS
     jointType: &A8 revolute
@@ -70,7 +70,7 @@ links:
         appearance: { material: { diffuseColor: [ 1, 0, 0 ] } }
   -
     name: SPACER_RF
-    translation: [ 0.25, -0.2565, -0.05 ]
+    translation: [ 0.25, -0.2565, 0 ]
     jointId: 1
     parent: *A7
     jointType: *A8

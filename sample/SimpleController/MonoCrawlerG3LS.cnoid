@@ -24,7 +24,7 @@ items:
           data:
             file: "${SHARE}/model/MonoCrawler/MonoCrawlerG3LS.body"
             format: CHOREONOID-BODY
-            rootPosition: [ 0, 0, 0.2 ]
+            rootPosition: [ 0, 0, 0.1 ]
             rootAttitude: [
               1, 0, 0,
               0, 1, 0,
@@ -32,7 +32,7 @@ items:
             jointDisplacements: [
               0, 0, 0, -20, 90, 80, 60, 0, 20, 0,
               -20, 0, 0, 0, 0, 0 ]
-            initialRootPosition: [ 0, 0, 0.2 ]
+            initialRootPosition: [ 0, 0, 0.1 ]
             initialRootAttitude: [
               1, 0, 0,
               0, 1, 0,

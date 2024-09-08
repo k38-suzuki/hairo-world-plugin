@@ -792,8 +792,10 @@ void CrawlerGenerator::Impl::writeBody(Listing* linksNode)
     {
         static const char* name[] = { "TRACK_L", "TRACK_R" };
         Vector3 translation[2];
-        translation[0] = Vector3(0.0, (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
-        translation[1] = Vector3(0.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        // translation[0] = Vector3(0.0, (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        // translation[1] = Vector3(0.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        translation[0] = Vector3(0.0, (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, 0.0);
+        translation[1] = Vector3(0.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, 0.0);
 
         for(int i = 0; i < 2; ++i) {
             MappingPtr node = new Mapping;
@@ -810,8 +812,10 @@ void CrawlerGenerator::Impl::writeBody(Listing* linksNode)
         {
             static const char* name[] = { "SPACER_LF", "SPACER_RF" };
             Vector3 translation[2];
-            translation[0] = Vector3(dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
-            translation[1] = Vector3(dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            // translation[0] = Vector3(dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            // translation[1] = Vector3(dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            translation[0] = Vector3(dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), 0.0);
+            translation[1] = Vector3(dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), 0.0);
 
             for(int i = 0; i < 2; ++i) {
                 MappingPtr node = new Mapping;
@@ -849,8 +853,10 @@ void CrawlerGenerator::Impl::writeBody(Listing* linksNode)
         {
             static const char* name[] = { "SPACER_LR", "SPACER_RR" };
             Vector3 translation[2];
-            translation[0] = Vector3(-dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
-            translation[1] = Vector3(-dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            // translation[0] = Vector3(-dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            // translation[1] = Vector3(-dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            translation[0] = Vector3(-dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), 0.0);
+            translation[1] = Vector3(-dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), 0.0);
 
             for(int i = 0; i < 2; ++i) {
                 MappingPtr node = new Mapping;
@@ -1130,8 +1136,10 @@ void CrawlerGenerator::Impl::writeAGXBody(Listing* linksNode)
         static const char* name[] = { "TRACK_L", "TRACK_R" };
         static const char* parent[] = { "CHASSIS", "CHASSIS" };
         Vector3 translation[2];
-        translation[0] = Vector3(0.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
-        translation[1] = Vector3(0.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        // translation[0] = Vector3(0.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        // translation[1] = Vector3(0.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        translation[0] = Vector3(0.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, 0.0);
+        translation[1] = Vector3(0.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, 0.0);
 
         for(int i = 0; i < 2; ++i) {
             MappingPtr node = new Mapping;
@@ -1159,8 +1167,10 @@ void CrawlerGenerator::Impl::writeAGXBody(Listing* linksNode)
     {
         static const char* name[] = { "SPROCKET_L", "SPROCKET_R" };
         Vector3 translation[2];
-        translation[0] = Vector3(dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
-        translation[1] = Vector3(dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        // translation[0] = Vector3(dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        // translation[1] = Vector3(dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        translation[0] = Vector3(dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, 0.0);
+        translation[1] = Vector3(dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, 0.0);
 
         for(int i = 0; i < 2;++i) {
             MappingPtr node = new Mapping;
@@ -1177,8 +1187,10 @@ void CrawlerGenerator::Impl::writeAGXBody(Listing* linksNode)
     {
         static const char* name[] = { "ROLLER_L", "ROLLER_R" };
         Vector3 translation[2];
-        translation[0] = Vector3(0.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
-        translation[1] = Vector3(0.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        // translation[0] = Vector3(0.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        // translation[1] = Vector3(0.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        translation[0] = Vector3(0.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, 0.0);
+        translation[1] = Vector3(0.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, 0.0);
 
         for(int i = 0; i < 2;++i) {
             MappingPtr node = new Mapping;
@@ -1195,8 +1207,10 @@ void CrawlerGenerator::Impl::writeAGXBody(Listing* linksNode)
     {
         static const char* name[] = { "IDLER_L", "IDLER_R" };
         Vector3 translation[2];
-        translation[0] = Vector3(-dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
-        translation[1] = Vector3(-dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        // translation[0] = Vector3(-dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        // translation[1] = Vector3(-dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, -dspins[CHS_ZSZ]->value() / 2.0);
+        translation[0] = Vector3(-dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, 0.0);
+        translation[1] = Vector3(-dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[TRK_WDT]->value()) / 2.0, 0.0);
 
         for(int i = 0; i < 2;++i) {
             MappingPtr node = new Mapping;
@@ -1214,8 +1228,10 @@ void CrawlerGenerator::Impl::writeAGXBody(Listing* linksNode)
         {
             static const char* name[] = { "SPACER_LF", "SPACER_RF" };
             Vector3 translation[2];
-            translation[0] = Vector3(dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
-            translation[1] = Vector3(dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            // translation[0] = Vector3(dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            // translation[1] = Vector3(dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            translation[0] = Vector3(dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), 0.0);
+            translation[1] = Vector3(dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), 0.0);
 
             for(int i = 0; i < 2; ++i) {
                 MappingPtr node = new Mapping;
@@ -1283,6 +1299,8 @@ void CrawlerGenerator::Impl::writeAGXBody(Listing* linksNode)
             static const char* name[] = { "ROLLER_LF", "ROLLER_RF" };
             static const char* parent[] = { "SPACER_LF", "SPACER_RF" };
             Vector3 translation[2];
+            // translation[0] = Vector3(dspins[FFL_WBS]->value() / 2.0,  (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0);
+            // translation[1] = Vector3(dspins[FFL_WBS]->value() / 2.0, -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0);
             translation[0] = Vector3(dspins[FFL_WBS]->value() / 2.0,  (dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0);
             translation[1] = Vector3(dspins[FFL_WBS]->value() / 2.0, -(dspins[SPC_WDT]->value() + dspins[FFL_WDT]->value()) / 2.0, 0.0);
 
@@ -1325,8 +1343,10 @@ void CrawlerGenerator::Impl::writeAGXBody(Listing* linksNode)
         {
             static const char* name[] = { "SPACER_LR", "SPACER_RR" };
             Vector3 translation[2];
-            translation[0] = Vector3(-dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
-            translation[1] = Vector3(-dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            // translation[0] = Vector3(-dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            // translation[1] = Vector3(-dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), -dspins[CHS_ZSZ]->value() / 2.0);
+            translation[0] = Vector3(-dspins[TRK_WBS]->value() / 2.0,  (dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 + dspins[TRK_WDT]->value(), 0.0);
+            translation[1] = Vector3(-dspins[TRK_WBS]->value() / 2.0, -(dspins[CHS_YSZ]->value() + dspins[SPC_WDT]->value()) / 2.0 - dspins[TRK_WDT]->value(), 0.0);
 
             for(int i = 0; i < 2; ++i) {
                 MappingPtr node = new Mapping;

@@ -5,7 +5,7 @@ name: MonoCrawlerNA
 links:
   -
     name: CHASSIS
-    translation: [ 0, 0, 0.2 ]
+    translation: [ 0, 0, 0.1 ]
     jointType: free
     centerOfMass: [ 0, 0, 0 ]
     mass: 50
@@ -18,7 +18,7 @@ links:
   -
     name: TRACK_L
     parent: CHASSIS
-    translation: [ 0, 0.2, -0.05 ]
+    translation: [ 0, 0.2, 0 ]
     jointType: &A0 fixed
     centerOfMass: &A1 [ 0, 0, 0 ]
     mass: &A2 0.333333
@@ -47,7 +47,7 @@ links:
   -
     name: TRACK_R
     parent: CHASSIS
-    translation: [ 0, -0.2, -0.05 ]
+    translation: [ 0, -0.2, 0 ]
     jointType: *A0
     centerOfMass: *A1
     mass: *A2
@@ -75,7 +75,7 @@ links:
         nodesToWheelsSplitThreshold: -0.05
   -
     name: SPROCKET_L
-    translation: [ 0.25, 0.2, -0.05 ]
+    translation: [ 0.25, 0.2, 0 ]
     jointId: 0
     parent: &A4 CHASSIS
     jointType: &A5 revolute
@@ -91,7 +91,7 @@ links:
         appearance: { material: { diffuseColor: [ 1, 1, 1 ] } }
   -
     name: SPROCKET_R
-    translation: [ 0.25, -0.2, -0.05 ]
+    translation: [ 0.25, -0.2, 0 ]
     jointId: 1
     parent: *A4
     jointType: *A5
@@ -103,7 +103,7 @@ links:
     elements: *A11
   -
     name: ROLLER_L
-    translation: [ 0, 0.2, -0.05 ]
+    translation: [ 0, 0.2, 0 ]
     jointId: 2
     parent: &A12 CHASSIS
     jointType: &A13 revolute
@@ -119,7 +119,7 @@ links:
         appearance: { material: { diffuseColor: [ 1, 1, 1 ] } }
   -
     name: ROLLER_R
-    translation: [ 0, -0.2, -0.05 ]
+    translation: [ 0, -0.2, 0 ]
     jointId: 3
     parent: *A12
     jointType: *A13
@@ -131,7 +131,7 @@ links:
     elements: *A19
   -
     name: IDLER_L
-    translation: [ -0.25, 0.2, -0.05 ]
+    translation: [ -0.25, 0.2, 0 ]
     jointId: 4
     parent: &A20 CHASSIS
     jointType: &A21 revolute
@@ -147,7 +147,7 @@ links:
         appearance: { material: { diffuseColor: [ 1, 1, 1 ] } }
   -
     name: IDLER_R
-    translation: [ -0.25, -0.2, -0.05 ]
+    translation: [ -0.25, -0.2, 0 ]
     jointId: 5
     parent: *A20
     jointType: *A21
@@ -159,7 +159,7 @@ links:
     elements: *A27
   -
     name: SPACER_LF
-    translation: [ 0.25, 0.2565, -0.05 ]
+    translation: [ 0.25, 0.2565, 0 ]
     jointId: 6
     parent: &A28 CHASSIS
     jointType: &A29 revolute
@@ -174,7 +174,7 @@ links:
         appearance: { material: { diffuseColor: [ 1, 0, 0 ] } }
   -
     name: SPACER_RF
-    translation: [ 0.25, -0.2565, -0.05 ]
+    translation: [ 0.25, -0.2565, 0 ]
     jointId: 7
     parent: *A28
     jointType: *A29
