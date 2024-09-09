@@ -3,8 +3,11 @@
     @author Kenta Suzuki
  */
 
-#include <cnoid/SimpleController>
 #include <cnoid/SharedJoystick>
+#include <cnoid/SimpleController>
+#include <cnoid/SpotLight>
+#include <cnoid/RangeCamera>
+#include <cnoid/RangeSensor>
 
  using namespace std;
  using namespace cnoid;
@@ -20,6 +23,20 @@ class MonoCrawlerJoystickController : public SimpleController
     double qref[2];
     double qprev[2];
     double dt;
+
+    struct DeviceInfo {
+        DevicePtr device;
+        int buttonId;
+        bool prevButtonState;
+        bool stateChanged;
+        DeviceInfo(Device* device, int buttonId)
+            : device(device),
+              buttonId(buttonId),
+              prevButtonState(false),
+              stateChanged(false)
+        { }
+    };
+    vector<DeviceInfo> devices;
 
     SharedJoystickPtr joystick;
     int targetMode;
@@ -39,11 +56,11 @@ public:
             if(opt == "wheel") {
                 usePseudoContinousTrackMode = false;
             }
-            if(opt == "position"){
+            if(opt == "position") {
                 spacerActuationMode = Link::JointDisplacement;
                 os << "The joint-position command mode is used." << endl;
             }
-            if(opt == "velocity"){
+            if(opt == "velocity") {
                 spacerActuationMode = Link::JointVelocity;
                 os << "The joint-velocity command mode is used." << endl;
             }
@@ -85,6 +102,20 @@ public:
         }
 
         dt = io->timeStep();
+
+        devices = {
+            {     body->findDevice<SpotLight>("LEFT_LIGHT"), Joystick::A_BUTTON },
+            {    body->findDevice<SpotLight>("RIGHT_LIGHT"), Joystick::A_BUTTON },
+            {  body->findDevice<RangeCamera>("LEFT_KINECT"), Joystick::B_BUTTON },
+            { body->findDevice<RangeCamera>("RIGHT_KINECT"), Joystick::B_BUTTON },
+            {       body->findDevice<RangeSensor>("VLP-16"), Joystick::Y_BUTTON }
+        };
+
+        // Turn on all the devices
+        for(auto& device : devices) {
+            device.device->on(true);
+            device.device->notifyStateChange();
+        }
 
         joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
         targetMode = joystick->addMode();
@@ -152,6 +183,33 @@ public:
                 dqref = deltaq / dt;
                 joint->u() = P * (qref[i] - q) + D * (dqref - dq);
                 qprev[i] = q;
+            }
+        }
+
+        for(auto& info : devices) {
+            if(info.device) {
+                bool stateChanged = false;
+                bool buttonState = joystick->getButtonState(targetMode, info.buttonId);
+                if(buttonState && !info.prevButtonState) {
+                    info.device->on(!info.device->on());
+                    stateChanged = true;
+                }
+                auto spotLight = dynamic_pointer_cast<SpotLight>(info.device);
+                if(spotLight) {
+                    if(joystick->getPosition(targetMode, Joystick::R_TRIGGER_AXIS) > 0.1) {
+                        spotLight->setBeamWidth(
+                            std::max(0.1f, spotLight->beamWidth() - 0.001f));
+                        stateChanged = true;
+                    } else if(joystick->getButtonState(targetMode, Joystick::R_BUTTON)) {
+                        spotLight->setBeamWidth(
+                            std::min(0.7854f, spotLight->beamWidth() + 0.001f));
+                        stateChanged = true;
+                    }
+                }
+                info.prevButtonState = buttonState;
+                if(stateChanged) {
+                    info.device->notifyStateChange();
+                }
             }
         }
 
