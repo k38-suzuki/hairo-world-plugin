@@ -43,7 +43,6 @@ public:
     Signal<void()> sigLocationChanged_;
 
     SceneLocation(SimpleColliderItem::Impl* impl);
-    virtual Item* getCorrespondingItem() override;
     virtual Isometry3 getLocation() const override;
     virtual bool setLocation(const Isometry3& T) override;
     virtual SignalProxy<void()> sigLocationChanged() override;
@@ -673,16 +672,10 @@ void SimpleColliderItem::onDisconnectedFromRoot()
 
 
 SceneLocation::SceneLocation(SimpleColliderItem::Impl* impl)
-    : LocationProxy(GlobalLocation),
+    : LocationProxy(impl->self, GlobalLocation),
       impl(impl)
 {
 
-}
-
-
-Item* SceneLocation::getCorrespondingItem()
-{
-    return impl->self;
 }
 
 
