@@ -427,3 +427,66 @@ links:
     mass: *A57
     inertia: *A58
     elements: *A59
+  -
+    &WIRE_GUARD_MAIN
+    name: WIRE_GUARD_L
+    parent: CHASSIS
+    jointType: fixed
+    translation: [ 0, 0.2, 0 ]
+    mass: 0.001
+    inertia: [
+      0.001, 0, 0,
+      0, 0.001, 0,
+      0, 0, 0.001 ]
+    elements:
+      Collision:
+        shape:
+          geometry: { type: Box, size: [ 0.7, 0.12, 0.22 ] }
+          appearance: &GUARD_COLOR { material: { diffuseColor: [ 0, 1, 0 ], transparency: 0.6 } }
+  -
+    <<: *WIRE_GUARD_MAIN
+    name: WIRE_GUARD_R
+    translation: [ 0, -0.2, 0 ]
+  -
+    &WIRE_GUARD_SUB
+    name: WIRE_GUARD_LF
+    parent: SPACER_LF
+    jointType: fixed
+    translation: [ 0.125, 0.047, 0 ]
+    mass: 0.001
+    inertia: [
+      0.001, 0, 0,
+      0, 0.001, 0,
+      0, 0, 0.001 ]
+    elements:
+      Collision:
+        shape:
+          geometry: { type: Box, size: [ 0.48, 0.09, 0.22 ] }
+          appearance: *GUARD_COLOR
+  -
+    <<: *WIRE_GUARD_SUB
+    name: WIRE_GUARD_RF
+    parent: SPACER_RF
+    translation: [ 0.125, -0.047, 0 ]
+
+# TODO: Share the following information with other MonoCrawler models
+collisionDetection:
+  excludeTreeDepth: 1
+  excludeSelfCollisionLinks: [
+    SPROCKET_L, ROLLER_L, IDLER_L,
+    SPROCKET_R, ROLLER_R, IDLER_R,
+    ROLLER_LF, IDLER_LF,
+    ROLLER_RF, IDLER_RF ]
+  excludeLinkGroups:
+    -
+      name: ChassisGroup
+      links: [
+        CHASSIS,
+        SPACER_LF, SPROCKET_LF,
+        SPACER_RF, SPROCKET_RF ]
+  excludeLinksWireCollision: [
+    SPROCKET_L, ROLLER_L, IDLER_L,
+    SPROCKET_R, ROLLER_R, IDLER_R,
+    SPROCKET_LF, ROLLER_LF, IDLER_LF,
+    SPROCKET_RF, ROLLER_RF, IDLER_RF ]
+  excludeLinksDynamic: [ WIRE_GUARD_L, WIRE_GUARD_R, WIRE_GUARD_LF, WIRE_GUARD_RF ]
