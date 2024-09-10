@@ -19,6 +19,7 @@
 #include <cnoid/SimpleControllerItem>
 #include <cnoid/SubProjectItem>
 #include <cnoid/ToolButton>
+#include <cnoid/UTF8>
 #include <cnoid/WorldItem>
 #include <cnoid/YAMLReader>
 #include <src/BodyPlugin/WorldLogFileItem.h>
@@ -61,7 +62,8 @@ public:
     vector<ProjectInfo> projectInfo;
     bool is_initialized;
 
-    void onSigOptionsParsed();
+    void onUtilOptionsParsed();
+    void onInputFileOptionsParsed(vector<string>& inputFiles);
 
     bool load(const string& filename, ostream& os = nullout());
     void update();
@@ -113,9 +115,10 @@ WRSUtilBar::Impl::Impl(WRSUtilBar* self)
 
     auto om = OptionManager::instance();
     om->add_option("--wrs-util", projectToExecute, "execute registered project");
-
+    om->sigInputFileOptionsParsed().connect(
+        [this](vector<string>& inputFiles){ onInputFileOptionsParsed(inputFiles); });
     om->sigOptionsParsed(1).connect(
-        [&](OptionManager*){ onSigOptionsParsed(); });
+        [&](OptionManager*){ onUtilOptionsParsed(); });
 
     projectCombo = new ComboBox;
     projectCombo->setToolTip(_("Select project"));
@@ -164,7 +167,7 @@ void WRSUtilBar::Impl::update()
 }
 
 
-void WRSUtilBar::Impl::onSigOptionsParsed()
+void WRSUtilBar::Impl::onUtilOptionsParsed()
 {
     for(auto& project : projectToExecute) {
         for(int i = 0; i < projectCombo->count(); ++i) {
@@ -173,6 +176,21 @@ void WRSUtilBar::Impl::onSigOptionsParsed()
                 projectCombo->setCurrentIndex(i);
                 onOpenButtonClicked();
             }
+        }
+    }
+}
+
+
+void WRSUtilBar::Impl::onInputFileOptionsParsed(vector<string>& inputFiles)
+{
+    auto it = inputFiles.begin();
+    while(it != inputFiles.end()) {
+        if(filesystem::path(fromUTF8(*it)).extension().string() == ".yaml") {
+            self->setRegistrationFile(*it);
+            self->update();
+            it = inputFiles.erase(it);
+        } else {
+            ++it;
         }
     }
 }
