@@ -36,12 +36,30 @@ vector<string> projectToExecute;
 struct ProjectInfo {
     string name;
     string view_project;
+    string robot_alignment;
     vector<string> task_projects;
     vector<string> simulator_projects;
     vector<string> robot_projects;
     bool is_recording_enabled;
     bool is_ros_enabled;
     Vector3 start_position;
+};
+
+struct AlignmentInfo {
+    Vector3 R;
+    int offset_id;
+    double offset_value;
+};
+
+AlignmentInfo alignmentInfo[] = {
+    {   Vector3(0.0, 0.0, 0.0), 1,  1.5 },
+    { Vector3(0.0, 0.0, 180.0), 1, -1.5 },
+    {  Vector3(0.0, 0.0, 90.0), 0, -1.5 },
+    { Vector3(0.0, 0.0, -90.0), 0,  1.5 },
+    {   Vector3(0.0, 0.0, 0.0), 2, -1.5 },
+    { Vector3(0.0, 0.0, 180.0), 2, -1.5 },
+    {  Vector3(0.0, 0.0, 90.0), 2, -1.5 },
+    { Vector3(0.0, 0.0, -90.0), 2, -1.5 },
 };
 
 }
@@ -218,6 +236,9 @@ bool WRSUtilBar::Impl::load(const string& filename, ostream& os)
                     string view = node->get("view_project", "");
                     info.view_project = view;
 
+                    string robot_alignment = node->get("robot_alignment", "X+");
+                    info.robot_alignment = robot_alignment;
+
                     auto& taskList = *node->findListing("task_project");
                     if(taskList.isValid()) {
                         for(int j = 0; j < taskList.size(); ++j) {
@@ -311,6 +332,26 @@ void WRSUtilBar::Impl::onOpenButtonClicked()
 
     Vector3 offset = info.start_position * -1.0;
 
+    string alignment = info.robot_alignment;
+    AlignmentInfo selectedInfo;
+    if(alignment == "X+") {
+        selectedInfo = alignmentInfo[0];
+    } else if(alignment == "X-") {
+        selectedInfo = alignmentInfo[1];
+    } else if(alignment == "Y+") {
+        selectedInfo = alignmentInfo[2];
+    } else if(alignment == "Y-") {
+        selectedInfo = alignmentInfo[3];
+    } else if(alignment == "X+Z+") {
+        selectedInfo = alignmentInfo[4];
+    } else if(alignment == "X-Z+") {
+        selectedInfo = alignmentInfo[5];
+    } else if(alignment == "Y+Z+") {
+        selectedInfo = alignmentInfo[6];
+    } else if(alignment == "Y-Z+") {
+        selectedInfo = alignmentInfo[7];
+    }
+
     for(auto& project : info.robot_projects) {
         ItemList<BodyItem> loadedItems = projectManager->loadProject(project_dir + "/" + project + ".cnoid", worldItem);
         BodyItem* robotItem = nullptr;
@@ -326,9 +367,11 @@ void WRSUtilBar::Impl::onOpenButtonClicked()
             auto p = rootLink->translation();
             p -= offset;
             rootLink->setTranslation(p);
+            rootLink->setRotation(rotFromRpy(radian(selectedInfo.R)));
             robotItem->notifyKinematicStateChange(true);
             robotItem->storeInitialState();
-            offset[1] += 1.5;
+            // offset[1] += 1.5;
+            offset[selectedInfo.offset_id] += selectedInfo.offset_value;
 
             if(info.is_ros_enabled) {
                 auto controllerItem = new SimpleControllerItem;
