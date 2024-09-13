@@ -1477,7 +1477,7 @@ MappingPtr CrawlerGenerator::Impl::writeAGXTrackBelt()
     node->write("nodeWidth", agxdspins[TRK_BNW]->value());
     node->write("nodeThickerThickness", agxdspins[TRK_BNTT]->value());
     node->write("useThickerNodeEvery", agxspins[TRK_BUTNE]->value());
-    node->write("material", "robotTracks");
+    node->write("material", "AizuSpiderTracks");
     node->write("nodeDistanceTension", agxdspins[TRK_BNDTM]->value() * exp10(-agxspins[TRK_BNDTE]->value()));
     node->write("stabilizingHingeFrictionParameter", agxdspins[TRK_BSHFPM]->value() * exp10(-agxspins[TRK_BSHFPE]->value()));
     node->write("minStabilizingHingeNormalForce", agxspins[TRK_BMSHNF]->value());
@@ -1558,7 +1558,7 @@ MappingPtr CrawlerGenerator::Impl::writeAGXSubTrackBelt()
     node->write("nodeWidth", agxdspins[FLP_BNW]->value());
     node->write("nodeThickerThickness", agxdspins[FLP_BNTT]->value());
     node->write("useThickerNodeEvery", agxspins[FLP_BUTNE]->value());
-    node->write("material", "robotTracks");
+    node->write("material", "AizuSpiderTracks");
     node->write("nodeDistanceTension", agxdspins[FLP_BNDTM]->value() * exp10(-agxspins[FLP_BNDTE]->value()));
     node->write("stabilizingHingeFrictionParameter", agxdspins[FLP_BSHFPM]->value() * exp10(-agxspins[FLP_BSHFPE]->value()));
     node->write("minStabilizingHingeNormalForce", agxspins[FLP_BMSHNF]->value());
@@ -1728,7 +1728,7 @@ MappingPtr CrawlerGenerator::Impl::writeAGXWheel()
     node->write("jointType", "revolute");
     node->write("jointAxis", "Y");
     write(node, "centerOfMass", Vector3(0.0, 0.0, 0.0));
-    node->write("material", "robotWheel");
+    node->write("material", "AizuSpiderWheel");
 
     return node;
 }
