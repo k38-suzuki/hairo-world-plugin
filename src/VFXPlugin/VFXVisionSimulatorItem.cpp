@@ -43,10 +43,11 @@ public:
     ItemList<MultiColliderItem> colliders;
     enum DynamicsId { RANDOM_SALT_ONLY, RANDOM_MOSAIC_ONLY, ALL_PROCESS };
     Selection dynamicsSelection;
+    SimulatorItem* simulatorItem;
     std::mutex convertMutex;
     VFXConverter converter;
     string vfx_event_file_path;
-    VFXEventReader* event;
+    vector<VFXEvent> events;
 };
 
 }
@@ -76,7 +77,8 @@ VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self)
     dynamicsSelection.setSymbol(RANDOM_MOSAIC_ONLY, N_("Random mosaic only"));
     dynamicsSelection.setSymbol(ALL_PROCESS, N_("All process"));
     dynamicsSelection.select(RANDOM_SALT_ONLY);
-    event = nullptr;
+    simulatorItem = nullptr;
+    events.clear();
 }
 
 
@@ -117,10 +119,14 @@ bool VFXVisionSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulator
 {
     cameras.clear();
     colliders.clear();
+    this->simulatorItem = simulatorItem;
+    events.clear();
 
     if(!vfx_event_file_path.empty()) {
-        event = new VFXEventReader;
-        event->load(vfx_event_file_path);
+        VFXEventReader reader;
+        if(reader.load(vfx_event_file_path)) {
+            events = reader.events();
+        }
     }
 
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
@@ -161,6 +167,8 @@ bool VFXVisionSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulator
 
 void VFXVisionSimulatorItem::Impl::onPostDynamics()
 {
+    double current_time = simulatorItem->currentTime();
+
     for(auto& camera : cameras) {
         Link* link = camera->link();
         double salt_amount = 0.0;
@@ -176,6 +184,22 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
             if(collision(collider, link->T().translation())) {
                 salt_amount = collider->saltAmount();
                 salt_chance = collider->saltChance();
+            }
+
+            for(auto& event : events) {
+                for(auto& target_collider : event.targetColliders()) {
+                    if(target_collider == collider->name()) {
+                        double begin_time = event.beginTime();
+                        double end_time = std::max({ event.endTime(), event.beginTime() + event.duration() });                        
+                        bool is_event_enabled = current_time >= begin_time ? true: false;
+                        is_event_enabled = current_time >= end_time ? false : is_event_enabled;
+
+                        if(is_event_enabled) {
+                            salt_amount = event.saltAmount() > 0.0 ? event.saltAmount() : salt_amount;
+                            salt_chance = event.saltChance() > 0.0 ? event.saltChance() : salt_chance;
+                        }
+                    }
+                }
             }
         }
 
@@ -196,6 +220,8 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
 
 void VFXVisionSimulatorItem::Impl::onPostDynamics2()
 {
+    double current_time = simulatorItem->currentTime();
+
     for(auto& camera : cameras) {
         Link* link = camera->link();
         double mosaic_chance = 0.0;
@@ -211,6 +237,22 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics2()
             if(collision(collider, link->T().translation())) {
                 mosaic_chance = collider->mosaicChance();
                 kernel = collider->kernel();
+            }
+
+            for(auto& event : events) {
+                for(auto& target_collider : event.targetColliders()) {
+                    if(target_collider == collider->name()) {
+                        double begin_time = event.beginTime();
+                        double end_time = std::max({ event.endTime(), event.beginTime() + event.duration() });                        
+                        bool is_event_enabled = current_time >= begin_time ? true: false;
+                        is_event_enabled = current_time >= end_time ? false : is_event_enabled;
+
+                        if(is_event_enabled) {
+                            mosaic_chance = event.mosaicChance() > 0.0 ? event.mosaicChance() : mosaic_chance;
+                            kernel = event.kernel() != 16 ? event.kernel() : kernel;
+                        }
+                    }
+                }
             }
         }
 
@@ -229,6 +271,8 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics2()
 
 void VFXVisionSimulatorItem::Impl::onPostDynamics3()
 {
+    double current_time = simulatorItem->currentTime();
+
     for(auto& camera : cameras) {
         Link* link = camera->link();
         double hue = 0.0;
@@ -283,6 +327,35 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics3()
                 pepper_chance = collider->pepperChance();
                 mosaic_chance = collider->mosaicChance();
                 kernel = collider->kernel();
+            }
+
+            for(auto& event : events) {
+                for(auto& target_collider : event.targetColliders()) {
+                    if(target_collider == collider->name()) {
+                        double begin_time = event.beginTime();
+                        double end_time = std::max({ event.endTime(), event.beginTime() + event.duration() });                        
+                        bool is_event_enabled = current_time >= begin_time ? true: false;
+                        is_event_enabled = current_time >= end_time ? false : is_event_enabled;
+
+                        if(is_event_enabled) {
+                            hue = event.hsv()[0] > 0.0 ? event.hsv()[0] : hue;
+                            saturation = event.hsv()[1] > 0.0 ? event.hsv()[1] : saturation;
+                            value = event.hsv()[2] > 0.0 ? event.hsv()[2] : value;
+                            red = event.rgb()[0] > 0.0 ? event.rgb()[0] : red;
+                            green = event.rgb()[1] > 0.0 ? event.rgb()[1] : green;
+                            blue = event.rgb()[2] > 0.0 ? event.rgb()[2] : blue;
+                            coef_b = event.coefB() < 0.0 ? event.coefB() : coef_b;
+                            coef_d = event.coefD() > 1.0 ? event.coefD() : coef_d;
+                            std_dev = event.stdDev() > 0.0 ? event.stdDev() : std_dev;
+                            salt_amount = event.saltAmount() > 0.0 ? event.saltAmount() : salt_amount;
+                            salt_chance = event.saltChance() > 0.0 ? event.saltChance() : salt_chance;
+                            pepper_amount = event.pepperAmount() > 0.0 ? event.pepperAmount() : pepper_amount;
+                            pepper_chance = event.pepperChance() > 0.0 ? event.pepperChance() : pepper_chance;
+                            mosaic_chance = event.mosaicChance() > 0.0 ? event.mosaicChance() : mosaic_chance;
+                            kernel = event.kernel() != 16 ? event.kernel() : kernel;
+                        }
+                    }
+                }
             }
         }
 

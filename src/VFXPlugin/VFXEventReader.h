@@ -24,10 +24,9 @@ public:
     void setEndTime(const double& end_time) { end_time_ = end_time; }
     double duration() { return duration_; }
     void setDuration(const double& duration) { duration_ = duration; }
+    std::vector<std::string> targetColliders() { return target_colliders_; }
     void addTargetCollider(const std::string& target_collider) { target_colliders_.push_back(target_collider); }
     void clearTargetCollider() { target_colliders_.clear(); }
-    bool isOccurred() { return is_occurred_; }
-    void setOccurred(bool is_occurred) { is_occurred_ = is_occurred; };
 
 private:
     std::string name_;
@@ -35,7 +34,6 @@ private:
     double end_time_;
     double duration_;
     std::vector<std::string> target_colliders_;
-    bool is_occurred_;
 };
 
 class VFXEventReader

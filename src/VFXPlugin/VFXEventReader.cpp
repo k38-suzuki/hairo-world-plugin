@@ -23,7 +23,6 @@ VFXEvent::VFXEvent()
     end_time_ = 0.0;
     duration_ = 0.0;
     target_colliders_.clear();
-    is_occurred_ = false;
 }
 
 
@@ -35,7 +34,6 @@ VFXEvent::VFXEvent(const VFXEvent& org)
     end_time_ = org.end_time_;
     duration_ = org.duration_;
     target_colliders_ = org.target_colliders_;
-    is_occurred_ = org.is_occurred_;    
 }
 
 

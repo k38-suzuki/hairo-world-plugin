@@ -21,10 +21,10 @@ namespace {
 vector<GeneralSliderView::SliderPtr> sliders;
 
 static const double effect_range[11][2] = {
-    {  0.0, 1.0 }, { -1.0,  1.0 }, { -1.0, 1.0 },
-    { -1.0, 1.0 }, { -1.0,  1.0 }, { -1.0, 1.0 },
-    { -1.0, 0.0 }, {  1.0, 32.0 },
-    {  0.0, 1.0 }, {  0.0,  1.0 }, {  0.0, 1.0 }
+    {  0.0, 1.0 }, { 0.0,  1.0 }, { 0.0, 1.0 },
+    {  0.0, 1.0 }, { 0.0,  1.0 }, { 0.0, 1.0 },
+    { -1.0, 0.0 }, { 1.0, 32.0 },
+    {  0.0, 1.0 }, { 0.0,  1.0 }, { 0.0, 1.0 }
 };
 
 void onSelectedItemChanged(const ItemList<>& selectedItems)
