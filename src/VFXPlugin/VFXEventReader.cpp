@@ -22,7 +22,9 @@ VFXEvent::VFXEvent()
     begin_time_ = 0.0;
     end_time_ = 0.0;
     duration_ = 0.0;
+    cycle_ << 0.0, 0.0;
     target_colliders_.clear();
+    is_enabled_ = false;
 }
 
 
@@ -33,7 +35,9 @@ VFXEvent::VFXEvent(const VFXEvent& org)
     begin_time_ = org.begin_time_;
     end_time_ = org.end_time_;
     duration_ = org.duration_;
+    cycle_ = org.cycle_;
     target_colliders_ = org.target_colliders_;
+    is_enabled_ = org.is_enabled_;
 }
 
 
@@ -108,12 +112,12 @@ bool VFXEventReader::Impl::load(const string& filename, ostream& os)
                     VFXEvent event;
 
                     Vector3 hsv;
-                    if(!read(node, "hsv", hsv)) {
+                    if(read(node, "hsv", hsv)) {
                         event.setHsv(hsv);
                     }
 
                     Vector3 rgb;
-                    if(!read(node, "rgb", rgb)) {
+                    if(read(node, "rgb", rgb)) {
                         event.setRgb(rgb);
                     }
 
@@ -131,6 +135,11 @@ bool VFXEventReader::Impl::load(const string& filename, ostream& os)
                     event.setBeginTime(node->get("begin_time", 0.0));
                     event.setEndTime(node->get("end_time", 0.0));
                     event.setDuration(node->get("duration", 0.0));
+
+                    Vector2 cycle;
+                    if(read(node, "cycle", cycle)) {
+                        event.setCycle(cycle);
+                    }
 
                     auto& colliderList = *node->findListing("target_collider");
                     if(colliderList.isValid()) {

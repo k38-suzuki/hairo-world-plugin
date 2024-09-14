@@ -261,7 +261,7 @@ bool WRSUtilBar::Impl::load(const string& filename, ostream& os)
                         info.robot_projects.push_back(robot);
                     }
 
-                    if(!read(node, "start_position", info.start_position)) {
+                    if(read(node, "start_position", info.start_position)) {
 
                     }
 

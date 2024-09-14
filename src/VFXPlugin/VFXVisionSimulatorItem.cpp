@@ -37,7 +37,6 @@ public:
     void onPostDynamics3();
     bool setDynamicsType(int dynamicsId);
     double dynamicsType() const;
-    void setVFXEventFile(const string& filename);
 
     DeviceList<Camera> cameras;
     ItemList<MultiColliderItem> colliders;
@@ -190,9 +189,17 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
                 for(auto& target_collider : event.targetColliders()) {
                     if(target_collider == collider->name()) {
                         double begin_time = event.beginTime();
-                        double end_time = std::max({ event.endTime(), event.beginTime() + event.duration() });                        
+                        double end_time = std::max({ event.endTime(), event.beginTime() + event.duration() });
                         bool is_event_enabled = current_time >= begin_time ? true: false;
                         is_event_enabled = current_time >= end_time ? false : is_event_enabled;
+                        Vector2 cycle = event.cycle();
+                        if(cycle[0] > 0.0 && cycle[1] > 0.0) {
+                            if(!is_event_enabled && event.isEnabled()) {
+                                event.setBeginTime(end_time + cycle[1]);
+                                event.setEndTime(end_time + cycle[0] + cycle[1]);
+                            }
+                        }
+                        event.setEnabled(is_event_enabled);
 
                         if(is_event_enabled) {
                             salt_amount = event.saltAmount() > 0.0 ? event.saltAmount() : salt_amount;
@@ -243,9 +250,17 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics2()
                 for(auto& target_collider : event.targetColliders()) {
                     if(target_collider == collider->name()) {
                         double begin_time = event.beginTime();
-                        double end_time = std::max({ event.endTime(), event.beginTime() + event.duration() });                        
+                        double end_time = std::max({ event.endTime(), event.beginTime() + event.duration() });
                         bool is_event_enabled = current_time >= begin_time ? true: false;
                         is_event_enabled = current_time >= end_time ? false : is_event_enabled;
+                        Vector2 cycle = event.cycle();
+                        if(cycle[0] > 0.0 && cycle[1] > 0.0) {
+                            if(!is_event_enabled && event.isEnabled()) {
+                                event.setBeginTime(end_time + cycle[1]);
+                                event.setEndTime(end_time + cycle[0] + cycle[1]);
+                            }
+                        }
+                        event.setEnabled(is_event_enabled);
 
                         if(is_event_enabled) {
                             mosaic_chance = event.mosaicChance() > 0.0 ? event.mosaicChance() : mosaic_chance;
@@ -333,9 +348,17 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics3()
                 for(auto& target_collider : event.targetColliders()) {
                     if(target_collider == collider->name()) {
                         double begin_time = event.beginTime();
-                        double end_time = std::max({ event.endTime(), event.beginTime() + event.duration() });                        
+                        double end_time = std::max({ event.endTime(), event.beginTime() + event.duration() });
                         bool is_event_enabled = current_time >= begin_time ? true: false;
                         is_event_enabled = current_time >= end_time ? false : is_event_enabled;
+                        Vector2 cycle = event.cycle();
+                        if(cycle[0] > 0.0 && cycle[1] > 0.0) {
+                            if(!is_event_enabled && event.isEnabled()) {
+                                event.setBeginTime(end_time + cycle[1]);
+                                event.setEndTime(end_time + cycle[0] + cycle[1]);
+                            }
+                        }
+                        event.setEnabled(is_event_enabled);
 
                         if(is_event_enabled) {
                             hue = event.hsv()[0] > 0.0 ? event.hsv()[0] : hue;
@@ -410,15 +433,6 @@ double VFXVisionSimulatorItem::Impl::dynamicsType() const
 }
 
 
-void VFXVisionSimulatorItem::Impl::setVFXEventFile(const string& filename)
-{
-    if(filename != vfx_event_file_path) {
-        vfx_event_file_path = nullptr;
-        vfx_event_file_path = filename;
-    }
-}
-
-
 Item* VFXVisionSimulatorItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new VFXVisionSimulatorItem(*this);
@@ -461,7 +475,7 @@ bool VFXVisionSimulatorItem::restore(const Archive& archive)
     if(archive.read("vfx_event_file_path", symbol)) {
         symbol = archive.resolveRelocatablePath(symbol);
         if(!symbol.empty()) {
-            impl->setVFXEventFile(symbol);
+            impl->vfx_event_file_path = symbol;
         }
     }
     return true;
