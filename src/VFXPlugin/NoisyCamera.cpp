@@ -85,9 +85,9 @@ const double* NoisyCamera::readState(const double* buf)
     setCoefD(buf[7]);
     setStdDev(buf[8]);
     setSaltAmount(buf[9]);
-    setSaltRate(buf[10]);
+    setSaltChance(buf[10]);
     setPepperAmount(buf[11]);
-    setPepperRate(buf[12]);
+    setPepperChance(buf[12]);
     setMosaicChance(buf[13]);
     setKernel(buf[14]);
     return buf + 15;
@@ -129,9 +129,9 @@ bool NoisyCamera::readSpecifications(const Mapping* info)
     setCoefD(info->get({ "coef_d", "coefD" }, 1.0));
     setStdDev(info->get({ "std_dev", "stdDev" }, 0.0));
     setSaltAmount(info->get({ "salt_amount", "saltAmount" }, 0.0));
-    setSaltRate(info->get({ "salt_chance", "saltChance" }, 0.0));
+    setSaltChance(info->get({ "salt_chance", "saltChance" }, 0.0));
     setPepperAmount(info->get({ "pepper_amount", "pepperAmount" }, 0.0));
-    setPepperRate(info->get({ "pepper_chance", "pepperChance" }, 0.0));
+    setPepperChance(info->get({ "pepper_chance", "pepperChance" }, 0.0));
     setMosaicChance(info->get({ "mosaic_chance", "mosaicChance" }, 0.0));
     setKernel(info->get("kernel", 16));
 
@@ -173,9 +173,9 @@ void NoisyCamera::copyNoisyCameraStateFrom(const NoisyCamera& other, bool doCopy
     setCoefD(other.coefD());
     setStdDev(other.stdDev());
     setSaltAmount(other.saltAmount());
-    setSaltRate(other.saltChance());
+    setSaltChance(other.saltChance());
     setPepperAmount(other.pepperAmount());
-    setPepperRate(other.pepperChance());
+    setPepperChance(other.pepperChance());
     setMosaicChance(other.mosaicChance());
     setKernel(other.kernel());
 }

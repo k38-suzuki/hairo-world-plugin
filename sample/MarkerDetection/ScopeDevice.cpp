@@ -95,8 +95,8 @@ ScopeDevice::ScopeDevice()
     on_ = true;
     fieldOfView_ = 65.0;
     focalLength_ = 10.0;
-    aspectRatio_ = Vector2(16.0, 9.0);
-    diffuseColor_ = Vector3(1.0, 0.0, 0.0);
+    aspectRatio_ << 16.0, 9.0;
+    diffuseColor_ << 1.0, 0.0, 0.0;
     ambientIntensity_ = 0.0;
     shininess_ = 0.0;
     transparency_ = 0.0;

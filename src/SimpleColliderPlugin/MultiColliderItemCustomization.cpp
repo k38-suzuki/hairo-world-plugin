@@ -100,7 +100,7 @@ void onSelectedItemChanged(const ItemList<>& selectedItems)
         GeneralSliderView::SliderPtr slider_salt_chance = sliderView->getOrCreateSlider(_("salt chance"), 0.0, 1.0, 2);
         slider_salt_chance->setValue(collider->saltChance());
         slider_salt_chance->setCallback([collider](double value){
-            collider->setSaltRate(value);
+            collider->setSaltChance(value);
             collider->notifyUpdate(); });
 
         GeneralSliderView::SliderPtr slider_pepper_amount = sliderView->getOrCreateSlider(_("pepper amount"), effect_range[10][0], effect_range[10][1], 2);
@@ -112,7 +112,7 @@ void onSelectedItemChanged(const ItemList<>& selectedItems)
         GeneralSliderView::SliderPtr slider_pepper_chance = sliderView->getOrCreateSlider(_("pepper chance"), 0.0, 1.0, 2);
         slider_pepper_chance->setValue(collider->pepperChance());
         slider_pepper_chance->setCallback([collider](double value){
-            collider->setPepperRate(value);
+            collider->setPepperChance(value);
             collider->notifyUpdate(); });
     
         GeneralSliderView::SliderPtr slider_mosaic_chance = sliderView->getOrCreateSlider(_("mosaic chance"), 0.0, 1.0, 2);

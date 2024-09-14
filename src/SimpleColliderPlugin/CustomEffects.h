@@ -84,11 +84,11 @@ public:
     double stdDev() const { return std_dev_; }
     void setSaltAmount(const double& salt_amount) { salt_amount_ = salt_amount; }
     double saltAmount() const { return salt_amount_; }
-    void setSaltRate(const double& salt_chance) { salt_chance_ = salt_chance; }
+    void setSaltChance(const double& salt_chance) { salt_chance_ = salt_chance; }
     double saltChance() const { return salt_chance_; }
     void setPepperAmount(const double& pepper_amount) { pepper_amount_ = pepper_amount; }
     double pepperAmount() const { return pepper_amount_; }
-    void setPepperRate(const double& pepper_chance) { pepper_chance_ = pepper_chance; }
+    void setPepperChance(const double& pepper_chance) { pepper_chance_ = pepper_chance; }
     double pepperChance() const { return pepper_chance_; }
     void setMosaicChance(const double& mosaic_chance) { mosaic_chance_ = mosaic_chance; }
     double mosaicChance() const { return mosaic_chance_; }

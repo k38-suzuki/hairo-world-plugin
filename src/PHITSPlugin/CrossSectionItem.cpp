@@ -385,11 +385,11 @@ void CrossSectionItem::Impl::updateScenePosition()
         int index = config->plainCombo->currentIndex();
         Vector3 rpy(0.0, 0.0, 0.0);
         if(index == XY) {
-            rpy = Vector3(0.0, 0.0, 0.0);
+            rpy << 0.0, 0.0, 0.0;
         } else if(index == YZ) {
-            rpy = Vector3(90.0, 0.0, 90.0);
+            rpy << 90.0, 0.0, 90.0;
         } else if(index == ZX) {
-            rpy = Vector3(90.0, -90.0, 180.0);
+            rpy << 90.0, -90.0, 180.0;
         }
         Matrix3 rotation = rotFromRpy(radian(rpy));
         scene->setRotation(rotation);

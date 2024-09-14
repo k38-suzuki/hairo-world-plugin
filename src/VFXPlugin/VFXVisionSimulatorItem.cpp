@@ -15,6 +15,7 @@
 #include <mutex>
 #include "VFXConverter.h"
 #include "NoisyCamera.h"
+#include "VFXEventReader.h"
 #include "gettext.h"
 
 using namespace std;
@@ -36,6 +37,7 @@ public:
     void onPostDynamics3();
     bool setDynamicsType(int dynamicsId);
     double dynamicsType() const;
+    void setVFXEventFile(const string& filename);
 
     DeviceList<Camera> cameras;
     ItemList<MultiColliderItem> colliders;
@@ -43,6 +45,8 @@ public:
     Selection dynamicsSelection;
     std::mutex convertMutex;
     VFXConverter converter;
+    string vfx_event_file_path;
+    VFXEventReader* event;
 };
 
 }
@@ -63,7 +67,8 @@ VFXVisionSimulatorItem::VFXVisionSimulatorItem()
 }
 
 VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self)
-    : self(self)
+    : self(self),
+      vfx_event_file_path("")
 {
     cameras.clear();
     colliders.clear();
@@ -71,6 +76,7 @@ VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self)
     dynamicsSelection.setSymbol(RANDOM_MOSAIC_ONLY, N_("Random mosaic only"));
     dynamicsSelection.setSymbol(ALL_PROCESS, N_("All process"));
     dynamicsSelection.select(RANDOM_SALT_ONLY);
+    event = nullptr;
 }
 
 
@@ -88,6 +94,7 @@ VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self, const Impl& org
     cameras.clear();
     colliders.clear();
     dynamicsSelection = org.dynamicsSelection;
+    vfx_event_file_path = org.vfx_event_file_path;
 }
 
 
@@ -110,6 +117,11 @@ bool VFXVisionSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulator
 {
     cameras.clear();
     colliders.clear();
+
+    if(!vfx_event_file_path.empty()) {
+        event = new VFXEventReader;
+        event->load(vfx_event_file_path);
+    }
 
     const vector<SimulationBody*>& simBodies = simulatorItem->simulationBodies();
     for(auto& simBody : simBodies) {
@@ -152,7 +164,7 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics()
     for(auto& camera : cameras) {
         Link* link = camera->link();
         double salt_amount = 0.0;
-        double salt_chance = 1.0;
+        double salt_chance = 0.0;
 
         NoisyCamera* noisyCamera = dynamic_cast<NoisyCamera*>(camera.get());
         if(noisyCamera) {
@@ -186,7 +198,7 @@ void VFXVisionSimulatorItem::Impl::onPostDynamics2()
 {
     for(auto& camera : cameras) {
         Link* link = camera->link();
-        double mosaic_chance = 1.0;
+        double mosaic_chance = 0.0;
         int kernel = 16;
 
         NoisyCamera* noisyCamera = dynamic_cast<NoisyCamera*>(camera.get());
@@ -325,6 +337,15 @@ double VFXVisionSimulatorItem::Impl::dynamicsType() const
 }
 
 
+void VFXVisionSimulatorItem::Impl::setVFXEventFile(const string& filename)
+{
+    if(filename != vfx_event_file_path) {
+        vfx_event_file_path = nullptr;
+        vfx_event_file_path = filename;
+    }
+}
+
+
 Item* VFXVisionSimulatorItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new VFXVisionSimulatorItem(*this);
@@ -336,6 +357,11 @@ void VFXVisionSimulatorItem::doPutProperties(PutPropertyFunction& putProperty)
     GLVisionSimulatorItem::doPutProperties(putProperty);
     putProperty(_("Dynamics type"), impl->dynamicsSelection,
                 [this](int which){ return impl->setDynamicsType(which); });
+    putProperty(_("VFX event file"), FilePathProperty(impl->vfx_event_file_path),
+                [this](const std::string& value){
+                    impl->vfx_event_file_path = value;
+                    return true;
+                });
 }
 
 
@@ -345,6 +371,7 @@ bool VFXVisionSimulatorItem::store(Archive& archive)
         return false;
     }
     archive.write("dynamics_type", impl->dynamicsSelection.selectedSymbol());
+    archive.writeRelocatablePath("vfx_event_file_path", impl->vfx_event_file_path);
     return true;
 }
 
@@ -354,9 +381,15 @@ bool VFXVisionSimulatorItem::restore(const Archive& archive)
     if(!GLVisionSimulatorItem::restore(archive)) {
         return false;
     }
-    string dynamicsId;
-    if(archive.read("dynamics_type", dynamicsId)) {
-        impl->dynamicsSelection.select(dynamicsId);
+    string symbol;
+    if(archive.read("dynamics_type", symbol)) {
+        impl->dynamicsSelection.select(symbol);
+    }
+    if(archive.read("vfx_event_file_path", symbol)) {
+        symbol = archive.resolveRelocatablePath(symbol);
+        if(!symbol.empty()) {
+            impl->setVFXEventFile(symbol);
+        }
     }
     return true;
 }

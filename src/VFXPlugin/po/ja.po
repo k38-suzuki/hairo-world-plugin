@@ -31,3 +31,9 @@ msgstr "全て"
 
 msgid "Dynamics type"
 msgstr "ダイナミクスの種類"
+
+msgid "VFX event file"
+msgstr "VFXイベントファイル"
+
+msgid "VFX events were read."
+msgstr "VFXイベントを読み込みました．"

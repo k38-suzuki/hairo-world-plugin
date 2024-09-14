@@ -194,7 +194,7 @@ void MultiColliderItem::doPutProperties(PutPropertyFunction& putProperty)
 
         putProperty.min(0.0).max(1.0)(_("salt chance"), saltChance(),
                     [this](double value){
-                        setSaltRate(value);
+                        setSaltChance(value);
                         return true;
                     });
 
@@ -206,7 +206,7 @@ void MultiColliderItem::doPutProperties(PutPropertyFunction& putProperty)
 
         putProperty.min(0.0).max(1.0)(_("pepper chance"), pepperChance(),
                     [this](double value){
-                        setPepperRate(value);
+                        setPepperChance(value);
                         return true;
                     });
 
@@ -305,9 +305,9 @@ bool MultiColliderItem::restore(const Archive& archive)
     setCoefD(archive.get("coef_d", 1.0));
     setStdDev(archive.get("std_dev", 0.0));
     setSaltAmount(archive.get("salt_amount", 0.0));
-    setSaltRate(archive.get("salt_chance", 0.0));
+    setSaltChance(archive.get("salt_chance", 0.0));
     setPepperAmount(archive.get("pepper_amount", 0.0));
-    setPepperRate(archive.get("pepper_chance", 0.0));
+    setPepperChance(archive.get("pepper_chance", 0.0));
     setMosaicChance(archive.get("mosaic_chance", 0.0));
     setKernel(archive.get("kernel", 16));
 

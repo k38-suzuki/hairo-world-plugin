@@ -3,6 +3,7 @@ set(sources
   NoisyCamera.cpp
   VFXConverter.cpp
   VFXPlugin.cpp
+  VFXEventReader.cpp
   VFXVisionSimulatorItem.cpp
 )
 
@@ -10,6 +11,7 @@ set(headers
   ImageGenerator.h
   NoisyCamera.h
   VFXConverter.h
+  VFXEventReader.h
   VFXVisionSimulatorItem.h
   exportdecl.h
 )

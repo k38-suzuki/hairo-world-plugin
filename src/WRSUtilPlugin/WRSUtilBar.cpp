@@ -221,9 +221,9 @@ bool WRSUtilBar::Impl::load(const string& filename, ostream& os)
 
     try {
         YAMLReader reader;
-        MappingPtr node = reader.loadDocument(filename)->toMapping();
-        if(node) {
-            auto& registrationList = *node->findListing("registrations");
+        auto archive = reader.loadDocument(filename)->toMapping();
+        if(archive) {
+            auto& registrationList = *archive->findListing("registrations");
             if(registrationList.isValid()) {
                 for(int i = 0; i < registrationList.size(); ++i) {
                     Mapping* node = registrationList[i].toMapping();
