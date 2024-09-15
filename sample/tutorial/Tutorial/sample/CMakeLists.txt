@@ -1,7 +1,4 @@
 choreonoid_add_simple_controller(BoxROVJoystickController BoxROVJoystickController.cpp)
 target_link_libraries(BoxROVJoystickController CnoidCFDPlugin)
 
-choreonoid_add_simple_controller(CrawlerJoystickController CrawlerJoystickController.cpp)
-
-install(FILES generator1.cnoid generator2.cnoid
-    DESTINATION ${CHOREONOID_SHARE_SUBDIR}/project)
+# choreonoid_add_simple_controller(CrawlerJoystickController CrawlerJoystickController.cpp)
