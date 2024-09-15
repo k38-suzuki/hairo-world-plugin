@@ -252,7 +252,7 @@ void CrossSectionItem::initializeClass(ExtensionManager* ext)
                 _("Dose Distribution"), "GAMMA-DATA", "gbin",
                 [](CrossSectionItem* item, const string& filename, ostream& os, Item*){ return item->impl->load(filename); });
 
-    ItemTreeView::instance()->customizeContextMenu<CrossSectionItem>(
+    ItemTreeView::customizeContextMenu<CrossSectionItem>(
         [](CrossSectionItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
             menuManager.setPath("/").setPath(_("PHITS"));
             menuManager.addItem(_("Start"))->sigTriggered().connect(

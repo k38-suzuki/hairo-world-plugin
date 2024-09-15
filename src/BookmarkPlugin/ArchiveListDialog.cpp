@@ -5,6 +5,7 @@
 #include "ArchiveListDialog.h"
 #include <cnoid/AppConfig>
 #include <cnoid/Buttons>
+#include <cnoid/Separator>
 #include <cnoid/ValueTree>
 #include <QBoxLayout>
 #include <QDialogButtonBox>
@@ -74,6 +75,8 @@ ArchiveListDialog::Impl::Impl(ArchiveListDialog* self)
     self->connect(listWidget, &QListWidget::itemDoubleClicked,
         [&](QListWidgetItem* item){ this->onItemDoubleClicked(item); });
     vbox->addWidget(listWidget);
+
+    vbox->addWidget(new HSeparator);
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
     self->connect(buttonBox, &QDialogButtonBox::accepted, self, &QDialog::accept);

@@ -137,7 +137,7 @@ void GammaImagerItem::initializeClass(ExtensionManager* ext)
     ext->itemManager()
         .registerClass<GammaImageVisualizerItem>(N_("GammaImageVisualizerItem"));
 
-    ItemTreeView::instance()->customizeContextMenu<GammaImageVisualizerItem>(
+    ItemTreeView::customizeContextMenu<GammaImageVisualizerItem>(
         [](GammaImageVisualizerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
             menuManager.setPath("/").setPath(_("PHITS"));
             menuManager.addItem(_("Start"))->sigTriggered().connect(

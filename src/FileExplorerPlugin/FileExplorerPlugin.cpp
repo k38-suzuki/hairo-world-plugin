@@ -24,7 +24,7 @@ public:
 
     virtual bool initialize() override
     {
-        ItemTreeView::instance()->customizeContextMenu<BodyItem>(
+        ItemTreeView::customizeContextMenu<BodyItem>(
             [&](BodyItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
                 menuManager.setPath("/").setPath(_("Open"));
                 menuManager.addItem(_("gedit"))->sigTriggered().connect(

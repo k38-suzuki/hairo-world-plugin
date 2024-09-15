@@ -92,7 +92,7 @@ void IKPlannerItem::initializeClass(ExtensionManager* ext)
         .registerClass<IKPlannerItem, SubSimulatorItem>(N_("IKPlannerItem"))
         .addCreationPanel<IKPlannerItem>();
 
-    ItemTreeView::instance()->customizeContextMenu<IKPlannerItem>(
+    ItemTreeView::customizeContextMenu<IKPlannerItem>(
         [](IKPlannerItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
             menuManager.setPath("/").setPath(_("IK Planner"));
             menuManager.addItem(_("Set start"))->sigTriggered().connect(

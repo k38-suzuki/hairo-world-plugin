@@ -14,7 +14,9 @@
 #include <cnoid/EigenTypes>
 #include <cnoid/ExtensionManager>
 #include <cnoid/ItemManager>
+#include <cnoid/ItemTreeView>
 #include <cnoid/MainMenu>
+#include <cnoid/MenuManager>
 #include <cnoid/ProjectManager>
 #include <cnoid/RootItem>
 #include <cnoid/Separator>
@@ -44,6 +46,19 @@ TaskCreator* creatorInstance = nullptr;
 
 namespace cnoid {
 
+class BodyLocator : public Dialog
+{
+public:
+    BodyLocator(QWidget* parent = nullptr);
+    ~BodyLocator();
+
+private:
+    void onTranslationButtonClicked(const int& id);
+
+    DoubleSpinBox* distanceSpin;
+    QDialogButtonBox* buttonBox;
+};
+
 class TaskCreator::Impl : public Dialog
 {
 public:
@@ -58,14 +73,12 @@ public:
     void save();
     void onButton1Clicked(const int& id);
     void onButton2Clicked(const int& id);
-    void onPosButtonClicked(const int& id);
 
     enum { NumProjects = 8 };
 
     ComboBox* projectCombos[NumProjects];
     CheckBox* logCheck;
     QLineEdit* logLine;
-    DoubleSpinBox* posSpin;
 };
 
 }
@@ -81,8 +94,12 @@ void TaskCreator::initializeClass(ExtensionManager* ext)
         //     [](Archive& archive){ return creatorInstance->impl->store(archive); },
         //     [](const Archive& archive) { return creatorInstance->impl->restore(archive); });
 
+        // MainMenu::instance()->add_Tools_Item(
+        //     _("Task Creator"), [](){ creatorInstance->impl->show(); });
         MainMenu::instance()->add_Tools_Item(
-            _("Task Creator"), [](){ creatorInstance->impl->show(); });
+            _("Body Locator"), [](){
+                BodyLocator* locator = new BodyLocator;
+                locator->show(); });
     }
 }
 
@@ -100,6 +117,7 @@ TaskCreator::TaskCreator()
 
 
 TaskCreator::Impl::Impl()
+    : Dialog()
 {
     setWindowTitle(_("Task Creator"));
 
@@ -128,19 +146,6 @@ TaskCreator::Impl::Impl()
         hbox = new QHBoxLayout;
     }
 
-    posSpin = new DoubleSpinBox;
-    posSpin->setRange(0.0, 10.0);
-    posSpin->setValue(1.5);
-    hbox->addWidget(posSpin);
-
-    const QStringList list = { "x+", "x-", "y+", "y-", "z+", "z-" };
-    for(int i = 0; i < 6; ++i) {
-        PushButton* button = new PushButton(list.at(i));
-        button->sigClicked().connect([this, i](){ onPosButtonClicked(i); });
-        hbox->addWidget(button);
-    }
-
-    vbox->addLayout(hbox);
     hbox = new QHBoxLayout;
 
     logCheck = new CheckBox;
@@ -290,12 +295,50 @@ void TaskCreator::Impl::onButton2Clicked(const int& id)
 }
 
 
-void TaskCreator::Impl::onPosButtonClicked(const int& id)
+BodyLocator::BodyLocator(QWidget* parent)
+    : Dialog(parent)
+{
+    auto layout = new QHBoxLayout;
+
+    distanceSpin = new DoubleSpinBox;
+    distanceSpin->setRange(0.0, 10.0);
+    distanceSpin->setValue(1.5);
+    layout->addWidget(distanceSpin);
+    layout->addWidget(new QLabel("[m]"));
+
+    const QStringList list = { "x+", "x-", "y+", "y-", "z+", "z-" };
+    for(int i = 0; i < 6; ++i) {
+        ToolButton* button = new ToolButton;
+        button->setText(list.at(i));
+        button->sigClicked().connect([this, i](){ onTranslationButtonClicked(i); });
+        layout->addWidget(button);
+    }
+
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+
+    auto mainLayout = new QVBoxLayout;
+    mainLayout->addLayout(layout);
+    mainLayout->addWidget(new HSeparator);
+    mainLayout->addWidget(buttonBox);
+
+    setLayout(mainLayout);
+    setWindowTitle(_("Body Locator"));
+}
+
+
+BodyLocator::~BodyLocator()
+{
+
+}
+
+
+void BodyLocator::onTranslationButtonClicked(const int& id)
 {
     auto rootItem = RootItem::instance();
     int index1 = id / 2;
     int index2 = id % 2;
-    double pos = posSpin->value();
+    double pos = distanceSpin->value();
     pos = index2 == 0 ? pos : pos * -1.0;
 
     ItemList<BodyItem> bodyItems = rootItem->selectedItems<BodyItem>();
