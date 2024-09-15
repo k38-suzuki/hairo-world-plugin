@@ -40,6 +40,3 @@ msgstr "プロジェクトを開く"
 
 msgid "Show the task creator"
 msgstr "タスクの作成"
-
-msgid "Body Locator"
-msgstr "ボディの配置"

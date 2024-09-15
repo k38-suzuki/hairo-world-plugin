@@ -18,7 +18,7 @@ public:
     
     virtual bool initialize() override
     {
-        TaskCreator::initializeClass(this);
+        // TaskCreator::initializeClass(this);
         return true;
     }
 

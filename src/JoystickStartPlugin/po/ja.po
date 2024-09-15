@@ -54,10 +54,7 @@ msgid "Start simulation from the current state: SELECT button, Start simulation 
 msgstr "現在位置からのシミュレーションを開始： SELECT ボタン，初期位置からのシミュレーションを開始： START ボタン"
 
 msgid "Joystick Tester"
-msgstr "ジョイスティックテスタ"
-
-msgid "JoystickTester"
-msgstr "ジョイスティックテスタ"
+msgstr "ジョイスティックのテスト"
 
 msgid "Show the joystick tester"
 msgstr "ジョイスティック状態の表示"

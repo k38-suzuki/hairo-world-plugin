@@ -25,3 +25,6 @@ msgstr "ファイル"
 
 msgid "Nautilus"
 msgstr "ディレクトリ"
+
+msgid "Body Locator"
+msgstr "ボディの配置"

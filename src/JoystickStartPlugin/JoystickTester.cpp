@@ -86,7 +86,7 @@ JoystickTester::JoystickTester()
 
 JoystickTester::Impl::Impl()
 {
-    setWindowTitle(_("JoystickTester"));
+    setWindowTitle(_("Joystick Tester"));
 
     joystick.setDevice("/dev/input/js0");
 
