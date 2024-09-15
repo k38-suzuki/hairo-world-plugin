@@ -1,9 +1,9 @@
 /**
     @author Kenta Suzuki
- */
+*/
 
- #ifndef CNOID_VFX_PLUGIN_VFX_EVENT_READER_H
- #define CNOID_VFX_PLUGIN_VFX_EVENT_READER_H
+#ifndef CNOID_VFX_PLUGIN_VFX_EVENT_READER_H
+#define CNOID_VFX_PLUGIN_VFX_EVENT_READER_H
 
 #include <cnoid/CustomEffects>
 #include <vector>
@@ -59,4 +59,4 @@ private:
 
 }
 
- #endif // CNOID_VFX_PLUGIN_VFX_EVENT_READER_H
+#endif // CNOID_VFX_PLUGIN_VFX_EVENT_READER_H

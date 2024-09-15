@@ -67,3 +67,6 @@ msgstr ""
 
 msgid "Exit"
 msgstr "終了"
+
+msgid "Drop files"
+msgstr "ドロップでファイルの読込み"

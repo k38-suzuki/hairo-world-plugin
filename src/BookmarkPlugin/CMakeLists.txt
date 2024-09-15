@@ -3,6 +3,7 @@ set(sources
   BookmarkBar.cpp
   BookmarkManager.cpp
   BookmarkPlugin.cpp
+  DroppableButton.cpp
   HistoryManager.cpp
   JoyKey.cpp
   KIOSKManager.cpp
@@ -15,6 +16,7 @@ set(headers
   ArchiveListDialog.h
   BookmarkBar.h
   BookmarkManager.h
+  DroppableButton.h
   HistoryManager.h
   JoyKey.h
   KIOSKManager.h
@@ -25,6 +27,7 @@ set(headers
 )
 
 choreonoid_make_header_public(BookmarkBar.h)
+choreonoid_make_header_public(DroppableButton.h)
 choreonoid_make_header_public(SystemTrayIcon.h)
 choreonoid_make_header_public(ToolsUtil.h)
 
