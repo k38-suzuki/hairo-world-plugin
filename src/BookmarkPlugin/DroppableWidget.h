@@ -2,25 +2,25 @@
     @author Kenta Suzuki
 */
 
-#ifndef CNOID_BOOKMARK_PLUGIN_DROPPABLE_BUTTON_H
-#define CNOID_BOOKMARK_PLUGIN_DROPPABLE_BUTTON_H
+#ifndef CNOID_BOOKMARK_PLUGIN_DROPPABLE_WIDGET_H
+#define CNOID_BOOKMARK_PLUGIN_DROPPABLE_WIDGET_H
 
-#include <cnoid/Buttons>
+#include <cnoid/Widget>
 #include "exportdecl.h"
 
 namespace cnoid {
 
 class ExtensionManager;
 
-class CNOID_EXPORT DroppableButton : public ToolButton
+class CNOID_EXPORT DroppableWidget : public Widget
 {
 public:
     static void initialize(ExtensionManager* ext);
 
-    DroppableButton(QWidget* parent = nullptr);
-    virtual ~DroppableButton();
+    DroppableWidget(QWidget* parent = nullptr);
+    virtual ~DroppableWidget();
 
-    virtual bool load(const std::string& filename);
+    virtual bool load(const std::string& filename) = 0;
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent* event) override;
@@ -31,4 +31,4 @@ protected:
 
 }
 
-#endif // CNOID_BOOKMARK_PLUGIN_DROPPABLE_BUTTON_H
+#endif // CNOID_BOOKMARK_PLUGIN_DROPPABLE_WIDGET_H
