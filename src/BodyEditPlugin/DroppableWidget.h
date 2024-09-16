@@ -10,13 +10,9 @@
 
 namespace cnoid {
 
-class ExtensionManager;
-
 class CNOID_EXPORT DroppableWidget : public Widget
 {
 public:
-    static void initialize(ExtensionManager* ext);
-
     DroppableWidget(QWidget* parent = nullptr);
     virtual ~DroppableWidget();
 

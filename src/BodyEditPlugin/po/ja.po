@@ -17,20 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "Convert Body"
-msgstr "ボディの変換"
+msgid "Body Loader"
+msgstr "ボディローダ"
 
-msgid "Body Converter"
-msgstr "ボディ変換"
-
-msgid "Load a body"
-msgstr "ボディの読み込み"
-
-msgid "Convert to"
-msgstr "変換先"
-
-msgid "Format:"
-msgstr "フォーマット"
+msgid "Format Converter"
+msgstr "フォーマットの変換"
 
 msgid "1.0"
 msgstr ""
@@ -367,3 +358,12 @@ msgstr "形状: Cylinder, 質量: {0} [kg], 半径: {1} [m], 高さ: {2} [m], �
 
 msgid "inertia: [ {0}, 0, 0, 0, {1}, 0, 0, 0, {2} ]\n"
 msgstr ""
+
+msgid "Drop body(*.body) here."
+msgstr "ここにボディ(*.body)をドロップしてください．"
+
+msgid "{0} is not supported."
+msgstr "{0} はサポートされていません．"
+
+msgid "{0} has been generated."
+msgstr "{0} が生成されました．"

@@ -67,12 +67,3 @@ msgstr ""
 
 msgid "Exit"
 msgstr "終了"
-
-msgid "Drop files"
-msgstr "ドロップでファイルの読込み"
-
-msgid "Drop body(*.body) or project(*.cnoid) here."
-msgstr "ここにボディ(*.body)またはプロジェクト(*.cnoid)をドロップしてください．"
-
-msgid "{0} are not supported."
-msgstr "{0} はサポートされていません．"

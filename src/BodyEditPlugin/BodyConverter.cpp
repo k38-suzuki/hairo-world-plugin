@@ -3,28 +3,39 @@
 */
 
 #include "BodyConverter.h"
+#include <cnoid/BodyItem>
 #include <cnoid/Buttons>
+#include <cnoid/CheckBox>
 #include <cnoid/ComboBox>
 #include <cnoid/Dialog>
 #include <cnoid/ExtensionManager>
+#include <cnoid/Format>
 #include <cnoid/ItemManager>
 #include <cnoid/MenuManager>
+#include <cnoid/MessageView>
+#include <cnoid/ProjectManager>
+#include <cnoid/RootItem>
 #include <cnoid/Separator>
+#include <cnoid/Signal>
+#include <cnoid/stdx/filesystem>
+#include <cnoid/WorldItem>
 #include <QAction>
 #include <QBoxLayout>
 #include <QDialogButtonBox>
 #include <QFile>
-#include <QFormLayout>
-#include <QGroupBox>
-#include <QMessageBox>
+#include <QLabel>
 #include <QTextStream>
+#include "DroppableWidget.h"
 #include "gettext.h"
 
+using namespace std;
 using namespace cnoid;
+namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
 BodyConverter* converterInstance = nullptr;
+bool is_convert_checked = false;
 
 struct KeyInfo {
     QString oldKey;
@@ -127,20 +138,77 @@ KeyInfo keyInfo[] = {
 
 namespace cnoid {
 
+class BodyDroppableWidget : public DroppableWidget
+{
+public:
+    BodyDroppableWidget(QWidget* parent = nullptr)
+        : DroppableWidget(parent)
+    {
+        setFixedHeight(200);
+
+        auto vbox = new QVBoxLayout;
+        auto label = new QLabel(_("Drop body(*.body) here."));
+        label->setAlignment(Qt::AlignCenter);
+        vbox->addWidget(label);
+        setLayout(vbox);
+    }
+
+    ~BodyDroppableWidget() {}
+
+    virtual bool load(const string& filename) override
+    {
+        filesystem::path path(filename);
+        string extension = path.extension();
+
+        if(extension == ".body") {
+            if(is_convert_checked) {
+                sigLoaded_(filename);
+                return true;
+            }
+
+            auto bodyItem = new BodyItem;
+            bodyItem->load(filename);
+
+            RootItem* rootItem = RootItem::instance();
+            ItemList<WorldItem> worldItems = rootItem->selectedItems();
+            if(!worldItems.size()) {
+                rootItem->addChildItem(bodyItem);
+            } else {
+                worldItems[0]->addChildItem(bodyItem);
+            }
+        } else if(extension == ".cnoid") {
+            ProjectManager* projectManager = ProjectManager::instance();
+            if(projectManager->tryToCloseProject()) {
+                projectManager->clearProject();
+                projectManager->loadProject(filename);
+            }
+        } else {
+            MessageView::instance()->putln(formatR(_("{0} is not supported."), filename));
+            return false;
+        }
+
+        return true;
+    }
+
+    SignalProxy<void(const string& filename)> sigLoaded() { return sigLoaded_; }
+
+private:
+    Signal<void(const string& filename)> sigLoaded_;
+};
+
 class BodyConverter::Impl : public Dialog
 {
 public:
 
     Impl();
 
-    void open();
-    void save();
-
     QString convert(const QString& line) const;
     void saveFile(const QString& fileName);
 
+    CheckBox* convertCheck;
     ComboBox* formatCombo;
-    QString bodyFileName;
+    QDialogButtonBox* buttonBox;
+    BodyDroppableWidget* dropWidget;
 };
 
 }
@@ -151,8 +219,8 @@ void BodyConverter::initializeClass(ExtensionManager* ext)
     if(!converterInstance) {
         converterInstance = ext->manage(new BodyConverter);
 
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
-        mm.addItem(_("Convert Body"))->sigTriggered().connect(
+        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
+        mm.addItem(_("Body Loader"))->sigTriggered().connect(
                     [&](){ converterInstance->impl->show(); });
     }
 }
@@ -172,61 +240,44 @@ BodyConverter::BodyConverter()
 
 BodyConverter::Impl::Impl()
 {
-    auto hbox1 = new QHBoxLayout;
-    auto button1 = new PushButton;
-    button1->setIcon(QIcon::fromTheme("document-open"));
-    button1->sigClicked().connect([&](){ open(); });
-    auto button2 = new PushButton;
-    button2->setIcon(QIcon::fromTheme("document-save"));
-    button2->sigClicked().connect([&](){ save(); });
-    hbox1->addWidget(button1);
-    hbox1->addWidget(button2);
-    hbox1->addStretch();
+    convertCheck = new CheckBox;
+    convertCheck->setText(_("Format Converter"));
+    convertCheck->sigToggled().connect([this](bool checked){ is_convert_checked = checked; });
 
     formatCombo = new ComboBox;
     formatCombo->addItems(QStringList() << _("1.0") << _("2.0"));
     formatCombo->setCurrentIndex(1);
 
-    QGroupBox* formGroupBox = new QGroupBox(_("Convert to"));
-    QFormLayout* layout = new QFormLayout;
-    layout->addRow(_("Format:"), formatCombo);
-    formGroupBox->setLayout(layout);
+    dropWidget = new BodyDroppableWidget;
+    dropWidget->sigLoaded().connect(
+        [this](const string& filename){
+            if(convertCheck->isChecked()) {
+                saveFile(filename.c_str());
+            }
+        });
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
-
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
     connect(buttonBox, &QDialogButtonBox::accepted, [&](){ accept(); });
 
+    auto layout = new QHBoxLayout;
+    layout->addWidget(convertCheck);
+    layout->addWidget(formatCombo);
+    layout->addStretch();
+
     auto mainLayout = new QVBoxLayout;
-    mainLayout->addLayout(hbox1);
-    mainLayout->addWidget(formGroupBox);
+    mainLayout->addLayout(layout);
+    mainLayout->addWidget(dropWidget);
     mainLayout->addWidget(new HSeparator);
     mainLayout->addWidget(buttonBox);
 
     setLayout(mainLayout);
-    setWindowTitle(_("Body Converter"));
+    setWindowTitle(_("Body Loader"));
 }
 
 
 BodyConverter::~BodyConverter()
 {
     delete impl;
-}
-
-
-void BodyConverter::Impl::open()
-{
-    QString fileName = getOpenFileName(_("Load a body"), "body").c_str();
-    if(!fileName.isEmpty()) {
-        bodyFileName = fileName;
-    }
-}
-
-
-void BodyConverter::Impl::save()
-{
-    if(!bodyFileName.isEmpty()) {
-        saveFile(bodyFileName);
-    }
 }
 
 
@@ -273,10 +324,5 @@ void BodyConverter::Impl::saveFile(const QString& fileName)
         out << convert(line) << "\n";
     }
 
-    QString status = QString("%1 has been generated.")
-                    .arg(fileName2);
-
-    QMessageBox msgBox;
-    msgBox.setText(status);
-    msgBox.exec();
+    MessageView::instance()->putln(formatR(_("{0} has been generated."), fileName2.toStdString()));
 }
