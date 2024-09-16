@@ -84,6 +84,7 @@ SlopeGenerator::SlopeGenerator()
 
 
 SlopeGenerator::Impl::Impl()
+    : Dialog()
 {
     setWindowTitle(_("Slope Generator"));
     yamlWriter.setKeyOrderPreservationMode(true);

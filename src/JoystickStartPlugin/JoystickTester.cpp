@@ -85,6 +85,7 @@ JoystickTester::JoystickTester()
 
 
 JoystickTester::Impl::Impl()
+    : Dialog()
 {
     setWindowTitle(_("Joystick Tester"));
 

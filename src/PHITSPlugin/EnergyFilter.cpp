@@ -182,6 +182,7 @@ void EnergyFilter::restoreState(const Archive& archive)
 
 
 EnergyFilterDialog::EnergyFilterDialog()
+    : Dialog()
 {
     setWindowTitle(_("Energy Filter Config"));
 

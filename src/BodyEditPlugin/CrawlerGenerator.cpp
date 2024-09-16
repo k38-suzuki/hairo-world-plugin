@@ -304,6 +304,7 @@ CrawlerGenerator::CrawlerGenerator()
 
 
 CrawlerGenerator::Impl::Impl()
+    : Dialog()
 {
     setWindowTitle(_("CrawlerRobot Generator"));
 

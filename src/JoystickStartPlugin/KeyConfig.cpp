@@ -57,9 +57,8 @@ namespace cnoid {
 class KeyConfig::Impl : public Dialog
 {
 public:
-    KeyConfig* self;
 
-    Impl(KeyConfig* self);
+    Impl();
 
     ComboBox* axisCombos[Joystick::NUM_STD_AXES];
     ComboBox* buttonCombos[Joystick::NUM_STD_BUTTONS];
@@ -70,12 +69,12 @@ public:
 
 KeyConfig::KeyConfig()
 {
-    impl = new Impl(this);
+    impl = new Impl;
 }
 
 
-KeyConfig::Impl::Impl(KeyConfig* self)
-    : self(self)
+KeyConfig::Impl::Impl()
+    : Dialog()
 {
     setWindowTitle(_("KeyConfig"));
 

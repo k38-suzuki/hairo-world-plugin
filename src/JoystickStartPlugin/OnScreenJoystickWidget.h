@@ -12,7 +12,7 @@ namespace cnoid {
 class OnScreenJoystickWidget : public Widget
 {
 public:
-    OnScreenJoystickWidget();
+    OnScreenJoystickWidget(QWidget* parent = nullptr);
     virtual ~OnScreenJoystickWidget();
 
 private:

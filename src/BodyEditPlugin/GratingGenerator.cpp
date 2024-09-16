@@ -106,6 +106,7 @@ GratingGenerator::GratingGenerator()
 
 
 GratingGenerator::Impl::Impl()
+    : Dialog()
 {
     setWindowTitle(_("Grating Generator"));
     yamlWriter.setKeyOrderPreservationMode(true);

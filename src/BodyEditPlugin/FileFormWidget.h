@@ -13,7 +13,7 @@ namespace cnoid {
 class FileFormWidget : public Widget
 {
 public:
-    FileFormWidget();
+    FileFormWidget(QWidget* parent = nullptr);
     virtual ~FileFormWidget();
 
     SignalProxy<void(std::string)> sigClicked();

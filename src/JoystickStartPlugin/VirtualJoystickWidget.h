@@ -12,7 +12,7 @@ namespace cnoid {
 class VirtualJoystickWidget : public Widget
 {
 public:
-    VirtualJoystickWidget();
+    VirtualJoystickWidget(QWidget* parent = nullptr);
     virtual ~VirtualJoystickWidget();
 
 protected:

@@ -46,7 +46,8 @@ public:
 }
 
 
-FileFormWidget::FileFormWidget()
+FileFormWidget::FileFormWidget(QWidget* parent)
+    : Widget(parent)
 {
     impl = new Impl(this);
 }

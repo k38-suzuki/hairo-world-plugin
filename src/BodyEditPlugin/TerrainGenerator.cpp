@@ -95,6 +95,7 @@ TerrainGenerator::TerrainGenerator()
 
 
 TerrainGenerator::Impl::Impl()
+    : Dialog()
 {
     setWindowTitle(_("BoxTerrain Generator"));
     yamlWriter.setKeyOrderPreservationMode(true);

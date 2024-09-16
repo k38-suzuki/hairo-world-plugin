@@ -15,7 +15,7 @@ namespace cnoid {
 class AxisWidget : public Widget
 {
 public:
-    AxisWidget();
+    AxisWidget(QWidget* parent = nullptr);
     virtual ~AxisWidget();
 
     void setValue(const int& id, const double& value);

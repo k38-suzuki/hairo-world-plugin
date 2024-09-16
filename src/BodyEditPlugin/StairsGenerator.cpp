@@ -89,6 +89,7 @@ StairsGenerator::StairsGenerator()
 
 
 StairsGenerator::Impl::Impl()
+    : Dialog()
 {
     setWindowTitle(_("Stairs Generator"));
     yamlWriter.setKeyOrderPreservationMode(true);

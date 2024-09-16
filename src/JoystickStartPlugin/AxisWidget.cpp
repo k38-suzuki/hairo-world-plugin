@@ -51,7 +51,8 @@ public:
 }
 
 
-AxisWidget::AxisWidget()
+AxisWidget::AxisWidget(QWidget* parent)
+    : Widget(parent)
 {
     impl = new Impl(this);
 }

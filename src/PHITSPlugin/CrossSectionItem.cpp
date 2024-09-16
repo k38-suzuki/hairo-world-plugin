@@ -521,6 +521,7 @@ bool CrossSectionItem::Impl::restore(const Archive& archive)
 
 
 DoseConfigDialog::DoseConfigDialog()
+    : Dialog()
 {
     setWindowTitle(_("Configuration of PHITS"));
 

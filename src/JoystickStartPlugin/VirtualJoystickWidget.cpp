@@ -117,7 +117,8 @@ public:
 }
 
 
-VirtualJoystickWidget::VirtualJoystickWidget()
+VirtualJoystickWidget::VirtualJoystickWidget(QWidget* parent)
+    : Widget(parent)
 {
     impl = new Impl(this);
 }

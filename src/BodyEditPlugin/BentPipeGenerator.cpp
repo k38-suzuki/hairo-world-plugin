@@ -108,11 +108,12 @@ void BentPipeGenerator::initializeClass(ExtensionManager* ext)
 
 BentPipeGenerator::BentPipeGenerator()
 {
-    impl = new Impl();
+    impl = new Impl;
 }
 
 
 BentPipeGenerator::Impl::Impl()
+    : Dialog()
 {
     setWindowTitle(_("BentPipe Generator"));
     yamlWriter.setKeyOrderPreservationMode(true);

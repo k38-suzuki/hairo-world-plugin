@@ -64,6 +64,7 @@ NetworkEmulator::NetworkEmulator()
 
 
 NetworkEmulator::Impl::Impl()
+    : Dialog()
 {
     setWindowTitle(_("Network Emulator"));
 

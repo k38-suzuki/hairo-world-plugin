@@ -99,6 +99,7 @@ PipeGenerator::PipeGenerator()
 
 
 PipeGenerator::Impl::Impl()
+    : Dialog()
 {
     setWindowTitle(_("Pipe Generator"));
     yamlWriter.setKeyOrderPreservationMode(true);

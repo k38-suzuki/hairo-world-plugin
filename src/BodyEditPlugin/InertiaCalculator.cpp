@@ -96,7 +96,8 @@ InertiaCalculator::InertiaCalculator()
 
 
 InertiaCalculator::Impl::Impl()
-    : mv(MessageView::instance())
+    : Dialog(),
+      mv(MessageView::instance())
 {
     setWindowTitle(_("InertiaCalculator"));
     setFixedWidth(500);
