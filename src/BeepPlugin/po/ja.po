@@ -26,7 +26,7 @@ msgstr "ビープビュー"
 msgid "Beep"
 msgstr "ビープ"
 
-msgid "No"
+msgid "No."
 msgstr ""
 
 msgid "Link0"
@@ -46,3 +46,6 @@ msgstr ""
 
 msgid "Play"
 msgstr "再生"
+
+msgid "Link pair list"
+msgstr "リンクペアリスト"

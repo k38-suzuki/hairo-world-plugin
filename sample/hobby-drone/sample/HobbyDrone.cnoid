@@ -31,7 +31,6 @@ items:
               1, 0, 0,
               0, 1, 0,
               0, 0, 1 ]
-            jointPositions: [ ]
             initialRootPosition: [ -2, -0.5, 0.3 ]
             initialRootAttitude: [
               1, 0, 0,
@@ -42,7 +41,6 @@ items:
             selfCollisionDetection: false
             lock_location: false
             scene_sensitive: true
-            zmp: [ 0, 0, 0 ]
           children:
             -
               id: 3
@@ -84,7 +82,6 @@ items:
               name: "MultiCollider"
               plugin: SimpleCollider
               class: MultiColliderItem
-              is_checked: true
               data:
                 translation: [ -2, -0.5, 0.3 ]
                 rotation: [ 0, -0, 0 ]
@@ -133,19 +130,16 @@ items:
               0, 1, 0,
               0, 0, 1 ]
             jointDisplacements: [ 0 ]
-            jointPositions: [ 0 ]
             initialRootPosition: [ 0, 0, 0 ]
             initialRootAttitude: [
               1, 0, 0,
               0, 1, 0,
               0, 0, 1 ]
-            initialJointPositions: [ 0 ]
             fix_root: true
             collisionDetection: true
             selfCollisionDetection: false
             lock_location: false
             scene_sensitive: true
-            zmp: [ 0, 0, 0 ]
         -
           id: 7
           name: "FluidArea"
@@ -239,7 +233,9 @@ items:
                 all_scene_objects: true
                 range_sensor_precision_ratio: 2
                 depth_error: 0
+                background_color: [ 0, 0, 0 ]
                 enable_head_light: true
+                enable_world_light: true
                 enable_additional_lights: true
                 antialiasing: false
                 dynamics_type: All process

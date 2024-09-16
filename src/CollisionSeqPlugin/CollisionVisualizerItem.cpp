@@ -80,6 +80,7 @@ public:
 
 
 CollisionVisualizerItem::CollisionVisualizerItem()
+    : SubSimulatorItem()
 {
     impl = new Impl(this);
 }

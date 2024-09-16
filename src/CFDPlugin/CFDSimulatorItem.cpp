@@ -215,6 +215,7 @@ void CFDSimulatorItem::initializeClass(ExtensionManager* ext)
 
 
 CFDSimulatorItem::CFDSimulatorItem()
+    : SubSimulatorItem()
 {
     impl = new CFDSimulatorItemImpl(this);
 }

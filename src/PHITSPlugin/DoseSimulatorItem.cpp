@@ -69,6 +69,7 @@ void DoseSimulatorItem::initializeClass(ExtensionManager* ext)
 
 
 DoseSimulatorItem::DoseSimulatorItem()
+    : SubSimulatorItem()
 {
     impl = new Impl(this);
 }

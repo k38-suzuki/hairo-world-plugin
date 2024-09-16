@@ -88,6 +88,7 @@ void NetworkEmulatorItem::initializeClass(ExtensionManager* ext)
 
 
 NetworkEmulatorItem::NetworkEmulatorItem()
+    : SubSimulatorItem()
 {
     impl = new Impl(this);
 }

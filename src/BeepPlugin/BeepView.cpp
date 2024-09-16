@@ -91,7 +91,7 @@ BeepView::Impl::Impl(BeepView* self)
 
     beeper = new Beeper;
 
-    const QStringList label0 = { _("No"), _("Link0"), _("Link1"), _("Frequency") };
+    const QStringList label0 = { _("No."), _("Link0"), _("Link1"), _("Frequency") };
     treeWidget = new TreeWidget;
     treeWidget->setHeaderLabels(label0);
 

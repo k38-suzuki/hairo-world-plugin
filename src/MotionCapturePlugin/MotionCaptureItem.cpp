@@ -49,6 +49,7 @@ public:
 
 
 MotionCaptureItem::MotionCaptureItem()
+    : SubSimulatorItem()
 {
     impl = new Impl(this);
 }

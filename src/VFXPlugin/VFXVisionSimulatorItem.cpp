@@ -55,7 +55,7 @@ public:
 void VFXVisionSimulatorItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-        .registerClass<VFXVisionSimulatorItem, SubSimulatorItem>(N_("VFXVisionSimulatorItem"))
+        .registerClass<VFXVisionSimulatorItem, GLVisionSimulatorItem>(N_("VFXVisionSimulatorItem"))
         .addCreationPanel<VFXVisionSimulatorItem>();
 }
 
@@ -65,6 +65,7 @@ VFXVisionSimulatorItem::VFXVisionSimulatorItem()
 {
     impl = new Impl(this);
 }
+
 
 VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self)
     : self(self),

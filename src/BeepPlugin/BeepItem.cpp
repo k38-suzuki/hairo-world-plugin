@@ -6,7 +6,9 @@
 #include <cnoid/Archive>
 #include <cnoid/CollisionLinkPair>
 #include <cnoid/ItemManager>
+#include <cnoid/ItemTreeView>
 #include <cnoid/LazyCaller>
+#include <cnoid/MenuManager>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
@@ -21,7 +23,7 @@ namespace {
 struct PairInfo {
     string link0;
     string link1;
-    bool isContacted;
+    bool is_contacted;
 };
 
 }
@@ -41,7 +43,7 @@ public:
     SimulatorItem* simulatorItem;
     WorldItem* worldItem;
     vector<PairInfo> pairs;
-    bool isPlayed;
+    bool is_played;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void onPostDynamics();
@@ -55,10 +57,21 @@ void BeepItem::initializeClass(ExtensionManager* ext)
     ext->itemManager()
             .registerClass<BeepItem, SubSimulatorItem>(N_("BeepItem"))
             .addCreationPanel<BeepItem>();
+
+    // ItemTreeView::customizeContextMenu<BeepItem>(
+    //     [&](BeepItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction){
+    //         menuManager.addItem(_("Link pair list"))->sigTriggered().connect(
+    //             [&, item](){
+
+    //             });
+    //         menuManager.addSeparator();
+    //         menuFunction.dispatchAs<Item>(item);
+    //     });
 }
 
 
 BeepItem::BeepItem()
+    : SubSimulatorItem()
 {
     impl = new Impl(this);
 }
@@ -70,7 +83,7 @@ BeepItem::Impl::Impl(BeepItem* self)
     simulatorItem = nullptr;
     worldItem = nullptr;
     pairs.clear();
-    isPlayed = false;
+    is_played = false;
 }
 
 
@@ -106,7 +119,7 @@ bool BeepItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
     worldItem = this->simulatorItem->findOwnerItem<WorldItem>();
     BeepView* bv = BeepView::instance();
     pairs.clear();
-    isPlayed = false;
+    is_played = false;
 
     if(bv) {
         int numItems = bv->treeWidget()->topLevelItemCount();
@@ -155,23 +168,23 @@ void BeepItem::Impl::onPostDynamics()
                     contacted = true;
                 }
             }
-            if(contacted && !info.isContacted) {
+            if(contacted && !info.is_contacted) {
                 playID = i;
             }
         }
 
-        info.isContacted = contacted;
+        info.is_contacted = contacted;
     }
 
-    if(playID != 999 && !isPlayed) {
+    if(playID != 999 && !is_played) {
         startTime = currentTime;
     }
 
     if(currentTime < startTime + 0.2) {
         callLater([this, playID](){ BeepView::instance()->play(playID); });
-        isPlayed = true;
+        is_played = true;
     } else {
-        isPlayed = false;
+        is_played = false;
     }
 }
 

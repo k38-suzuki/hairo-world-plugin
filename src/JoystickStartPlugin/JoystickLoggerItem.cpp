@@ -39,6 +39,7 @@ public:
 
 
 JoystickLoggerItem::JoystickLoggerItem()
+    : SubSimulatorItem()
 {
     impl = new Impl(this);
 }

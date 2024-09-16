@@ -46,7 +46,7 @@ public:
 void GammaVisionSimulatorItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-        .registerClass<GammaVisionSimulatorItem, SubSimulatorItem>(N_("GammaVisionSimulatorItem"))
+        .registerClass<GammaVisionSimulatorItem, GLVisionSimulatorItem>(N_("GammaVisionSimulatorItem"))
         .addCreationPanel<GammaVisionSimulatorItem>();
 }
 
