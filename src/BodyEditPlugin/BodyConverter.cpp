@@ -16,7 +16,6 @@
 #include <cnoid/ProjectManager>
 #include <cnoid/RootItem>
 #include <cnoid/Separator>
-#include <cnoid/Signal>
 #include <cnoid/stdx/filesystem>
 #include <cnoid/WorldItem>
 #include <QAction>
@@ -25,7 +24,7 @@
 #include <QFile>
 #include <QLabel>
 #include <QTextStream>
-#include "DroppableWidget.h"
+#include "FileDroppableWidget.h"
 #include "gettext.h"
 
 using namespace std;
@@ -35,7 +34,6 @@ namespace filesystem = cnoid::stdx::filesystem;
 namespace {
 
 BodyConverter* converterInstance = nullptr;
-bool is_convert_checked = false;
 
 struct KeyInfo {
     QString oldKey;
@@ -138,77 +136,19 @@ KeyInfo keyInfo[] = {
 
 namespace cnoid {
 
-class BodyDroppableWidget : public DroppableWidget
-{
-public:
-    BodyDroppableWidget(QWidget* parent = nullptr)
-        : DroppableWidget(parent)
-    {
-        setFixedHeight(200);
-
-        auto vbox = new QVBoxLayout;
-        auto label = new QLabel(_("Drop body(*.body) here."));
-        label->setAlignment(Qt::AlignCenter);
-        vbox->addWidget(label);
-        setLayout(vbox);
-    }
-
-    ~BodyDroppableWidget() {}
-
-    virtual bool load(const string& filename) override
-    {
-        filesystem::path path(filename);
-        string extension = path.extension();
-
-        if(extension == ".body") {
-            if(is_convert_checked) {
-                sigLoaded_(filename);
-                return true;
-            }
-
-            auto bodyItem = new BodyItem;
-            bodyItem->load(filename);
-
-            RootItem* rootItem = RootItem::instance();
-            ItemList<WorldItem> worldItems = rootItem->selectedItems();
-            if(!worldItems.size()) {
-                rootItem->addChildItem(bodyItem);
-            } else {
-                worldItems[0]->addChildItem(bodyItem);
-            }
-        } else if(extension == ".cnoid") {
-            ProjectManager* projectManager = ProjectManager::instance();
-            if(projectManager->tryToCloseProject()) {
-                projectManager->clearProject();
-                projectManager->loadProject(filename);
-            }
-        } else {
-            MessageView::instance()->putln(formatR(_("{0} is not supported."), filename));
-            return false;
-        }
-
-        return true;
-    }
-
-    SignalProxy<void(const string& filename)> sigLoaded() { return sigLoaded_; }
-
-private:
-    Signal<void(const string& filename)> sigLoaded_;
-};
-
 class BodyConverter::Impl : public Dialog
 {
 public:
 
     Impl();
 
+    void onFileDropped(const string& filename);
     QString convert(const QString& line) const;
     void saveFile(const QString& fileName);
 
     CheckBox* convertCheck;
     ComboBox* formatCombo;
     QDialogButtonBox* buttonBox;
-    BodyDroppableWidget* dropWidget;
 };
 
 }
@@ -239,22 +179,24 @@ BodyConverter::BodyConverter()
 
 
 BodyConverter::Impl::Impl()
+    : Dialog()
 {
     convertCheck = new CheckBox;
     convertCheck->setText(_("Format Converter"));
-    convertCheck->sigToggled().connect([this](bool checked){ is_convert_checked = checked; });
 
     formatCombo = new ComboBox;
     formatCombo->addItems(QStringList() << _("1.0") << _("2.0"));
     formatCombo->setCurrentIndex(1);
 
-    dropWidget = new BodyDroppableWidget;
-    dropWidget->sigLoaded().connect(
-        [this](const string& filename){
-            if(convertCheck->isChecked()) {
-                saveFile(filename.c_str());
-            }
-        });
+    auto dropWidget = new FileDroppableWidget;
+    dropWidget->setFixedHeight(200);
+
+    auto vbox = new QVBoxLayout;
+    auto label = new QLabel(_("Drop body(*.body) here."));
+    label->setAlignment(Qt::AlignCenter);
+    vbox->addWidget(label);
+    dropWidget->setLayout(vbox);
+    dropWidget->sigFileDropped().connect([this](const string& filename){ onFileDropped(filename); });
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
     connect(buttonBox, &QDialogButtonBox::accepted, [&](){ accept(); });
@@ -278,6 +220,38 @@ BodyConverter::Impl::Impl()
 BodyConverter::~BodyConverter()
 {
     delete impl;
+}
+
+
+void BodyConverter::Impl::onFileDropped(const string& filename)
+{
+    filesystem::path path(filename);
+    string extension = path.extension();
+
+    if(extension == ".body") {
+        if(!convertCheck->isChecked()) {
+            auto bodyItem = new BodyItem;
+            bodyItem->load(filename);
+
+            RootItem* rootItem = RootItem::instance();
+            ItemList<WorldItem> worldItems = rootItem->selectedItems();
+            if(!worldItems.size()) {
+                rootItem->addChildItem(bodyItem);
+            } else {
+                worldItems[0]->addChildItem(bodyItem);
+            }
+        } else {
+            saveFile(filename.c_str());
+        }
+    } else if(extension == ".cnoid") {
+        ProjectManager* projectManager = ProjectManager::instance();
+        if(projectManager->tryToCloseProject()) {
+            projectManager->clearProject();
+            projectManager->loadProject(filename);
+        }
+    } else {
+        MessageView::instance()->putln(formatR(_("{0} is not supported."), filename));
+    }
 }
 
 

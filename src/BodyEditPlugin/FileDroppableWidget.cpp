@@ -2,7 +2,7 @@
     @author Kenta Suzuki
 */
 
-#include "DroppableWidget.h"
+#include "FileDroppableWidget.h"
 #include <QDragEnterEvent>
 #include <QDragLeaveEvent>
 #include <QDragMoveEvent>
@@ -15,38 +15,38 @@
 using namespace std;
 using namespace cnoid;
 
-DroppableWidget::DroppableWidget(QWidget* parent)
+FileDroppableWidget::FileDroppableWidget(QWidget* parent)
     : Widget(parent)
 {
     setAcceptDrops(true);
 }
 
 
-DroppableWidget::~DroppableWidget()
+FileDroppableWidget::~FileDroppableWidget()
 {
 
 }
 
 
-void DroppableWidget::dragEnterEvent(QDragEnterEvent* event)
+void FileDroppableWidget::dragEnterEvent(QDragEnterEvent* event)
 {
     event->acceptProposedAction();
 }
 
 
-void DroppableWidget::dragLeaveEvent(QDragLeaveEvent* event)
+void FileDroppableWidget::dragLeaveEvent(QDragLeaveEvent* event)
 {
     event->accept();
 }
 
 
-void DroppableWidget::dragMoveEvent(QDragMoveEvent* event)
+void FileDroppableWidget::dragMoveEvent(QDragMoveEvent* event)
 {
     event->acceptProposedAction();
 }
 
 
-void DroppableWidget::dropEvent(QDropEvent* event)
+void FileDroppableWidget::dropEvent(QDropEvent* event)
 {
     const QMimeData* mimeData = event->mimeData();
 
@@ -61,8 +61,15 @@ void DroppableWidget::dropEvent(QDropEvent* event)
         for(int i = 0; i < pathList.size(); ++i) {
             string filename = pathList.at(i).toStdString();
             if(load(filename)) {
+                sigFileDropped_(filename);
                 event->acceptProposedAction();
             }
         }
     }
+}
+
+
+bool FileDroppableWidget::load(const string& filename)
+{
+    return true;
 }

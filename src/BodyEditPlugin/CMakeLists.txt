@@ -11,7 +11,7 @@ set(sources
   StairsGenerator.cpp
   TerrainGenerator.cpp
   BentPipeGenerator.cpp
-  DroppableWidget.cpp
+  FileDroppableWidget.cpp
   Notepad.cpp
 )
 
@@ -27,12 +27,12 @@ set(headers
   StairsGenerator.h
   TerrainGenerator.h
   BentPipeGenerator.h
-  DroppableWidget.h
+  FileDroppableWidget.h
   Notepad.h
   exportdecl.h
 )
 
-choreonoid_make_header_public(DroppableWidget.h)
+choreonoid_make_header_public(FileDroppableWidget.h)
 
 set(target CnoidBodyEditPlugin)
 make_gettext_mofiles(${target} mofiles)
