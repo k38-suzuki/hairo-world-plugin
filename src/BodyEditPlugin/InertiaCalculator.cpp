@@ -96,7 +96,7 @@ InertiaCalculator::InertiaCalculator()
 
 
 InertiaCalculator::Impl::Impl()
-    : mv(new MessageView)
+    : mv(MessageView::instance())
 {
     setWindowTitle(_("InertiaCalculator"));
     setFixedWidth(500);
@@ -163,7 +163,6 @@ InertiaCalculator::Impl::Impl()
     auto vbox = new QVBoxLayout;
     vbox->addLayout(hbox);
     vbox->addWidget(topWidget);
-    vbox->addWidget(mv);
     vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);
     setLayout(vbox);
@@ -183,7 +182,6 @@ void InertiaCalculator::initializeClass(ExtensionManager* ext)
 
         MainMenu::instance()->add_Tools_Item(
             _("Calculate Inertia"), [](){
-                calculatorInstance->impl->mv->clear();
                 calculatorInstance->impl->show(); });
     }
 }

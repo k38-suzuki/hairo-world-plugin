@@ -29,7 +29,7 @@ private:
     Impl* impl;
 
     WRSUtilBar();
-    ~WRSUtilBar();
+    virtual ~WRSUtilBar();
 };
 
 }

@@ -17,7 +17,7 @@ public:
         
     VFXVisionSimulatorItem();
     VFXVisionSimulatorItem(const VFXVisionSimulatorItem& org);
-    ~VFXVisionSimulatorItem();
+    virtual ~VFXVisionSimulatorItem();
 
     virtual bool initializeSimulation(SimulatorItem* simulatorItem) override;
 

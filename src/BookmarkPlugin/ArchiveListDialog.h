@@ -13,7 +13,7 @@ class ArchiveListDialog : public Dialog
 {
 public:
     ArchiveListDialog(QWidget* parent = nullptr);
-    ~ArchiveListDialog();
+    virtual ~ArchiveListDialog();
 
     void addItem(const QString& text);
     void addItems(const QStringList& texts);

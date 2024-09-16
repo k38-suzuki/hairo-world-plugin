@@ -17,7 +17,7 @@ public:
         
     GammaVisionSimulatorItem();
     GammaVisionSimulatorItem(const GammaVisionSimulatorItem& org);
-    ~GammaVisionSimulatorItem();
+    virtual ~GammaVisionSimulatorItem();
 
     virtual bool initializeSimulation(SimulatorItem* simulatorItem) override;
     virtual void finalizeSimulation() override;

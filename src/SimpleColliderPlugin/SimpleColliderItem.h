@@ -21,7 +21,7 @@ public:
 
     SimpleColliderItem();
     SimpleColliderItem(const SimpleColliderItem& org);
-    ~SimpleColliderItem();
+    virtual ~SimpleColliderItem();
     void storeBodyPosition();
     void restoreBodyPosition();
     virtual SgNode* getScene() override;

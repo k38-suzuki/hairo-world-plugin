@@ -17,7 +17,7 @@ class GammaEffect
 {
 public:
     GammaEffect(Camera* camera);
-    ~GammaEffect();
+    virtual ~GammaEffect();
 
     void setMaxCas(const int& maxcas) { maxcas_ = maxcas; }
     int maxcas() const { return maxcas_; }

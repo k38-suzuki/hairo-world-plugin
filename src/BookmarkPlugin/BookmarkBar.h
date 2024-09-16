@@ -23,7 +23,7 @@ private:
     Impl* impl;
 
     BookmarkBar();
-    ~BookmarkBar();
+    virtual ~BookmarkBar();
 };
 
 }

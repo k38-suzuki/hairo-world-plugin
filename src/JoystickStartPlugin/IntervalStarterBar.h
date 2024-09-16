@@ -26,7 +26,7 @@ private:
     Impl* impl;
 
     IntervalStarterBar();
-    ~IntervalStarterBar();
+    virtual ~IntervalStarterBar();
 };
 
 }
