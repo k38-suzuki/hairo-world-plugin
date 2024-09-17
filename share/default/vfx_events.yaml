@@ -16,4 +16,4 @@ events:
     end_time: 0.0
     duration: 0.0
     cycle: [ 0.0, 0.0 ]
-#    target_collider: [ ]
+    target_collider: [ Collider1, Collider2 ]

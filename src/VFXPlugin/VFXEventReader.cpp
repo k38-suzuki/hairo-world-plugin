@@ -158,7 +158,7 @@ bool VFXEventReader::Impl::load(const string& filename, ostream& os)
         os << ex.message();
     }
 
-    MessageView::instance()->putln(formatR(_("VFX events were read.")));
+    MessageView::instance()->putln(formatR(_("VFX events were loaded.")));
 
     return true;
 }

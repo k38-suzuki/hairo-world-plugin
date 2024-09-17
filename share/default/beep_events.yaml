@@ -1,0 +1,9 @@
+events:
+  -
+    name: Pair1
+    pair: [ Link1, Link2 ]
+    frequency: 440
+  -
+    name: Pair2
+    pair: [ Link3, Link4 ]
+    frequency: 880

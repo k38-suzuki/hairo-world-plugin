@@ -35,5 +35,5 @@ msgstr "ダイナミクスの種類"
 msgid "VFX event file"
 msgstr "VFXイベントファイル"
 
-msgid "VFX events were read."
-msgstr "VFXイベントを読み込みました．"
+msgid "VFX events were loaded."
+msgstr "VFXイベントが読み込まれました．"

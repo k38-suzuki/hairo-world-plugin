@@ -4,7 +4,6 @@
 
 #include <cnoid/Format>
 #include <cnoid/Plugin>
-#include "BeepView.h"
 #include "BeepItem.h"
 
 using namespace cnoid;
@@ -19,7 +18,6 @@ public:
 
     virtual bool initialize() override
     {
-        BeepView::initializeClass(this);
         BeepItem::initializeClass(this);
         return true;
     }

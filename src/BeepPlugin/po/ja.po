@@ -26,26 +26,17 @@ msgstr "ビープビュー"
 msgid "Beep"
 msgstr "ビープ"
 
-msgid "No."
-msgstr ""
-
-msgid "Link0"
-msgstr "リンク１"
-
-msgid "Link1"
-msgstr "リンク２"
-
-msgid "Frequency"
-msgstr "周波数"
-
-msgid "+"
-msgstr ""
-
-msgid "-"
-msgstr ""
-
 msgid "Play"
 msgstr "再生"
 
-msgid "Link pair list"
-msgstr "リンクペアリスト"
+msgid "Play beep"
+msgstr "ビープ音の試聴"
+
+msgid "Beep Player"
+msgstr "ビーププレイヤ"
+
+msgid "Beep event file"
+msgstr "ビープイベントファイル"
+
+msgid "Beep events were loaded."
+msgstr "Beepイベントが読み込まれました．"
