@@ -114,6 +114,7 @@ bool BeepItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
             item->setName(event.name());
             item->setFrequency(event.frequency());
             item->setLength(event.length());
+            item->showMessage(false);
             item->setTemporary(true);
             self->addSubItem(item);
             commandItems.push_back(item);

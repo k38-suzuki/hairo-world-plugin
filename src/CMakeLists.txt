@@ -13,7 +13,6 @@ add_subdirectory(WRSUtilPlugin)
 
 if(CMAKE_PROJECT_NAME STREQUAL "Choreonoid")
   add_subdirectory(BookmarkPlugin)
-  add_subdirectory(TaskCreatorPlugin)
   add_subdirectory(PHITSPlugin)
 endif()
 

@@ -52,3 +52,6 @@ msgstr "長さ"
 
 msgid "Waiting time after started"
 msgstr "開始後の待ち時間"
+
+msgid "Show message"
+msgstr "メッセージの出力"

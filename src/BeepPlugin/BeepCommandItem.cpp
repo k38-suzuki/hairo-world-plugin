@@ -41,6 +41,7 @@ public:
     int length;
     Process process;
     double waiting_time_after_started;
+    bool is_message_enabled;
 };
 
 }
@@ -50,7 +51,7 @@ void BeepCommandItem::initializeClass(ExtensionManager* ext)
 {
     ItemManager& im = ext->itemManager();
     im.registerClass<BeepCommandItem>(N_("BeepCommandItem"));
-    im.addCreationPanel<BeepCommandItem>();
+    // im.addCreationPanel<BeepCommandItem>();
 
     ItemTreeView::customizeContextMenu<BeepCommandItem>(
         [](BeepCommandItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
@@ -76,6 +77,7 @@ BeepCommandItem::Impl::Impl(BeepCommandItem* self)
     frequency = 440;
     length = 200;
     waiting_time_after_started = 0.0;
+    is_message_enabled = true;
 
     process.sigReadyReadStandardOutput().connect(
         [&](){ onReadyReadServerProcessOutput(); });
@@ -97,6 +99,7 @@ BeepCommandItem::Impl::Impl(BeepCommandItem* self, const Impl& org)
     frequency = org.frequency;
     length = org.length;
     waiting_time_after_started = org.waiting_time_after_started;
+    is_message_enabled = org.is_message_enabled;
 
     process.sigReadyReadStandardOutput().connect(
         [&](){ onReadyReadServerProcessOutput(); });
@@ -150,6 +153,12 @@ void BeepCommandItem::setWaitingTimeAfterStarted(double time)
 }
 
 
+void BeepCommandItem::showMessage(const bool checked)
+{
+    impl->is_message_enabled = checked;
+}
+
+
 bool BeepCommandItem::execute()
 {
     return impl->execute();
@@ -178,9 +187,11 @@ bool BeepCommandItem::Impl::execute()
 #endif
 
         if(process.waitForStarted()) {
-            // mv->putln(
-            //     formatR(_("External command \"{0}\" has been executed by item \"{1}\"."),
-            //             actual_command + " " + actual_arguments, self->displayName()));
+            if(is_message_enabled) {
+                mv->putln(
+                    formatR(_("External command \"{0}\" has been executed by item \"{1}\"."),
+                            actual_command + " " + actual_arguments, self->displayName()));
+            }
             if(waiting_time_after_started > 0.0) {
                 msleep(waiting_time_after_started * 1000.0);
             }
@@ -190,9 +201,13 @@ bool BeepCommandItem::Impl::execute()
         } else {
             mv->put(formatR(_("External command \"{}\" cannot be executed."), actual_command));
             if(!filesystem::exists(fromUTF8(actual_command))) {
-                mv->putln(_(" The command does not exist."));
+                if(is_message_enabled) {
+                    mv->putln(_(" The command does not exist."));
+                }
             } else {
-                mv->putln("");
+                if(is_message_enabled) {
+                    mv->putln("");
+                }
             }
         }
     }
@@ -240,6 +255,8 @@ void BeepCommandItem::doPutProperties(PutPropertyFunction& putProperty)
     putProperty.min(0)(_("Length"), impl->length, changeProperty(impl->length));
     putProperty(_("Waiting time after started"), impl->waiting_time_after_started,
                 changeProperty(impl->waiting_time_after_started));
+    putProperty(_("Show message"), impl->is_message_enabled,
+                changeProperty(impl->is_message_enabled));
 }
 
 
@@ -248,6 +265,7 @@ bool BeepCommandItem::store(Archive& archive)
     archive.write("frequency", impl->frequency);
     archive.write("length", impl->length);
     archive.write("waiting_time_after_started", impl->waiting_time_after_started);
+    archive.write("is_message_enabled", impl->is_message_enabled);
     return true;
 }
 
@@ -257,5 +275,6 @@ bool BeepCommandItem::restore(const Archive& archive)
     archive.read("frequency", impl->frequency);
     archive.read("length", impl->length);
     archive.read("waiting_time_after_started", impl->waiting_time_after_started);
+    archive.read("is_message_enabled", impl->is_message_enabled);
     return true;
 }

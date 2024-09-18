@@ -111,7 +111,6 @@ bool BeepEventReader::Impl::load(const string& filename, ostream& os)
                     event.setLength(node->get("length", 0));
 
                     auto& pairList = *node->findListing("pair");
-
                     if(pairList.isValid() && pairList.size() == 2) {
                         string link1 = pairList[0].toString();
                         string link2 = pairList[1].toString();
