@@ -91,6 +91,7 @@ SceneDevice* createSceneScopeDevice(Device* device)
 
 
 ScopeDevice::ScopeDevice()
+    : Device()
 {
     on_ = true;
     fieldOfView_ = 65.0;

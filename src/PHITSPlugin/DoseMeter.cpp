@@ -82,6 +82,7 @@ SceneDevice* createSceneDoseMeter(Device* device)
 
 
 DoseMeter::DoseMeter()
+    : Device()
 {
     on_ = false;
     color_ << 1.0, 1.0, 1.0;

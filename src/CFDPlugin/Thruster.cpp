@@ -76,7 +76,8 @@ SceneDevice* createSceneThruster(Device* device)
 
 
 Thruster::Thruster()
-    : spec(new Spec)
+    : Device(),
+      spec(new Spec)
 {
     on_ = true;
     force_ = 0.0;

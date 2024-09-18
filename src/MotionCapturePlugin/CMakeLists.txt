@@ -1,10 +1,12 @@
 set(sources
+  CollisionVisualizerItem.cpp
   MotionCaptureItem.cpp
   MotionCapturePlugin.cpp
   PassiveMarker.cpp
 )
 
 set(headers
+  CollisionVisualizerItem.h
   MotionCaptureItem.h
   PassiveMarker.h
   exportdecl.h

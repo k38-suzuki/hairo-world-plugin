@@ -2,7 +2,7 @@
    @author Kenta Suzuki
 */
 
-#include "CollisionLoggerItem.h"
+#include "CollisionSeqLoggerItem.h"
 #include <cnoid/Archive>
 #include <cnoid/Body>
 #include <cnoid/DeviceList>
@@ -55,13 +55,13 @@ bool updateNames(const string& nameListString, string& out_newNameListString, ve
 
 namespace cnoid {
 
-class CollisionLoggerItem::Impl
+class CollisionSeqLoggerItem::Impl
 {
 public:
-    CollisionLoggerItem* self;
+    CollisionSeqLoggerItem* self;
 
-    Impl(CollisionLoggerItem* self);
-    Impl(CollisionLoggerItem* self, const Impl& org);
+    Impl(CollisionSeqLoggerItem* self);
+    Impl(CollisionSeqLoggerItem* self, const Impl& org);
 
     vector<Body*> bodies;
     vector<string> bodyNames;
@@ -79,14 +79,14 @@ public:
 }
 
 
-CollisionLoggerItem::CollisionLoggerItem()
+CollisionSeqLoggerItem::CollisionSeqLoggerItem()
     : SubSimulatorItem()
 {
     impl = new Impl(this);
 }
 
 
-CollisionLoggerItem::Impl::Impl(CollisionLoggerItem* self)
+CollisionSeqLoggerItem::Impl::Impl(CollisionSeqLoggerItem* self)
     : self(self)
 {
     bodies.clear();
@@ -97,7 +97,7 @@ CollisionLoggerItem::Impl::Impl(CollisionLoggerItem* self)
 }
 
 
-CollisionLoggerItem::CollisionLoggerItem(const CollisionLoggerItem& org)
+CollisionSeqLoggerItem::CollisionSeqLoggerItem(const CollisionSeqLoggerItem& org)
     : SubSimulatorItem(org),
       impl(new Impl(this, *org.impl))
 {
@@ -105,7 +105,7 @@ CollisionLoggerItem::CollisionLoggerItem(const CollisionLoggerItem& org)
 }
 
 
-CollisionLoggerItem::Impl::Impl(CollisionLoggerItem* self, const Impl& org)
+CollisionSeqLoggerItem::Impl::Impl(CollisionSeqLoggerItem* self, const Impl& org)
     : self(self),
       bodyNames(org.bodyNames)
 {
@@ -114,28 +114,28 @@ CollisionLoggerItem::Impl::Impl(CollisionLoggerItem* self, const Impl& org)
 }
 
 
-CollisionLoggerItem::~CollisionLoggerItem()
+CollisionSeqLoggerItem::~CollisionSeqLoggerItem()
 {
     delete impl;
 }
 
 
-void CollisionLoggerItem::initializeClass(ExtensionManager* ext)
+void CollisionSeqLoggerItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()
-        .registerClass<CollisionLoggerItem, SubSimulatorItem>(N_("CollisionLoggerItem"))
-        .addCreationPanel<CollisionLoggerItem>();
+        .registerClass<CollisionSeqLoggerItem, SubSimulatorItem>(N_("CollisionSeqLoggerItem"))
+        .addCreationPanel<CollisionSeqLoggerItem>();
 }
 
 
-bool CollisionLoggerItem::initializeSimulation(SimulatorItem* simulatorItem)
+bool CollisionSeqLoggerItem::initializeSimulation(SimulatorItem* simulatorItem)
 {
     impl->initializeSimulation(simulatorItem);
     return true;
 }
 
 
-bool CollisionLoggerItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
+bool CollisionSeqLoggerItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     bodies.clear();
     this->simulatorItem = simulatorItem;
@@ -190,7 +190,7 @@ bool CollisionLoggerItem::Impl::initializeSimulation(SimulatorItem* simulatorIte
 }
 
 
-void CollisionLoggerItem::Impl::onPostDynamics()
+void CollisionSeqLoggerItem::Impl::onPostDynamics()
 {
     int currentFrame = simulatorItem->currentFrame();
     for(size_t i = 0; i < bodies.size(); ++i) {
@@ -213,13 +213,13 @@ void CollisionLoggerItem::Impl::onPostDynamics()
 }
 
 
-Item* CollisionLoggerItem::doCloneItem(CloneMap* cloneMap) const
+Item* CollisionSeqLoggerItem::doCloneItem(CloneMap* cloneMap) const
 {
-    return new CollisionLoggerItem(*this);
+    return new CollisionSeqLoggerItem(*this);
 }
 
 
-void CollisionLoggerItem::doPutProperties(PutPropertyFunction& putProperty)
+void CollisionSeqLoggerItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     SubSimulatorItem::doPutProperties(putProperty);
     putProperty(_("Target bodies"), impl->bodyNameListString,
@@ -227,7 +227,7 @@ void CollisionLoggerItem::doPutProperties(PutPropertyFunction& putProperty)
 }
 
 
-bool CollisionLoggerItem::store(Archive& archive)
+bool CollisionSeqLoggerItem::store(Archive& archive)
 {
     if(!SubSimulatorItem::store(archive)) {
         return false;
@@ -237,7 +237,7 @@ bool CollisionLoggerItem::store(Archive& archive)
 }
 
 
-bool CollisionLoggerItem::restore(const Archive& archive)
+bool CollisionSeqLoggerItem::restore(const Archive& archive)
 {
     if(!SubSimulatorItem::restore(archive)) {
         return false;

@@ -51,12 +51,12 @@ links:
           0, 0.1, 0,
           0, 0, 0.5 ]
         elements:
-          -
+          - &marker
             type: PassiveMarker
-            name: GreenMarker
+            name: RedMarker
             translation: [ 0.0, 0.0, 0.3 ]
             radius: 0.03
-            color: [ 0.0, 1.0, 0.0 ]
+            color: [ 1.0, 0.0, 0.0 ]
             transparency: 0.3
           -
             type: Shape
@@ -95,10 +95,9 @@ links:
       -
         type: Shape
         <<: *TrackShape
-      -
-        type: CollisionSensor
-        name: CollisionSensor_L
-        color: [ 1.0, 0.0, 0.0 ]
+      - <<: *marker
+        name: GreenMarker
+        color: [ 0.0, 1.0, 0.0 ]
   -
     name: CRAWLER_TRACK_R
     parent: BODY
@@ -108,7 +107,6 @@ links:
       -
         type: Shape
         <<: *TrackShape
-      -
-        type: CollisionSensor
-        name: CollisionSensor_R
-        color: [ 1.0, 0.0, 0.0 ]
+      - <<: *marker
+        name: BlueMarker
+        color: [ 0.0, 0.0, 1.0 ]

@@ -2,19 +2,19 @@
    @author Kenta Suzuki
 */
 
-#ifndef CNOID_COLLISIONSEQ_PLUGIN_COLLISION_VISUALIZER_ITEM_H
-#define CNOID_COLLISIONSEQ_PLUGIN_COLLISION_VISUALIZER_ITEM_H
+#ifndef CNOID_COLLISIONSEQ_PLUGIN_COLLISION_SEQ_LOGGER_ITEM_H
+#define CNOID_COLLISIONSEQ_PLUGIN_COLLISION_SEQ_LOGGER_ITEM_H
 
 #include <cnoid/SubSimulatorItem>
 
 namespace cnoid {
 
-class CollisionLoggerItem : public SubSimulatorItem
+class CollisionSeqLoggerItem : public SubSimulatorItem
 {
 public:
-    CollisionLoggerItem();
-    CollisionLoggerItem(const CollisionLoggerItem& org);
-    virtual ~CollisionLoggerItem();
+    CollisionSeqLoggerItem();
+    CollisionSeqLoggerItem(const CollisionSeqLoggerItem& org);
+    virtual ~CollisionSeqLoggerItem();
 
     static void initializeClass(ExtensionManager* ext);
     virtual bool initializeSimulation(SimulatorItem* simulatorItem) override;
@@ -30,8 +30,8 @@ private:
     Impl* impl;
 };
 
-typedef ref_ptr<CollisionLoggerItem> CollisionLoggerItemPtr;
+typedef ref_ptr<CollisionSeqLoggerItem> CollisionSeqLoggerItemPtr;
 
 }
 
-#endif // CNOID_COLLISIONSEQ_PLUGIN_COLLISION_VISUALIZER_ITEM_H
+#endif // CNOID_COLLISIONSEQ_PLUGIN_COLLISION_SEQ_LOGGER_ITEM_H

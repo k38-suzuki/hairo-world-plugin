@@ -5,6 +5,7 @@
 #include <cnoid/Format>
 #include <cnoid/Plugin>
 #include "MotionCaptureItem.h"
+#include "CollisionVisualizerItem.h"
 
 using namespace cnoid;
 
@@ -19,6 +20,7 @@ public:
 
     virtual bool initialize() override
     {
+        // CollisionVisualizerItem::initializeClass(this);
         MotionCaptureItem::initializeClass(this);
         return true;
     }

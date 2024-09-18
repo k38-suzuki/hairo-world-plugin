@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "CollisionLoggerItem"
+msgid "CollisionSeqLoggerItem"
 msgstr "干渉時系列ロガーアイテム"
 
 msgid "Target bodies"

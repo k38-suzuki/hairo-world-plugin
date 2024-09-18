@@ -82,9 +82,10 @@ SceneDevice* createScenePassiveMarker(Device* device)
 
 
 PassiveMarker::PassiveMarker()
+    : Device()
 {
     on_ = true;
-    radius_ = 1.0;
+    radius_ = 0.05;
     color_ << 1.0, 0.0, 0.0;
     transparency_ = 0.0;
     symbol_ = true;

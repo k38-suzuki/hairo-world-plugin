@@ -80,7 +80,8 @@ SceneDevice* createSceneWingDevice(Device* device)
 
 
 WingDevice::WingDevice()
-    : spec(new Spec)
+    : Device(),
+      spec(new Spec)
 {
     on_ = true;
     cl_ = 0.0;

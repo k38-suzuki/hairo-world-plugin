@@ -4,7 +4,7 @@
 
 #include <cnoid/Format>
 #include <cnoid/Plugin>
-#include "CollisionLoggerItem.h"
+#include "CollisionSeqLoggerItem.h"
 
 using namespace cnoid;
 
@@ -18,7 +18,7 @@ public:
 
     virtual bool initialize() override
     {
-        CollisionLoggerItem::initializeClass(this);
+        CollisionSeqLoggerItem::initializeClass(this);
         return true;
     }
 
