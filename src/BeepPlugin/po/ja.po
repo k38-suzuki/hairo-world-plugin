@@ -40,3 +40,30 @@ msgstr "ビープイベントファイル"
 
 msgid "Beep events were loaded."
 msgstr "Beepイベントが読み込まれました．"
+
+msgid "BeepCommandItem"
+msgstr "ビープコマンドアイテム"
+
+msgid "Execute"
+msgstr "実行"
+
+msgid "Terminate"
+msgstr "停止"
+
+msgid "External command \"{0}\" has been executed by item \"{1}\"."
+msgstr "外部コマンド \"{0}\" がアイテム \"{1}\" によって実行されました．"
+
+msgid "External command \"{}\" cannot be executed."
+msgstr "外部コマンド \"{}\" を実行できません．"
+
+msgid " The command does not exist."
+msgstr "コマンドが存在しません．"
+
+msgid "Frequency"
+msgstr "周波数"
+
+msgid "Length"
+msgstr "長さ"
+
+msgid "Waiting time after started"
+msgstr "開始後の待ち時間"
