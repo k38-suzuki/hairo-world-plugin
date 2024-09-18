@@ -1,11 +1,11 @@
 set(sources
-  CollisionVisualizerItem.cpp
+  CollisionLoggerItem.cpp
   CollisionSensor.cpp
   CollisionSeqPlugin.cpp
 )
 
 set(headers
-  CollisionVisualizerItem.h
+  CollisionLoggerItem.h
   CollisionSensor.h
   exportdecl.h
 )

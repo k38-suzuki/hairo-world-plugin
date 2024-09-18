@@ -17,11 +17,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "CollisionVisualizerItem"
-msgstr "干渉可視化"
+msgid "CollisionLoggerItem"
+msgstr "干渉時系列ロガーアイテム"
 
 msgid "Target bodies"
 msgstr "対象ボディ"
-
-msgid "Record collision states"
-msgstr "干渉の記録"

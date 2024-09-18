@@ -9,12 +9,12 @@
 
 namespace cnoid {
 
-class CollisionVisualizerItem : public SubSimulatorItem
+class CollisionLoggerItem : public SubSimulatorItem
 {
 public:
-    CollisionVisualizerItem();
-    CollisionVisualizerItem(const CollisionVisualizerItem& org);
-    virtual ~CollisionVisualizerItem();
+    CollisionLoggerItem();
+    CollisionLoggerItem(const CollisionLoggerItem& org);
+    virtual ~CollisionLoggerItem();
 
     static void initializeClass(ExtensionManager* ext);
     virtual bool initializeSimulation(SimulatorItem* simulatorItem) override;
@@ -30,7 +30,7 @@ private:
     Impl* impl;
 };
 
-typedef ref_ptr<CollisionVisualizerItem> CollisionVisualizerItemPtr;
+typedef ref_ptr<CollisionLoggerItem> CollisionLoggerItemPtr;
 
 }
 
