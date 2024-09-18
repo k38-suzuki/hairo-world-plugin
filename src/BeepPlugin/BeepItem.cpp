@@ -37,7 +37,7 @@ public:
     WorldItem* worldItem;
     string beep_event_file_path;
     vector<BeepEvent> events;
-    vector<BeepCommandItem*> commandItems;
+    ItemList<BeepCommandItem> commandItems;
 };
 
 }
@@ -100,8 +100,10 @@ bool BeepItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 {
     worldItem = simulatorItem->findOwnerItem<WorldItem>();
     events.clear();
+    for(auto& item : commandItems) {
+        item->removeFromParentItem();
+    }
     commandItems.clear();
-    self->clearChildren();
 
     if(!beep_event_file_path.empty()) {
         BeepEventReader reader;
@@ -117,8 +119,8 @@ bool BeepItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
             item->showMessage(false);
             item->setTemporary(true);
             self->addSubItem(item);
-            commandItems.push_back(item);
         }
+        commandItems = self->descendantItems();
     }
 
     if(worldItem) {
