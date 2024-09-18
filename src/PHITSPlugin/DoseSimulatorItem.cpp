@@ -272,7 +272,9 @@ void DoseSimulatorItem::doPutProperties(PutPropertyFunction& putProperty)
 
 bool DoseSimulatorItem::store(Archive& archive)
 {
-    SubSimulatorItem::store(archive);
+    if(!SubSimulatorItem::store(archive)) {
+        return false;
+    }
     archive.write("color_scale", impl->colorScale.selectedIndex());
     archive.writeRelocatablePath("default_shield_table_file", impl->defaultShieldTableFile);
     return true;
@@ -281,7 +283,9 @@ bool DoseSimulatorItem::store(Archive& archive)
 
 bool DoseSimulatorItem::restore(const Archive& archive)
 {
-    SubSimulatorItem::restore(archive);
+    if(!SubSimulatorItem::restore(archive)) {
+        return false;
+    }
     impl->colorScale.selectIndex(archive.get("color_scale", 0));
     archive.readRelocatablePath("default_shield_table_file", impl->defaultShieldTableFile);
     return true;

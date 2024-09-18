@@ -225,7 +225,9 @@ void NetworkEmulatorItem::doPutProperties(PutPropertyFunction& putProperty)
 
 bool NetworkEmulatorItem::store(Archive& archive)
 {
-    SubSimulatorItem::store(archive);
+    if(!SubSimulatorItem::store(archive)) {
+        return false;
+    }
     archive.write("interface", impl->interface.selectedSymbol());
     archive.write("ifb_device", impl->ifbDevice.selectedSymbol());
     return true;
@@ -234,7 +236,9 @@ bool NetworkEmulatorItem::store(Archive& archive)
 
 bool NetworkEmulatorItem::restore(const Archive& archive)
 {
-    SubSimulatorItem::restore(archive);
+    if(!SubSimulatorItem::restore(archive)) {
+        return false;
+    }
     string interface;
     if(archive.read("interface", interface)) {
         impl->interface.select(interface);

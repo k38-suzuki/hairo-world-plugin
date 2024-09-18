@@ -144,7 +144,9 @@ void JoystickLoggerItem::doPutProperties(PutPropertyFunction& putProperty)
 
 bool JoystickLoggerItem::store(Archive& archive)
 {
-    SubSimulatorItem::store(archive);
+    if(!SubSimulatorItem::store(archive)) {
+        return false;
+    }
     archive.write("device", impl->device);
     return true;
 }
@@ -152,7 +154,9 @@ bool JoystickLoggerItem::store(Archive& archive)
 
 bool JoystickLoggerItem::restore(const Archive& archive)
 {
-    SubSimulatorItem::restore(archive);
+    if(!SubSimulatorItem::restore(archive)) {
+        return false;
+    }
     archive.read("device", impl->device);
     return true;
 }

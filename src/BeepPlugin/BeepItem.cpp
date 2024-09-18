@@ -181,7 +181,9 @@ void BeepItem::doPutProperties(PutPropertyFunction& putProperty)
 
 bool BeepItem::store(Archive& archive)
 {
-    SubSimulatorItem::store(archive);
+    if(!SubSimulatorItem::store(archive)) {
+        return false;
+    }
     archive.writeRelocatablePath("beep_event_file_path", impl->beep_event_file_path);
     return true;
 }
@@ -189,7 +191,9 @@ bool BeepItem::store(Archive& archive)
 
 bool BeepItem::restore(const Archive& archive)
 {
-    SubSimulatorItem::restore(archive);
+    if(!SubSimulatorItem::restore(archive)) {
+        return false;
+    }
     string symbol;
     if(archive.read("beep_event_file_path", symbol)) {
         symbol = archive.resolveRelocatablePath(symbol);

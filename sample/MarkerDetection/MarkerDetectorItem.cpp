@@ -180,13 +180,17 @@ void MarkerDetectorItem::doPutProperties(PutPropertyFunction& putProperty)
 
 bool MarkerDetectorItem::store(Archive& archive)
 {
-    SubSimulatorItem::store(archive);
+    if(!SubSimulatorItem::store(archive)) {
+        return false;
+    }
     return true;
 }
 
 
 bool MarkerDetectorItem::restore(const Archive& archive)
 {
-    SubSimulatorItem::restore(archive);
+    if(!SubSimulatorItem::restore(archive)) {
+        return false;
+    }
     return true;
 }

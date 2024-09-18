@@ -468,13 +468,17 @@ void CFDSimulatorItem::doPutProperties(PutPropertyFunction& putProperty)
 
 bool CFDSimulatorItem::store(Archive& archive)
 {
-    SubSimulatorItem::store(archive);
+    if(!SubSimulatorItem::store(archive)) {
+        return false;
+    }
     return true;
 }
 
 
 bool CFDSimulatorItem::restore(const Archive& archive)
 {
-    SubSimulatorItem::restore(archive);
+    if(!SubSimulatorItem::restore(archive)) {
+        return false;
+    }
     return true;
 }

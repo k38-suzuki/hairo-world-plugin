@@ -129,13 +129,17 @@ void LiftSimulatorItem::doPutProperties(PutPropertyFunction& putProperty)
 
 bool LiftSimulatorItem::store(Archive& archive)
 {
-    SubSimulatorItem::store(archive);
+    if(!SubSimulatorItem::store(archive)) {
+        return false;
+    }
     return true;
 }
 
 
 bool LiftSimulatorItem::restore(const Archive& archive)
 {
-    SubSimulatorItem::restore(archive);
+    if(!SubSimulatorItem::restore(archive)) {
+        return false;
+    }
     return true;
 }

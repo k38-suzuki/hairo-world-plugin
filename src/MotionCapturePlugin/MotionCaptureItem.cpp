@@ -241,7 +241,9 @@ void MotionCaptureItem::doPutProperties(PutPropertyFunction& putProperty)
 
 bool MotionCaptureItem::store(Archive& archive)
 {
-    SubSimulatorItem::store(archive);
+    if(!SubSimulatorItem::store(archive)) {
+        return false;
+    }
     archive.write("data_recording", impl->isMotionDataRecordingProperty);
     return true;
 }
@@ -249,7 +251,9 @@ bool MotionCaptureItem::store(Archive& archive)
 
 bool MotionCaptureItem::restore(const Archive& archive)
 {
-    SubSimulatorItem::restore(archive);
+    if(!SubSimulatorItem::restore(archive)) {
+        return false;
+    }
     archive.read("data_recording", impl->isMotionDataRecordingProperty);
     return true;
 }

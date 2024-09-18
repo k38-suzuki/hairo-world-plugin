@@ -229,7 +229,9 @@ void CollisionVisualizerItem::doPutProperties(PutPropertyFunction& putProperty)
 
 bool CollisionVisualizerItem::store(Archive& archive)
 {
-    SubSimulatorItem::store(archive);
+    if(!SubSimulatorItem::store(archive)) {
+        return false;
+    }
     writeElements(archive, "target_bodies", impl->bodyNames, true);
     return true;
 }
@@ -237,7 +239,9 @@ bool CollisionVisualizerItem::store(Archive& archive)
 
 bool CollisionVisualizerItem::restore(const Archive& archive)
 {
-    SubSimulatorItem::restore(archive);
+    if(!SubSimulatorItem::restore(archive)) {
+        return false;
+    }
     readElements(archive, "target_bodies", impl->bodyNames);
     impl->bodyNameListString = getNameListString(impl->bodyNames);
     return true;
