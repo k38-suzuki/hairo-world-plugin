@@ -72,7 +72,6 @@ public:
     DeviceList<CollisionSensor> sensors;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
-    void extract(SgNode* node, Link* link, Vector3 color);
     void onPostDynamics();
 };
 

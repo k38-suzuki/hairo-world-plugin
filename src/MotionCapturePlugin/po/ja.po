@@ -20,8 +20,5 @@ msgstr ""
 msgid "MotionCaptureItem"
 msgstr "モーションキャプチャアイテム"
 
-msgid "Record motion data"
-msgstr "モーションデータの記録"
-
 msgid "CollisionVisualizerItem"
 msgstr "干渉可視化"

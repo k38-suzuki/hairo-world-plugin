@@ -98,7 +98,6 @@ bool CollisionVisualizerItem::start()
     if(!CollisionDetectionControllerItem::start()) {
         return false;
     }
-
     return true;
 }
 
@@ -114,7 +113,6 @@ bool CollisionVisualizerItem::control()
     if(!CollisionDetectionControllerItem::control()) {
         return false;
     }
-
     return true;
 }
 
@@ -157,7 +155,6 @@ bool CollisionVisualizerItem::store(Archive& archive)
     if(!CollisionDetectionControllerItem::store(archive)) {
         return false;
     }
-
     return true;
 }
 
@@ -167,6 +164,5 @@ bool CollisionVisualizerItem::restore(const Archive& archive)
     if(!CollisionDetectionControllerItem::restore(archive)) {
         return false;
     }
-
     return true;
 }
