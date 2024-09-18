@@ -178,9 +178,9 @@ bool BeepCommandItem::Impl::execute()
 #endif
 
         if(process.waitForStarted()) {
-            mv->putln(
-                formatR(_("External command \"{0}\" has been executed by item \"{1}\"."),
-                        actual_command + " " + actual_arguments, self->displayName()));
+            // mv->putln(
+            //     formatR(_("External command \"{0}\" has been executed by item \"{1}\"."),
+            //             actual_command + " " + actual_arguments, self->displayName()));
             if(waiting_time_after_started > 0.0) {
                 msleep(waiting_time_after_started * 1000.0);
             }

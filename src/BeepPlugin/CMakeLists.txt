@@ -1,5 +1,4 @@
 set(sources
-  Beeper.cpp
   BeepCommandItem.cpp
   BeepEventReader.cpp
   BeepItem.cpp
@@ -7,14 +6,12 @@ set(sources
 )
 
 set(headers
-  Beeper.h
   BeepCommandItem.h
   BeepEventReader.h
   BeepItem.h
   exportdecl.h
 )
 
-choreonoid_make_header_public(Beeper.h)
 choreonoid_make_header_public(BeepCommandItem.h)
 
 set(target CnoidBeepPlugin)

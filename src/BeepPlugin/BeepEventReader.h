@@ -23,8 +23,10 @@ public:
     void setLinkPairs(const std::string& link1, const std::string& link2) {
         link1_ = link1;
         link2_ = link2; }
-    double frequency() const { return frequency_; }
-    void setFrequency(const double& frequency) { frequency_ = frequency; }
+    int frequency() const { return frequency_; }
+    void setFrequency(const int& frequency) { frequency_ = frequency; }
+    int length() const { return length_; }
+    void setLength(const int& length) { length_ = length; }
     bool isEnabled() const { return is_enabled_; }
     void setEnabled(const bool is_enabled) { is_enabled_ = is_enabled; };
 
@@ -32,7 +34,8 @@ private:
     std::string name_;
     std::string link1_;
     std::string link2_;
-    double frequency_;
+    int frequency_;
+    int length_;
     bool is_enabled_;
 };
 

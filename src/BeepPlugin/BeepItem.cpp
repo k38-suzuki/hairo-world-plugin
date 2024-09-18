@@ -4,23 +4,15 @@
 
 #include "BeepItem.h"
 #include <cnoid/Archive>
-#include <cnoid/Buttons>
-#include <cnoid/ComboBox>
 #include <cnoid/CollisionLinkPair>
-#include <cnoid/Dialog>
 #include <cnoid/Format>
 #include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
 #include <cnoid/LazyCaller>
-#include <cnoid/MenuManager>
-#include <cnoid/MessageView>
 #include <cnoid/PutPropertyFunction>
-#include <cnoid/Separator>
 #include <cnoid/SimulatorItem>
 #include <cnoid/WorldItem>
-#include <QBoxLayout>
-#include <QDialogButtonBox>
-#include "Beeper.h"
+#include "BeepCommandItem.h"
 #include "BeepEventReader.h"
 #include "gettext.h"
 
@@ -28,22 +20,6 @@ using namespace std;
 using namespace cnoid;
 
 namespace cnoid {
-
-class BeepPlayer : public Dialog
-{
-public:
-    BeepPlayer();
-
-    void load(const string& filename);
-
-private:
-    void play();
-
-    ComboBox* eventCombo;
-    QDialogButtonBox* buttonBox;
-    Beeper beeper;
-    vector<BeepEvent> events;
-};
 
 class BeepItem::Impl
 {
@@ -58,12 +34,10 @@ public:
 
     typedef shared_ptr<CollisionLinkPair> CollisionLinkPairPtr;
 
-    SimulatorItem* simulatorItem;
     WorldItem* worldItem;
-    Beeper beeper;
-    bool is_played;
     string beep_event_file_path;
     vector<BeepEvent> events;
+    vector<BeepCommandItem*> commandItems;
 };
 
 }
@@ -74,19 +48,6 @@ void BeepItem::initializeClass(ExtensionManager* ext)
     ext->itemManager()
             .registerClass<BeepItem, SubSimulatorItem>(N_("BeepItem"))
             .addCreationPanel<BeepItem>();
-
-    ItemTreeView::customizeContextMenu<BeepItem>(
-        [&](BeepItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction){
-            menuManager.addItem(_("Play beep"))->sigTriggered().connect(
-                [&, item](){
-                    string filename = item->impl->beep_event_file_path;
-                    BeepPlayer* player = new BeepPlayer;
-                    player->load(filename);
-                    player->show();
-                });
-            menuManager.addSeparator();
-            menuFunction.dispatchAs<Item>(item);
-        });
 }
 
 
@@ -99,12 +60,11 @@ BeepItem::BeepItem()
 
 BeepItem::Impl::Impl(BeepItem* self)
     : self(self),
-      is_played(false),
       beep_event_file_path("")
 {
-    simulatorItem = nullptr;
     worldItem = nullptr;
     events.clear();
+    commandItems.clear();
 }
 
 
@@ -118,8 +78,9 @@ BeepItem::BeepItem(const BeepItem& org)
 BeepItem::Impl::Impl(BeepItem* self, const Impl& org)
     : self(self)
 {
-    is_played = org.is_played;
     beep_event_file_path = org.beep_event_file_path;
+    events = org.events;
+    commandItems = org.commandItems;
 }
 
 
@@ -137,21 +98,31 @@ bool BeepItem::initializeSimulation(SimulatorItem* simulatorItem)
 
 bool BeepItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 {
-    this->simulatorItem = simulatorItem;
-    worldItem = this->simulatorItem->findOwnerItem<WorldItem>();
-    is_played = false;
+    worldItem = simulatorItem->findOwnerItem<WorldItem>();
     events.clear();
+    commandItems.clear();
+    self->clearChildren();
 
     if(!beep_event_file_path.empty()) {
         BeepEventReader reader;
         if(reader.load(beep_event_file_path)) {
             events = reader.events();
         }
+
+        for(auto& event: events) {
+            BeepCommandItem* item = new BeepCommandItem;
+            item->setName(event.name());
+            item->setFrequency(event.frequency());
+            item->setLength(event.length());
+            item->setTemporary(true);
+            self->addSubItem(item);
+            commandItems.push_back(item);
+        }
     }
 
     if(worldItem) {
         worldItem->setCollisionDetectionEnabled(true);
-        this->simulatorItem->addPostDynamicsFunction([&](){ onPostDynamics(); });
+        simulatorItem->addPostDynamicsFunction([&](){ onPostDynamics(); });
     }
 
     return true;
@@ -160,10 +131,6 @@ bool BeepItem::Impl::initializeSimulation(SimulatorItem* simulatorItem)
 
 void BeepItem::Impl::onPostDynamics()
 {
-    double currentTime = simulatorItem->currentTime();
-    static double startTime = 0.0;
-
-    int playID = 999;
     for(size_t i = 0; i < events.size(); ++i) {
         string link0 = events[i].link1();
         string link1 = events[i].link2();
@@ -185,28 +152,11 @@ void BeepItem::Impl::onPostDynamics()
                 }
             }
             if(contacted && !events[i].isEnabled()) {
-                playID = i;
+                callLater([this, i](){ commandItems[i]->execute(); });
             }
         }
 
         events[i].setEnabled(contacted);
-    }
-
-    if(playID != 999 && !is_played) {
-        startTime = currentTime;
-    }
-
-    if(currentTime < startTime + 0.2) {
-        callLater([this, playID](){
-            int frequency = events[playID].frequency();
-            int length = 200;
-            if(!beeper.isActive()) {
-                beeper.start(frequency, length);
-            }
-        });
-        is_played = true;
-    } else {
-        is_played = false;
     }
 }
 
@@ -247,62 +197,4 @@ bool BeepItem::restore(const Archive& archive)
         }
     }
     return true;
-}
-
-
-BeepPlayer::BeepPlayer()
-    : Dialog()
-{
-    events.clear();
-
-    eventCombo = new ComboBox;
-
-    auto playButton = new PushButton(QIcon::fromTheme("media-playback-start"), _("Play"));
-    playButton->sigClicked().connect([this](){ play(); });
-
-    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
-    connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
-
-    auto layout = new QHBoxLayout;
-    layout->addWidget(eventCombo);
-    layout->addWidget(playButton);
-
-    auto mainLayout = new QVBoxLayout;
-    mainLayout->addLayout(layout);
-    mainLayout->addStretch();
-    mainLayout->addWidget(new HSeparator);
-    mainLayout->addWidget(buttonBox);
-
-    setLayout(mainLayout);
-    setWindowTitle(_("Beep Player"));
-}
-
-
-void BeepPlayer::load(const string& filename)
-{
-    events.clear();
-
-    if(!filename.empty()) {
-        BeepEventReader reader;
-        if(reader.load(filename)) {
-            events = reader.events();
-        }
-    }
-
-    for(auto& event : events) {
-        MessageView::instance()->putln(formatR(_("name: {0}, link1: {1}, link2: {2}, frequency: {3}"),
-                event.name(), event.link1(), event.link2(), event.frequency()));
-        eventCombo->addItem(event.name().c_str());
-    }
-}
-
-
-void BeepPlayer::play()
-{
-    int index =  eventCombo->currentIndex();
-    int frequency = events[index].frequency();
-    int length = 200;
-    if(!beeper.isActive()) {
-        beeper.start(frequency, length);
-    }
 }

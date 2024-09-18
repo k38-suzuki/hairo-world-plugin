@@ -20,21 +20,6 @@ msgstr ""
 msgid "BeepItem"
 msgstr "ビープアイテム"
 
-msgid "BeepView"
-msgstr "ビープビュー"
-
-msgid "Beep"
-msgstr "ビープ"
-
-msgid "Play"
-msgstr "再生"
-
-msgid "Play beep"
-msgstr "ビープ音の試聴"
-
-msgid "Beep Player"
-msgstr "ビーププレイヤ"
-
 msgid "Beep event file"
 msgstr "ビープイベントファイル"
 

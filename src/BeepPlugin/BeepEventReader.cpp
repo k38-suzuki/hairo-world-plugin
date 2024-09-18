@@ -35,7 +35,8 @@ BeepEvent::BeepEvent()
     name_.clear();
     link1_.clear();
     link2_.clear();
-    frequency_ = 0.0;
+    frequency_ = 440;
+    length_ = 200;
     is_enabled_ = false;
 }
 
@@ -46,6 +47,7 @@ BeepEvent::BeepEvent(const BeepEvent& org)
     link1_ = org.link1_;
     link2_ = org.link2_;
     frequency_ = org.frequency_;
+    length_ = org.length_;
     is_enabled_ = org.is_enabled_;
 }
 
@@ -105,7 +107,8 @@ bool BeepEventReader::Impl::load(const string& filename, ostream& os)
                     BeepEvent event;
 
                     event.setName(node->get("name", ""));
-                    event.setFrequency(node->get("frequency", 0.0));
+                    event.setFrequency(node->get("frequency", 0));
+                    event.setLength(node->get("length", 0));
 
                     auto& pairList = *node->findListing("pair");
 
