@@ -118,7 +118,13 @@ items:
               class: MotionCaptureItem
               data:
                 enabled: true
-                data_recording: true
+            -
+              id: 7
+              name: "CollisionSeqLogger"
+              plugin: MotionCapture
+              class: CollisionSeqLoggerItem
+              data:
+                enabled: true
 views:
   -
     id: 0

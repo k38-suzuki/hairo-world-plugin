@@ -1,4 +1,5 @@
 set(sources
+  CollisionSeqLoggerItem.cpp
   CollisionVisualizerItem.cpp
   MotionCaptureItem.cpp
   MotionCapturePlugin.cpp
@@ -7,6 +8,7 @@ set(sources
 )
 
 set(headers
+  CollisionSeqLoggerItem.h
   CollisionVisualizerItem.h
   MotionCaptureItem.h
   PassiveMarker.h

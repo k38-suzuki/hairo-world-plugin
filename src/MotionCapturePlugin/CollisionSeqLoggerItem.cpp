@@ -14,9 +14,9 @@
 #include <cnoid/StringUtil>
 #include <cnoid/Tokenizer>
 #include <cnoid/ValueTreeUtil>
-#include <QDateTime>
+#include "LoggerUtil.h"
+#include "PassiveMarker.h"
 #include <set>
-#include "CollisionSensor.h"
 #include "gettext.h"
 
 using namespace std;
@@ -69,7 +69,7 @@ public:
     SimulatorItem* simulatorItem;
 
     vector<MultiValueSeqItem*> collisionStateSeqItems;
-    DeviceList<CollisionSensor> sensors;
+    DeviceList<PassiveMarker> sensors;
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void onPostDynamics();
@@ -154,9 +154,8 @@ bool CollisionSeqLoggerItem::Impl::initializeSimulation(SimulatorItem* simulator
             if(!body->isStaticModel()) {
                 bodies.push_back(body);
                 MultiValueSeqItem* collisionStateSeqItem = new MultiValueSeqItem;
-                QDateTime loggingStartTime = QDateTime::currentDateTime();
-                string suffix = loggingStartTime.toString("yyyy-MM-dd-hh-mm-ss").toStdString();
-                string name = suffix + " - " + body->name();
+                string suffix = getCurrentTimeSuffix();
+                string name = body->name() + suffix;
                 collisionStateSeqItem->setName(name);
                 self->addSubItem(collisionStateSeqItem);
                 collisionStateSeqItems.push_back(collisionStateSeqItem);
@@ -168,8 +167,8 @@ bool CollisionSeqLoggerItem::Impl::initializeSimulation(SimulatorItem* simulator
                 log->setFrameRate(1.0 / simulatorItem->worldTimeStep());
                 log->setOffsetTime(0.0);
 
-                for(int j = 0; j < body->numLinks(); ++j) {
-                    Link* link = body->link(j);
+                for(int i = 0; i < body->numLinks(); ++i) {
+                    Link* link = body->link(i);
                     link->mergeSensingMode(Link::LinkContactState);
                 }
             }
