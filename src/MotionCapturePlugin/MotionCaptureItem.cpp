@@ -156,7 +156,7 @@ void MotionCaptureItem::Impl::finalizeSimulation()
 {
     if(multiPointSetItem) {
         // string suffix = getCurrentTimeSuffix();
-        // string dir = mkdirs(StandardPath::Downloads, "capture/test");
+        // string dir = mkdir(StandardPath::Downloads, "capture");
 
         multiPointSetItem->setChecked(true);
 

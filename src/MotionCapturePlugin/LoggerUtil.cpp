@@ -6,7 +6,6 @@
 #include <cnoid/UTF8>
 #include <cnoid/stdx/filesystem>
 #include <QDateTime>
-#include <QDir>
  #include <QStandardPaths>
 
 using namespace std;
@@ -49,30 +48,29 @@ string getStandardPath(const int& type)
         default:
             break;
     }
-    return QStandardPaths::writableLocation(pathType).toStdString();
+    return toUTF8(QStandardPaths::writableLocation(pathType).toStdString());
 }
 
 
 string mkdir(const int& type, const std::string& directory)
 {
-    QDir dir(getStandardPath(type).c_str());
-    if(!dir.mkdir(directory.c_str())) {
-
+    string user_dir = getStandardPath(type) + "/" + directory;
+    filesystem::path path(fromUTF8(user_dir));
+    if(!filesystem::exists(path)) {
+        filesystem::create_directory(path);
     }
-    return getStandardPath(type) + "/" + directory;
+    return toUTF8(path.string());
 }
 
 
 string mkdirs(const int& type, const std::string& directories)
 {
-    filesystem::path dir(fromUTF8(getStandardPath(type).c_str()));
-    string user_path = toUTF8((dir / directories.c_str()).string());
-
-    filesystem::path user_dir(fromUTF8(user_path));
-    if(!filesystem::exists(user_dir)) {
-        filesystem::create_directories(user_dir);
+    string user_dir = getStandardPath(type) + "/" + directories;
+    filesystem::path path(fromUTF8(user_dir));
+    if(!filesystem::exists(path)) {
+        filesystem::create_directories(path);
     }
-    return getStandardPath(type) + "/" + directories;
+    return toUTF8(path.string());
 }
 
 }
