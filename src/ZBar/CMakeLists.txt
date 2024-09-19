@@ -1,6 +1,5 @@
 set(sources
   QRDecoder.cpp
-  ZBarPlugin.cpp
 )
 
 set(headers
@@ -10,7 +9,7 @@ set(headers
 
 choreonoid_make_header_public(QRDecoder.h)
   
-set(target CnoidZBarPlugin)
+set(target CnoidZBar)
 make_gettext_mofiles(${target} mofiles)
-choreonoid_add_plugin(${target} ${sources} ${mofiles} HEADERS ${headers})
+choreonoid_add_library(${target} SHARED ${sources} ${mofiles} HEADERS ${headers})
 target_link_libraries(${target} PUBLIC CnoidBodyPlugin)
