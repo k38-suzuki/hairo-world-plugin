@@ -6,7 +6,6 @@
 #include <cnoid/CollisionLinkPair>
 #include <cnoid/ExtensionManager>
 #include <cnoid/ItemManager>
-#include "PassiveMarker.h"
 #include "gettext.h"
 
 using namespace std;
@@ -22,9 +21,6 @@ public:
     Impl(CollisionVisualizerItem* self);
     Impl(CollisionVisualizerItem* self, const Impl& org);
     ~Impl();
-
-    Body* ioBody;
-    DeviceList<PassiveMarker> markers;
 };
 
 }
@@ -33,7 +29,7 @@ public:
 void CollisionVisualizerItem::initializeClass(ExtensionManager* ext)
 {
     ItemManager& im = ext->itemManager();
-    im.registerClass<CollisionVisualizerItem>(N_("CollisionVisualizerItem"));
+    im.registerClass<CollisionVisualizerItem, CollisionDetectionControllerItem>(N_("CollisionVisualizerItem"));
     im.addCreationPanel<CollisionVisualizerItem>();
 }
 
@@ -48,8 +44,7 @@ CollisionVisualizerItem::CollisionVisualizerItem()
 CollisionVisualizerItem::Impl::Impl(CollisionVisualizerItem* self)
     : self(self)
 {
-    ioBody = nullptr;
-    markers.clear();
+
 }
 
 
@@ -64,7 +59,7 @@ CollisionVisualizerItem::CollisionVisualizerItem(const CollisionVisualizerItem& 
 CollisionVisualizerItem::Impl::Impl(CollisionVisualizerItem* self, const Impl& org)
     : self(self)
 {
-    markers.clear();
+
 }
 
 
@@ -85,10 +80,6 @@ bool CollisionVisualizerItem::initialize(ControllerIO* io)
     if(!CollisionDetectionControllerItem::initialize(io)) {
         return false;
     }
-
-    impl->ioBody = io->body();
-    impl->markers = impl->ioBody->devices();
-
     return true;
 }
 
@@ -135,7 +126,7 @@ Item* CollisionVisualizerItem::doCloneItem(CloneMap* cloneMap) const
 }
 
 
-void CollisionVisualizerItem::onCollisionsDetected(const std::vector<CollisionLinkPair>& collisions)
+void CollisionVisualizerItem::onCollisionsDetected(const vector<CollisionLinkPair>& collisions)
 {
     for(auto& collision : collisions) {
         Link* link1 = collision.link(0);
