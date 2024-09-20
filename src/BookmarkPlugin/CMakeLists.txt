@@ -3,6 +3,7 @@ set(sources
   BookmarkBar.cpp
   BookmarkManager.cpp
   BookmarkPlugin.cpp
+  HamburgerMenu.cpp
   HistoryManager.cpp
   JoyKey.cpp
   KIOSKManager.cpp
@@ -15,6 +16,7 @@ set(headers
   ArchiveListDialog.h
   BookmarkBar.h
   BookmarkManager.h
+  HamburgerMenu.h
   HistoryManager.h
   JoyKey.h
   KIOSKManager.h
@@ -24,11 +26,13 @@ set(headers
   exportdecl.h
 )
 
+choreonoid_qt_add_resources(RC_SRCS BookmarkPlugin.qrc)
+
 choreonoid_make_header_public(BookmarkBar.h)
 choreonoid_make_header_public(SystemTrayIcon.h)
 choreonoid_make_header_public(ToolsUtil.h)
 
 set(target CnoidBookmarkPlugin)
 make_gettext_mofiles(${target} mofiles)
-choreonoid_add_plugin(${target} ${sources} ${mofiles} HEADERS ${headers})
+choreonoid_add_plugin(${target} ${sources} ${mofiles} ${RC_SRCS} HEADERS ${headers})
 target_link_libraries(${target} PUBLIC CnoidBodyPlugin)

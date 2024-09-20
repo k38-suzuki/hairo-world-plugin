@@ -6,6 +6,7 @@
 #include <cnoid/Plugin>
 #include "BookmarkBar.h"
 #include "BookmarkManager.h"
+#include "HamburgerMenu.h"
 #include "HistoryManager.h"
 #include "KIOSKManager.h"
 #include "ToolsUtil.h"
@@ -29,6 +30,7 @@ public:
         WorldLogManager::initializeClass(this);
         HistoryManager::initializeClass(this);
         KIOSKManager::initializeClass(this);
+        HamburgerMenu::initializeClass(this);
         return true;
     }
 
