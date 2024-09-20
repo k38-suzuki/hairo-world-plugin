@@ -34,6 +34,7 @@ public:
 
     void onDecodeButtonClicked();
 
+    ImageViewBar* imageViewBar;
     string decoded_image_file;
 
     QRDecoder* decoder;
@@ -57,14 +58,14 @@ QRReader::QRReader()
 
 
 QRReader::Impl::Impl()
-    : decoded_image_file("decoded_image.png")
+    : imageViewBar(ImageViewBar::instance()),
+      decoded_image_file("decoded_image.png")
 {
     decoder = new QRDecoder;
     decoder->sigDecoded().connect([&](std::string text){
         MessageView::instance()->putln(formatR(_("\"{0}\" has been read."), text)); });
 
-    auto bar = ImageViewBar::instance();
-    auto button = bar->addButton(":/ZBar/icon/kkrn_icon_qrcode_6.svg");
+    auto button = imageViewBar->addButton(":/ZBar/icon/kkrn_icon_qrcode_6.svg");
     button->setToolTip(_("Read QR"));
     button->sigClicked().connect([&](){ onDecodeButtonClicked(); });
 }
@@ -86,8 +87,10 @@ QRReader::Impl::~Impl()
 
 void QRReader::Impl::onDecodeButtonClicked()
 {
-    auto imageableItem = ImageView::instance()->getImageableItem();
-    const Image* image = imageableItem->getImage();
-    image->save(decoded_image_file);
-    decoder->decode(decoded_image_file);
+    auto imageableItem = imageViewBar->getSelectedImageableItem();
+    if(imageableItem) {
+        const Image* image = imageableItem->getImage();
+        image->save(decoded_image_file);
+        decoder->decode(decoded_image_file);
+    }
 }
