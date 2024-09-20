@@ -2,12 +2,8 @@
 <RCC version="1.0">
   <qresource prefix="/ZBar" >
     
-    <file>icon/kkrn_icon_qrcode_1.svg</file>
-    <file>icon/kkrn_icon_qrcode_2.svg</file>
-    <file>icon/kkrn_icon_qrcode_3.svg</file>
-    <file>icon/kkrn_icon_qrcode_4.svg</file>
-    <file>icon/kkrn_icon_qrcode_5.svg</file>
-    <file>icon/kkrn_icon_qrcode_6.svg</file>
+    <file>icon/1031_q_h.svg</file>
+    <file>icon/1032_q_h.svg</file>
 
   </qresource>
 </RCC>

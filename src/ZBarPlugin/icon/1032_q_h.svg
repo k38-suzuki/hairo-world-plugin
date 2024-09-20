@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <defs>
+    <style>
+      .a, .c {
+        fill: none;
+      }
+
+      .a, .c, .d {
+        stroke: #231815;
+        stroke-width: 2px;
+      }
+
+      .a {
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .b, .d {
+        fill: #231815;
+      }
+
+      .c {
+        stroke-miterlimit: 10;
+      }
+    </style>
+  </defs>
+  <title>1032_q_h</title>
+  <g>
+    <rect class="a" x="9.52" y="9.52" width="12.31" height="12.31"/>
+    <rect class="a" x="9.52" y="26.17" width="12.31" height="12.31"/>
+    <rect class="a" x="26.17" y="9.52" width="12.31" height="12.31" transform="translate(16.65 48) rotate(-90)"/>
+    <g>
+      <polyline class="a" points="4.17 11.46 4.17 4.17 11.46 4.17"/>
+      <polyline class="a" points="36.54 4.17 43.83 4.17 43.83 11.46"/>
+      <polyline class="a" points="4.17 11.46 4.17 4.17 11.46 4.17"/>
+      <polyline class="a" points="36.54 4.17 43.83 4.17 43.83 11.46"/>
+      <polyline class="a" points="4.17 36.54 4.17 43.83 11.46 43.83"/>
+      <polyline class="a" points="36.54 43.83 43.83 43.83 43.83 36.54"/>
+    </g>
+    <rect class="b" x="14.67" y="14.74" width="2" height="2"/>
+    <rect class="c" x="13.71" y="13.77" width="3.93" height="3.93"/>
+    <rect class="b" x="31.33" y="14.74" width="2" height="2"/>
+    <rect class="c" x="30.36" y="13.77" width="3.93" height="3.93"/>
+    <rect class="b" x="14.67" y="31.33" width="2" height="2"/>
+    <rect class="c" x="13.71" y="30.36" width="3.93" height="3.93"/>
+    <g>
+      <line class="d" x1="27.17" y1="28.54" x2="37.48" y2="28.54"/>
+      <line class="d" x1="27.17" y1="32.25" x2="37.48" y2="32.25"/>
+      <line class="d" x1="27.17" y1="36.11" x2="37.48" y2="36.11"/>
+    </g>
+  </g>
+</svg>
