@@ -1,11 +1,11 @@
-# Japanese translations for Choreonoid package.
-# Copyright (C) 2023 THE Choreonoid'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the Choreonoid package.
+# Japanese translations for BookmarkPlugin package.
+# Copyright (C) 2023 THE BookmarkPlugin'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the BookmarkPlugin package.
 # k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2023.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Choreonoid\n"
+"Project-Id-Version: BookmarkPlugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-16 17:47+0900\n"
 "PO-Revision-Date: 2023-01-16 17:47+0900\n"
@@ -32,16 +32,16 @@ msgstr "履歴"
 msgid "Clear histories"
 msgstr "履歴の削除"
 
-msgid "Show the worldlog manager"
+msgid "Show the world log manager"
 msgstr "ワールドログマネージャの表示"
 
-msgid "WorldLog"
+msgid "World Log"
 msgstr "ワールドログ"
 
-msgid "WorldLog Manager"
+msgid "World Log Manager"
 msgstr "ワールドログマネージャ"
 
-msgid "Save a WorldLog"
+msgid "Save a World Log"
 msgstr "ワールドログの保存"
 
 msgid "BookmarkBar"

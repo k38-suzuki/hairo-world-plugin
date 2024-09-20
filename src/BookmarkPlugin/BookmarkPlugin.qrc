@@ -2,7 +2,7 @@
 <RCC version="1.0">
   <qresource prefix="/BookmarkPlugin" >
     
-    <file>icon/bars_hoso.svg</file>
+    <file>icon/bars_24.svg</file>
 
   </qresource>
 </RCC>

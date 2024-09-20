@@ -10,7 +10,7 @@
 #include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include <cnoid/ValueTree>
-#include <cnoid/ToolsUtil>
+#include "ToolsUtil.h"
 #include "gettext.h"
 
 using namespace std;

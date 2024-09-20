@@ -6,7 +6,7 @@
 #include <cnoid/Action>
 #include <cnoid/ExtensionManager>
 #include <cnoid/Menu>
-#include <cnoid/ToolsUtil>
+#include "ToolsUtil.h"
 
 using namespace std;
 using namespace cnoid;
@@ -55,10 +55,8 @@ HamburgerMenu::HamburgerMenu()
 HamburgerMenu::Impl::Impl()
 {
     menu = new Menu;
-    menu->addAction(action);
-
-    auto button = fileBar()->addButton(":/BookmarkPlugin/icon/bars_hoso.svg");
-    button->setMenu(menu);
+    // auto button = fileBar()->addButton(":/BookmarkPlugin/icon/bars_24.svg");
+    // button->setMenu(menu);
 }
 
 

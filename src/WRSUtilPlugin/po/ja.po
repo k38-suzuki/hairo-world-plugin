@@ -1,11 +1,11 @@
-# Japanese translations for Choreonoid package.
-# Copyright (C) 2024 THE Choreonoid'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the Choreonoid package.
+# Japanese translations for WRSUtilPlugin package.
+# Copyright (C) 2024 THE WRSUtilPlugin'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the WRSUtilPlugin package.
 # k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2024.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Choreonoid\n"
+"Project-Id-Version: WRSUtilPlugin\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-31 08:00+0900\n"
 "PO-Revision-Date: 2024-08-31 08:00+0900\n"

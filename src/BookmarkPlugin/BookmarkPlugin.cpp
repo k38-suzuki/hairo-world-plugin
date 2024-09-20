@@ -25,12 +25,12 @@ public:
     virtual bool initialize() override
     {
         ToolsMenu::initializeClass(this);
+        HamburgerMenu::initializeClass(this);
         // BookmarkBar::initialize(this);
         BookmarkManager::initializeClass(this);
         WorldLogManager::initializeClass(this);
         HistoryManager::initializeClass(this);
         KIOSKManager::initializeClass(this);
-        HamburgerMenu::initializeClass(this);
         return true;
     }
 

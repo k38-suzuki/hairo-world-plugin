@@ -3,6 +3,7 @@
 */
 
 #include "BookmarkManager.h"
+#include <cnoid/Action>
 #include <cnoid/Archive>
 #include <cnoid/AppConfig>
 #include <cnoid/Buttons>
@@ -11,7 +12,8 @@
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/stdx/filesystem>
-#include <cnoid/ToolsUtil>
+#include "HamburgerMenu.h"
+#include "ToolsUtil.h"
 #include "gettext.h"
 
 using namespace std;
@@ -39,6 +41,11 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
                     bookmarkInstance->addItem(filename.c_str());
                 }                
             });
+
+        auto action = HamburgerMenu::instance()->addAction(_("Bookmark Manager"));
+        action->setToolTip(_("Show the bookmark manager"));
+        action->setIcon(QIcon::fromTheme("user-bookmarks"));
+        action->sigTriggered().connect([&](){ bookmarkInstance->show(); });
 
         auto button2 = fileBar()->addButton(QIcon::fromTheme("user-bookmarks"));
         button2->setToolTip(_("Show the bookmark manager"));

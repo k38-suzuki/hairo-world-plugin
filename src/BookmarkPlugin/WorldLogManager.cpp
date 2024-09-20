@@ -16,7 +16,8 @@
 #include <cnoid/UTF8>
 #include <cnoid/WorldItem>
 #include <src/BodyPlugin/WorldLogFileItem.h>
-#include <cnoid/ToolsUtil>
+#include "HamburgerMenu.h"
+#include "ToolsUtil.h"
 #include <QDateTime>
 #include "gettext.h"
 
@@ -36,8 +37,13 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
     if(!logInstance) {
         logInstance = ext->manage(new WorldLogManager);
 
+        auto action = HamburgerMenu::instance()->addAction(_("World Log Manager"));
+        action->setToolTip(_("Show the world log manager"));
+        action->setIcon(QIcon::fromTheme("emblem-documents"));
+        action->sigTriggered().connect([&](){ logInstance->show(); });
+
         auto button = fileBar()->addButton(QIcon::fromTheme("emblem-documents"));
-        button->setToolTip(_("Show the worldlog manager"));
+        button->setToolTip(_("Show the world log manager"));
         button->sigClicked().connect([&](){ logInstance->show(); });
     }
 }
@@ -51,7 +57,7 @@ WorldLogManager* WorldLogManager::instance()
 
 WorldLogManager::WorldLogManager()
 {
-    setWindowTitle(_("WorldLog Manager"));
+    setWindowTitle(_("World Log Manager"));
     setArchiveKey("world_log_list");
     setFixedSize(800, 450);
 
@@ -59,7 +65,7 @@ WorldLogManager::WorldLogManager()
     project_filename.clear();
 
     saveCheck = new CheckBox;
-    saveCheck->setText(_("Save a WorldLog"));
+    saveCheck->setText(_("Save a World Log"));
     addWidget(saveCheck);
 
     TimeBar::instance()->sigPlaybackStopped().connect(
