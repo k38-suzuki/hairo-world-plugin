@@ -10,7 +10,7 @@
 #include <cnoid/MultiValueSeqItem>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SimulatorItem>
-#include <QDateTime>
+#include <cnoid/LoggerUtil>
 #include "gettext.h"
 
 using namespace std;
@@ -94,9 +94,8 @@ bool JoystickLoggerItem::Impl::initializeSimulation(SimulatorItem* simulatorItem
     this->simulatorItem = simulatorItem;
     joystick = new Joystick(device.c_str());
     joystickStateSeqItem = new MultiValueSeqItem;
-    QDateTime loggingStartTime = QDateTime::currentDateTime();
-    string suffix = loggingStartTime.toString("yyyy-MM-dd-hh-mm-ss").toStdString();
-    string name = suffix + " - " + device;
+    string suffix = getCurrentTimeSuffix();
+    string name = device + suffix;
     joystickStateSeqItem->setName(name);
     self->addSubItem(joystickStateSeqItem);
 
