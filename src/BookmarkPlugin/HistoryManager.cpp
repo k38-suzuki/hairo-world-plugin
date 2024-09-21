@@ -58,6 +58,7 @@ void HistoryManager::initializeClass(ExtensionManager* ext)
 
 
 HistoryManager::HistoryManager()
+    : ArchiveListDialog()
 {
     impl = new Impl(this);
 }
@@ -97,15 +98,15 @@ HistoryManager::~HistoryManager()
 
 HistoryManager::Impl::~Impl()
 {
-    auto& recentFiles = *AppConfig::archive()->openListing("histories");
-    recentFiles.clear();
+    auto config = AppConfig::archive()->openListing("histories");
+    config->clear();
 
     for(int i = 2; i < currentMenu->actions().size(); ++i) {
         string filename = currentMenu->actions().at(i)->text().toStdString();
-        recentFiles.append(filename, DOUBLE_QUOTED);
+        config->append(filename, DOUBLE_QUOTED);
     }
 
-    if(recentFiles.empty()) {
+    if(config->empty()) {
         AppConfig::archive()->remove("histories");
     }
 }

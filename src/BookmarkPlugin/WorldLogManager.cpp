@@ -49,6 +49,7 @@ WorldLogManager* WorldLogManager::instance()
 
 
 WorldLogManager::WorldLogManager()
+    : ArchiveListDialog()
 {
     setWindowTitle(_("World Log Manager"));
     setArchiveKey("world_log_list");
@@ -67,17 +68,17 @@ WorldLogManager::WorldLogManager()
     SimulationBar::instance()->sigSimulationAboutToStart().connect(
         [&](SimulatorItem* simulatorItem){ onSimulationAboutToStart(simulatorItem); });
 
-    auto& archive = *AppConfig::archive()->openMapping("world_log_manager");
-    if(archive.isValid()) {
-        saveCheck->setChecked(archive.get("save_world_log", false));
+    auto config = AppConfig::archive()->openMapping("world_log_manager");
+    if(config->isValid()) {
+        saveCheck->setChecked(config->get("save_world_log", false));
     }
 }
 
 
 WorldLogManager::~WorldLogManager()
 {
-    auto& archive = *AppConfig::archive()->openMapping("world_log_manager");
-    archive.write("save_world_log", saveCheck->isChecked());
+    auto config = AppConfig::archive()->openMapping("world_log_manager");
+    config->write("save_world_log", saveCheck->isChecked());
 }
 
 
