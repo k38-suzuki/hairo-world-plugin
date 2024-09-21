@@ -5,29 +5,24 @@
 #ifndef CNOID_BOOKMARK_PLUGIN_KIOSK_MANAGER_H
 #define CNOID_BOOKMARK_PLUGIN_KIOSK_MANAGER_H
 
-#include <cnoid/JoystickCapture>
-
 namespace cnoid {
 
 class ExtensionManager;
-class SimulatorItem;
-class JoyKey;
 
 class KIOSKManager
 {
 public:
     static void initializeClass(ExtensionManager* ext);
+    static KIOSKManager* instance();
 
-    KIOSKManager(ExtensionManager* ext);
+    KIOSKManager();
     virtual ~KIOSKManager();
 
-private:
-    void onHideMenuBarToggled(const bool& on);
-    void onButton(const int& id, const bool& isPressed);
+    void setKIOSKEnabled(bool checked);
 
-    JoystickCapture joystick;
-    SimulatorItem* simulatorItem;
-    JoyKey* key;
+private:
+    class Impl;
+    Impl* impl;
 };
 
 }

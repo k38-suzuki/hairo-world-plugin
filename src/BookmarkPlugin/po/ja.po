@@ -20,9 +20,6 @@ msgstr ""
 msgid "Enable KIOSK"
 msgstr "KIOSKモード"
 
-msgid "Hide tool bar"
-msgstr "ツールバーの非表示"
-
 msgid "Show the history manager"
 msgstr "履歴の表示"
 

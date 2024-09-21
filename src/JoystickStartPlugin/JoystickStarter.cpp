@@ -25,7 +25,7 @@ using namespace cnoid;
 namespace {
 
 JoystickStarter* starterInstance = nullptr;
-Action* startCheck = nullptr;
+bool is_starter_enabled = false;
 
 }
 
@@ -86,22 +86,26 @@ JoystickStarter::~JoystickStarter()
 
 void JoystickStarter::initializeClass(ExtensionManager* ext)
 {
+    auto config = AppConfig::archive()->openMapping("joystick_starter");
+    is_starter_enabled = config->get("game_start_mode", false);
+
     if(auto optionsMenu = MainMenu::instance()->get_Options_Menu()) {
         MenuManager& mm = ext->menuManager();
         mm.setCurrent(optionsMenu).setPath(N_("Joystick"));
-        startCheck = mm.addCheckItem(_("Game Start Mode"));
-        startCheck->sigToggled().connect([&](bool on){
-            auto& archive = *AppConfig::archive()->openMapping("joystick_starter");
-            archive.write("game_start_mode", startCheck->isChecked()); });
+        auto currentMenu = mm.currentMenu();
+        auto startCheck = mm.addCheckItem(_("Game Start Mode"));
+        currentMenu->sigAboutToShow().connect(
+            [startCheck](){ startCheck->setChecked(is_starter_enabled); });
+
+        startCheck->sigToggled().connect(
+            [&](bool checked){
+                is_starter_enabled = checked;
+                AppConfig::archive()->openMapping("joystick_starter")->write("game_start_mode", checked);
+            });
     }
 
     if(!starterInstance) {
         starterInstance = ext->manage(new JoystickStarter);
-    }
-
-    auto& archive = *AppConfig::archive()->openMapping("joystick_starter");
-    if(archive.isValid()) {
-        startCheck->setChecked(archive.get("game_start_mode", false));
     }
 }
 
@@ -109,7 +113,7 @@ void JoystickStarter::initializeClass(ExtensionManager* ext)
 void JoystickStarter::Impl::onButton(int id, bool isPressed)
 {
     if(isPressed) {
-        if(startCheck->isChecked()) {
+        if(is_starter_enabled) {
             switch(id) {
                 case Joystick::START_BUTTON:
                     if(currentStatus == STOP) {
