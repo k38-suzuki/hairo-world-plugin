@@ -10,18 +10,24 @@
 using namespace std;
 using namespace cnoid;
 
-HamburgerButton::HamburgerButton()
+HamburgerButton::HamburgerButton(QWidget* parent)
+    : PushButton(parent)
 {
-    menu_ = new Menu;
-
-    setIcon(QIcon(":/BookmarkPlugin/icon/bars_24.svg"));
-    setMenu(menu_);
+    initialize();
 }
 
 
-HamburgerButton::~HamburgerButton()
+HamburgerButton::HamburgerButton(const QString& text, QWidget* parent)
+    : PushButton(text, parent)
 {
+    initialize();
+}
 
+
+HamburgerButton::HamburgerButton(const QIcon& icon, const QString& text, QWidget* parent)
+    : PushButton(icon, text, parent)
+{
+    initialize();
 }
 
 
@@ -39,4 +45,12 @@ Menu* HamburgerButton::addMenu(const string& title)
     Menu* menu = new Menu(title.c_str());
     menu_->addMenu(menu);
     return menu;
+}
+
+
+void HamburgerButton::initialize()
+{
+    menu_ = new Menu;
+    setIcon(QIcon(":/BookmarkPlugin/icon/bars_24.svg"));
+    setMenu(menu_);
 }

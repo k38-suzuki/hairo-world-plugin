@@ -16,13 +16,16 @@ class Menu;
 class CNOID_EXPORT HamburgerButton : public PushButton
 {
 public:
-    HamburgerButton();;
-    virtual ~HamburgerButton();
+    HamburgerButton(QWidget* parent = nullptr);
+    HamburgerButton(const QString& text, QWidget* parent = nullptr);
+    HamburgerButton(const QIcon& icon, const QString& text, QWidget* parent = nullptr);
 
     Action* addAction(const std::string& text);
     Menu* addMenu(const std::string& title);
 
 private:
+    void initialize();
+
     QMenu* menu_;
 };
 
