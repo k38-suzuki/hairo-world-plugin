@@ -103,7 +103,7 @@ public:
     void onButtonClicked( const int& id, const bool& isPressed);
     void onAxis(const int& id, const double& position);
     void onButton(const int& id, const bool& isPressed);
-    
+
     virtual int numAxes() const;
     virtual int numButtons() const;
     virtual bool readCurrentState();
@@ -130,7 +130,7 @@ VirtualJoystickWidget::Impl::Impl(VirtualJoystickWidget* self)
 {
     self->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     self->setFocusPolicy(Qt::WheelFocus);
-    
+
     for(int i = 0; i < NUM_JOYSTICK_ELEMENTS; ++i) {
         ButtonInfo& info = buttonInfo[i];
         ToolButton& button = buttons[i];

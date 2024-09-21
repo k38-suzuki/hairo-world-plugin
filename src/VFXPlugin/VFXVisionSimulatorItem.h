@@ -14,7 +14,7 @@ class CNOID_EXPORT VFXVisionSimulatorItem : public GLVisionSimulatorItem
 {
 public:
     static void initializeClass(ExtensionManager* ext);
-        
+
     VFXVisionSimulatorItem();
     VFXVisionSimulatorItem(const VFXVisionSimulatorItem& org);
     virtual ~VFXVisionSimulatorItem();

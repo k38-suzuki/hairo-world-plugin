@@ -64,7 +64,7 @@ bool LiftSimulatorItem::initializeSimulation(SimulatorItem* simulatorItem)
     if(simBodies.size()) {
         simulatorItem->addPreDynamicsFunction([&](){ onPreDynamics(); });
     }
-    
+
     return true;
 }
 
@@ -119,7 +119,7 @@ Item* LiftSimulatorItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new LiftSimulatorItem(*this);
 }
-        
+
 
 void LiftSimulatorItem::doPutProperties(PutPropertyFunction& putProperty)
 {

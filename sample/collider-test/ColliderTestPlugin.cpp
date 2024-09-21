@@ -17,7 +17,7 @@ public:
     {
         require("Body");
     }
-    
+
     virtual bool initialize() override
     {
         std::vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
@@ -33,7 +33,7 @@ public:
     }
 
 private:
-    
+
     void onButtonClicked()
     {
         auto colliders = RootItem::instance()->checkedItems<SimpleColliderItem>();

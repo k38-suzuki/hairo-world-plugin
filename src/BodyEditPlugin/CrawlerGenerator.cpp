@@ -388,7 +388,7 @@ CrawlerGenerator::Impl::Impl()
     }
 
     static const char* label4[] = { _("Front SubTrack"), _("Rear SubTrack"), _("AGX") };
-    
+
     auto hbox1 = new QHBoxLayout;
     for(int i = 0; i < NUM_CHECKS; ++i) {
         CheckInfo info = checkInfo[i];

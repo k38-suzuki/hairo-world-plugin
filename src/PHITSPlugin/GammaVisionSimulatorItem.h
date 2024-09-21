@@ -14,7 +14,7 @@ class CNOID_EXPORT GammaVisionSimulatorItem : public GLVisionSimulatorItem
 {
 public:
     static void initializeClass(ExtensionManager* ext);
-        
+
     GammaVisionSimulatorItem();
     GammaVisionSimulatorItem(const GammaVisionSimulatorItem& org);
     virtual ~GammaVisionSimulatorItem();

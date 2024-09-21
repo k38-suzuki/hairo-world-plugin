@@ -12,7 +12,7 @@ public:
     {
 
     }
-    
+
     virtual bool initialize() override
     {
         Action* menuItem = menuManager().setPath("/View").addItem("Hello World");

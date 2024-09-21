@@ -37,9 +37,9 @@ public:
     double wingspan() const { return wingspan_; }
     void setWingspan(double wingspan) { wingspan_ = wingspan; }
     double chordLength() const { return chordLength_; }
-    void setChordLength(double chordLength) { chordLength_ = chordLength; } 
+    void setChordLength(double chordLength) { chordLength_ = chordLength; }
     void setSymbol(bool symbol) { symbol_ = symbol; }
-    bool symbol() const { return symbol_; }   
+    bool symbol() const { return symbol_; }
 
     bool readSpecifications(const Mapping* info);
     bool writeSpecifications(Mapping* info) const;

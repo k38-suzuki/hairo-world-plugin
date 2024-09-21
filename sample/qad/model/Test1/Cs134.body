@@ -8,7 +8,7 @@ links:
     name: CS134
     translation: [ 0.0, 1.5, 0.5 ]
     jointType: fixed
-    mass: 1 
+    mass: 1
     inertia: [
       0.72533, 0,       0,
       0,       0.08533, 0,

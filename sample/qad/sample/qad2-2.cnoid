@@ -1,38 +1,38 @@
-items: 
+items:
   id: 0
   name: "Root"
   plugin: Base
   class: RootItem
-  children: 
-    - 
+  children:
+    -
       id: 1
       name: "World"
       plugin: Body
       class: WorldItem
-      data: 
+      data:
         collision_detection: false
         collision_detector: AISTCollisionDetector
         default_material_table_file: "${SHARE}/default/materials.yaml"
-      children: 
-        - 
+      children:
+        -
           id: 2
           name: "Co60"
           plugin: Body
           class: BodyItem
           is_checked: true
-          data: 
+          data:
             file: "${SHARE}/QAD/model/Test2/Co60.body"
             format: CHOREONOID-BODY
             rootPosition: [ 1, 1, 0 ]
-            rootAttitude: [ 
-              0.707106781, -0.707106781, 0, 
-              0.707106781, 0.707106781, -0, 
+            rootAttitude: [
+              0.707106781, -0.707106781, 0,
+              0.707106781, 0.707106781, -0,
               0, 0, 1 ]
             jointPositions: [  ]
             initialRootPosition: [ 1, 1, 0 ]
-            initialRootAttitude: [ 
-              0.707106781, -0.707106781, 0, 
-              0.707106781, 0.707106781, 0, 
+            initialRootAttitude: [
+              0.707106781, -0.707106781, 0,
+              0.707106781, 0.707106781, 0,
               0, 0, 1 ]
             staticModel: true
             collisionDetection: true
@@ -40,25 +40,25 @@ items:
             location_editable: true
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
-        - 
+        -
           id: 3
           name: "box2"
           plugin: Body
           class: BodyItem
           is_checked: true
-          data: 
+          data:
             file: "${SHARE}/QAD/model/Test2/box2.body"
             format: CHOREONOID-BODY
             rootPosition: [ 5.243, 5.234, 0 ]
-            rootAttitude: [ 
-              0.707106781, -0.707106781, 0, 
-              0.707106781, 0.707106781, -0, 
+            rootAttitude: [
+              0.707106781, -0.707106781, 0,
+              0.707106781, 0.707106781, -0,
               0, 0, 1 ]
             jointPositions: [  ]
             initialRootPosition: [ 5.243, 5.234, 0 ]
-            initialRootAttitude: [ 
-              0.707106781, -0.707106781, 0, 
-              0.707106781, 0.707106781, 0, 
+            initialRootAttitude: [
+              0.707106781, -0.707106781, 0,
+              0.707106781, 0.707106781, 0,
               0, 0, 1 ]
             staticModel: true
             collisionDetection: true
@@ -66,13 +66,13 @@ items:
             location_editable: true
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
-        - 
+        -
           id: 4
           name: "test2"
           plugin: PHITS
           class: CrossSectionItem
           is_checked: true
-          data: 
+          data:
             input_file: "test2/test2.inp"
             output_file: "test2/test2.out"
             code: 1
@@ -96,25 +96,25 @@ items:
             default_nuclide_table_file: "${SHARE}/default/nuclides.yaml"
             default_element_table_file: "${SHARE}/default/elements.yaml"
             gamma_data_file: "test2/test2.gbin"
-        - 
+        -
           id: 5
           name: "origin"
           plugin: Body
           class: BodyItem
           is_checked: true
-          data: 
+          data:
             file: "${SHARE}/QAD/model/Test2/origin.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0 ]
-            rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            rootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
             jointPositions: [  ]
             initialRootPosition: [ 0, 0, 0 ]
-            initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            initialRootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
             staticModel: false
             collisionDetection: true
@@ -122,41 +122,41 @@ items:
             location_editable: true
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
-views: 
-  - 
+views:
+  -
     id: 0
     plugin: Base
     class: ItemPropertyView
     mounted: true
-  - 
+  -
     id: 1
     plugin: Base
     class: ItemTreeView
     mounted: true
-    state: 
+    state:
       expanded: [ 1 ]
-  - 
+  -
     id: 2
     plugin: Base
     class: LocationView
     mounted: true
-    state: 
+    state:
       show_rpy: true
       unique_rpy: false
       show_quoternion: false
       show_rotation_matrix: false
       coordinate: world
-  - 
+  -
     id: 3
     plugin: Base
     class: MessageView
     mounted: true
-  - 
+  -
     id: 4
     plugin: Base
     class: SceneView
     mounted: true
-    state: 
+    state:
       editMode: false
       viewpointOperationMode: thirdPerson
       visible_polygon_elements: [ face ]
@@ -191,8 +191,8 @@ views:
       coordinateAxes: true
       fpsTestIteration: 1
       upsideDown: false
-      cameras: 
-        - 
+      cameras:
+        -
           camera: [ System, Perspective ]
           isCurrent: true
           fieldOfView: 0.610865
@@ -201,7 +201,7 @@ views:
           eye: [ -7.07507, -12.7893, 9.95519 ]
           direction: [ 0.49013, 0.693036, -0.528653 ]
           up: [ 0.305251, 0.43162, 0.848838 ]
-        - 
+        -
           camera: [ System, Orthographic ]
           orthoHeight: 20
           near: 0.04
@@ -211,12 +211,12 @@ views:
       xzgridColor: [ 0.9, 0.9, 0.9, 1 ]
       yzgridColor: [ 0.9, 0.9, 0.9, 1 ]
       isDedicatedItemCheckEnabled: false
-  - 
+  -
     id: 5
     plugin: Body
     class: JointDisplacementView
     mounted: true
-    state: 
+    state:
       show_selected_joints: false
       show_joint_ids: true
       show_joint_names: false
@@ -224,28 +224,28 @@ views:
       show_sliders: true
       show_dials: false
       show_phases: true
-  - 
+  -
     id: 6
     plugin: Body
     class: LinkDeviceListView
     mounted: true
-    state: 
+    state:
       element_type: all
       listingMode: list
       current_body_item: 5
-      body_items: 
-        - 
+      body_items:
+        -
           id: 2
           selected_links: [ 0 ]
-        - 
+        -
           id: 5
           selected_links: [ 0 ]
-  - 
+  -
     id: 7
     plugin: Body
     class: LinkPositionView
     mounted: true
-    state: 
+    state:
       coordinate_mode: world
       preferred_coordinate_mode: base
       show_rpy: true
@@ -253,18 +253,18 @@ views:
       show_quoternion: false
       show_rotation_matrix: false
       target_link_type: ik_link
-  - 
+  -
     id: 8
     plugin: Body
     class: LinkPropertyView
     mounted: true
-  - 
+  -
     id: 9
     plugin: Python
     class: PythonConsoleView
     mounted: true
-toolbars: 
-  "TimeBar": 
+toolbars:
+  "TimeBar":
     minTime: 0
     maxTime: 30
     frameRate: 1000
@@ -274,9 +274,9 @@ toolbars:
     speedScale: 1
     syncToOngoingUpdates: true
     autoExpansion: true
-  "LeggedBodyBar": 
+  "LeggedBodyBar":
     stanceWidth: 0.15
-  "KinematicsBar": 
+  "KinematicsBar":
     forward_kinematics: true
     inverse_kinematics: true
     preset_kinematics: true
@@ -286,7 +286,7 @@ toolbars:
     snapDistance: 0.025
     penetrationBlockDepth: 0.0005
     lazyCollisionDetectionMode: true
-  "BodyMotionGenerationBar": 
+  "BodyMotionGenerationBar":
     autoGenerationForNewBody: true
     balancer: false
     autoGeneration: false
@@ -319,30 +319,30 @@ toolbars:
     waistHeightRelaxation: false
     gravity: 9.8
     dynamicsTimeRatio: 1
-Body: 
-  "BodyMotionEngine": 
+Body:
+  "BodyMotionEngine":
     updateJointVelocities: false
-  "BodySelectionManager": 
+  "BodySelectionManager":
     current_body_item: 5
     current_link: "ORIGIN"
-  "EditableSceneBody": 
-    editableSceneBodies: 
-      - 
+  "EditableSceneBody":
+    editableSceneBodies:
+      -
         bodyItem: 2
         show_cm: false
         show_cm_projection: false
         show_zmp: false
-      - 
+      -
         bodyItem: 3
         show_cm: false
         show_cm_projection: false
         show_zmp: false
-      - 
+      -
         bodyItem: 5
         show_cm: false
         show_cm_projection: false
         show_zmp: false
-  "KinematicFaultChecker": 
+  "KinematicFaultChecker":
     checkJointPositions: true
     angleMargin: 0
     translationMargin: 0
@@ -351,77 +351,77 @@ Body:
     targetJoints: all
     checkSelfCollisions: true
     onlyTimeBarRange: false
-  "SplineFilterDialog": 
+  "SplineFilterDialog":
     isInputFrameRateSpecified: false
     inputFrameRate: 200
     isOutputFrameRateSpecified: false
     outputFrameRate: 200
-viewAreas: 
-  - 
+viewAreas:
+  -
     type: embedded
     tabs: true
-    contents: 
+    contents:
       type: splitter
       orientation: horizontal
       sizes: [ 1404, 445 ]
-      children: 
-        - 
+      children:
+        -
           type: splitter
           orientation: horizontal
           sizes: [ 363, 1037 ]
-          children: 
-            - 
+          children:
+            -
               type: splitter
               orientation: vertical
               sizes: [ 449, 448 ]
-              children: 
-                - 
+              children:
+                -
                   type: pane
                   views: [ 1 ]
-                - 
+                -
                   type: pane
                   views: [ 0, 8 ]
                   current: 0
-            - 
+            -
               type: splitter
               orientation: vertical
               sizes: [ 672, 225 ]
-              children: 
-                - 
+              children:
+                -
                   type: pane
                   views: [ 4 ]
-                - 
+                -
                   type: pane
                   views: [ 3, 9 ]
                   current: 3
-        - 
+        -
           type: splitter
           orientation: vertical
           sizes: [ 198, 699 ]
-          children: 
-            - 
+          children:
+            -
               type: pane
               views: [ 2 ]
-            - 
+            -
               type: splitter
               orientation: vertical
               sizes: [ 286, 409 ]
-              children: 
-                - 
+              children:
+                -
                   type: pane
                   views: [ 7 ]
-                - 
+                -
                   type: pane
                   views: [ 6, 5 ]
                   current: 6
-layoutOfToolBars: 
-  rows: 
-    - 
+layoutOfToolBars:
+  rows:
+    -
       - { name: "FileBar", x: 0, priority: 0 }
       - { name: "ScriptBar", x: 0, priority: 1 }
       - { name: "SimulationBar", x: 0, priority: 2 }
       - { name: "TimeBar", x: 0, priority: 0 }
-    - 
+    -
       - { name: "BodyBar", x: 0, priority: 0 }
       - { name: "KinematicsBar", x: 0, priority: 1 }
       - { name: "SceneBar", x: 0, priority: 2 }

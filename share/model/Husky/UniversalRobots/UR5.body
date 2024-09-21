@@ -17,7 +17,7 @@ links:
       -
         type: Visual
         elements: { Resource: { uri: "UR5/base.dae" } }
-      - 
+      -
         type: Collision
         elements:
           -
@@ -55,13 +55,13 @@ links:
       0,              0,              0.00666 ]
     rotorInertia: 0.2
     elements:
-      - 
-        type: Visual 
+      -
+        type: Visual
         elements: { Resource: { uri: "UR5/shoulder.dae" } }
-      - 
+      -
         type: Collision
         elements: &SHOULDER_SHAPE
-          - 
+          -
             type: Shape
             translation: [ 0, 0, -0.013 ]
             rotation: [ 1, 0, 0, 90 ]
@@ -98,16 +98,16 @@ links:
         elements: { Resource: { uri: "UR5/upperarm.dae" } }
       -
         type: Collision
-        elements: 
+        elements:
           -
             type: Transform
-            rotation: [ [ 0, 0, 1, 180], [ 1, 0, 0, 90 ]] 
+            rotation: [ [ 0, 0, 1, 180], [ 1, 0, 0, 90 ]]
             elements: *SHOULDER_SHAPE
-          - 
+          -
             type: Transform
             translation: [ 0, 0, 0.21 ]
             rotation: [ 1, 0, 0, 90 ]
-            elements: 
+            elements:
               -
                 type: Shape
                 translation: [ 0, -0.14, 0 ]
@@ -189,7 +189,7 @@ links:
                         translation: [ 0, -0.012, 0 ]
                         rotation: [ 1, 0, 0, -13 ]
                         elements:
-                          - 
+                          -
                             type: Shape
                             translation: [ 0, -0.006, 0.0576 ]
                             geometry: { type: Cylinder, radius: 0.0576, height: 0.012 }
@@ -198,7 +198,7 @@ links:
                             translation: [ 0, -0.012, 0 ]
                             rotation: [ 1, 0, 0, -8 ]
                             elements:
-                              - 
+                              -
                                 type: Shape
                                 translation: [ 0, -0.006, 0.0576 ]
                                 geometry: { type: Cylinder, radius: 0.0576, height: 0.012 }
@@ -207,7 +207,7 @@ links:
                                 translation: [ 0, -0.012, 0 ]
                                 rotation: [ 1, 0, 0, -7 ]
                                 elements:
-                                  - 
+                                  -
                                     type: Shape
                                     translation: [ 0, -0.006, 0.0568 ]
                                     geometry: { type: Cylinder, radius: 0.0568, height: 0.012 }
@@ -216,7 +216,7 @@ links:
                                     translation: [ 0, -0.012, 0 ]
                                     rotation: [ 1, 0, 0, -10 ]
                                     elements:
-                                      - 
+                                      -
                                         type: Shape
                                         translation: [ 0, -0.0075, 0.054 ]
                                         geometry: { type: Cylinder, radius: 0.054, height: 0.015 }
@@ -225,7 +225,7 @@ links:
                                         translation: [ 0, -0.015, 0 ]
                                         rotation: [ 1, 0, 0, -10 ]
                                         elements:
-                                          - 
+                                          -
                                             type: Shape
                                             translation: [ 0, -0.0075, 0.052 ]
                                             geometry: { type: Cylinder, radius: 0.052, height: 0.015 }
@@ -234,7 +234,7 @@ links:
                                             translation: [ 0, -0.015, 0 ]
                                             rotation: [ 1, 0, 0, -5 ]
                                             elements:
-                                              - 
+                                              -
                                                 type: Shape
                                                 translation: [ 0, -0.0075, 0.05 ]
                                                 geometry: { type: Cylinder, radius: 0.05, height: 0.015 }
@@ -243,7 +243,7 @@ links:
                                                 translation: [ 0, -0.015, 0 ]
                                                 rotation: [ 1, 0, 0, -5 ]
                                                 elements:
-                                                  - 
+                                                  -
                                                     type: Shape
                                                     translation: [ 0, -0.005, 0.048 ]
                                                     geometry: { type: Cylinder, radius: 0.048, height: 0.01 }
@@ -252,7 +252,7 @@ links:
                                                     translation: [ 0, -0.01, 0 ]
                                                     rotation: [ 1, 0, 0, -4 ]
                                                     elements:
-                                                      - 
+                                                      -
                                                         type: Shape
                                                         translation: [ 0, -0.005, 0.045 ]
                                                         geometry: { type: Cylinder, radius: 0.045, height: 0.01 }
@@ -261,7 +261,7 @@ links:
                                                         translation: [ 0, -0.01, 0 ]
                                                         rotation: [ 1, 0, 0, -2 ]
                                                         elements:
-                                                          - 
+                                                          -
                                                             type: Shape
                                                             translation: [ 0, -0.005, 0.043 ]
                                                             geometry: { type: Cylinder, radius: 0.043, height: 0.01 }
@@ -270,7 +270,7 @@ links:
                                                             translation: [ 0, -0.01, 0 ]
                                                             rotation: [ 1, 0, 0, -6 ]
                                                             elements:
-                                                              - 
+                                                              -
                                                                 type: Shape
                                                                 translation: [ 0, -0.005, 0.042 ]
                                                                 geometry: { type: Cylinder, radius: 0.042, height: 0.01 }
@@ -279,7 +279,7 @@ links:
                                                                 translation: [ 0, -0.01, 0 ]
                                                                 rotation: [ 1, 0, 0, -3 ]
                                                                 elements:
-                                                                  - 
+                                                                  -
                                                                     type: Shape
                                                                     translation: [ 0, -0.0075, 0.04 ]
                                                                     geometry: { type: Cylinder, radius: 0.04, height: 0.015 }
@@ -288,7 +288,7 @@ links:
                                                                     translation: [ 0, -0.015, 0.001 ]
                                                                     rotation: [ 1, 0, 0, -1 ]
                                                                     elements:
-                                                                      - 
+                                                                      -
                                                                         type: Shape
                                                                         translation: [ 0, -0.0065, 0.0392 ]
                                                                         geometry: { type: Cylinder, radius: 0.0392, height: 0.013 }
@@ -331,8 +331,8 @@ links:
         elements: { Resource: { uri: "UR5/wrist1.dae" } }
       -
         type: Collision
-        elements: 
-          - 
+        elements:
+          -
             type: Shape
             translation: [ 0, 0.0525, 0.0 ]
             geometry: { type: Cylinder, radius: 0.0376, height: 0.01 }
@@ -365,7 +365,7 @@ links:
       -
         type: Collision
         elements:
-          - 
+          -
             type: Shape
             translation: [ 0, 0, 0.05415 ]
             rotation: [ 1, 0, 0, 90 ]

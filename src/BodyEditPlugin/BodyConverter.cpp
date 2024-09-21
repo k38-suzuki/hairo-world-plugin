@@ -83,7 +83,7 @@ KeyInfo keyInfo[] = {
     // for Material node
     { "ambientIntensity:",   "ambient:"              },
     { "diffuseColor:",       "diffuse:"              },
-    { "emissiveColor:",      "emissive:"             }, 
+    { "emissiveColor:",      "emissive:"             },
     { "specularColor:",      "specular:"             },
 
     // for Texture node

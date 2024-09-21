@@ -279,7 +279,7 @@ void BentPipeGenerator::Impl::writeLinkShape(Listing* elementsNode)
             verticesList.append(x2, 3, n);
             verticesList.append(y2, 3, n);
             verticesList.append(z2, 3, n);
-        }        
+        }
     }
 
     Listing& facesList = *geometryNode->createFlowStyleListing("faces");
@@ -297,7 +297,7 @@ void BentPipeGenerator::Impl::writeLinkShape(Listing* elementsNode)
             int i5 = (i + 1) * (n2 * 2) + j + 1;
             int i6 = (i + 1) * (n2 * 2) + j + n2;
             int i7 = (i + 1) * (n2 * 2) + j + n2 + 1;
-            
+
             if(i == 0) {
                 facesList.append(i0, 5, n3);
                 facesList.append(i2, 5, n3);

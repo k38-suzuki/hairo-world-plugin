@@ -14,7 +14,7 @@ public:
     {
         require("Body");
     }
-    
+
     virtual bool initialize() override
     {
         LiftSimulatorItem::initializeClass(this);

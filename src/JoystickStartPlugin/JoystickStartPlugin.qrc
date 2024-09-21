@@ -1,7 +1,7 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
   <qresource prefix="/JoystickStartPlugin" >
-    
+
     <file>icon/573_ex_f.svg</file>
     <file>icon/stopwatch_24.svg</file>
 

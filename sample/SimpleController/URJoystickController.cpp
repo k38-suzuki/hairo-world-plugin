@@ -14,7 +14,7 @@ using namespace cnoid;
 class URJoystickController : public SimpleController
 {
     SimpleControllerIO* io;
-    int jointActuationMode; 
+    int jointActuationMode;
 
     Body* ioBody;
     BodyPtr ikBody;

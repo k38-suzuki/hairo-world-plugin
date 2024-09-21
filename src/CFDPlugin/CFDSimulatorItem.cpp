@@ -139,7 +139,7 @@ void CFDLink::calcMesh(MeshExtractor* extractor, CFDBody* cfdBody)
     }
 
     const int numTriangles = mesh->numTriangles();
-    for(int i = 0; i < numTriangles; ++i) { 
+    for(int i = 0; i < numTriangles; ++i) {
         SgMesh::TriangleRef src = mesh->triangle(i);
         Vector3 a = vertices_[src[0]].cast<Isometry3::Scalar>();
         Vector3 b = vertices_[src[1]].cast<Isometry3::Scalar>();
@@ -350,7 +350,7 @@ void CFDSimulatorItemImpl::onPreDynamics()
             } else {
                 cd = cfdLink->cda;
             }
-            
+
             Vector3 a = link->R() * link->centerOfMass();
             Vector3 w = link->w();
             Vector3 v = link->v() + w.cross(a);

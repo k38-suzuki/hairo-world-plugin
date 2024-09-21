@@ -9,7 +9,7 @@ links:
     translation: [ 0, 0, 0 ]
     rotation: [ 0, 1, 0, 45 ]
     jointType: fixed
-    mass: 1 
+    mass: 1
     inertia: [
       0.72533, 0,       0,
       0,       0.08533, 0,

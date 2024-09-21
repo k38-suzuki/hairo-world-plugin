@@ -34,7 +34,7 @@ public:
     {
         require("CFD");
     }
-    
+
     virtual bool initialize() override
     {
         MenuManager& mm = menuManager().setPath("/Options").setPath("UnsteadyFlow");

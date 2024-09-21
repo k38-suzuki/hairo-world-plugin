@@ -55,7 +55,7 @@ links:
     maxJointVelocity: 90
     jointId: 1
     elements:
-      - 
+      -
         # Turret
         type: RigidBody
         centerOfMass: [ 0, 0, 0 ]
@@ -71,7 +71,7 @@ links:
               height: 0.1
               radius: 0.1
             appearance: *BodyAppearance
-      - 
+      -
         # Gun
         type: Transform
         translation: [ 0.2, 0, 0 ]
@@ -113,7 +113,7 @@ links:
                 diffuseColor: [ 1.0, 1.0, 0.4 ]
                 ambientIntensity: 0.3
                 emissiveColor: [ 0.8, 0.8, 0.3 ]
-      - 
+      -
         type: NoisyCamera
         name: NoisyCamera
         translation: [ 0.1, 0, 0.05 ]
@@ -147,7 +147,7 @@ links:
                 diffuseColor: [ 0.2, 0.2, 0.8 ]
                 specularColor: [ 0.6, 0.6, 1.0 ]
                 shininess: 0.6
-      - 
+      -
         type: Camera
         name: Camera
         translation: [ 0.1, 0, 0.05 ]
@@ -183,7 +183,7 @@ links:
       0,    0.02, 0,
       0,    0,    0.02 ]
     elements:
-      Shape: &TRACK 
+      Shape: &TRACK
         geometry:
           type: Extrusion
           crossSection: [
@@ -210,4 +210,4 @@ links:
       0,    0.02, 0,
       0,    0,    0.02 ]
     elements:
-      Shape: *TRACK 
+      Shape: *TRACK

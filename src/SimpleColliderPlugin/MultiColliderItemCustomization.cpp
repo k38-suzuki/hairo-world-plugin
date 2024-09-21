@@ -114,7 +114,7 @@ void onSelectedItemChanged(const ItemList<>& selectedItems)
         slider_pepper_chance->setCallback([collider](double value){
             collider->setPepperChance(value);
             collider->notifyUpdate(); });
-    
+
         GeneralSliderView::SliderPtr slider_mosaic_chance = sliderView->getOrCreateSlider(_("mosaic chance"), 0.0, 1.0, 2);
         slider_mosaic_chance->setValue(collider->mosaicChance());
         slider_mosaic_chance->setCallback([collider](double value){

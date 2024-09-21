@@ -1,7 +1,7 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
   <qresource prefix="/ZBar" >
-    
+
     <file>icon/1031_q_h.svg</file>
     <file>icon/1032_q_h.svg</file>
 

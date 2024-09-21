@@ -329,7 +329,7 @@ bool PHITSWriter::searchCameraLink(const int inputMode)
     Link* clink = nullptr;
     Vector3 localT;
     if(inputMode == GammaData::PINHOLE) {
-        // ピンホールカメラの取得        
+        // ピンホールカメラの取得
         string material = pcamera->material();
         detMaterialId = elementTable.materialId(material);
         detMatThickness = pcamera->thickness();

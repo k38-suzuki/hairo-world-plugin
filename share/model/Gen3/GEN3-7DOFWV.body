@@ -30,7 +30,7 @@ links:
           -
             type: Shape
             geometry: { type: Resource, uri: "parts/base_link.STL" }
-            appearance: *BodyAppearance       
+            appearance: *BodyAppearance
   -
     name: J0
     parent: BASE
@@ -200,7 +200,7 @@ links:
     translation: [ 0, 0.00017505, -0.10593 ]
     rotation: [ 1, 0, 0, 1.5708 ]
     jointRange: [ -2.09, 2.09 ]
-    jointVelocityRange: [ -0.8727, 0.8727 ]  
+    jointVelocityRange: [ -0.8727, 0.8727 ]
     centerOfMass: [ 1E-06, -0.045483, -0.00965 ]
     mass: 0.6781
     inertia: [
@@ -222,7 +222,7 @@ links:
           -
             type: Shape
             geometry: { type: Resource, uri: "parts/spherical_wrist_2_link.STL" }
-            appearance: *BodyAppearance       
+            appearance: *BodyAppearance
   -
     name: J6
     parent: J5
@@ -232,7 +232,7 @@ links:
     translation: [ 0, -0.10593, -0.00017505 ]
     rotation: [ 1, 0, 0, -1.5708 ]
     jointRange: unlimited
-    jointVelocityRange: [ -0.8727, 0.8727 ]  
+    jointVelocityRange: [ -0.8727, 0.8727 ]
     centerOfMass: [ 0.000281, 0.011402, -0.029798 ]
     mass: 0.5
     inertia: [
@@ -268,7 +268,7 @@ links:
 #      Shape:
 #        geometry: { type: Sphere, radius: 0.01 }
 #        appearance: { material: { diffuseColor: [ 1.0, 0.0, 0.0 ], transparency: 0.8 } }
-      - 
+      -
         type: Camera
         name: ColorSensor
         translation: [ 0, 0.05639, -0.00305 ]
@@ -292,7 +292,7 @@ links:
                 diffuseColor: [ 0.2, 0.2, 0.8 ]
                 specularColor: [ 0.6, 0.6, 1.0 ]
                 shininess: 0.6
-      - 
+      -
         type: Camera
         name: DepthSensor
         translation: [ 0.0275, 0.066, -0.00305 ]

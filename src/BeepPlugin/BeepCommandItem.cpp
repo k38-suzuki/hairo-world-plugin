@@ -35,7 +35,7 @@ public:
     bool execute();
     bool terminate();
     void onReadyReadServerProcessOutput();
-        
+
     string command;
     int frequency;
     int length;
@@ -168,9 +168,9 @@ bool BeepCommandItem::execute()
 bool BeepCommandItem::Impl::execute()
 {
     bool result = false;
-    
+
     MessageView* mv = MessageView::instance();
-    
+
     if(!command.empty()) {
         terminate();
         string actual_command(command);
@@ -195,7 +195,7 @@ bool BeepCommandItem::Impl::execute()
             if(waiting_time_after_started > 0.0) {
                 msleep(waiting_time_after_started * 1000.0);
             }
-            
+
             result = true;
 
         } else {

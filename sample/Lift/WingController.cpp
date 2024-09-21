@@ -4,7 +4,7 @@
 using namespace cnoid;
 
 class WingController : public SimpleController
-{ 
+{
     Link* joints[2];
     Joystick joystick;
 
@@ -19,7 +19,7 @@ public:
             joint->setActuationMode(Link::JointVelocity);
             io->enableIO(joint);
         }
-        
+
         return true;
     }
 
@@ -36,7 +36,7 @@ public:
             if(fabs(pos[i]) < 0.2) {
                 pos[i] = 0.0;
             }
-            
+
             joint->dq_target() = -0.5 * pos[i];
         }
 

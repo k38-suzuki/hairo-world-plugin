@@ -33,7 +33,7 @@ MultiColliderItem::MultiColliderItem(const MultiColliderItem& org)
       VFXEffects(org)
 {
     colliderTypeSelection = org.colliderTypeSelection;
-    
+
     switch(colliderTypeSelection.which()) {
     case CFD:
         setDiffuseColor(Vector3(0.0, 1.0, 1.0));

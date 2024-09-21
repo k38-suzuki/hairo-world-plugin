@@ -164,7 +164,7 @@ bool TerrainGenerator::Impl::save(const string& filename)
     if(inputFile.empty()) {
         return false;
     }
-    
+
     data = new TerrainData;
     if(!data->read(inputFile)) {
         return false;

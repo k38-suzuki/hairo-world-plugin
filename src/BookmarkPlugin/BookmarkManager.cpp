@@ -39,7 +39,7 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
                 const string& filename = ProjectManager::instance()->currentProjectFile();
                 if(!filename.empty()) {
                     bookmarkInstance->addItem(filename.c_str());
-                }                
+                }
             });
 
         auto action = HamburgerMenu::instance()->addAction(_("Bookmark Manager"));

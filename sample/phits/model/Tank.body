@@ -75,7 +75,7 @@ links:
     maxJointVelocity: 90
     jointId: 1
     elements:
-      - 
+      -
         # Turret
         type: RigidBody
         centerOfMass: [ 0, 0, 0 ]
@@ -91,7 +91,7 @@ links:
               height: 0.1
               radius: 0.1
             appearance: *BodyAppearance
-      - 
+      -
         # Gun
         type: Transform
         translation: [ 0.2, 0, 0 ]
@@ -227,7 +227,7 @@ links:
       0,    0.02, 0,
       0,    0,    0.02 ]
     elements:
-      Shape: &TRACK 
+      Shape: &TRACK
         geometry:
           type: Extrusion
           crossSection: [
@@ -254,4 +254,4 @@ links:
       0,    0.02, 0,
       0,    0,    0.02 ]
     elements:
-      Shape: *TRACK 
+      Shape: *TRACK

@@ -138,7 +138,7 @@ bool GammaData::read(const string& filename)
 
 
 bool GammaData::readPHITS(const string& filename, const uint8_t _readMode)
-{    
+{
     // phits outputからデータの読み込み
     ifstream in;
     in.open(filename, ios_base::in);
@@ -318,7 +318,7 @@ bool GammaData::readPHITS(const string& filename, const uint8_t _readMode)
                 while(getline(ss, s, ' ')) {
                     if(s != "")  v.push_back(s);
                 }
-                
+
                 for(const string& sv : v) {
                     stringstream sss{ sv };
                     float d;
@@ -684,7 +684,7 @@ bool GammaData::write(const string& filename)
         char buf17[12] = "";
         out.write((const char *)&buf17, sizeof(buf17));
     }
-    
+
     out.close();
     return true;
 }

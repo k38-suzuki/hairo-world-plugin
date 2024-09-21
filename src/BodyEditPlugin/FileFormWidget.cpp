@@ -125,7 +125,7 @@ static QString makeNameFilterString(const std::string& caption, const string& ex
     QString filters =
         ItemFileDialog::makeNameFilter(
             caption, ItemFileIO::separateExtensions(extensions));
-    
+
     filters += _(";;Any files (*)");
     return filters;
 }

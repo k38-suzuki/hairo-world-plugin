@@ -138,7 +138,7 @@ public:
                 armJoints[4] = body->link("J4");
                 armJoints[5] = body->link("J5");
                 armJoints[6] = body->link("J6");
-                break;      
+                break;
             case GEN3LITE:
                 armJoints[0] = body->link("J0");
                 armJoints[1] = body->link("J1");

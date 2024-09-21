@@ -1,38 +1,38 @@
-items: 
+items:
   id: 0
   name: "Root"
   plugin: Base
   class: RootItem
-  children: 
-    - 
+  children:
+    -
       id: 1
       name: "World"
       plugin: Body
       class: WorldItem
-      data: 
+      data:
         collisionDetection: false
         collisionDetector: AISTCollisionDetector
         materialTableFile: "${SHARE}/default/materials.yaml"
-      children: 
-        - 
+      children:
+        -
           id: 2
           name: "BoxROV"
           plugin: Body
           class: BodyItem
           is_checked: true
-          data: 
+          data:
             file: "${SHARE}/Tutorial/model/BoxROV.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0 ]
-            rootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            rootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
             jointPositions: [  ]
             initialRootPosition: [ 0, 0, 0 ]
-            initialRootAttitude: [ 
-              1, 0, 0, 
-              0, 1, 0, 
+            initialRootAttitude: [
+              1, 0, 0,
+              0, 1, 0,
               0, 0, 1 ]
             staticModel: false
             collisionDetection: true
@@ -40,13 +40,13 @@ items:
             location_editable: false
             scene_sensitive: true
             zmp: [ 0, 0, 0 ]
-          children: 
-            - 
+          children:
+            -
               id: 3
               name: "BoxROVJoystickController"
               plugin: Body
               class: SimpleControllerItem
-              data: 
+              data:
                 isNoDelayMode: false
                 controllerOptions: ""
                 controller: "BoxROVJoystickController"
@@ -54,13 +54,13 @@ items:
                 reloading: false
                 exportSymbols: false
                 isOldTargetVariableMode: false
-        - 
+        -
           id: 4
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
           is_selected: true
-          data: 
+          data:
             timeStep: 0.001
             realtimeSync: true
             recording: "full"
@@ -85,42 +85,42 @@ items:
             kinematicWalking: false
             2Dmode: false
             oldAccelSensorMode: false
-views: 
-  - 
+views:
+  -
     id: 0
     plugin: Base
     class: ItemPropertyView
     mounted: true
-  - 
+  -
     id: 1
     plugin: Base
     class: ItemTreeView
     mounted: true
-    state: 
+    state:
       expanded: [ 1, 2, 4 ]
-  - 
+  -
     id: 2
     name: "Location"
     plugin: Base
     class: LocationView
     mounted: true
-    state: 
+    state:
       show_rpy: true
       unique_rpy: false
       show_quoternion: false
       show_rotation_matrix: false
       coordinate: world
-  - 
+  -
     id: 3
     plugin: Base
     class: MessageView
     mounted: true
-  - 
+  -
     id: 4
     plugin: Base
     class: SceneView
     mounted: true
-    state: 
+    state:
       editMode: false
       viewpointControlMode: thirdPerson
       collisionLines: false
@@ -153,8 +153,8 @@ views:
       coordinateAxes: true
       fpsTestIteration: 1
       upsideDown: false
-      cameras: 
-        - 
+      cameras:
+        -
           camera: [ System, Perspective ]
           isCurrent: true
           fieldOfView: 0.610865
@@ -163,7 +163,7 @@ views:
           eye: [ 3.62509, 1.75524, 1.05289 ]
           direction: [ -0.880451, -0.440225, -0.17609 ]
           up: [ -0.1575, -0.0787495, 0.984374 ]
-        - 
+        -
           camera: [ System, Orthographic ]
           orthoHeight: 20
           near: 0.04
@@ -173,23 +173,23 @@ views:
       xzgridColor: [ 0.9, 0.9, 0.9, 1 ]
       yzgridColor: [ 0.9, 0.9, 0.9, 1 ]
       isDedicatedItemCheckEnabled: false
-  - 
+  -
     id: 5
     name: "Virtual Joystick"
     plugin: Base
     class: VirtualJoystickView
-  - 
+  -
     id: 6
     plugin: Body
     class: BodyLinkView
-    state: 
+    state:
       showRotationMatrix: false
-  - 
+  -
     id: 7
     plugin: Body
     class: JointDisplacementView
     mounted: true
-    state: 
+    state:
       show_selected_joints: false
       show_joint_ids: true
       show_joint_names: false
@@ -197,22 +197,22 @@ views:
       show_sliders: true
       show_dials: false
       show_phases: true
-  - 
+  -
     id: 8
     name: "Links / Devices"
     plugin: Body
     class: LinkDeviceListView
     mounted: true
-    state: 
+    state:
       mode: list
       element_type: link
-  - 
+  -
     id: 9
     name: "Link Position"
     plugin: Body
     class: LinkPositionView
     mounted: true
-    state: 
+    state:
       coordinate_mode: world
       preferred_coordinate_mode: base
       show_rpy: true
@@ -220,19 +220,19 @@ views:
       show_quoternion: false
       show_rotation_matrix: false
       target_link_type: ik_link
-  - 
+  -
     id: 10
     name: "Link Properties"
     plugin: Body
     class: LinkPropertyView
     mounted: true
-  - 
+  -
     id: 11
     plugin: Python
     class: PythonConsoleView
     mounted: true
-toolbars: 
-  "TimeBar": 
+toolbars:
+  "TimeBar":
     minTime: 0
     maxTime: 30
     frameRate: 1000
@@ -242,7 +242,7 @@ toolbars:
     speedScale: 1
     syncToOngoingUpdates: true
     autoExpansion: true
-  "KinematicsBar": 
+  "KinematicsBar":
     forward_kinematics: true
     inverse_kinematics: true
     preset_kinematics: true
@@ -252,7 +252,7 @@ toolbars:
     snapDistance: 0.025
     penetrationBlockDepth: 0.0005
     lazyCollisionDetectionMode: true
-  "BodyMotionGenerationBar": 
+  "BodyMotionGenerationBar":
     autoGenerationForNewBody: true
     balancer: false
     autoGeneration: false
@@ -285,22 +285,22 @@ toolbars:
     waistHeightRelaxation: false
     gravity: 9.8
     dynamicsTimeRatio: 1
-  "LeggedBodyBar": 
+  "LeggedBodyBar":
     stanceWidth: 0.15
-Body: 
-  "BodyMotionEngine": 
+Body:
+  "BodyMotionEngine":
     updateJointVelocities: false
-  "BodySelectionManager": 
+  "BodySelectionManager":
     currentBodyItem: 2
     currentLink: "CHASSIS"
-  "EditableSceneBody": 
-    editableSceneBodies: 
-      - 
+  "EditableSceneBody":
+    editableSceneBodies:
+      -
         bodyItem: 2
         showCenterOfMass: false
         showPpcom: false
         showZmp: false
-  "KinematicFaultChecker": 
+  "KinematicFaultChecker":
     checkJointPositions: true
     angleMargin: 0
     translationMargin: 0
@@ -309,77 +309,77 @@ Body:
     targetJoints: all
     checkSelfCollisions: true
     onlyTimeBarRange: false
-  "SplineFilterDialog": 
+  "SplineFilterDialog":
     isInputFrameRateSpecified: false
     inputFrameRate: 200
     isOutputFrameRateSpecified: false
     outputFrameRate: 200
-viewAreas: 
-  - 
+viewAreas:
+  -
     type: embedded
     tabs: true
-    contents: 
+    contents:
       type: splitter
       orientation: horizontal
       sizes: [ 1403, 446 ]
-      children: 
-        - 
+      children:
+        -
           type: splitter
           orientation: horizontal
           sizes: [ 363, 1036 ]
-          children: 
-            - 
+          children:
+            -
               type: splitter
               orientation: vertical
               sizes: [ 449, 448 ]
-              children: 
-                - 
+              children:
+                -
                   type: pane
                   views: [ 1 ]
-                - 
+                -
                   type: pane
                   views: [ 0, 10 ]
                   current: 0
-            - 
+            -
               type: splitter
               orientation: vertical
               sizes: [ 673, 224 ]
-              children: 
-                - 
+              children:
+                -
                   type: pane
                   views: [ 4 ]
-                - 
+                -
                   type: pane
                   views: [ 3, 11 ]
                   current: 3
-        - 
+        -
           type: splitter
           orientation: vertical
           sizes: [ 163, 734 ]
-          children: 
-            - 
+          children:
+            -
               type: pane
               views: [ 2 ]
-            - 
+            -
               type: splitter
               orientation: vertical
               sizes: [ 286, 444 ]
-              children: 
-                - 
+              children:
+                -
                   type: pane
                   views: [ 9 ]
-                - 
+                -
                   type: pane
                   views: [ 8, 7 ]
                   current: 7
-layoutOfToolBars: 
-  rows: 
-    - 
+layoutOfToolBars:
+  rows:
+    -
       - { name: "FileBar", x: 0, priority: 0 }
       - { name: "ScriptBar", x: 0, priority: 1 }
       - { name: "SimulationBar", x: 0, priority: 2 }
       - { name: "TimeBar", x: 0, priority: 0 }
-    - 
+    -
       - { name: "BodyBar", x: 0, priority: 0 }
       - { name: "KinematicsBar", x: 0, priority: 1 }
       - { name: "SceneBar", x: 0, priority: 2 }

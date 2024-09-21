@@ -8,7 +8,7 @@ links:
     name: CO60
     translation: [ 0.0, 0.5, 1.5 ]
     jointType: fixed
-    mass: 1 
+    mass: 1
     inertia: [
       0.72533, 0,       0,
       0,       0.08533, 0,

@@ -17,7 +17,7 @@ links:
     translation: [ 0.0, 0.0, -0.15 ]
     jointType: fixed
     elements:
-      - 
+      -
         type: Camera
         name: Camera
         translation: [ 0.07, 0.0, 0.1 ]

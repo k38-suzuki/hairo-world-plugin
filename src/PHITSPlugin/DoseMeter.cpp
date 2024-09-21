@@ -171,7 +171,7 @@ void DoseMeter::clearState()
 
 
 int DoseMeter::stateSize() const
-{    
+{
     return 10;
 }
 

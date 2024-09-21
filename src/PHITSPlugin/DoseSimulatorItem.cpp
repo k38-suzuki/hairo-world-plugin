@@ -164,7 +164,7 @@ void DoseSimulatorItem::Impl::onMidDynamics()
     if(!nodeData) {
         return;
     }
-    
+
     for(size_t i = 0; i < doseMeters.size(); ++i) {
         DoseMeter* doseMeter = doseMeters[i];
         Link* link = doseMeter->link();
@@ -256,7 +256,7 @@ Item* DoseSimulatorItem::doCloneItem(CloneMap* cloneMap) const
 {
     return new DoseSimulatorItem(*this);
 }
-    
+
 
 void DoseSimulatorItem::doPutProperties(PutPropertyFunction& putProperty)
 {

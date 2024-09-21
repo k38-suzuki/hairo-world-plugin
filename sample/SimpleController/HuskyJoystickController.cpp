@@ -47,7 +47,7 @@ public:
     virtual bool control() override
     {
         joystick->updateState(targetMode);
-        
+
         double pos[2];
         for(int i = 0; i < 2; ++i) {
             pos[i] = joystick->getPosition(targetMode,

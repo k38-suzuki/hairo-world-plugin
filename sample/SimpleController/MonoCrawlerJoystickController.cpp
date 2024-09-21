@@ -122,7 +122,7 @@ public:
 
         return true;
     }
- 
+
     virtual bool control() override
     {
         joystick->updateState(targetMode);

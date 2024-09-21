@@ -15,7 +15,7 @@ public:
     {
         require("Body");
     }
-    
+
     virtual bool initialize() override
     {
         QRReader::initializeClass(this);

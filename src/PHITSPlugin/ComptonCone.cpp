@@ -385,7 +385,6 @@ bool ComptonCone::readComptonCone(string strFName, double Energy, ComptonCamera*
 
         ifs.close();
         if(!bDumpPID) { break; }
-    
     }
 
     writing_file.close();
@@ -401,7 +400,7 @@ bool ComptonCone::readComptonCone(string strFName, double Energy, ComptonCamera*
 
     recon.setndiv(ndiv, theta);
     recon.Exec(values,
-                cameraWidth, 
+                cameraWidth,
                 cameraHeight,
                 sphere_radius,
                 arm,
@@ -414,7 +413,7 @@ bool ComptonCone::readComptonCone(string strFName, double Energy, ComptonCamera*
     //reconstimage->addScalerToImage(imageSize, imageSize, imageRgb);
 
     ConvertToBitmapSource(pngfile, imageSize, imageRgb);
-    
+
     return true;
 }
 

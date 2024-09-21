@@ -293,7 +293,7 @@ void EnergyFilterDialog::restoreState(const Archive& archive)
     } else if(mode == EnergyFilter::NUCLIDE_FILTER) {
         nuclideFilterRadio.setChecked(true);
     }
-    
+
     minChSpin->setValue(archive.get("min", 0));
     maxChSpin->setValue(archive.get("max", 0));
 

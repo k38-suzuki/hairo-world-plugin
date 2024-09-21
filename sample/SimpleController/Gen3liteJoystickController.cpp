@@ -172,7 +172,7 @@ public:
         }
 
         // speed selection
-        bool currentState1 = fabs(pos[5]) > 0 ? true : false; 
+        bool currentState1 = fabs(pos[5]) > 0 ? true : false;
         if(currentState1 && !prevButtonState2[0]) {
             if(pos[5] == -1) {
                 currentSpeed = currentSpeed == 100 ? 100 : currentSpeed + 10;

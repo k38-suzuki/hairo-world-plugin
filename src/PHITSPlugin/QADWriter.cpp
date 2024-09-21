@@ -320,7 +320,7 @@ string QADWriter::writeQAD(GammaData::CalcInfo& calcInfo, int iSrc)
             Vector3 v = { 0, obsD[io] / 2, 0 }; // 底面中心座標(Vx, Vy, Vz)
             Vector3 h = { 0, -obsD[io], 0 }; // 上面へのベクトル(Hx, Hy, Hz)
             v += obsCenter;
-            
+
             // オブジェクトの姿勢行列に線源の姿勢行列の逆行列を掛ける
             Matrix3 calcRotMat = invSrcRotMat * obsRotMat[io];
             v = calcRotMat * v;

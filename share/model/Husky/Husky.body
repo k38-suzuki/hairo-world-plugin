@@ -86,14 +86,14 @@ links:
     translation: [ -0.256, -0.2854, 0.03282 ]
     jointId: 3
     <<: *WheelCommon
-  - 
+  -
     type: SubBody
     uri: "resource/bumper.body"
     prefix: FRONT_
     parent: BASE
     translation: [ 0.48, 0.0, 0.091 ]
     jointType: fixed
-  - 
+  -
     type: SubBody
     uri: "resource/bumper.body"
     prefix: REAR_

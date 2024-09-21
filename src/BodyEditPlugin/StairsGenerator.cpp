@@ -117,7 +117,7 @@ StairsGenerator::Impl::Impl()
     stepsSpin->setRange(1, 9999);
     stepsSpin->setValue(10);
     gbox->addWidget(new QLabel(_("Number of steps [-]")), 2, 2);
-    gbox->addWidget(stepsSpin, 2, 3); 
+    gbox->addWidget(stepsSpin, 2, 3);
 
     colorButton = new ColorButton;
     colorButton->setColor(Vector3(0.5, 0.5, 0.5));
@@ -242,7 +242,7 @@ void StairsGenerator::Impl::writeLinkShape(Listing* elementsNode)
     double depth = tread * steps;
     ListingPtr elementsNode2 = new Listing;
     writeStepShape(elementsNode2);
-    
+
     for(int i = 0; i < steps; ++i) {
         MappingPtr node = new Mapping;
         if(i != 0) {

@@ -1,7 +1,7 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
   <qresource prefix="/BookmarkPlugin" >
-    
+
     <file>icon/bars_24.svg</file>
 
   </qresource>

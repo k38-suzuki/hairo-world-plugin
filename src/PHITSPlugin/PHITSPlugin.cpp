@@ -21,7 +21,7 @@ public:
     }
 
     virtual bool initialize() override
-    {        
+    {
         CrossSectionItem::initializeClass(this);
         DoseSimulatorItem::initializeClass(this);
         GammaImagerItem::initializeClass(this);

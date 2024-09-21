@@ -13,12 +13,11 @@
 #include <cnoid/SimulatorItem>
 #include <cnoid/stdx/filesystem>
 #include <cnoid/TimeBar>
-#include <cnoid/UTF8>
 #include <cnoid/WorldItem>
+#include <cnoid/LoggerUtil>
 #include <src/BodyPlugin/WorldLogFileItem.h>
 #include "HamburgerMenu.h"
 #include "ToolsUtil.h"
-#include <QDateTime>
 #include "gettext.h"
 
 using namespace std;
@@ -112,17 +111,11 @@ void WorldLogManager::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
     if(saveCheck->isChecked()) {
         is_simulation_started = true;
-        filesystem::path homeDir(fromUTF8(getenv("HOME")));
         ProjectManager* pm = ProjectManager::instance();
-        QDateTime recordingStartTime = QDateTime::currentDateTime();
-        string suffix = recordingStartTime.toString("-yyyy-MM-dd-hh-mm-ss").toStdString();
-        string logDirPath = toUTF8((homeDir / "worldlog" / (pm->currentProjectName() + suffix).c_str()).string());
-        filesystem::path dir(fromUTF8(logDirPath));
-        if(!filesystem::exists(dir)) {
-            filesystem::create_directories(dir);
-        }
+        string suffix = getCurrentTimeSuffix();
+        string dir = mkdirs(StandardPath::Downloads, "worldlog/" + pm->currentProjectName() + suffix);
 
-        project_filename = toUTF8((dir / pm->currentProjectName().c_str()).string()) + ".cnoid";
+        project_filename = dir + "/" + pm->currentProjectName() + ".cnoid";
         WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
         if(worldItem) {
             ItemList<WorldLogFileItem> logItems = worldItem->descendantItems<WorldLogFileItem>();
@@ -133,12 +126,11 @@ void WorldLogManager::onSimulationAboutToStart(SimulatorItem* simulatorItem)
                 logItem = new WorldLogFileItem;
                 worldItem->addChildItem(logItem);
             }
-            if(recordingStartTime.isValid()) {
-                string filename = toUTF8((dir / logItem->name().c_str()).string()) + ".log";
-                logItem->setLogFile(filename);
-                logItem->setTimeStampSuffixEnabled(false);
-                logItem->setSelected(true);
-            }
+
+            string filename = dir + "/" + logItem->name() + ".log";
+            logItem->setLogFile(filename);
+            logItem->setTimeStampSuffixEnabled(false);
+            logItem->setSelected(true);
         }
     }
 }
