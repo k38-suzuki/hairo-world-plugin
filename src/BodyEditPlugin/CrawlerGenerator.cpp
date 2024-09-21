@@ -419,7 +419,7 @@ CrawlerGenerator::Impl::Impl()
     for(int i = 0; i < NUM_TBUTTONS; ++i) {
         toolButtons[i] = new PushButton;
         PushButton* button = toolButtons[i];
-        QIcon icon = QIcon::fromTheme(name[i]);
+        const QIcon icon = QIcon::fromTheme(name[i]);
         if(icon.isNull()) {
             button->setText(tlabel[i]);
         } else {

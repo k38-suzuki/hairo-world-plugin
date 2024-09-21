@@ -92,8 +92,7 @@ IntervalStarterBar::Impl::Impl(IntervalStarterBar* self)
     intervalTimer = new Timer(self);
     intervalTimer->sigTimeout().connect([&](){ onTimeout(); });
 
-    const QIcon startIcon = QIcon::fromTheme("media-playlist-repeat");
-    startButton = self->addToggleButton(":/JoystickStartPlugin/icon/stopwatch_24.svg");
+    startButton = self->addToggleButton(":/JoystickStartPlugin/icon/repeat_24dp_5F6368.svg");
     startButton->setToolTip(_("Set the interval timer"));
     startButton->sigToggled().connect([&](bool checked){ onButtonToggled(checked); });
 

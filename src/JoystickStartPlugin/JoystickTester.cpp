@@ -10,10 +10,9 @@
 #include <cnoid/Format>
 #include <cnoid/JoystickCapture>
 #include <cnoid/MainMenu>
-#include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>
-#include <cnoid/ToolBar>
+#include <cnoid/ToolsUtil>
 #include <QBoxLayout>
 #include <QDialogButtonBox>
 #include <QGridLayout>
@@ -57,17 +56,12 @@ void JoystickTester::initializeClass(ExtensionManager* ext)
     if(!testerInstance) {
         testerInstance = ext->manage(new JoystickTester);
 
-        MainMenu::instance()->add_Tools_Item(
-            _("Joystick Tester"), [](){ testerInstance->impl->show(); });
+        // MainMenu::instance()->add_Tools_Item(
+        //     _("Joystick Tester"), [](){ testerInstance->impl->show(); });
 
-        // vector<ToolBar*> toolBars = MainWindow::instance()->toolBars();
-        // for(auto& bar : toolBars) {
-        //     if(bar->name() == "FileBar") {
-        //         auto button1 = bar->addButton(QIcon::fromTheme("applications-games"));
-        //         button1->setToolTip(_("Show the joystick tester"));
-        //         button1->sigClicked().connect([&](){ testerInstance->impl->show(); });
-        //     }
-        // }
+        auto button = fileBar()->addButton(":/JoystickStartPlugin/icon/sports_esports_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg");
+        button->setToolTip(_("Show the joystick tester"));
+        button->sigClicked().connect([&](){ testerInstance->impl->show(); });
     }
 }
 

@@ -50,7 +50,7 @@ void HistoryManager::initializeClass(ExtensionManager* ext)
     if(!historyInstance) {
         historyInstance = ext->manage(new HistoryManager);
 
-        // auto button1 = fileBar()->addButton(QIcon::fromTheme("document-revert"));
+        // auto button1 = fileBar()->addButton(":/BookmarkPlugin/icon/history_24dp_5F6368.svg"));
         // button1->setToolTip(_("Show the history manager"));
         // button1->sigClicked().connect([&](){ historyInstance->show(); });
     }

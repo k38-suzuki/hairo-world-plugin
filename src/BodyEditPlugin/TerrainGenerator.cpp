@@ -111,7 +111,7 @@ TerrainGenerator::Impl::Impl()
     inputFileLine->setEnabled(false);
     data = nullptr;
     PushButton* loadButton = new PushButton;
-    QIcon openIcon = QIcon::fromTheme("document-open");
+    const QIcon openIcon = QIcon::fromTheme("document-open");
     if(openIcon.isNull()) {
         loadButton->setText(_("&Load"));
     } else {

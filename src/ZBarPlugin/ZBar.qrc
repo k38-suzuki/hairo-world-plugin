@@ -2,8 +2,7 @@
 <RCC version="1.0">
   <qresource prefix="/ZBar" >
 
-    <file>icon/1031_q_h.svg</file>
-    <file>icon/1032_q_h.svg</file>
+    <file>icon/qr_code_scanner_24dp_5F6368.svg</file>
 
   </qresource>
 </RCC>

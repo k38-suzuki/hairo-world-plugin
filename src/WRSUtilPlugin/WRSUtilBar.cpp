@@ -142,11 +142,11 @@ WRSUtilBar::Impl::Impl(WRSUtilBar* self)
     projectCombo->setToolTip(_("Select a project"));
     self->addWidget(projectCombo);
 
-    auto updateButton = self->addButton(QIcon::fromTheme("view-refresh"));
+    auto updateButton = self->addButton(":/WRSUtilPlugin/icon/refresh_24dp_5F6368.svg");
     updateButton->setToolTip(_("Update projects"));
     updateButton->sigClicked().connect([&](){ onUpdateButtonClicked(); });
 
-    auto openButton = self->addButton(QIcon::fromTheme("window-new"));
+    auto openButton = self->addButton(":/WRSUtilPlugin/icon/launch_24dp_5F6368.svg");
     openButton->setToolTip(_("Open the selected project"));
     openButton->sigClicked().connect([&](){ onOpenButtonClicked(); });
 }

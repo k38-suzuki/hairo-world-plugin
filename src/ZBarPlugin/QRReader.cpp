@@ -65,7 +65,7 @@ QRReader::Impl::Impl()
     decoder->sigDecoded().connect([&](std::string text){
         MessageView::instance()->putln(formatR(_("\"{0}\" has been read."), text)); });
 
-    auto button = imageViewBar->addButton(":/ZBar/icon/1032_q_h.svg");
+    auto button = imageViewBar->addButton(":/ZBar/icon/qr_code_scanner_24dp_5F6368.svg");
     button->setToolTip(_("Read QR"));
     button->sigClicked().connect([&](){ onDecodeButtonClicked(); });
 }

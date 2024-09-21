@@ -1,0 +1,10 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+  <qresource prefix="/WRSUtilPlugin" >
+
+    <file>icon/file_open_24dp_5F6368.svg</file>
+    <file>icon/launch_24dp_5F6368.svg</file>
+    <file>icon/refresh_24dp_5F6368.svg</file>
+
+  </qresource>
+</RCC>

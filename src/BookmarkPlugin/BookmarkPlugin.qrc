@@ -2,9 +2,18 @@
 <RCC version="1.0">
   <qresource prefix="/BookmarkPlugin" >
 
-    <file>icon/882_ti_f.svg</file>
-    <file>icon/bars_24.svg</file>
-    <file>icon/star_close_24.svg</file>
+    <file>icon/bookmark_add_24dp_5F6368.svg</file>
+    <file>icon/bookmark_added_24dp_5F6368.svg</file>
+    <file>icon/bookmark_remove_24dp_5F6368.svg</file>
+    <file>icon/bookmarks_24dp_5F6368.svg</file>
+    <file>icon/collections_bookmark_24dp_5F6368.svg</file>
+    <file>icon/file_open_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg</file>
+    <file>icon/history_24dp_5F6368.svg</file>
+    <file>icon/menu_24dp_5F6368.svg</file>
+    <file>icon/more_horiz_24dp_5F6368.svg</file>
+    <file>icon/more_vert_24dp_5F6368.svg</file>
+    <file>icon/restore_page_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg</file>
+    <file>icon/tune_24dp_5F6368.svg</file>
 
   </qresource>
 </RCC>
