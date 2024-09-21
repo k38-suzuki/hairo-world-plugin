@@ -3,7 +3,7 @@ set(sources
   BookmarkBar.cpp
   BookmarkManager.cpp
   BookmarkPlugin.cpp
-  HamburgerMenu.cpp
+  HamburgerButton.cpp
   HistoryManager.cpp
   JoyKey.cpp
   KIOSKManager.cpp
@@ -16,7 +16,7 @@ set(headers
   ArchiveListDialog.h
   BookmarkBar.h
   BookmarkManager.h
-  HamburgerMenu.h
+  HamburgerButton.h
   HistoryManager.h
   JoyKey.h
   KIOSKManager.h

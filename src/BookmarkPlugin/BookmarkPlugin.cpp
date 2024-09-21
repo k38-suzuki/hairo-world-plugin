@@ -6,7 +6,6 @@
 #include <cnoid/Plugin>
 #include "BookmarkBar.h"
 #include "BookmarkManager.h"
-#include "HamburgerMenu.h"
 #include "HistoryManager.h"
 #include "KIOSKManager.h"
 #include "ToolsUtil.h"
@@ -25,7 +24,6 @@ public:
     virtual bool initialize() override
     {
         ToolsMenu::initializeClass(this);
-        HamburgerMenu::initializeClass(this);
         // BookmarkBar::initialize(this);
         BookmarkManager::initializeClass(this);
         WorldLogManager::initializeClass(this);

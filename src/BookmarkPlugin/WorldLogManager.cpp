@@ -16,7 +16,6 @@
 #include <cnoid/WorldItem>
 #include <cnoid/LoggerUtil>
 #include <src/BodyPlugin/WorldLogFileItem.h>
-#include "HamburgerMenu.h"
 #include "ToolsUtil.h"
 #include "gettext.h"
 
@@ -35,11 +34,6 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
 {
     if(!logInstance) {
         logInstance = ext->manage(new WorldLogManager);
-
-        auto action = HamburgerMenu::instance()->addAction(_("World Log Manager"));
-        action->setToolTip(_("Show the world log manager"));
-        action->setIcon(QIcon::fromTheme("emblem-documents"));
-        action->sigTriggered().connect([&](){ logInstance->show(); });
 
         auto button = fileBar()->addButton(QIcon::fromTheme("emblem-documents"));
         button->setToolTip(_("Show the world log manager"));
