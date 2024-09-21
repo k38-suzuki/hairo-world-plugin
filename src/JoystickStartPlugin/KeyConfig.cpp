@@ -3,7 +3,6 @@
 */
 
 #include "KeyConfig.h"
-#include <cnoid/Archive>
 #include <cnoid/Button>
 #include <cnoid/ComboBox>
 #include <cnoid/Dialog>

@@ -3,7 +3,6 @@
 */
 
 #include "WorldLogManager.h"
-#include <cnoid/Archive>
 #include <cnoid/AppConfig>
 #include <cnoid/CheckBox>
 #include <cnoid/ExtensionManager>
@@ -13,6 +12,7 @@
 #include <cnoid/SimulatorItem>
 #include <cnoid/stdx/filesystem>
 #include <cnoid/TimeBar>
+#include <cnoid/ValueTree>
 #include <cnoid/WorldItem>
 #include <cnoid/LoggerUtil>
 #include <src/BodyPlugin/WorldLogFileItem.h>

@@ -2,7 +2,9 @@
 <RCC version="1.0">
   <qresource prefix="/BookmarkPlugin" >
 
+    <file>icon/882_ti_f.svg</file>
     <file>icon/bars_24.svg</file>
+    <file>icon/star_close_24.svg</file>
 
   </qresource>
 </RCC>

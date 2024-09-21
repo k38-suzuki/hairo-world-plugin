@@ -139,7 +139,7 @@ WRSUtilBar::Impl::Impl(WRSUtilBar* self)
         [&](OptionManager*){ onUtilOptionsParsed(); });
 
     projectCombo = new ComboBox;
-    projectCombo->setToolTip(_("Select project"));
+    projectCombo->setToolTip(_("Select a project"));
     self->addWidget(projectCombo);
 
     auto updateButton = self->addButton(QIcon::fromTheme("view-refresh"));

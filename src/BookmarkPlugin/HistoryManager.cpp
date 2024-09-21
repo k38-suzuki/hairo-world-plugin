@@ -98,15 +98,15 @@ HistoryManager::~HistoryManager()
 
 HistoryManager::Impl::~Impl()
 {
-    auto config = AppConfig::archive()->openListing("histories");
-    config->clear();
+    auto& recentFiles = *AppConfig::archive()->openListing("histories");
+    recentFiles.clear();
 
     for(int i = 2; i < currentMenu->actions().size(); ++i) {
         string filename = currentMenu->actions().at(i)->text().toStdString();
-        config->append(filename, DOUBLE_QUOTED);
+        recentFiles.append(filename, DOUBLE_QUOTED);
     }
 
-    if(config->empty()) {
+    if(recentFiles.empty()) {
         AppConfig::archive()->remove("histories");
     }
 }

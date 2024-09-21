@@ -4,13 +4,13 @@
 
 #include "BookmarkManager.h"
 #include <cnoid/Action>
-#include <cnoid/Archive>
 #include <cnoid/AppConfig>
 #include <cnoid/Buttons>
 #include <cnoid/ExtensionManager>
 #include <cnoid/ItemManager>
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
+#include <cnoid/ValueTree>
 #include <cnoid/stdx/filesystem>
 #include "ToolsUtil.h"
 #include "gettext.h"

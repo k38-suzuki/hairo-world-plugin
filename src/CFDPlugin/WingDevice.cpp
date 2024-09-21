@@ -3,7 +3,6 @@
 */
 
 #include "WingDevice.h"
-#include <cnoid/Archive>
 #include <cnoid/BoundingBox>
 #include <cnoid/EigenUtil>
 #include <cnoid/MeshGenerator>
@@ -13,6 +12,7 @@
 #include <cnoid/SceneShape>
 #include <cnoid/StdBodyLoader>
 #include <cnoid/StdBodyWriter>
+#include <cnoid/ValueTree>
 
 using namespace cnoid;
 

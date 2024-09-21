@@ -3,7 +3,6 @@
 */
 
 #include "Thruster.h"
-#include <cnoid/Archive>
 #include <cnoid/EigenUtil>
 #include <cnoid/MeshGenerator>
 #include <cnoid/Link>
@@ -12,6 +11,7 @@
 #include <cnoid/SceneShape>
 #include <cnoid/StdBodyLoader>
 #include <cnoid/StdBodyWriter>
+#include <cnoid/ValueTree>
 
 using namespace cnoid;
 

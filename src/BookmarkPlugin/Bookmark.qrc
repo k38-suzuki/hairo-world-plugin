@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/Bookmark">
-        <file>icon/bookmark.svg</file>
-    </qresource>
-</RCC>
