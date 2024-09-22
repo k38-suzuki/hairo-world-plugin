@@ -44,15 +44,21 @@ public:
 
 void HistoryManager::initializeClass(ExtensionManager* ext)
 {
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("History"));
-    currentMenu = mm.currentMenu();
+    // MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("History"));
+    // currentMenu = mm.currentMenu();
+    currentMenu = new Menu;
 
     if(!historyInstance) {
         historyInstance = ext->manage(new HistoryManager);
 
         auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/history_24dp_5F6368.svg");
         button->setToolTip(_("Show the history manager"));
+        // button->setMenu(currentMenu);
         button->sigClicked().connect([&](){ historyInstance->show(); });
+
+        button->setContextMenuPolicy(Qt::CustomContextMenu);
+        button->connect(button, &ToolButton::customContextMenuRequested,
+            [&](const QPoint& pos){ currentMenu->exec(QCursor::pos()); });
     }
 }
 
