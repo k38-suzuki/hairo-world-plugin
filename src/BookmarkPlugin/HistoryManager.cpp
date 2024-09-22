@@ -44,22 +44,15 @@ public:
 
 void HistoryManager::initializeClass(ExtensionManager* ext)
 {
-    // MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("History"));
-    // currentMenu = mm.currentMenu();
-    currentMenu = new Menu;
+    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("History"));
+    currentMenu = mm.currentMenu();
 
     if(!historyInstance) {
         historyInstance = ext->manage(new HistoryManager);
 
-        // auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/history_24dp_5F6368.svg"));
-        // button->setToolTip(_("Show the history manager"));
-        // button->sigClicked().connect([&](){ historyInstance->show(); });
-
         auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/history_24dp_5F6368.svg");
-        button->setToolTip(_("Show the histories"));
-        // button->setMenu(currentMenu);
-        button->sigClicked().connect(
-            [&, button](){ currentMenu->exec(QCursor::pos()); });
+        button->setToolTip(_("Show the history manager"));
+        button->sigClicked().connect([&](){ historyInstance->show(); });
     }
 }
 
@@ -91,8 +84,6 @@ HistoryManager::Impl::Impl(HistoryManager* self)
     self->setArchiveKey("history_list");
     self->setFixedSize(800, 450);
 
-    // ProjectManager::instance()->sigProjectLoaded().connect(
-    //     [&](int level){ self->addItem(ProjectManager::instance()->currentProjectFile().c_str()); });
     ProjectManager::instance()->sigProjectLoaded().connect([&](int level){ onProjectLoaded(level); });
 }
 
@@ -172,5 +163,7 @@ void HistoryManager::Impl::onProjectLoaded(int level)
     string filename = ProjectManager::instance()->currentProjectFile().c_str();
     if(!filename.empty()) {
         addProject(filename);
+        self->addItem(filename.c_str());
+        self->removeDuplicates();
     }
 }

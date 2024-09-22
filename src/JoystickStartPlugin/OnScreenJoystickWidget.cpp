@@ -96,32 +96,32 @@ OnScreenJoystickWidget::Impl::Impl(OnScreenJoystickWidget* self)
     axisPositions.resize(Joystick::NUM_STD_AXES, 0.0);
     buttonStates.resize(Joystick::NUM_STD_BUTTONS, false);
 
-    auto hbox0 = new QHBoxLayout;
+    auto hbox1 = new QHBoxLayout;
     for(int i = 0; i < NUM_AXES; ++i) {
         axes[i] = new AxisWidget;
         AxisWidget* axis = axes[i];
         axis->sigAxis().connect(
                     [this, i](double h_position, double v_position){ onAxis(i, h_position, v_position); });
-        hbox0->addWidget(axis);
+        hbox1->addWidget(axis);
     }
 
-    auto hbox1 = new QHBoxLayout;
+    auto hbox2 = new QHBoxLayout;
     for(int i = 0; i < Joystick::NUM_STD_BUTTONS; ++i) {
         buttons[i] = new ToolButton(to_string(i).c_str());
         ToolButton* button = buttons[i];
         button->setFixedWidth(30);
         button->sigPressed().connect([this, i](){ onButtonPressed(i); });
         button->sigReleased().connect([this, i](){ onButtonReleased(i); });
-        hbox1->addWidget(button);
+        hbox2->addWidget(button);
     }
 
-    auto vbox0 = new QVBoxLayout;
-    vbox0->addLayout(hbox0);
-    vbox0->addLayout(hbox1);
+    auto vbox1 = new QVBoxLayout;
+    vbox1->addLayout(hbox1);
+    vbox1->addLayout(hbox2);
 
     auto hbox = new QHBoxLayout;
     hbox->addStretch();
-    hbox->addLayout(vbox0);
+    hbox->addLayout(vbox1);
     hbox->addStretch();
     auto vbox = new QVBoxLayout;
     vbox->addStretch();

@@ -91,9 +91,9 @@ JoystickTester::Impl::Impl()
     joystick.sigButton().connect(
         [&](int id, bool isPressed){ onButton(id, isPressed); });
 
-    QGroupBox* gbox0 = new QGroupBox(_("Axes"));
-    auto vbox0 = new QVBoxLayout;
-    QGridLayout* grid = new QGridLayout;
+    QGroupBox* gbox2 = new QGroupBox(_("Axes"));
+    auto vbox1 = new QVBoxLayout;
+    QGridLayout* gbox1 = new QGridLayout;
     for(int i = 0; i < joystick.numAxes(); ++i) {
         QProgressBar* bar = new QProgressBar;
         bar->setValue(0);
@@ -101,26 +101,26 @@ JoystickTester::Impl::Impl()
         bar->setFormat(formatC("{0:.3}%", 0.0).c_str());
         bars.push_back(bar);
         const string label = "Axis " + to_string(i) + ":";
-        grid->addWidget(new QLabel(label.c_str()), i, 0);
-        grid->addWidget(bar, i, 1);
+        gbox1->addWidget(new QLabel(label.c_str()), i, 0);
+        gbox1->addWidget(bar, i, 1);
     }
-    vbox0->addLayout(grid);
-    vbox0->addStretch();
-    gbox0->setLayout(vbox0);
+    vbox1->addLayout(gbox1);
+    vbox1->addStretch();
+    gbox2->setLayout(vbox1);
 
-    QGroupBox* gbox1 = new QGroupBox(_("Buttons"));
-    auto vbox1 = new QVBoxLayout;
+    QGroupBox* gbox3 = new QGroupBox(_("Buttons"));
+    auto vbox2 = new QVBoxLayout;
     for(int i = 0; i < joystick.numButtons(); ++i) {
         PushButton* button = new PushButton(to_string(i).c_str());
         buttons.push_back(button);
-        vbox1->addWidget(button);
+        vbox2->addWidget(button);
     }
-    vbox1->addStretch();
-    gbox1->setLayout(vbox1);
+    vbox2->addStretch();
+    gbox3->setLayout(vbox2);
 
     auto hbox = new QHBoxLayout;
-    hbox->addWidget(gbox0);
-    hbox->addWidget(gbox1);
+    hbox->addWidget(gbox2);
+    hbox->addWidget(gbox3);
 
     auto okButton = new QPushButton(_("&Ok"));
     okButton->setDefault(true);
@@ -128,11 +128,11 @@ JoystickTester::Impl::Impl()
     buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
 
-    auto vbox2 = new QVBoxLayout;
-    vbox2->addLayout(hbox);
-    vbox2->addWidget(new HSeparator);
-    vbox2->addWidget(buttonBox);
-    setLayout(vbox2);
+    auto vbox = new QVBoxLayout;
+    vbox->addLayout(hbox);
+    vbox->addWidget(new HSeparator);
+    vbox->addWidget(buttonBox);
+    setLayout(vbox);
 }
 
 

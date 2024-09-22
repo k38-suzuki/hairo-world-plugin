@@ -18,6 +18,7 @@ public:
     void addItem(const QString& text);
     void addItems(const QStringList& texts);
     void addWidget(QWidget* widget);
+    void removeDuplicates();
 
     void setArchiveKey(const std::string& archive_key);
 

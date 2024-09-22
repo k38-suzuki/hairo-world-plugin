@@ -594,17 +594,17 @@ DoseConfigDialog::DoseConfigDialog()
     rangeBox->setAlignment(Qt::AlignCenter);
     rangeBox->setLayout(rgbox);
 
-    QGridLayout* gbox0 = new QGridLayout;
-    int index = 0;
-    gbox0->addWidget(new QLabel(_("maxcas")), index, 0);
-    gbox0->addWidget(maxCasSpin, index, 1);
-    gbox0->addWidget(new QLabel(_("maxbch")), index, 2);
-    gbox0->addWidget(maxBchSpin, index++, 3);
-    gbox0->addWidget(new QLabel(_("Code")), index, 0);
-    gbox0->addWidget(codeCombo, index, 1);
-    gbox0->addWidget(messageCheck, index++, 2, 1, 2);
-
     QGridLayout* gbox1 = new QGridLayout;
+    int index = 0;
+    gbox1->addWidget(new QLabel(_("maxcas")), index, 0);
+    gbox1->addWidget(maxCasSpin, index, 1);
+    gbox1->addWidget(new QLabel(_("maxbch")), index, 2);
+    gbox1->addWidget(maxBchSpin, index++, 3);
+    gbox1->addWidget(new QLabel(_("Code")), index, 0);
+    gbox1->addWidget(codeCombo, index, 1);
+    gbox1->addWidget(messageCheck, index++, 2, 1, 2);
+
+    QGridLayout* gbox2 = new QGridLayout;
     static const char* label[] = { "XY", "YZ", "ZX" };
 
     plainCombo = new ComboBox;
@@ -617,9 +617,9 @@ DoseConfigDialog::DoseConfigDialog()
     dspin->setSingleStep(0.01);
     slider = new Slider(Qt::Horizontal);
     slider->setRange(0, 100);
-    gbox1->addWidget(plainCombo, 0, 0, 1, 1);
-    gbox1->addWidget(slider, 0, 1, 1, 2);
-    gbox1->addWidget(dspin, 0, 3, 1, 1);
+    gbox2->addWidget(plainCombo, 0, 0, 1, 1);
+    gbox2->addWidget(slider, 0, 1, 1, 2);
+    gbox2->addWidget(dspin, 0, 3, 1, 1);
 
     dspin->sigValueChanged().connect([&](double value){
         sigValueChanged_(value);
@@ -643,9 +643,9 @@ DoseConfigDialog::DoseConfigDialog()
     auto vbox = new QVBoxLayout;
     vbox->addLayout(new HSeparatorBox(new QLabel("PHITS/QAD")));
     vbox->addWidget(rangeBox);
-    vbox->addLayout(gbox0);
-    vbox->addLayout(new HSeparatorBox(new QLabel(_("Plain"))));
     vbox->addLayout(gbox1);
+    vbox->addLayout(new HSeparatorBox(new QLabel(_("Plain"))));
+    vbox->addLayout(gbox2);
     vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);
     setLayout(vbox);

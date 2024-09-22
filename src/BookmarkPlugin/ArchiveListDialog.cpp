@@ -36,7 +36,7 @@ public:
     void onItemDoubleClicked(QListWidgetItem* item);
     void updateList();
     void clearList();
-    void storeList();
+    void removeDuplicates();
 };
 
 }
@@ -98,9 +98,7 @@ ArchiveListDialog::Impl::~Impl()
 
     for(int i = 0; i < listWidget->count(); ++i) {
         QListWidgetItem* item = listWidget->item(i);
-        if(item) {
-            recentList.append(item->text().toStdString(), DOUBLE_QUOTED);
-        }
+        recentList.append(item->text().toStdString(), DOUBLE_QUOTED);
     }
 
     if(recentList.empty()) {
@@ -187,6 +185,26 @@ void ArchiveListDialog::Impl::clearList()
     while(listWidget->count()) {
         listWidget->takeItem(0);
     }
+}
+
+
+void ArchiveListDialog::removeDuplicates()
+{
+    impl->removeDuplicates();
+}
+
+
+void ArchiveListDialog::Impl::removeDuplicates()
+{
+    QStringList list;
+    for(int i = 0; i < listWidget->count(); ++i) {
+        auto item = listWidget->item(i);
+        list << item->text();
+    }
+
+    list.removeDuplicates();
+    clearList();
+    self->addItems(list);
 }
 
 
