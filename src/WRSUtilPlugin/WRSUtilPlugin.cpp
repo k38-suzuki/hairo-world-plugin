@@ -10,6 +10,7 @@ using namespace cnoid;
 class WRSUtilPlugin : public Plugin
 {
 public:
+
     WRSUtilPlugin() : Plugin("WRSUtil")
     {
         require("Body");

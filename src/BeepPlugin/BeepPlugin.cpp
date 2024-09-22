@@ -12,6 +12,7 @@ using namespace cnoid;
 class BeepPlugin : public Plugin
 {
 public:
+
     BeepPlugin() : Plugin("Beep")
     {
         require("Body");

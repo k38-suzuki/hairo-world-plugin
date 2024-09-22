@@ -19,6 +19,7 @@ using namespace cnoid;
 class BodyEditPlugin : public Plugin
 {
 public:
+
     BodyEditPlugin() : Plugin("BodyEdit")
     {
         require("Body");

@@ -11,6 +11,7 @@ using namespace cnoid;
 class OMPLPlugin : public Plugin
 {
 public:
+
     OMPLPlugin() : Plugin("OMPL")
     {
         require("Body");

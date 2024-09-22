@@ -51,6 +51,6 @@ Menu* HamburgerButton::addMenu(const string& title)
 void HamburgerButton::initialize()
 {
     menu_ = new Menu;
-    setIcon(QIcon(":/BookmarkPlugin/icon/menu_24dp_5F6368.svg"));
+    setIcon(QIcon(":/GooglePlugin/icon/menu_24dp_5F6368.svg"));
     setMenu(menu_);
 }

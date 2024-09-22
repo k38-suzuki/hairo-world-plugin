@@ -1,8 +1,0 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
-  <qresource prefix="/ZBar" >
-
-    <file>icon/qr_code_scanner_24dp_5F6368.svg</file>
-
-  </qresource>
-</RCC>

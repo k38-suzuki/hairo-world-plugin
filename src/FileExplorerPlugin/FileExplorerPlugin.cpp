@@ -11,6 +11,7 @@ using namespace cnoid;
 class FileExplorerPlugin : public Plugin
 {
 public:
+
     FileExplorerPlugin() : Plugin("FileExplorer")
     {
         require("Body");

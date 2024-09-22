@@ -11,6 +11,7 @@ using namespace cnoid;
 class VFXPlugin : public Plugin
 {
 public:
+
     VFXPlugin() : Plugin("VFX")
     {
         require("Body");

@@ -11,6 +11,7 @@ using namespace cnoid;
 class IKPlannerPlugin : public Plugin
 {
 public:
+
     IKPlannerPlugin() : Plugin("IKPlanner")
     {
         require("Body");

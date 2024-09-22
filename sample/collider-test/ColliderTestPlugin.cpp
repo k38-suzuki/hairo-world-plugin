@@ -13,6 +13,7 @@ using namespace cnoid;
 class ColliderTestPlugin : public Plugin
 {
 public:
+
     ColliderTestPlugin() : Plugin("ColliderTest")
     {
         require("Body");

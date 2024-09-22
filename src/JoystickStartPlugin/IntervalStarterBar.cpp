@@ -92,7 +92,7 @@ IntervalStarterBar::Impl::Impl(IntervalStarterBar* self)
     intervalTimer = new Timer(self);
     intervalTimer->sigTimeout().connect([&](){ onTimeout(); });
 
-    startButton = self->addToggleButton(":/JoystickStartPlugin/icon/repeat_24dp_5F6368.svg");
+    startButton = self->addToggleButton(":/GooglePlugin/icon/repeat_24dp_5F6368.svg");
     startButton->setToolTip(_("Set the interval timer"));
     startButton->sigToggled().connect([&](bool checked){ onButtonToggled(checked); });
 

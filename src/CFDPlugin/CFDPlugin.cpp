@@ -11,6 +11,7 @@ using namespace cnoid;
 class CFDPlugin : public Plugin
 {
 public:
+
     CFDPlugin() : Plugin("CFD")
     {
         require("Body");

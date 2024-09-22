@@ -10,6 +10,7 @@ using namespace cnoid;
 class LiftSamplePlugin : public Plugin
 {
 public:
+
     LiftSamplePlugin() : Plugin("LiftSample")
     {
         require("Body");

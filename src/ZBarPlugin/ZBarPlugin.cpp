@@ -11,6 +11,7 @@ using namespace cnoid;
 class ZBarPlugin : public Plugin
 {
 public:
+
     ZBarPlugin() : Plugin("ZBar")
     {
         require("Body");

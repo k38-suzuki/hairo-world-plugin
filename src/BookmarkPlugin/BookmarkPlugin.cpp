@@ -16,6 +16,7 @@ using namespace cnoid;
 class BookmarkPlugin : public Plugin
 {
 public:
+
     BookmarkPlugin() : Plugin("Bookmark")
     {
         require("Body");

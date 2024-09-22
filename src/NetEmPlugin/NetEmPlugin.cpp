@@ -12,6 +12,7 @@ using namespace cnoid;
 class NetEmPlugin : public Plugin
 {
 public:
+
     NetEmPlugin() : Plugin("NetEm")
     {
         require("Body");
