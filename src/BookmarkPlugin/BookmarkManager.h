@@ -25,7 +25,7 @@ protected:
     virtual void onItemDoubleClicked(const std::string& text) override;
 
 private:
-    void onButtonClicked();
+    void onOpenButtonClicked();
 
     CheckBox* autoCheck;
 };

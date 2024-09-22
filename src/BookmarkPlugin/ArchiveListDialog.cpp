@@ -12,6 +12,7 @@
 #include <QFileInfo>
 #include <QListWidget>
 #include <QListWidgetItem>
+#include "gettext.h"
 
 using namespace std;
 using namespace cnoid;
@@ -32,7 +33,7 @@ public:
     int max_items;
     QHBoxLayout* hbox;
 
-    void onButtonClicked();
+    void onClearButtonClicked();
     void onItemDoubleClicked(QListWidgetItem* item);
     void updateList();
     void clearList();
@@ -60,9 +61,9 @@ ArchiveListDialog::Impl::Impl(ArchiveListDialog* self)
 
     auto hbox1 = new QHBoxLayout;
     hbox = new QHBoxLayout;
-    auto button1 = new PushButton("C");
-    button1->sigClicked().connect([&](){ onButtonClicked(); });
-    auto button2 = new PushButton("AC");
+    auto button1 = new PushButton(_("C"));
+    button1->sigClicked().connect([&](){ onClearButtonClicked(); });
+    auto button2 = new PushButton(_("AC"));
     button2->sigClicked().connect([&](){ clearList(); });
     hbox1->addLayout(hbox);
     hbox1->addStretch();
@@ -145,7 +146,7 @@ void ArchiveListDialog::setArchiveKey(const std::string& archive_key)
 }
 
 
-void ArchiveListDialog::Impl::onButtonClicked()
+void ArchiveListDialog::Impl::onClearButtonClicked()
 {
     QListWidgetItem* item = listWidget->currentItem();
     if(item) {

@@ -64,7 +64,7 @@ BookmarkManager::BookmarkManager()
     const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/file_open_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg");
     auto button = new ToolButton;
     button->setIcon(icon);
-    button->sigClicked().connect([&](){ onButtonClicked(); });
+    button->sigClicked().connect([&](){ onOpenButtonClicked(); });
     autoCheck = new CheckBox;
     autoCheck->setText(_("Autoplay"));
     addWidget(button);
@@ -104,7 +104,7 @@ void BookmarkManager::onItemDoubleClicked(const string& text)
 }
 
 
-void BookmarkManager::onButtonClicked()
+void BookmarkManager::onOpenButtonClicked()
 {
     vector<string> filenames = getOpenFileNames(_("Open a project"), "cnoid");
     for(auto& filename : filenames) {

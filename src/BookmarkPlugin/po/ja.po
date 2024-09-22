@@ -17,6 +17,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+msgid "C"
+msgstr ""
+
+msgid "AC"
+msgstr ""
+
 msgid "Enable KIOSK"
 msgstr "KIOSKモード"
 
