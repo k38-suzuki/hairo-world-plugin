@@ -3,14 +3,14 @@
 */
 
 #include "HistoryManager.h"
+#include <cnoid/Action>
 #include <cnoid/AppConfig>
 #include <cnoid/ExtensionManager>
 #include <cnoid/Menu>
-#include <cnoid/MenuManager>
 #include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include <cnoid/ValueTree>
-#include "ToolsUtil.h"
+#include "HamburgerMenu.h"
 #include "gettext.h"
 
 using namespace std;
@@ -19,7 +19,6 @@ using namespace cnoid;
 namespace {
 
 HistoryManager* historyInstance = nullptr;
-Menu* currentMenu = nullptr;
 
 }
 
@@ -37,6 +36,8 @@ public:
     void addProject(const string& filename);
     void clearProjects();
     void onProjectLoaded(int level);
+
+    Menu* currentMenu;
 };
 
 }
@@ -44,21 +45,16 @@ public:
 
 void HistoryManager::initializeClass(ExtensionManager* ext)
 {
-    // MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("History"));
-    // currentMenu = mm.currentMenu();
-    currentMenu = new Menu;
-
     if(!historyInstance) {
         historyInstance = ext->manage(new HistoryManager);
 
-        auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/history_24dp_5F6368.svg");
-        button->setToolTip(_("Show the history manager"));
-        // button->setMenu(currentMenu);
-        button->sigClicked().connect([&](){ historyInstance->show(); });
-
-        button->setContextMenuPolicy(Qt::CustomContextMenu);
-        button->connect(button, &ToolButton::customContextMenuRequested,
-            [&](const QPoint& pos){ currentMenu->exec(QCursor::pos()); });
+        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/history_24dp_5F6368.svg");
+        auto action = new Action;
+        action->setText(_("History Manager"));
+        action->setIcon(icon);
+        action->setToolTip(_("Show the history manager"));
+        action->sigTriggered().connect([&](){ historyInstance->show(); });
+        HamburgerMenu::instance()->addAction(action);
     }
 }
 
@@ -73,6 +69,8 @@ HistoryManager::HistoryManager()
 HistoryManager::Impl::Impl(HistoryManager* self)
     : self(self)
 {
+    currentMenu = HamburgerMenu::instance()->contextMenu();
+
     QAction* action = currentMenu->addAction(_("Clear histories"));
     self->connect(action, &QAction::triggered, [&](){ clearProjects(); });
     currentMenu->addSeparator();

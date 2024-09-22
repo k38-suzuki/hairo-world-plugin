@@ -5,7 +5,6 @@
 #ifndef CNOID_JOYSTICKSTART_PLUGIN_JOYSTICK_TESTER_H
 #define CNOID_JOYSTICKSTART_PLUGIN_JOYSTICK_TESTER_H
 
-
 namespace cnoid {
 
 class ExtensionManager;

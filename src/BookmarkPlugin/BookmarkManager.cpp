@@ -12,7 +12,7 @@
 #include <cnoid/SimulationBar>
 #include <cnoid/ValueTree>
 #include <cnoid/stdx/filesystem>
-#include "ToolsUtil.h"
+#include "HamburgerMenu.h"
 #include "gettext.h"
 
 using namespace std;
@@ -31,9 +31,9 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
     if(!bookmarkInstance) {
         bookmarkInstance = ext->manage(new BookmarkManager);
 
-        auto button1 = fileBar()->addButton(":/GoogleMaterialSymbols/icon/bookmark_add_24dp_5F6368.svg");
-        button1->setToolTip(_("Bookmark a current project"));
-        button1->sigClicked().connect(
+        auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/bookmark_add_24dp_5F6368.svg");
+        button->setToolTip(_("Bookmark a current project"));
+        button->sigClicked().connect(
             [&](){
                 const string& filename = ProjectManager::instance()->currentProjectFile();
                 if(!filename.empty()) {
@@ -41,9 +41,13 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
                 }
             });
 
-        auto button2 = fileBar()->addButton(":/GoogleMaterialSymbols/icon/collections_bookmark_24dp_5F6368.svg");
-        button2->setToolTip(_("Show the bookmark manager"));
-        button2->sigClicked().connect([&](){ bookmarkInstance->show(); });
+        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/collections_bookmark_24dp_5F6368.svg");
+        auto action = new Action;
+        action->setText(_("Bookmark Manager"));
+        action->setIcon(icon);
+        action->setToolTip(_("Show the bookmark manager"));
+        action->sigTriggered().connect([&](){ bookmarkInstance->show(); });
+        HamburgerMenu::instance()->addAction(action);
     }
 }
 

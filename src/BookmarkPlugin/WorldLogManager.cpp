@@ -6,7 +6,6 @@
 #include <cnoid/AppConfig>
 #include <cnoid/CheckBox>
 #include <cnoid/ExtensionManager>
-#include <cnoid/MainWindow>
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
@@ -16,7 +15,7 @@
 #include <cnoid/WorldItem>
 #include <cnoid/LoggerUtil>
 #include <src/BodyPlugin/WorldLogFileItem.h>
-#include "ToolsUtil.h"
+#include "HamburgerMenu.h"
 #include "gettext.h"
 
 using namespace std;
@@ -35,9 +34,13 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
     if(!logInstance) {
         logInstance = ext->manage(new WorldLogManager);
 
-        auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/restore_page_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg");
-        button->setToolTip(_("Show the world log manager"));
-        button->sigClicked().connect([&](){ logInstance->show(); });
+        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/restore_page_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg");
+        auto action = new Action;
+        action->setText(_("World Log Manager"));
+        action->setIcon(icon);
+        action->setToolTip(_("Show the world log manager"));
+        action->sigTriggered().connect([&](){ logInstance->show(); });
+        HamburgerMenu::instance()->addAction(action);
     }
 }
 

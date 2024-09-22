@@ -4,7 +4,7 @@
 
 #include "JoystickTester.h"
 #include <cnoid/Action>
-#include <cnoid/Button>
+#include <cnoid/Buttons>
 #include <cnoid/Dialog>
 #include <cnoid/ExtensionManager>
 #include <cnoid/Format>
@@ -12,7 +12,7 @@
 #include <cnoid/MainMenu>
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>
-#include <cnoid/ToolsUtil>
+#include <cnoid/HamburgerMenu>
 #include <QBoxLayout>
 #include <QDialogButtonBox>
 #include <QGridLayout>
@@ -59,9 +59,13 @@ void JoystickTester::initializeClass(ExtensionManager* ext)
         // MainMenu::instance()->add_Tools_Item(
         //     _("Joystick Tester"), [](){ testerInstance->impl->show(); });
 
-        auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/sports_esports_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg");
-        button->setToolTip(_("Show the joystick tester"));
-        button->sigClicked().connect([&](){ testerInstance->impl->show(); });
+        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/sports_esports_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg");
+        auto action = new Action;
+        action->setText(_("Joystick Tester"));
+        action->setIcon(icon);
+        action->setToolTip(_("Show the joystick tester"));
+        action->sigTriggered().connect([&](){ testerInstance->impl->show(); });
+        HamburgerMenu::instance()->addAction(action);
     }
 }
 
