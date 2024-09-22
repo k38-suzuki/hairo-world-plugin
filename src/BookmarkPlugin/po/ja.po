@@ -21,10 +21,13 @@ msgid "Enable KIOSK"
 msgstr "KIOSKモード"
 
 msgid "Show the history manager"
+msgstr "ヒストリマネージャの表示"
+
+msgid "Show the histories"
 msgstr "履歴の表示"
 
 msgid "History Manager"
-msgstr "履歴"
+msgstr "ヒストリマネージャ"
 
 msgid "Clear histories"
 msgstr "履歴の削除"

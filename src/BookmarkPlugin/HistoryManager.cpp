@@ -44,15 +44,22 @@ public:
 
 void HistoryManager::initializeClass(ExtensionManager* ext)
 {
-    MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("History Manager"));
-    currentMenu = mm.currentMenu();
+    // MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("History"));
+    // currentMenu = mm.currentMenu();
+    currentMenu = new Menu;
 
     if(!historyInstance) {
         historyInstance = ext->manage(new HistoryManager);
 
-        // auto button1 = fileBar()->addButton(":/GooglePlugin/icon/history_24dp_5F6368.svg"));
-        // button1->setToolTip(_("Show the history manager"));
-        // button1->sigClicked().connect([&](){ historyInstance->show(); });
+        // auto button = fileBar()->addButton(":/GooglePlugin/icon/history_24dp_5F6368.svg"));
+        // button->setToolTip(_("Show the history manager"));
+        // button->sigClicked().connect([&](){ historyInstance->show(); });
+
+        auto button = fileBar()->addButton(":/GooglePlugin/icon/history_24dp_5F6368.svg");
+        button->setToolTip(_("Show the histories"));
+        // button->setMenu(currentMenu);
+        button->sigClicked().connect(
+            [&, button](){ currentMenu->exec(QCursor::pos()); });
     }
 }
 
