@@ -51,11 +51,11 @@ void HistoryManager::initializeClass(ExtensionManager* ext)
     if(!historyInstance) {
         historyInstance = ext->manage(new HistoryManager);
 
-        // auto button = fileBar()->addButton(":/GooglePlugin/icon/history_24dp_5F6368.svg"));
+        // auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/history_24dp_5F6368.svg"));
         // button->setToolTip(_("Show the history manager"));
         // button->sigClicked().connect([&](){ historyInstance->show(); });
 
-        auto button = fileBar()->addButton(":/GooglePlugin/icon/history_24dp_5F6368.svg");
+        auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/history_24dp_5F6368.svg");
         button->setToolTip(_("Show the histories"));
         // button->setMenu(currentMenu);
         button->sigClicked().connect(

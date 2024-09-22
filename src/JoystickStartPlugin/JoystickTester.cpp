@@ -59,7 +59,7 @@ void JoystickTester::initializeClass(ExtensionManager* ext)
         // MainMenu::instance()->add_Tools_Item(
         //     _("Joystick Tester"), [](){ testerInstance->impl->show(); });
 
-        auto button = fileBar()->addButton(":/GooglePlugin/icon/sports_esports_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg");
+        auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/sports_esports_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg");
         button->setToolTip(_("Show the joystick tester"));
         button->sigClicked().connect([&](){ testerInstance->impl->show(); });
     }

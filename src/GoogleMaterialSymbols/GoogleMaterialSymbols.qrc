@@ -1,6 +1,6 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
-  <qresource prefix="/GooglePlugin" >
+  <qresource prefix="/GoogleMaterialSymbols" >
 
     <file>icon/bookmark_add_24dp_5F6368.svg</file>
     <file>icon/bookmark_added_24dp_5F6368.svg</file>

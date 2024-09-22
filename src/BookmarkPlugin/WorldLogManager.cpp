@@ -35,7 +35,7 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
     if(!logInstance) {
         logInstance = ext->manage(new WorldLogManager);
 
-        auto button = fileBar()->addButton(":/GooglePlugin/icon/restore_page_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg");
+        auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/restore_page_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg");
         button->setToolTip(_("Show the world log manager"));
         button->sigClicked().connect([&](){ logInstance->show(); });
     }
