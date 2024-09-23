@@ -9,6 +9,7 @@
 #include "OnScreenJoystickView.h"
 #include "JoystickTester.h"
 #include "JoystickStarter.h"
+#include "DigitalClock.h"
 
 using namespace cnoid;
 
@@ -28,6 +29,7 @@ public:
         OnScreenJoystickView::initializeClass(this);
         JoystickTester::initializeClass(this);
         JoystickStarter::initializeClass(this);
+        DigitalClock::initializeClass(this);
         return true;
     }
 

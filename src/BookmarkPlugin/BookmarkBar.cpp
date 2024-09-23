@@ -87,7 +87,7 @@ BookmarkBar::Impl::Impl(BookmarkBar* self)
     removeAction->setText(_("Remove"));
     removeAction->sigTriggered().connect([&](){ onRemoveActionTriggered(); });
 
-    auto button = self->addButton(":/GoogleMaterialSymbols/icon/bookmark_add_24dp_5F6368.svg");
+    auto button = self->addButton(":/GoogleMaterialSymbols/icon/bookmark_add_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
     // button->setMenu(menu);
     button->sigClicked().connect([&](){ onInputButtonClicked(); });
 }

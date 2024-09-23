@@ -142,11 +142,11 @@ WRSUtilBar::Impl::Impl(WRSUtilBar* self)
     projectCombo->setToolTip(_("Select a project"));
     self->addWidget(projectCombo);
 
-    auto updateButton = self->addButton(":/GoogleMaterialSymbols/icon/refresh_24dp_5F6368.svg");
+    auto updateButton = self->addButton(":/GoogleMaterialSymbols/icon/refresh_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
     updateButton->setToolTip(_("Update projects"));
     updateButton->sigClicked().connect([&](){ onUpdateButtonClicked(); });
 
-    auto openButton = self->addButton(":/GoogleMaterialSymbols/icon/launch_24dp_5F6368.svg");
+    auto openButton = self->addButton(":/GoogleMaterialSymbols/icon/open_in_new_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
     openButton->setToolTip(_("Open the selected project"));
     openButton->sigClicked().connect([&](){ onOpenButtonClicked(); });
 }

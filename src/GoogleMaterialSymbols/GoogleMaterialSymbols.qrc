@@ -2,27 +2,18 @@
 <RCC version="1.0">
   <qresource prefix="/GoogleMaterialSymbols" >
 
-    <file>icon/bookmark_add_24dp_5F6368.svg</file>
-    <file>icon/bookmark_added_24dp_5F6368.svg</file>
-    <file>icon/bookmark_remove_24dp_5F6368.svg</file>
-    <file>icon/bookmarks_24dp_5F6368.svg</file>
-    <file>icon/collections_bookmark_24dp_5F6368.svg</file>
-    <file>icon/file_open_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg</file>
-    <file>icon/file_open_24dp_5F6368.svg</file>
-    <file>icon/history_24dp_5F6368.svg</file>
-    <file>icon/launch_24dp_5F6368.svg</file>
-    <file>icon/menu_24dp_5F6368.svg</file>
-    <file>icon/more_horiz_24dp_5F6368.svg</file>
-    <file>icon/more_vert_24dp_5F6368.svg</file>
-    <file>icon/qr_code_scanner_24dp_5F6368.svg</file>
-    <file>icon/refresh_24dp_5F6368.svg</file>
-    <file>icon/repeat_24dp_5F6368.svg</file>
-    <file>icon/repeat_on_24dp_5F6368.svg</file>
-    <file>icon/repeat_one_on_24dp_5F6368.svg</file>
-    <file>icon/restore_page_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg</file>
-    <file>icon/sports_esports_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg</file>
-    <file>icon/stadia_controller_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg</file>
-    <file>icon/tune_24dp_5F6368.svg</file>
+    <file>icon/bookmark_add_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg</file>
+    <file>icon/collections_bookmark_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg</file>
+    <file>icon/file_open_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg</file>
+    <file>icon/joystick_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg</file>
+    <file>icon/manage_history_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg</file>
+    <file>icon/menu_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg</file>
+    <file>icon/open_in_new_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg</file>
+    <file>icon/qr_code_scanner_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg</file>
+    <file>icon/refresh_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg</file>
+    <file>icon/repeat_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg</file>
+    <file>icon/restore_page_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg</file>
+    <file>icon/timer_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg</file>
 
   </qresource>
 </RCC>

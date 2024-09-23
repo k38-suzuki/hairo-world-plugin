@@ -48,7 +48,7 @@ void HistoryManager::initializeClass(ExtensionManager* ext)
     if(!historyInstance) {
         historyInstance = ext->manage(new HistoryManager);
 
-        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/history_24dp_5F6368.svg");
+        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/manage_history_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
         auto action = new Action;
         action->setText(_("History Manager"));
         action->setIcon(icon);

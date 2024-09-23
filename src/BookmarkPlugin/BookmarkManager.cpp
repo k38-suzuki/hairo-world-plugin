@@ -31,7 +31,7 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
     if(!bookmarkInstance) {
         bookmarkInstance = ext->manage(new BookmarkManager);
 
-        auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/bookmark_add_24dp_5F6368.svg");
+        auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/bookmark_add_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
         button->setToolTip(_("Bookmark a current project"));
         button->sigClicked().connect(
             [&](){
@@ -41,7 +41,7 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
                 }
             });
 
-        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/collections_bookmark_24dp_5F6368.svg");
+        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/collections_bookmark_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
         auto action = new Action;
         action->setText(_("Bookmark Manager"));
         action->setIcon(icon);
@@ -65,7 +65,7 @@ BookmarkManager::BookmarkManager()
     setArchiveKey("bookmark_list");
     setFixedSize(800, 450);
 
-    const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/file_open_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg");
+    const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/file_open_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
     auto button = new ToolButton;
     button->setIcon(icon);
     button->sigClicked().connect([&](){ onOpenButtonClicked(); });

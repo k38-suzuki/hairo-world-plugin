@@ -34,7 +34,7 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
     if(!logInstance) {
         logInstance = ext->manage(new WorldLogManager);
 
-        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/restore_page_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.svg");
+        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/restore_page_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
         auto action = new Action;
         action->setText(_("World Log Manager"));
         action->setIcon(icon);

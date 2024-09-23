@@ -67,3 +67,9 @@ msgstr "インターバル時間"
 
 msgid "Set the interval timer"
 msgstr "インターバルタイマーをセット"
+
+msgid "Digital Clock"
+msgstr "デジタルクロック"
+
+msgid "Show the digital clock"
+msgstr "デジタルクロックの表示"
