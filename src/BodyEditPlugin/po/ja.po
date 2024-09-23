@@ -20,7 +20,10 @@ msgstr ""
 msgid "Body Loader"
 msgstr "ボディローダ"
 
-msgid "Format Converter"
+msgid "Show the body loader"
+msgstr "ボディローダの表示"
+
+msgid "Format conversion"
 msgstr "フォーマットの変換"
 
 msgid "1.0"
@@ -305,10 +308,13 @@ msgstr "設定1"
 msgid "Setting 2"
 msgstr "設定2"
 
-msgid "InertiaCalculator"
-msgstr "慣性モーメント計算"
+msgid "Inertia Calculator"
+msgstr "慣性モーメントの計算"
 
 msgid "Calculate Inertia"
+msgstr "慣性モーメントの計算"
+
+msgid "Show the inertia calculator"
 msgstr "慣性モーメントの計算"
 
 msgid "Box"

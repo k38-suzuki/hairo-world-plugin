@@ -26,7 +26,7 @@ public:
     {
         IntervalTimer::initializeClass(this);
         JoystickLoggerItem::initializeClass(this);
-        OnScreenJoystickView::initializeClass(this);
+        // OnScreenJoystickView::initializeClass(this);
         JoystickTester::initializeClass(this);
         JoystickStarter::initializeClass(this);
         DigitalClock::initializeClass(this);

@@ -12,6 +12,7 @@
 #include <QKeyEvent>
 #include <thread>
 #include <mutex>
+#include "gettext.h"
 
 using namespace std;
 using namespace cnoid;
@@ -163,7 +164,9 @@ VirtualJoystickWidget::Impl::Impl(VirtualJoystickWidget* self)
     vbox->addStretch();
     vbox->addLayout(hbox);
     vbox->addStretch();
+
     self->setLayout(vbox);
+    self->setWindowTitle(_("Virtual Joystick2"));
 
     ExtJoystick::registerJoystick("OnScreenJoystickView", this);
 }

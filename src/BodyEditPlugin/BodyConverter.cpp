@@ -18,6 +18,7 @@
 #include <cnoid/Separator>
 #include <cnoid/stdx/filesystem>
 #include <cnoid/WorldItem>
+#include <cnoid/HamburgerMenu>
 #include <QAction>
 #include <QBoxLayout>
 #include <QDialogButtonBox>
@@ -159,9 +160,17 @@ void BodyConverter::initializeClass(ExtensionManager* ext)
     if(!converterInstance) {
         converterInstance = ext->manage(new BodyConverter);
 
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
-        mm.addItem(_("Body Loader"))->sigTriggered().connect(
-                    [&](){ converterInstance->impl->show(); });
+        // MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
+        // mm.addItem(_("Body Loader"))->sigTriggered().connect(
+        //             [&](){ converterInstance->impl->show(); });
+
+        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/upload_file_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
+        auto action = new Action;
+        action->setText(_("Body Loader"));
+        action->setIcon(icon);
+        action->setToolTip(_("Show the body loader"));
+        action->sigTriggered().connect([&](){ converterInstance->impl->show(); });
+        HamburgerMenu::instance()->addAction(action);
     }
 }
 
@@ -182,7 +191,7 @@ BodyConverter::Impl::Impl()
     : Dialog()
 {
     convertCheck = new CheckBox;
-    convertCheck->setText(_("Format Converter"));
+    convertCheck->setText(_("Format conversion"));
 
     formatCombo = new ComboBox;
     formatCombo->addItems(QStringList() << _("1.0") << _("2.0"));

@@ -14,4 +14,4 @@ set(headers
 set(target CnoidNetEmPlugin)
 make_gettext_mofiles(${target} mofiles)
 choreonoid_add_plugin(${target} ${sources} ${mofiles} HEADERS ${headers})
-target_link_libraries(${target} PUBLIC CnoidBodyPlugin CnoidSimpleColliderPlugin)
+target_link_libraries(${target} PUBLIC CnoidBodyPlugin CnoidSimpleColliderPlugin CnoidBookmarkPlugin)

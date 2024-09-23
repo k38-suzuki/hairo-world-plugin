@@ -30,13 +30,11 @@ items:
               0, 1, 0,
               0, 0, 1 ]
             jointDisplacements: [ 103.1, 197.3, 180, 43.6, 265.2, 257.5, 288.1, 0, 0, 0 ]
-            jointPositions: [ 1.79943, 3.44353, 3.14159, 0.760964, 4.62861, 4.49422, 5.02829, 0, 0, 0 ]
             initialRootPosition: [ 0, 0, 0 ]
             initialRootAttitude: [
               1, 0, 0,
               0, 1, 0,
               0, 0, 1 ]
-            initialJointPositions: [ 1.79943, 3.44353, 3.14159, 0.760964, 4.62861, 4.49422, 5.02829, 0, 0, 0 ]
             fix_root: true
             collisionDetection: true
             selfCollisionDetection: false
@@ -46,7 +44,6 @@ items:
               "FINGER_DISTAL_1":
                 base_frame: 0
                 offset_frame: 0
-            zmp: [ 0, 0, 0 ]
           children:
             -
               id: 3
@@ -74,7 +71,6 @@ items:
               1, 0, 0,
               0, 1, 0,
               0, 0, 1 ]
-            jointPositions: [  ]
             initialRootPosition: [ 0, 0, -0.1 ]
             initialRootAttitude: [
               1, 0, 0,
@@ -85,7 +81,6 @@ items:
             selfCollisionDetection: false
             lock_location: false
             scene_sensitive: true
-            zmp: [ 0, 0, 0 ]
         -
           id: 5
           name: "AISTSimulator"
@@ -164,7 +159,7 @@ views:
           isCurrent: true
           eye: [ 1.45374, 0.586865, 0.634788 ]
           direction: [ -0.880451, -0.440225, -0.17609 ]
-          up: [ -0.1575, -0.0787498, 0.984374 ]
+          up: [ -0.1575, -0.0787497, 0.984374 ]
         -
           camera: [ System, Orthographic ]
           orthoHeight: 20
@@ -240,11 +235,6 @@ views:
     mounted: true
   -
     id: 9
-    plugin: JoystickStart
-    class: OnScreenJoystickView
-    mounted: true
-  -
-    id: 10
     plugin: Python
     class: PythonConsoleView
     mounted: true
@@ -308,17 +298,17 @@ viewAreas:
     contents:
       type: splitter
       orientation: horizontal
-      sizes: [ 1400, 444 ]
+      sizes: [ 1402, 444 ]
       children:
         -
           type: splitter
           orientation: horizontal
-          sizes: [ 362, 1034 ]
+          sizes: [ 363, 1035 ]
           children:
             -
               type: splitter
               orientation: vertical
-              sizes: [ 504, 504 ]
+              sizes: [ 518, 518 ]
               children:
                 -
                   type: pane
@@ -330,27 +320,19 @@ viewAreas:
             -
               type: splitter
               orientation: vertical
-              sizes: [ 756, 252 ]
+              sizes: [ 777, 259 ]
               children:
                 -
                   type: pane
                   views: [ 4 ]
                 -
-                  type: splitter
-                  orientation: horizontal
-                  sizes: [ 515, 515 ]
-                  children:
-                    -
-                      type: pane
-                      views: [ 3, 10 ]
-                      current: 3
-                    -
-                      type: pane
-                      views: [ 9 ]
+                  type: pane
+                  views: [ 3, 9 ]
+                  current: 3
         -
           type: splitter
           orientation: vertical
-          sizes: [ 225, 783 ]
+          sizes: [ 231, 805 ]
           children:
             -
               type: pane
@@ -358,7 +340,7 @@ viewAreas:
             -
               type: splitter
               orientation: vertical
-              sizes: [ 323, 456 ]
+              sizes: [ 332, 469 ]
               children:
                 -
                   type: pane

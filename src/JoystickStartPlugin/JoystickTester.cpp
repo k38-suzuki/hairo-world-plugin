@@ -20,6 +20,7 @@
 #include <QLabel>
 #include <QProgressBar>
 #include <vector>
+#include "VirtualJoystickWidget.h"
 #include "gettext.h"
 
 using namespace std;
@@ -28,6 +29,7 @@ using namespace cnoid;
 namespace {
 
 JoystickTester* testerInstance = nullptr;
+VirtualJoystickWidget* joystickInstance = nullptr;
 
 }
 
@@ -56,15 +58,25 @@ void JoystickTester::initializeClass(ExtensionManager* ext)
     if(!testerInstance) {
         testerInstance = ext->manage(new JoystickTester);
 
-        // MainMenu::instance()->add_Tools_Item(
-        //     _("Joystick Tester"), [](){ testerInstance->impl->show(); });
-
         const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/joystick_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
         auto action = new Action;
         action->setText(_("Joystick Tester"));
         action->setIcon(icon);
         action->setToolTip(_("Show the joystick tester"));
         action->sigTriggered().connect([&](){ testerInstance->impl->show(); });
+        HamburgerMenu::instance()->addAction(action);
+    }
+
+    if(!joystickInstance) {
+        joystickInstance = ext->manage(new VirtualJoystickWidget);
+        joystickInstance->setWindowFlags(Qt::WindowStaysOnTopHint);
+
+        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/videogame_asset_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
+        auto action = new Action;
+        action->setText(_("Virtual Joystick2"));
+        action->setIcon(icon);
+        action->setToolTip(_("Show the virtual joystick"));
+        action->sigTriggered().connect([&](){ joystickInstance->show(); });
         HamburgerMenu::instance()->addAction(action);
     }
 }

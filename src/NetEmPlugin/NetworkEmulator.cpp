@@ -3,6 +3,7 @@
 */
 
 #include "NetworkEmulator.h"
+#include <cnoid/Action>
 #include <cnoid/Button>
 #include <cnoid/ComboBox>
 #include <cnoid/Dialog>
@@ -10,6 +11,7 @@
 #include <cnoid/MainMenu>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
+#include <cnoid/HamburgerMenu>
 #include <QBoxLayout>
 #include <QDialogButtonBox>
 #include <QGridLayout>
@@ -52,7 +54,15 @@ void NetworkEmulator::initializeClass(ExtensionManager* ext)
         emulatorInstance = ext->manage(new NetworkEmulator);
 
         MainMenu::instance()->add_Tools_Item(
-            _("NetworkEmulator"), []() { emulatorInstance->impl->show(); });
+            _("Network Emulator"), []() { emulatorInstance->impl->show(); });
+
+        // const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/network_manage_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
+        // auto action = new Action;
+        // action->setText(_("Network Emulator"));
+        // action->setIcon(icon);
+        // action->setToolTip(_("Show the network emulator"));
+        // action->sigTriggered().connect([&](){ emulatorInstance->impl->show(); });
+        // HamburgerMenu::instance()->addAction(action);
     }
 }
 

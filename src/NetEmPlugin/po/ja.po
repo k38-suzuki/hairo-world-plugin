@@ -44,11 +44,11 @@ msgstr "インタフェース"
 msgid "IFB Device"
 msgstr "IFBデバイス"
 
-msgid "NetworkEmulator"
-msgstr "ネットワークエミュレータ"
-
 msgid "Network Emulator"
 msgstr "ネットワークエミュレータ"
+
+msgid "Show the network emulator"
+msgstr "ネットワークエミュレータの表示"
 
 msgid "&Start"
 msgstr "開始(&S)"

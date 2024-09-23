@@ -3,6 +3,7 @@
 */
 
 #include "InertiaCalculator.h"
+#include <cnoid/Action>
 #include <cnoid/Button>
 #include <cnoid/ComboBox>
 #include <cnoid/Dialog>
@@ -13,6 +14,7 @@
 #include <cnoid/MessageView>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
+#include <cnoid/HamburgerMenu>
 #include <QBoxLayout>
 #include <QDialogButtonBox>
 #include <QGridLayout>
@@ -97,6 +99,14 @@ void InertiaCalculator::initializeClass(ExtensionManager* ext)
         MainMenu::instance()->add_Tools_Item(
             _("Calculate Inertia"), [](){
                 calculatorInstance->impl->show(); });
+
+        // const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/calculate_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
+        // auto action = new Action;
+        // action->setText(_("Inertia Calculator"));
+        // action->setIcon(icon);
+        // action->setToolTip(_("Show the inertia calculator"));
+        // action->sigTriggered().connect([&](){ calculatorInstance->impl->show(); });
+        // HamburgerMenu::instance()->addAction(action);
     }
 }
 
@@ -111,7 +121,7 @@ InertiaCalculator::Impl::Impl()
     : Dialog(),
       mv(MessageView::instance())
 {
-    setWindowTitle(_("InertiaCalculator"));
+    setWindowTitle(_("Inertia Calculator"));
     setFixedWidth(500);
 
     for(int i = 0; i < NUM_COMBOS; ++i) {
