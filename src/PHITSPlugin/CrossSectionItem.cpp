@@ -196,6 +196,33 @@ public:
 }
 
 
+void CrossSectionItem::initializeClass(ExtensionManager* ext)
+{
+    ext->itemManager()
+        .registerClass<CrossSectionItem>(N_("CrossSectionItem"))
+        .addCreationPanel<CrossSectionItem>()
+
+            .addLoader<CrossSectionItem>(
+                _("Dose Distribution"), "GAMMA-DATA", "gbin",
+                [](CrossSectionItem* item, const string& filename, ostream& os, Item*){ return item->impl->load(filename); });
+
+    ItemTreeView::customizeContextMenu<CrossSectionItem>(
+        [](CrossSectionItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
+            menuManager.setPath("/").setPath(_("PHITS"));
+            menuManager.addItem(_("Start"))->sigTriggered().connect(
+                        [item](){ item->impl->config->start(true); });
+            menuManager.addItem(_("Stop"))->sigTriggered().connect(
+                        [item](){ item->impl->config->start(false); });
+            menuManager.setPath("/");
+            menuManager.addItem(_("Configuration of PHITS"))->sigTriggered().connect(
+                [item](){ item->impl->config->show(); });
+            menuManager.setPath("/");
+            menuManager.addSeparator();
+            menuFunction.dispatchAs<Item>(item);
+    });
+}
+
+
 CrossSectionItem::CrossSectionItem()
 {
     impl = new Impl(this);
@@ -239,33 +266,6 @@ CrossSectionItem::Impl::Impl(CrossSectionItem* self, const Impl& org)
 CrossSectionItem::~CrossSectionItem()
 {
     delete impl;
-}
-
-
-void CrossSectionItem::initializeClass(ExtensionManager* ext)
-{
-    ext->itemManager()
-        .registerClass<CrossSectionItem>(N_("CrossSectionItem"))
-        .addCreationPanel<CrossSectionItem>()
-
-            .addLoader<CrossSectionItem>(
-                _("Dose Distribution"), "GAMMA-DATA", "gbin",
-                [](CrossSectionItem* item, const string& filename, ostream& os, Item*){ return item->impl->load(filename); });
-
-    ItemTreeView::customizeContextMenu<CrossSectionItem>(
-        [](CrossSectionItem* item, MenuManager& menuManager, ItemFunctionDispatcher menuFunction) {
-            menuManager.setPath("/").setPath(_("PHITS"));
-            menuManager.addItem(_("Start"))->sigTriggered().connect(
-                        [item](){ item->impl->config->start(true); });
-            menuManager.addItem(_("Stop"))->sigTriggered().connect(
-                        [item](){ item->impl->config->start(false); });
-            menuManager.setPath("/");
-            menuManager.addItem(_("Configuration of PHITS"))->sigTriggered().connect(
-                [item](){ item->impl->config->show(); });
-            menuManager.setPath("/");
-            menuManager.addSeparator();
-            menuFunction.dispatchAs<Item>(item);
-    });
 }
 
 

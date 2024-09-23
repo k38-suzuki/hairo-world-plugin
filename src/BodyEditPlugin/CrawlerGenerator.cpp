@@ -297,6 +297,18 @@ public:
 }
 
 
+void CrawlerGenerator::initializeClass(ExtensionManager* ext)
+{
+    if(!crawlerInstance) {
+        crawlerInstance = ext->manage(new CrawlerGenerator);
+
+        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
+        mm.addItem(_("CrawlerRobot"))->sigTriggered().connect(
+                    [&](){ crawlerInstance->impl->show(); });
+    }
+}
+
+
 CrawlerGenerator::CrawlerGenerator()
 {
     impl = new Impl;
@@ -474,18 +486,6 @@ CrawlerGenerator::Impl::Impl()
 CrawlerGenerator::~CrawlerGenerator()
 {
     delete impl;
-}
-
-
-void CrawlerGenerator::initializeClass(ExtensionManager* ext)
-{
-    if(!crawlerInstance) {
-        crawlerInstance = ext->manage(new CrawlerGenerator);
-
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
-        mm.addItem(_("CrawlerRobot"))->sigTriggered().connect(
-                    [&](){ crawlerInstance->impl->show(); });
-    }
 }
 
 

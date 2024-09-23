@@ -92,6 +92,18 @@ public:
 }
 
 
+void PipeGenerator::initializeClass(ExtensionManager* ext)
+{
+    if(!pipeInstance) {
+        pipeInstance = ext->manage(new PipeGenerator);
+
+        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
+        mm.addItem(_("Pipe"))->sigTriggered().connect(
+                    [&](){ pipeInstance->impl->show(); });
+    }
+}
+
+
 PipeGenerator::PipeGenerator()
 {
     impl = new Impl;
@@ -157,18 +169,6 @@ PipeGenerator::Impl::Impl()
 PipeGenerator::~PipeGenerator()
 {
     delete impl;
-}
-
-
-void PipeGenerator::initializeClass(ExtensionManager* ext)
-{
-    if(!pipeInstance) {
-        pipeInstance = ext->manage(new PipeGenerator);
-
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
-        mm.addItem(_("Pipe"))->sigTriggered().connect(
-                    [&](){ pipeInstance->impl->show(); });
-    }
 }
 
 

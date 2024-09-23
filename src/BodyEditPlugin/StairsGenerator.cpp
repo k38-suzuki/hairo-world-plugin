@@ -82,6 +82,18 @@ public:
 }
 
 
+void StairsGenerator::initializeClass(ExtensionManager* ext)
+{
+    if(!stairsInstance) {
+        stairsInstance = ext->manage(new StairsGenerator);
+
+        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
+        mm.addItem(_("Stairs"))->sigTriggered().connect(
+                    [&](){ stairsInstance->impl->show(); });
+    }
+}
+
+
 StairsGenerator::StairsGenerator()
 {
     impl = new Impl;
@@ -140,18 +152,6 @@ StairsGenerator::Impl::Impl()
 StairsGenerator::~StairsGenerator()
 {
     delete impl;
-}
-
-
-void StairsGenerator::initializeClass(ExtensionManager* ext)
-{
-    if(!stairsInstance) {
-        stairsInstance = ext->manage(new StairsGenerator);
-
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
-        mm.addItem(_("Stairs"))->sigTriggered().connect(
-                    [&](){ stairsInstance->impl->show(); });
-    }
 }
 
 

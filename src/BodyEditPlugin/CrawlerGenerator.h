@@ -12,10 +12,10 @@ class ExtensionManager;
 class CrawlerGenerator
 {
 public:
+    static void initializeClass(ExtensionManager* ext);
+
     CrawlerGenerator();
     virtual ~CrawlerGenerator();
-
-    static void initializeClass(ExtensionManager* ext);
 
 private:
     class Impl;

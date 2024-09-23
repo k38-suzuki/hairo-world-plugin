@@ -12,10 +12,10 @@ class ExtensionManager;
 class StairsGenerator
 {
 public:
+    static void initializeClass(ExtensionManager* ext);
+
     StairsGenerator();
     virtual ~StairsGenerator();
-
-    static void initializeClass(ExtensionManager* ext);
 
 private:
     class Impl;

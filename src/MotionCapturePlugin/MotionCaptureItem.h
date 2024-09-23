@@ -17,7 +17,6 @@ public:
     virtual ~MotionCaptureItem();
 
     static void initializeClass(ExtensionManager* ext);
-
     virtual bool initializeSimulation(SimulatorItem* simulatorItem) override;
     virtual void finalizeSimulation() override;
 

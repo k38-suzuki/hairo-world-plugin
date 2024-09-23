@@ -13,11 +13,11 @@ namespace cnoid {
 class CNOID_EXPORT GammaImagerItem : public Item
 {
 public:
+    static void initializeClass(ExtensionManager* ext);
+
     GammaImagerItem();
     GammaImagerItem(const GammaImagerItem& org);
     virtual ~GammaImagerItem();
-
-    static void initializeClass(ExtensionManager* ext);
 
     std::string defaultNuclideTableFile() const;
     std::string defaultElementTableFile() const;

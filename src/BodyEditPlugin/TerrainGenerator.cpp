@@ -87,6 +87,18 @@ public:
 }
 
 
+void TerrainGenerator::initializeClass(ExtensionManager* ext)
+{
+    if(!terrainInstance) {
+        terrainInstance = ext->manage(new TerrainGenerator);
+
+        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
+        mm.addItem(_("BoxTerrain"))->sigTriggered().connect(
+                    [&](){ terrainInstance->impl->show(); });
+    }
+}
+
+
 TerrainGenerator::TerrainGenerator()
 {
     impl = new Impl;
@@ -143,18 +155,6 @@ TerrainGenerator::Impl::Impl()
 TerrainGenerator::~TerrainGenerator()
 {
     delete impl;
-}
-
-
-void TerrainGenerator::initializeClass(ExtensionManager* ext)
-{
-    if(!terrainInstance) {
-        terrainInstance = ext->manage(new TerrainGenerator);
-
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
-        mm.addItem(_("BoxTerrain"))->sigTriggered().connect(
-                    [&](){ terrainInstance->impl->show(); });
-    }
 }
 
 

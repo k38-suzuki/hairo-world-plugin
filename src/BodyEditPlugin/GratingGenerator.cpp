@@ -99,6 +99,18 @@ public:
 }
 
 
+void GratingGenerator::initializeClass(ExtensionManager* ext)
+{
+    if(!gratingInstance) {
+        gratingInstance = ext->manage(new GratingGenerator);
+
+        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
+        mm.addItem(_("Grating"))->sigTriggered().connect(
+                    [&](){ gratingInstance->impl->show(); });
+    }
+}
+
+
 GratingGenerator::GratingGenerator()
 {
     impl = new Impl;
@@ -185,18 +197,6 @@ GratingGenerator::Impl::Impl()
 GratingGenerator::~GratingGenerator()
 {
     delete impl;
-}
-
-
-void GratingGenerator::initializeClass(ExtensionManager* ext)
-{
-    if(!gratingInstance) {
-        gratingInstance = ext->manage(new GratingGenerator);
-
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
-        mm.addItem(_("Grating"))->sigTriggered().connect(
-                    [&](){ gratingInstance->impl->show(); });
-    }
 }
 
 

@@ -12,10 +12,10 @@ class ExtensionManager;
 class InertiaCalculator
 {
 public:
+    static void initializeClass(ExtensionManager* ext);
+
     InertiaCalculator();
     virtual ~InertiaCalculator();
-
-    static void initializeClass(ExtensionManager* ext);
 
 private:
     class Impl;

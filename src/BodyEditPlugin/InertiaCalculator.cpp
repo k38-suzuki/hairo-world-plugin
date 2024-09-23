@@ -89,6 +89,18 @@ public:
 }
 
 
+void InertiaCalculator::initializeClass(ExtensionManager* ext)
+{
+    if(!calculatorInstance) {
+        calculatorInstance = ext->manage(new InertiaCalculator);
+
+        MainMenu::instance()->add_Tools_Item(
+            _("Calculate Inertia"), [](){
+                calculatorInstance->impl->show(); });
+    }
+}
+
+
 InertiaCalculator::InertiaCalculator()
 {
     impl = new Impl;
@@ -174,18 +186,6 @@ InertiaCalculator::Impl::Impl()
 InertiaCalculator::~InertiaCalculator()
 {
     delete impl;
-}
-
-
-void InertiaCalculator::initializeClass(ExtensionManager* ext)
-{
-    if(!calculatorInstance) {
-        calculatorInstance = ext->manage(new InertiaCalculator);
-
-        MainMenu::instance()->add_Tools_Item(
-            _("Calculate Inertia"), [](){
-                calculatorInstance->impl->show(); });
-    }
 }
 
 

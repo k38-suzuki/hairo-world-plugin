@@ -12,10 +12,10 @@ class ExtensionManager;
 class BentPipeGenerator
 {
 public:
+    static void initializeClass(ExtensionManager* ext);
+
     BentPipeGenerator();
     virtual ~BentPipeGenerator();
-
-    static void initializeClass(ExtensionManager* ext);
 
 private:
     class Impl;

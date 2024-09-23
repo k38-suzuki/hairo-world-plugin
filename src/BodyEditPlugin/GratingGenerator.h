@@ -12,10 +12,10 @@ class ExtensionManager;
 class GratingGenerator
 {
 public:
+    static void initializeClass(ExtensionManager* ext);
+
     GratingGenerator();
     virtual ~GratingGenerator();
-
-    static void initializeClass(ExtensionManager* ext);
 
 private:
     class Impl;

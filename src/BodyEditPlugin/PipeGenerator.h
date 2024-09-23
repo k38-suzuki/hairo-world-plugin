@@ -12,10 +12,10 @@ class ExtensionManager;
 class PipeGenerator
 {
 public:
+    static void initializeClass(ExtensionManager* ext);
+
     PipeGenerator();
     virtual ~PipeGenerator();
-
-    static void initializeClass(ExtensionManager* ext);
 
 private:
     class Impl;

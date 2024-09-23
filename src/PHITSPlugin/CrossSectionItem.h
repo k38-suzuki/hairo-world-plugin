@@ -16,11 +16,12 @@ namespace cnoid {
 class CrossSectionItem : public Item, public RenderableItem
 {
 public:
+    static void initializeClass(ExtensionManager* ext);
+
     CrossSectionItem();
     CrossSectionItem(const CrossSectionItem& org);
     virtual ~CrossSectionItem();
 
-    static void initializeClass(ExtensionManager* ext);
     virtual SgNode* getScene() override;
 
     GammaData& gammaData() const;

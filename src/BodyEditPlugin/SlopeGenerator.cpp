@@ -77,6 +77,18 @@ public:
 }
 
 
+void SlopeGenerator::initializeClass(ExtensionManager* ext)
+{
+    if(!slopeInstance) {
+        slopeInstance = ext->manage(new SlopeGenerator);
+
+        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
+        mm.addItem(_("Slope"))->sigTriggered().connect(
+                    [&](){ slopeInstance->impl->show(); });
+    }
+}
+
+
 SlopeGenerator::SlopeGenerator()
 {
     impl = new Impl;
@@ -127,18 +139,6 @@ SlopeGenerator::Impl::Impl()
 SlopeGenerator::~SlopeGenerator()
 {
     delete impl;
-}
-
-
-void SlopeGenerator::initializeClass(ExtensionManager* ext)
-{
-    if(!slopeInstance) {
-        slopeInstance = ext->manage(new SlopeGenerator);
-
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
-        mm.addItem(_("Slope"))->sigTriggered().connect(
-                    [&](){ slopeInstance->impl->show(); });
-    }
 }
 
 
