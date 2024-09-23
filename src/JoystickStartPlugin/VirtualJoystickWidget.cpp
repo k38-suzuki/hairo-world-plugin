@@ -101,9 +101,9 @@ public:
     bool onKeyStateChanged(int key, bool on);
     void onButtonPressed(int index);
     void onButtonReleased(int index);
-    void onButtonClicked( const int& id, const bool& isPressed);
+    void onButtonClicked(const int& id, bool isPressed);
     void onAxis(const int& id, const double& position);
-    void onButton(const int& id, const bool& isPressed);
+    void onButton(const int& id, bool isPressed);
 
     virtual int numAxes() const;
     virtual int numButtons() const;
@@ -231,7 +231,7 @@ void VirtualJoystickWidget::Impl::onButtonReleased(int index)
 }
 
 
-void VirtualJoystickWidget::Impl::onButtonClicked(const int& id, const bool& isPressed)
+void VirtualJoystickWidget::Impl::onButtonClicked(const int& id, bool isPressed)
 {
     ToolButton& button = buttons[id];
     ButtonInfo& info = buttonInfo[id];
@@ -262,7 +262,7 @@ void VirtualJoystickWidget::Impl::onAxis(const int& id, const double& position)
 }
 
 
-void VirtualJoystickWidget::Impl::onButton(const int& id, const bool& isPressed)
+void VirtualJoystickWidget::Impl::onButton(const int& id, bool isPressed)
 {
     for(int i = 0; i < NUM_JOYSTICK_ELEMENTS; ++i) {
         ButtonInfo& info = buttonInfo[i];

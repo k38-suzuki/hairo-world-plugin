@@ -153,7 +153,7 @@ void BeepCommandItem::setWaitingTimeAfterStarted(double time)
 }
 
 
-void BeepCommandItem::showMessage(const bool checked)
+void BeepCommandItem::showMessage(bool checked)
 {
     impl->is_message_enabled = checked;
 }

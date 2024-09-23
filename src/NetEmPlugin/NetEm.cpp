@@ -228,7 +228,7 @@ void NetEm::setRate(const int& id, const double& rate)
 }
 
 
-void NetEm::setLoss(const int &id, const double &loss)
+void NetEm::setLoss(const int& id, const double& loss)
 {
     impl->losses[id] = loss;
 }

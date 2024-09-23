@@ -50,7 +50,7 @@ public:
     void onKIOSKToggled(bool checked);
     void onHideMenuBarToggled(bool checked);
     void onHideToolBarToggled(bool checked);
-    void onButton(const int& id, const bool& isPressed);
+    void onButton(const int& id, bool isPressed);
 
     JoystickCapture joystick;
     SimulatorItem* simulatorItem;
@@ -167,7 +167,7 @@ void KIOSKManager::Impl::onHideToolBarToggled(bool checked)
 }
 
 
-void KIOSKManager::Impl::onButton(const int& id, const bool& isPressed)
+void KIOSKManager::Impl::onButton(const int& id, bool isPressed)
 {
     if(id == Joystick::LOGO_BUTTON && isPressed) {
         if(is_kiosk_enabled) {

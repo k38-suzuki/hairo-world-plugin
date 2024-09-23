@@ -162,7 +162,7 @@ void ScopeDevice::forEachActualType(std::function<bool(const std::type_info& typ
 }
 
 
-void ScopeDevice::on(const bool on)
+void ScopeDevice::on(bool on)
 {
     on_ = on;
 }

@@ -31,7 +31,7 @@ public:
     double integralDose() const { return integralDose_[1]; }
     void setDoseRate(const double doseRate) { doseRate_ = doseRate; }
     double doseRate() const { return doseRate_; }
-    void setShield(const bool on);
+    void setShield(bool on);
     bool isShield()  const { return isShield_; }
     void setMaterial(const std::string material) { material_ = material; }
     std::string material() const { return material_; }

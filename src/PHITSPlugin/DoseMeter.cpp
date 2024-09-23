@@ -134,7 +134,7 @@ DoseMeter::DoseMeter(const DoseMeter& org, bool copyStateOnly)
 }
 
 
-void DoseMeter::setShield(const bool on)
+void DoseMeter::setShield(bool on)
 {
     if(hasShield_) {
         isShield_ = on;

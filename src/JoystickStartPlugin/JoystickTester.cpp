@@ -42,7 +42,7 @@ public:
     Impl();
 
     void onAxis(const int& id, const double& position);
-    void onButton(const int& id, const bool& isPressed);
+    void onButton(const int& id, bool isPressed);
 
     vector<QProgressBar*> bars;
     vector<PushButton*> buttons;
@@ -168,7 +168,7 @@ void JoystickTester::Impl::onAxis(const int& id, const double& position)
 }
 
 
-void JoystickTester::Impl::onButton(const int& id, const bool& isPressed)
+void JoystickTester::Impl::onButton(const int& id, bool isPressed)
 {
     PushButton* button = buttons[id];
     QPalette palette;

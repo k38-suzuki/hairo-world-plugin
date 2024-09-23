@@ -40,7 +40,7 @@ public:
     double energy() const { return energy_; }
     std::string installPath() const;
     void setCamera(Camera* camera);
-    void putMessages(const bool& on);
+    void putMessages(bool checked);
 
     SignalProxy<void(std::string)> sigReadPHITSData() { return sigReadPHITSData_; }
     SignalProxy<void()> sigProcessFinished() { return sigProcessFinished_; }

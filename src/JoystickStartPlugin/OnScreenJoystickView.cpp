@@ -68,9 +68,9 @@ void OnScreenJoystickView::onAttachedMenuRequest(MenuManager& menuManager)
 {
     // auto screenCheck = menuManager.addCheckItem(_("On-screen Joystick"));
     // screenCheck->setChecked(impl->isOnScreenJoystickEnabled);
-    // screenCheck->sigToggled().connect([&](bool on){
-    //     impl->isOnScreenJoystickEnabled = on;
-    //     impl->topWidget->setCurrentIndex(on ? 1 : 0);
+    // screenCheck->sigToggled().connect([&](bool checked){
+    //     impl->isOnScreenJoystickEnabled = checked;
+    //     impl->topWidget->setCurrentIndex(checked ? 1 : 0);
     // });
 }
 

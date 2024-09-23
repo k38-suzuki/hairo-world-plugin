@@ -27,7 +27,7 @@ public:
     int length() const;
     double waitingTimeAfterStarted() const;
     void setWaitingTimeAfterStarted(double time);
-    void showMessage(const bool checked);
+    void showMessage(bool checked);
     bool execute();
     bool terminate();
 

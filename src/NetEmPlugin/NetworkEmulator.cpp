@@ -42,7 +42,7 @@ public:
     PushButton* startButton;
 
     Impl();
-    void onStartButtonToggled(const bool& on);
+    void onStartButtonToggled(bool checked);
 };
 
 }
@@ -121,7 +121,7 @@ NetworkEmulator::Impl::Impl()
     startButton = new PushButton(_("&Start"));
     startButton->setCheckable(true);
     buttonBox->addButton(startButton, QDialogButtonBox::ActionRole);
-    startButton->sigToggled().connect([&](bool on){ onStartButtonToggled(on); });
+    startButton->sigToggled().connect([&](bool checked){ onStartButtonToggled(checked); });
 
     auto vbox = new QVBoxLayout;
     vbox->addLayout(gbox);
@@ -138,9 +138,9 @@ NetworkEmulator::~NetworkEmulator()
 }
 
 
-void NetworkEmulator::Impl::onStartButtonToggled(const bool& on)
+void NetworkEmulator::Impl::onStartButtonToggled(bool checked)
 {
-    if(on) {
+    if(checked) {
         startButton->setText(_("&Stop"));
         emulator->start(interfaceCombo->currentIndex(), ifbdeviceCombo->currentIndex());
         for(int i = 0; i < 2; ++i) {

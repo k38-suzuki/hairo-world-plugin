@@ -70,7 +70,7 @@ public:
     Signal<void()> sigUnlocked;
 
     void onAxis(const int& id, const double& position);
-    void onButton(const int& id, const bool& isPressed);
+    void onButton(const int& id, bool isPressed);
     void tryToUnlock();
 };
 
@@ -153,7 +153,7 @@ void JoyKey::Impl::onAxis(const int& id, const double& position)
 }
 
 
-void JoyKey::Impl::onButton(const int& id, const bool& isPressed)
+void JoyKey::Impl::onButton(const int& id, bool isPressed)
 {
     if(isPressed) {
         JoystickInfo info = key[count];

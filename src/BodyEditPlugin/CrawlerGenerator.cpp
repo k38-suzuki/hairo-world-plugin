@@ -260,8 +260,8 @@ public:
     void onImportButtonClicked();
 
     bool load2(const string& filename, ostream& os = nullout());
-    void onEnableAGXCheckToggled(const bool& on);
-    void onButtonToggled(const int& id, const bool& checked);
+    void onEnableAGXCheckToggled(bool checked);
+    void onButtonToggled(const int& id, bool checked);
 
     MappingPtr writeBody(const string& filename);
     MappingPtr writeConfig(const string& filename);
@@ -478,7 +478,7 @@ CrawlerGenerator::Impl::Impl()
     toolButtons[RESET]->sigClicked().connect([&](){ onResetButtonClicked(); });
     toolButtons[IMPORT]->sigClicked().connect([&](){ onImportButtonClicked(); });
     toolButtons[EXPORT]->sigClicked().connect([&](){ onExportButtonClicked(); });
-    checks[AGX_CHK]->sigToggled().connect([&](bool on){ onEnableAGXCheckToggled(on); });
+    checks[AGX_CHK]->sigToggled().connect([&](bool checked){ onEnableAGXCheckToggled(checked); });
     formWidget->sigClicked().connect([&](string filename){ save(filename); });
 }
 
@@ -649,47 +649,47 @@ void CrawlerGenerator::Impl::onExportButtonClicked()
 }
 
 
-void CrawlerGenerator::Impl::onEnableAGXCheckToggled(const bool& on)
+void CrawlerGenerator::Impl::onEnableAGXCheckToggled(bool checked)
 {
-    agxdspins[TRK_BNT]->setEnabled(on);
-    agxdspins[TRK_BNW]->setEnabled(on);
-    agxdspins[TRK_BNTT]->setEnabled(on);
-    agxdspins[TRK_BNDTM]->setEnabled(on);
-    agxdspins[TRK_BSHFPM]->setEnabled(on);
+    agxdspins[TRK_BNT]->setEnabled(checked);
+    agxdspins[TRK_BNW]->setEnabled(checked);
+    agxdspins[TRK_BNTT]->setEnabled(checked);
+    agxdspins[TRK_BNDTM]->setEnabled(checked);
+    agxdspins[TRK_BSHFPM]->setEnabled(checked);
 
-    agxdspins[TRK_BHCM]->setEnabled(on);
-    agxdspins[TRK_BHSD]->setEnabled(on);
-    agxdspins[TRK_BNWMT]->setEnabled(on);
-    agxdspins[TRK_BNWST]->setEnabled(on);
+    agxdspins[TRK_BHCM]->setEnabled(checked);
+    agxdspins[TRK_BHSD]->setEnabled(checked);
+    agxdspins[TRK_BNWMT]->setEnabled(checked);
+    agxdspins[TRK_BNWST]->setEnabled(checked);
 
-    agxdspins[FLP_BNT]->setEnabled(on);
-    agxdspins[FLP_BNW]->setEnabled(on);
-    agxdspins[FLP_BNTT]->setEnabled(on);
-    agxdspins[FLP_BNDTM]->setEnabled(on);
-    agxdspins[FLP_BSHFPM]->setEnabled(on);
+    agxdspins[FLP_BNT]->setEnabled(checked);
+    agxdspins[FLP_BNW]->setEnabled(checked);
+    agxdspins[FLP_BNTT]->setEnabled(checked);
+    agxdspins[FLP_BNDTM]->setEnabled(checked);
+    agxdspins[FLP_BSHFPM]->setEnabled(checked);
 
-    agxdspins[FLP_BHCM]->setEnabled(on);
-    agxdspins[FLP_BHSD]->setEnabled(on);
-    agxdspins[FLP_BNWMT]->setEnabled(on);
-    agxdspins[FLP_BNWST]->setEnabled(on);
+    agxdspins[FLP_BHCM]->setEnabled(checked);
+    agxdspins[FLP_BHSD]->setEnabled(checked);
+    agxdspins[FLP_BNWMT]->setEnabled(checked);
+    agxdspins[FLP_BNWST]->setEnabled(checked);
 
-    agxspins[TRK_BNN]->setEnabled(on);
-    agxspins[TRK_BUTNE]->setEnabled(on);
-    agxspins[TRK_BNDTE]->setEnabled(on);
-    agxspins[TRK_BSHFPE]->setEnabled(on);
-    agxspins[TRK_BMSHNF]->setEnabled(on);
-    agxspins[TRK_BHCE]->setEnabled(on);
+    agxspins[TRK_BNN]->setEnabled(checked);
+    agxspins[TRK_BUTNE]->setEnabled(checked);
+    agxspins[TRK_BNDTE]->setEnabled(checked);
+    agxspins[TRK_BSHFPE]->setEnabled(checked);
+    agxspins[TRK_BMSHNF]->setEnabled(checked);
+    agxspins[TRK_BHCE]->setEnabled(checked);
 
-    agxspins[FLP_BNN]->setEnabled(on);
-    agxspins[FLP_BUTNE]->setEnabled(on);
-    agxspins[FLP_BNDTE]->setEnabled(on);
-    agxspins[FLP_BSHFPE]->setEnabled(on);
-    agxspins[FLP_BMSHNF]->setEnabled(on);
-    agxspins[FLP_BHCE]->setEnabled(on);
+    agxspins[FLP_BNN]->setEnabled(checked);
+    agxspins[FLP_BUTNE]->setEnabled(checked);
+    agxspins[FLP_BNDTE]->setEnabled(checked);
+    agxspins[FLP_BSHFPE]->setEnabled(checked);
+    agxspins[FLP_BMSHNF]->setEnabled(checked);
+    agxspins[FLP_BHCE]->setEnabled(checked);
 }
 
 
-void CrawlerGenerator::Impl::onButtonToggled(const int& id, const bool& checked)
+void CrawlerGenerator::Impl::onButtonToggled(const int& id, bool checked)
 {
     if(checked) {
         topWidget->setCurrentIndex(id);

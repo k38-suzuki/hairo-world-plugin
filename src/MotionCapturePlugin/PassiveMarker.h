@@ -38,7 +38,7 @@ public:
     Vector3 color() const { return color_; }
     void setTransparency(const double& transparency) { transparency_ = transparency; }
     double transparency() const { return transparency_; }
-    void setSymbol(const bool& symbol) { symbol_ = symbol; }
+    void setSymbol(bool symbol) { symbol_ = symbol; }
     bool symbol() const { return symbol_; }
 
 protected:

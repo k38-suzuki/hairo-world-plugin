@@ -173,7 +173,7 @@ void PHITSRunner::setCamera(Camera* camera)
 }
 
 
-void PHITSRunner::putMessages(const bool& on)
+void PHITSRunner::putMessages(bool checked)
 {
-    putMessages_ = on;
+    putMessages_ = checked;
 }

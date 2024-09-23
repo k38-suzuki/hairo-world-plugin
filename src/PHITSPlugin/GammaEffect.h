@@ -23,9 +23,9 @@ public:
     int maxcas() const { return maxcas_; }
     void setMaxBch(const int& maxbch) { maxbch_ = maxbch; }
     int maxbch() const { return maxbch_; }
-    void message(const bool& on) { phitsRunner_.putMessages(on); }
+    void message(bool checked) { phitsRunner_.putMessages(checked); }
 
-    void start(const bool& checked);
+    void start(bool checked);
 
 private:
     Camera* camera_;

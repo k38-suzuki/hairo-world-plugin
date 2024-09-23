@@ -230,13 +230,15 @@ EnergyFilterDialog::EnergyFilterDialog()
     minChSpin->setEnabled(false);
     maxChSpin->setEnabled(false);
     nuclideTree->setEnabled(false);
-    rangeFilterRadio.sigToggled().connect([&](bool on){
-        minChSpin->setEnabled(on);
-        maxChSpin->setEnabled(on);
-    });
-    nuclideFilterRadio.sigToggled().connect([&](bool on){
-        nuclideTree->setEnabled(on);
-    });
+    rangeFilterRadio.sigToggled().connect(
+        [&](bool checked){
+            minChSpin->setEnabled(checked);
+            maxChSpin->setEnabled(checked);
+        });
+    nuclideFilterRadio.sigToggled().connect(
+        [&](bool checked){
+            nuclideTree->setEnabled(checked);
+        });
 
     auto vbox = new QVBoxLayout();
     vbox->addWidget(&noFilterRadio);

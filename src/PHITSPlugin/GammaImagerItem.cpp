@@ -94,7 +94,7 @@ public:
     bool is_message_checked;
 
     void setCamera(Camera* camera);
-    void start(const bool& on);
+    void start(bool checked);
 
     virtual bool store(Archive& archive) override;
     virtual bool restore(const Archive& archive) override;
@@ -389,7 +389,7 @@ GammaImagerItemBase::GammaImagerItemBase(Item* imagerItem)
 {
     sigCheckToggledConnection.reset(
         imagerItem->sigCheckToggled(Item::LogicalSumOfAllChecks).connect(
-            [&](bool on){ enableVisualization(on); }));
+            [&](bool checked){ enableVisualization(checked); }));
 }
 
 
@@ -485,9 +485,9 @@ void GammaImageVisualizerItem::setCamera(Camera* camera)
 }
 
 
-void GammaImageVisualizerItem::start(const bool& on)
+void GammaImageVisualizerItem::start(bool checked)
 {
-    if(on) {
+    if(checked) {
         filesystem::path homeDir(getenv("HOME"));
         QDateTime recordingStartTime = QDateTime::currentDateTime();
         string suffix = recordingStartTime.toString("-yyyy-MM-dd-hh-mm-ss").toStdString();

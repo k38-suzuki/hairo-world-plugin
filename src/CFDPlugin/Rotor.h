@@ -39,7 +39,7 @@ public:
     void setPitch(const double& pitch) { pitch_ = pitch; }
     double pitch() const { return pitch_; }
     double& voltage() { return voltage_; }
-    void setReverse(const bool& reverse) { reverse_ = reverse; }
+    void setReverse(bool reverse) { reverse_ = reverse; }
     bool reverse() const { return reverse_; }
 
 protected:

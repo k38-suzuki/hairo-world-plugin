@@ -21,7 +21,7 @@ public:
     virtual void copyStateFrom(const DeviceState& other) override;
     virtual DeviceState* cloneState() const override;
     virtual void forEachActualType(std::function<bool(const std::type_info& type)> func) override;
-    virtual void on(const bool on) override;
+    virtual void on(bool on) override;
     virtual bool on() const override;
     virtual int stateSize() const override;
     virtual const double* readState(const double* buf) override;

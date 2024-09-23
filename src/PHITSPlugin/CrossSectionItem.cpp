@@ -154,7 +154,7 @@ public:
     Signal<void(string filename)> sigReadPHITSData_;
 
     bool readPHITSData(const string& filename);
-    void start(const bool& on);
+    void start(bool checked);
     void storeState(Archive& archive);
     void restoreState(const Archive& archive);
 };
@@ -587,7 +587,7 @@ DoseConfigDialog::DoseConfigDialog()
     messageCheck = new CheckBox;
     messageCheck->setChecked(true);
     messageCheck->setText(_("Put messages"));
-    messageCheck->sigToggled().connect([&](bool on){ phitsRunner.putMessages(on); });
+    messageCheck->sigToggled().connect([&](bool checked){ phitsRunner.putMessages(checked); });
 
     QGroupBox* rangeBox = new QGroupBox;
     rangeBox->setTitle(_("Dose Distribution Range"));
@@ -709,9 +709,9 @@ bool DoseConfigDialog::readPHITSData(const string& filename)
 }
 
 
-void DoseConfigDialog::start(const bool& on)
+void DoseConfigDialog::start(bool checked)
 {
-    if(on) {
+    if(checked) {
         filesystem::path homeDir(getenv("HOME"));
         QDateTime recordingStartTime = QDateTime::currentDateTime();
         string suffix = recordingStartTime.toString("-yyyy-MM-dd-hh-mm-ss").toStdString();

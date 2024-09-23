@@ -63,7 +63,7 @@ GammaEffect::~GammaEffect()
 }
 
 
-void GammaEffect::start(const bool& checked)
+void GammaEffect::start(bool checked)
 {
     ComptonCamera* comptonCamera = dynamic_cast<ComptonCamera*>(camera_);
     PinholeCamera* pinholeCamera = dynamic_cast<PinholeCamera*>(camera_);

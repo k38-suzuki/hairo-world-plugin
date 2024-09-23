@@ -41,7 +41,7 @@ public:
     double forceOffset() const { return forceOffset_; }
     void setTorqueOffset(const double& torqueOffset) { torqueOffset_ = torqueOffset; }
     double torqueOffset() const { return torqueOffset_; }
-    void setSymbol(const bool& symbol) { symbol_ = symbol; }
+    void setSymbol(bool symbol) { symbol_ = symbol; }
     bool symbol() const { return symbol_; }
 
 protected:

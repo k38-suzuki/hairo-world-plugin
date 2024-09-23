@@ -24,7 +24,7 @@ public:
 
     GammaData& gammaData() { return gammaData_; }
 
-    void setReady(const bool& isReady) { isReady_ = isReady; }
+    void setReady(bool isReady) { isReady_ = isReady; }
     bool isReady() const { return isReady_; }
     void setDataType(const int& dataType) { dataType_ = dataType; }
     int dataType() const { return dataType_; }

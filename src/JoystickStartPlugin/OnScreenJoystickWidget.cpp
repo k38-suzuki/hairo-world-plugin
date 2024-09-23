@@ -65,7 +65,7 @@ public:
     Signal<void(int id, bool isPressed)> sigButton_;
 
     void onAxis(const int& id, const double& position);
-    void onButton(const int& id, const bool& isPressed);
+    void onButton(const int& id, bool isPressed);
     void onAxis(const int& index, const double& h_position, const double& v_position);
     void onButtonPressed(const int& index);
     void onButtonReleased(const int& index);
@@ -151,7 +151,7 @@ void OnScreenJoystickWidget::Impl::onAxis(const int& id, const double& position)
 }
 
 
-void OnScreenJoystickWidget::Impl::onButton(const int& id, const bool& isPressed)
+void OnScreenJoystickWidget::Impl::onButton(const int& id, bool isPressed)
 {
     if(isPressed) {
         onButtonPressed(id);
