@@ -209,6 +209,7 @@ BodyConverter::Impl::Impl()
     auto mainLayout = new QVBoxLayout;
     mainLayout->addLayout(layout);
     mainLayout->addWidget(dropWidget);
+    mainLayout->addStretch();
     mainLayout->addWidget(new HSeparator);
     mainLayout->addWidget(buttonBox);
 

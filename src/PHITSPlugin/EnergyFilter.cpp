@@ -243,6 +243,7 @@ EnergyFilterDialog::EnergyFilterDialog()
     vbox->addLayout(rangeHbox);
     vbox->addLayout(nuclideHbox);
     vbox->addWidget(nuclideTree);
+    vbox->addStretch();
     vbox->addWidget(new HSeparator());
     vbox->addWidget(buttonBox);
     setLayout(vbox);

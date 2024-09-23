@@ -164,6 +164,7 @@ InertiaCalculator::Impl::Impl()
     auto vbox = new QVBoxLayout;
     vbox->addLayout(hbox);
     vbox->addWidget(topWidget);
+    vbox->addStretch();
     vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);
     setLayout(vbox);

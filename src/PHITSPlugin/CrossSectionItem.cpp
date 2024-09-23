@@ -646,6 +646,7 @@ DoseConfigDialog::DoseConfigDialog()
     vbox->addLayout(gbox1);
     vbox->addLayout(new HSeparatorBox(new QLabel(_("Plain"))));
     vbox->addLayout(gbox2);
+    vbox->addStretch();
     vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);
     setLayout(vbox);

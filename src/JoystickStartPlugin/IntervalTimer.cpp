@@ -2,8 +2,9 @@
    @author Kenta Suzuki
 */
 
-#include "IntervalStarterBar.h"
+#include "IntervalTimer.h"
 #include <cnoid/Archive>
+#include <cnoid/Buttons>
 #include <cnoid/ExtensionManager>
 #include <cnoid/Format>
 #include <cnoid/MessageView>
@@ -17,106 +18,100 @@
 using namespace std;
 using namespace cnoid;
 
+namespace {
+
+IntervalTimer* timerInstance = nullptr;
+
+}
+
 namespace cnoid {
 
-class IntervalStarterBar::Impl
+class IntervalTimer::Impl
 {
 public:
-    IntervalStarterBar* self;
 
-    Impl(IntervalStarterBar* self);
+    Impl();
     ~Impl();
-
-    SpinBox* intervalSpin;
-
-    SimulationBar* sb;
-    SimulatorItem* simulatorItem;
-    Timer* startTimer;
-    Timer* intervalTimer;
-    ToolButton* startButton;
-
-    bool is_simulation_started;
-    int counter;
 
     void onCountdown();
     void onTimeout();
     void onButtonToggled(bool checked);
     void onSimulationAboutToStart(SimulatorItem* simulatorItem);
     void onPlaybackStopped(double time, bool isStoppedManually);
+
+    SpinBox* intervalSpin;
+
+    SimulationBar* sb;
+    SimulatorItem* simulatorItem;
+    TimeBar* tb;
+    Timer* startTimer;
+    Timer* intervalTimer;
+    ToolButton* startButton;
+
+    bool is_simulation_started;
+    int counter;
 };
 
 }
 
 
-void IntervalStarterBar::initialize(ExtensionManager* ext)
+void IntervalTimer::initializeClass(ExtensionManager* ext)
 {
-    static bool initialized = false;
-    if(!initialized) {
-        ext->addToolBar(instance());
-        initialized = true;
+    if(!timerInstance) {
+        timerInstance = ext->manage(new IntervalTimer);
     }
 }
 
 
-IntervalStarterBar* IntervalStarterBar::instance()
+IntervalTimer::IntervalTimer()
 {
-    static IntervalStarterBar* starterBar = new IntervalStarterBar;
-    return starterBar;
+    impl = new Impl;
 }
 
 
-IntervalStarterBar::IntervalStarterBar()
-    : ToolBar(N_("IntervalStarterBar"))
+IntervalTimer::Impl::Impl()
+    : sb(SimulationBar::instance()),
+      tb(TimeBar::instance())
 {
-    impl = new Impl(this);
-}
-
-
-IntervalStarterBar::Impl::Impl(IntervalStarterBar* self)
-    : self(self),
-      sb(SimulationBar::instance())
-{
-    self->setVisibleByDefault(false);
-
     is_simulation_started = false;
     counter = 5;
 
     intervalSpin = new SpinBox;
     intervalSpin->setValue(counter);
     intervalSpin->setToolTip(_("Interval time"));
-    self->addWidget(intervalSpin);
 
-    startTimer = new Timer(self);
+    startTimer = new Timer(tb);
     startTimer->sigTimeout().connect([&](){ onCountdown(); });
 
-    intervalTimer = new Timer(self);
+    intervalTimer = new Timer(tb);
     intervalTimer->sigTimeout().connect([&](){ onTimeout(); });
 
-    startButton = self->addToggleButton(":/GoogleMaterialSymbols/icon/repeat_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
+    tb->addWidget(intervalSpin);
+    tb->sigPlaybackStopped().connect(
+        [&](double time, bool isStoppedManually){ onPlaybackStopped(time, isStoppedManually); });    
+
+    startButton = tb->addToggleButton(":/GoogleMaterialSymbols/icon/timer_play_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
     startButton->setToolTip(_("Set the interval timer"));
     startButton->sigToggled().connect([&](bool checked){ onButtonToggled(checked); });
 
     sb->sigSimulationAboutToStart().connect(
             [&](SimulatorItem* simulatorItem){ onSimulationAboutToStart(simulatorItem); });
-
-    TimeBar::instance()->sigPlaybackStopped().connect(
-        [&](double time, bool isStoppedManually){ onPlaybackStopped(time, isStoppedManually); });
 }
 
 
-IntervalStarterBar::~IntervalStarterBar()
+IntervalTimer::~IntervalTimer()
 {
     delete impl;
 }
 
 
-IntervalStarterBar::Impl::~Impl()
+IntervalTimer::Impl::~Impl()
 {
 
 }
 
 
-void IntervalStarterBar::Impl::onCountdown()
+void IntervalTimer::Impl::onCountdown()
 {
     if(counter > 0) {
         MessageView::instance()->putln(formatR(_("{0}"), counter));
@@ -129,14 +124,14 @@ void IntervalStarterBar::Impl::onCountdown()
 }
 
 
-void IntervalStarterBar::Impl::onTimeout()
+void IntervalTimer::Impl::onTimeout()
 {
     intervalTimer->stop();
     onButtonToggled(true);
 }
 
 
-void IntervalStarterBar::Impl::onButtonToggled(bool checked)
+void IntervalTimer::Impl::onButtonToggled(bool checked)
 {
     if(checked) {
         counter = intervalSpin->value();
@@ -149,7 +144,7 @@ void IntervalStarterBar::Impl::onButtonToggled(bool checked)
 }
 
 
-void IntervalStarterBar::Impl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
+void IntervalTimer::Impl::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
     if(startTimer->isActive()) {
         startTimer->stop();
@@ -164,7 +159,7 @@ void IntervalStarterBar::Impl::onSimulationAboutToStart(SimulatorItem* simulator
 }
 
 
-void IntervalStarterBar::Impl::onPlaybackStopped(double time, bool isStoppedManually)
+void IntervalTimer::Impl::onPlaybackStopped(double time, bool isStoppedManually)
 {
     bool is_starter_checked = startButton->isChecked();
     if(is_simulation_started && is_starter_checked) {
@@ -172,17 +167,3 @@ void IntervalStarterBar::Impl::onPlaybackStopped(double time, bool isStoppedManu
     }
     is_simulation_started = false;
 }
-
-
-// bool IntervalStarterBar::storeState(Archive& archive)
-// {
-//     archive.write("interval_time", impl->intervalSpin->value());
-//     return true;
-// }
-
-
-// bool IntervalStarterBar::restoreState(const Archive& archive)
-// {
-//     impl->intervalSpin->setValue(archive.get("interval_time", 5));
-//     return true;
-// }

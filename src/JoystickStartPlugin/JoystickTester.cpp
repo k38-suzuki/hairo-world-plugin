@@ -37,15 +37,15 @@ class JoystickTester::Impl : public Dialog
 {
 public:
 
-    vector<QProgressBar*> bars;
-    vector<PushButton*> buttons;
-
-    JoystickCapture joystick;
-
     Impl();
 
     void onAxis(const int& id, const double& position);
     void onButton(const int& id, const bool& isPressed);
+
+    vector<QProgressBar*> bars;
+    vector<PushButton*> buttons;
+
+    JoystickCapture joystick;
 };
 
 }
@@ -134,6 +134,7 @@ JoystickTester::Impl::Impl()
 
     auto vbox = new QVBoxLayout;
     vbox->addLayout(hbox);
+    vbox->addStretch();
     vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);
     setLayout(vbox);

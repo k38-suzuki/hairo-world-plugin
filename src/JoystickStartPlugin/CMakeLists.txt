@@ -2,7 +2,7 @@ set(sources
   AxisWidget.cpp
   DigitalClock.cpp
   OnScreenJoystickWidget.cpp
-  IntervalStarterBar.cpp
+  IntervalTimer.cpp
   JoystickLoggerItem.cpp
   JoystickStartPlugin.cpp
   OnScreenJoystickView.cpp
@@ -18,7 +18,7 @@ set(headers
   ConfigurableJoystick.h
   DelayedJoystick.h
   OnScreenJoystickWidget.h
-  IntervalStarterBar.h
+  IntervalTimer.h
   JoystickLoggerItem.h
   OnScreenJoystickView.h
   JoystickTester.h

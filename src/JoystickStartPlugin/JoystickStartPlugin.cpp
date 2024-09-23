@@ -4,7 +4,7 @@
 
 #include <cnoid/Format>
 #include <cnoid/Plugin>
-#include "IntervalStarterBar.h"
+#include "IntervalTimer.h"
 #include "JoystickLoggerItem.h"
 #include "OnScreenJoystickView.h"
 #include "JoystickTester.h"
@@ -24,7 +24,7 @@ public:
 
     virtual bool initialize() override
     {
-        IntervalStarterBar::initialize(this);
+        IntervalTimer::initializeClass(this);
         JoystickLoggerItem::initializeClass(this);
         OnScreenJoystickView::initializeClass(this);
         JoystickTester::initializeClass(this);

@@ -59,14 +59,17 @@ msgstr "ジョイスティックのテスト"
 msgid "Show the joystick tester"
 msgstr "ジョイスティックのテスト"
 
-msgid "IntervalStarterBar"
-msgstr "インターバルスタータバー"
+msgid "Interval Timer"
+msgstr "インターバルタイマ"
+
+msgid "Show the interval timer"
+msgstr "インターバルタイマの表示"
 
 msgid "Interval time"
 msgstr "インターバル時間"
 
 msgid "Set the interval timer"
-msgstr "インターバルタイマーをセット"
+msgstr "インターバルタイマをセット"
 
 msgid "Digital Clock"
 msgstr "デジタルクロック"

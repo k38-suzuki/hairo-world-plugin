@@ -122,6 +122,7 @@ KeyConfig::Impl::Impl()
     hbox->addLayout(bvbox);
     auto vbox = new QVBoxLayout;
     vbox->addLayout(hbox);
+    vbox->addStretch();
     vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);
     setLayout(vbox);

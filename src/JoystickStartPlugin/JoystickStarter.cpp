@@ -55,6 +55,32 @@ public:
 }
 
 
+void JoystickStarter::initializeClass(ExtensionManager* ext)
+{
+    auto config = AppConfig::archive()->openMapping("joystick_starter");
+    is_starter_enabled = config->get("game_start_mode", false);
+
+    if(auto optionsMenu = MainMenu::instance()->get_Options_Menu()) {
+        MenuManager& mm = ext->menuManager();
+        mm.setCurrent(optionsMenu).setPath(N_("Joystick"));
+        auto currentMenu = mm.currentMenu();
+        auto startCheck = mm.addCheckItem(_("Game Start Mode"));
+        currentMenu->sigAboutToShow().connect(
+            [startCheck](){ startCheck->setChecked(is_starter_enabled); });
+
+        startCheck->sigToggled().connect(
+            [&](bool checked){
+                is_starter_enabled = checked;
+                AppConfig::archive()->openMapping("joystick_starter")->write("game_start_mode", checked);
+            });
+    }
+
+    if(!starterInstance) {
+        starterInstance = ext->manage(new JoystickStarter);
+    }
+}
+
+
 JoystickStarter::JoystickStarter()
 {
     impl = new Impl;
@@ -81,32 +107,6 @@ JoystickStarter::Impl::Impl()
 JoystickStarter::~JoystickStarter()
 {
     delete impl;
-}
-
-
-void JoystickStarter::initializeClass(ExtensionManager* ext)
-{
-    auto config = AppConfig::archive()->openMapping("joystick_starter");
-    is_starter_enabled = config->get("game_start_mode", false);
-
-    if(auto optionsMenu = MainMenu::instance()->get_Options_Menu()) {
-        MenuManager& mm = ext->menuManager();
-        mm.setCurrent(optionsMenu).setPath(N_("Joystick"));
-        auto currentMenu = mm.currentMenu();
-        auto startCheck = mm.addCheckItem(_("Game Start Mode"));
-        currentMenu->sigAboutToShow().connect(
-            [startCheck](){ startCheck->setChecked(is_starter_enabled); });
-
-        startCheck->sigToggled().connect(
-            [&](bool checked){
-                is_starter_enabled = checked;
-                AppConfig::archive()->openMapping("joystick_starter")->write("game_start_mode", checked);
-            });
-    }
-
-    if(!starterInstance) {
-        starterInstance = ext->manage(new JoystickStarter);
-    }
 }
 
 

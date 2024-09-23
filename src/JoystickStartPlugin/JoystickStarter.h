@@ -12,10 +12,10 @@ class ExtensionManager;
 class JoystickStarter
 {
 public:
+    static void initializeClass(ExtensionManager* ext);
+
     JoystickStarter();
     virtual ~JoystickStarter();
-
-    static void initializeClass(ExtensionManager* ext);
 
 private:
     class Impl;

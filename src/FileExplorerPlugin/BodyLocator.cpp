@@ -133,9 +133,8 @@ BodyLocator::Impl::Impl()
     auto mainLayout = new QVBoxLayout;
     mainLayout->addLayout(layout);
     mainLayout->addLayout(layout2);
-
-    mainLayout->addWidget(new HSeparator);
     mainLayout->addStretch();
+    mainLayout->addWidget(new HSeparator);
     mainLayout->addWidget(buttonBox);
 
     setLayout(mainLayout);

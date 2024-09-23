@@ -78,7 +78,7 @@ msgid "DoseSimulatorItem"
 msgstr "線量シミュレータアイテム"
 
 msgid "GammaData was not found."
-msgstr "線量分布が見つかりませんでした。"
+msgstr "線量分布が見つかりませんでした．"
 
 msgid "Enable Visualization"
 msgstr "線量可視化"

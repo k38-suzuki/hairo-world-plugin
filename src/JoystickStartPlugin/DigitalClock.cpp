@@ -40,7 +40,7 @@ void DigitalClock::initializeClass(ExtensionManager* ext)
     if(!clockInstance) {
         clockInstance = ext->manage(new DigitalClock);
 
-        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/timer_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
+        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/alarm_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
         auto action = new Action;
         action->setText(_("Digital Clock"));
         action->setIcon(icon);

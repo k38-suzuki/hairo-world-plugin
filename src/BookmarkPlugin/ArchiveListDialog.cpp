@@ -75,12 +75,12 @@ ArchiveListDialog::Impl::Impl(ArchiveListDialog* self)
     listWidget->setDragDropMode(QAbstractItemView::InternalMove);
     self->connect(listWidget, &QListWidget::itemDoubleClicked,
         [&](QListWidgetItem* item){ this->onItemDoubleClicked(item); });
-    vbox->addWidget(listWidget);
-
-    vbox->addWidget(new HSeparator);
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
     self->connect(buttonBox, &QDialogButtonBox::accepted, self, &QDialog::accept);
+
+    vbox->addWidget(listWidget);
+    vbox->addWidget(new HSeparator);
     vbox->addWidget(buttonBox);
 }
 
