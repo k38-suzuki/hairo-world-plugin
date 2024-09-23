@@ -59,10 +59,11 @@ HamburgerMenu::~HamburgerMenu()
 
 void HamburgerMenu::initialize()
 {
+    menu_ = new Menu;
     contextMenu_ = new Menu;
 
     auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/menu_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
-    // button->setMenu(this);
+    button->setMenu(menu_);
     button->sigClicked().connect([&](){ this->exec(QCursor::pos()); });
 
     button->setContextMenuPolicy(Qt::CustomContextMenu);

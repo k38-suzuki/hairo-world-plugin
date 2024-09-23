@@ -170,7 +170,7 @@ void BodyConverter::initializeClass(ExtensionManager* ext)
         action->setIcon(icon);
         action->setToolTip(_("Show the body loader"));
         action->sigTriggered().connect([&](){ converterInstance->impl->show(); });
-        HamburgerMenu::instance()->addAction(action);
+        HamburgerMenu::instance()->subMenu()->addAction(action);
     }
 }
 
