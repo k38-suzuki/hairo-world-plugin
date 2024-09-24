@@ -3,6 +3,7 @@
 */
 
 #include "HamburgerMenu.h"
+#include <cnoid/Action>
 #include <cnoid/ExtensionManager>
 #include <cnoid/MainWindow>
 #include <cnoid/Menu>
@@ -57,6 +58,16 @@ HamburgerMenu::~HamburgerMenu()
 }
 
 
+void HamburgerMenu::setClearableContext(const string& text)
+{
+    if(!text.empty()) {
+        auto action = contextMenu_->addAction(text.c_str());
+        connect(action, &QAction::triggered, [&](){ onClearActionTriggered(); });
+        contextMenu_->addSeparator();
+    }
+}
+
+
 void HamburgerMenu::initialize()
 {
     menu_ = new Menu;
@@ -69,6 +80,15 @@ void HamburgerMenu::initialize()
     button->setContextMenuPolicy(Qt::CustomContextMenu);
     button->connect(button, &ToolButton::customContextMenuRequested,
         [&](const QPoint& pos){ contextMenu_->exec(QCursor::pos()); });
+}
+
+
+void HamburgerMenu::onClearActionTriggered()
+{
+    while(contextMenu_->actions().size() > 2) {
+        auto action = contextMenu_->actions().at(2);
+        contextMenu_->removeAction(action);
+    }
 }
 
 

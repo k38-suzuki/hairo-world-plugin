@@ -26,8 +26,12 @@ public:
     Menu* subMenu() { return menu_; }
     Menu* contextMenu() { return contextMenu_; }
 
+    void setClearableContext(const std::string& text);
+
 private:
     void initialize();
+    void onClearActionTriggered();
+
     Menu* menu_;
     Menu* contextMenu_;
 };

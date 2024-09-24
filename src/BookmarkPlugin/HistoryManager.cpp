@@ -34,7 +34,6 @@ public:
 
     void loadProject(const string& filename);
     void addProject(const string& filename);
-    void onClearActionTriggered();
     void onProjectLoaded(int level);
 
     Menu* currentMenu;
@@ -69,11 +68,8 @@ HistoryManager::HistoryManager()
 HistoryManager::Impl::Impl(HistoryManager* self)
     : self(self)
 {
+    HamburgerMenu::instance()->setClearableContext(_("Clear histories"));
     currentMenu = HamburgerMenu::instance()->contextMenu();
-
-    auto action = currentMenu->addAction(_("Clear histories"));
-    self->connect(action, &QAction::triggered, [&](){ onClearActionTriggered(); });
-    currentMenu->addSeparator();
 
     auto& recentFiles = *AppConfig::archive()->findListing("histories");
     if(recentFiles.isValid() && !recentFiles.empty()) {
@@ -149,15 +145,6 @@ void HistoryManager::Impl::addProject(const string& filename)
 
         auto action = currentMenu->addAction(filename.c_str());
         self->connect(action, &QAction::triggered, [this, filename](){ loadProject(filename); });
-    }
-}
-
-
-void HistoryManager::Impl::onClearActionTriggered()
-{
-    while(currentMenu->actions().size() > 2) {
-        auto action = currentMenu->actions().at(2);
-        currentMenu->removeAction(action);
     }
 }
 
