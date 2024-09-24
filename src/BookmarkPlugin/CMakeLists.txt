@@ -1,6 +1,5 @@
 set(sources
   ArchiveListDialog.cpp
-  BookmarkBar.cpp
   BookmarkManager.cpp
   BookmarkPlugin.cpp
   HamburgerMenu.cpp
@@ -13,7 +12,6 @@ set(sources
 
 set(headers
   ArchiveListDialog.h
-  BookmarkBar.h
   BookmarkManager.h
   HamburgerMenu.h
   HistoryManager.h
@@ -24,7 +22,6 @@ set(headers
   exportdecl.h
 )
 
-choreonoid_make_header_public(BookmarkBar.h)
 choreonoid_make_header_public(SystemTrayIcon.h)
 choreonoid_make_header_public(HamburgerMenu.h)
 

@@ -10,7 +10,9 @@
 
 namespace cnoid {
 
+class Action;
 class ExtensionManager;
+class Menu;
 
 class BookmarkManager : public ArchiveListDialog
 {
@@ -21,13 +23,19 @@ public:
     BookmarkManager();
     virtual ~BookmarkManager();
 
+    Menu* contextMenu() { return menu_; }
+    void addAction(const std::string& filename);
+
 protected:
     virtual void onItemDoubleClicked(const std::string& text) override;
 
 private:
     void onOpenButtonClicked();
+    void onLoadActionTriggered(const std::string& filename);
+    void onClearActionTriggered();
 
-    CheckBox* autoCheck;
+    CheckBox* autoCheck_;
+    Menu* menu_;
 };
 
 }

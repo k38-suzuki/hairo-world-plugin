@@ -34,7 +34,7 @@ public:
 
     void loadProject(const string& filename);
     void addProject(const string& filename);
-    void clearProjects();
+    void onClearActionTriggered();
     void onProjectLoaded(int level);
 
     Menu* currentMenu;
@@ -54,7 +54,7 @@ void HistoryManager::initializeClass(ExtensionManager* ext)
         action->setIcon(icon);
         action->setToolTip(_("Show the history manager"));
         action->sigTriggered().connect([&](){ historyInstance->show(); });
-        HamburgerMenu::instance()->addAction(action);
+        HamburgerMenu::instance()->subMenu()->addAction(action);
     }
 }
 
@@ -71,8 +71,8 @@ HistoryManager::Impl::Impl(HistoryManager* self)
 {
     currentMenu = HamburgerMenu::instance()->contextMenu();
 
-    QAction* action = currentMenu->addAction(_("Clear histories"));
-    self->connect(action, &QAction::triggered, [&](){ clearProjects(); });
+    auto action = currentMenu->addAction(_("Clear histories"));
+    self->connect(action, &QAction::triggered, [&](){ onClearActionTriggered(); });
     currentMenu->addSeparator();
 
     auto& recentFiles = *AppConfig::archive()->findListing("histories");
@@ -136,27 +136,27 @@ void HistoryManager::Impl::addProject(const string& filename)
 {
     if(!filename.empty()) {
         for(int i = 2; i < currentMenu->actions().size(); ++i) {
-            QAction* action = currentMenu->actions().at(i);
+            auto action = currentMenu->actions().at(i);
             if(action->text().toStdString() == filename) {
                 currentMenu->removeAction(action);
             }
         }
 
         if(currentMenu->actions().size() >= 12) {
-            QAction* action = currentMenu->actions().at(2);
+            auto action = currentMenu->actions().at(2);
             currentMenu->removeAction(action);
         }
 
-        QAction* action = currentMenu->addAction(filename.c_str());
+        auto action = currentMenu->addAction(filename.c_str());
         self->connect(action, &QAction::triggered, [this, filename](){ loadProject(filename); });
     }
 }
 
 
-void HistoryManager::Impl::clearProjects()
+void HistoryManager::Impl::onClearActionTriggered()
 {
     while(currentMenu->actions().size() > 2) {
-        QAction* action = currentMenu->actions().at(2);
+        auto action = currentMenu->actions().at(2);
         currentMenu->removeAction(action);
     }
 }

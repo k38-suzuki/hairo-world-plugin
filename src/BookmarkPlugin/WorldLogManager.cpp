@@ -40,7 +40,7 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
         action->setIcon(icon);
         action->setToolTip(_("Show the world log manager"));
         action->sigTriggered().connect([&](){ logInstance->show(); });
-        HamburgerMenu::instance()->addAction(action);
+        HamburgerMenu::instance()->subMenu()->addAction(action);
     }
 }
 

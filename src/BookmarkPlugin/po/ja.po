@@ -33,7 +33,7 @@ msgid "History Manager"
 msgstr "ヒストリマネージャ"
 
 msgid "Clear histories"
-msgstr "履歴の削除"
+msgstr "履歴のクリア"
 
 msgid "Show the world log manager"
 msgstr "ワールドログマネージャの表示"
@@ -47,9 +47,6 @@ msgstr "ワールドログマネージャ"
 msgid "Save a World Log"
 msgstr "ワールドログの保存"
 
-msgid "BookmarkBar"
-msgstr "ブックマークバー"
-
 msgid "Bookmark a current project"
 msgstr "プロジェクトの登録"
 
@@ -58,6 +55,9 @@ msgstr "ブックマークマネージャの表示"
 
 msgid "Bookmark Manager"
 msgstr "ブックマークマネージャ"
+
+msgid "Clear bookmarks"
+msgstr "ブックマークのクリア"
 
 msgid "Autoplay"
 msgstr "自動再生"
