@@ -6,11 +6,10 @@
 #define CNOID_BOOKMARK_PLUGIN_BOOKMARK_MANAGER_H
 
 #include "ArchiveListDialog.h"
-#include <cnoid/CheckBox>
 
 namespace cnoid {
 
-class Action;
+class CheckBox;
 class ExtensionManager;
 class Menu;
 
@@ -23,19 +22,17 @@ public:
     BookmarkManager();
     virtual ~BookmarkManager();
 
-    Menu* contextMenu() { return menu_; }
-    void addAction(const std::string& filename);
-
 protected:
     virtual void onItemDoubleClicked(const std::string& text) override;
 
 private:
+    void addAction(const std::string& filename);
+    void onAddButtonClicked();
     void onOpenButtonClicked();
     void onLoadActionTriggered(const std::string& filename);
-    void onClearActionTriggered();
 
     CheckBox* autoCheck_;
-    Menu* menu_;
+    Menu* contextMenu_;
 };
 
 }

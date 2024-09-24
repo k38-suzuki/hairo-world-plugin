@@ -17,7 +17,6 @@ class WorldLogManager : public ArchiveListDialog
 {
 public:
     static void initializeClass(ExtensionManager* ext);
-    static WorldLogManager* instance();
 
     WorldLogManager();
     virtual ~WorldLogManager();
@@ -29,9 +28,9 @@ private:
     void onSimulationAboutToStart(SimulatorItem* simulatorItem);
     void onPlaybackStopped(double time, bool isStoppedManually);
 
-    CheckBox* saveCheck;
-    bool is_simulation_started;
-    std::string project_filename;
+    CheckBox* saveCheck_;
+    bool is_simulation_started_;
+    std::string project_filename_;
 };
 
 }

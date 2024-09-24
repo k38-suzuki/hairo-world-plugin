@@ -10,6 +10,7 @@
 namespace cnoid {
 
 class ExtensionManager;
+class Menu;
 
 class HistoryManager : public ArchiveListDialog
 {
@@ -23,8 +24,11 @@ protected:
     virtual void onItemDoubleClicked(const std::string& text) override;
 
 private:
-    class Impl;
-    Impl* impl;
+    void addProject(const std::string& filename);
+    void onProjectLoaded(int level);
+    void onLoadActionTriggered(const std::string& filename);
+
+    Menu* contextMenu_;
 };
 
 }

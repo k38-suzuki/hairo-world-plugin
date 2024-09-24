@@ -22,25 +22,6 @@ HistoryManager* historyInstance = nullptr;
 
 }
 
-namespace cnoid {
-
-class HistoryManager::Impl
-{
-public:
-    HistoryManager* self;
-
-    Impl(HistoryManager* self);
-    ~Impl();
-
-    void loadProject(const string& filename);
-    void addProject(const string& filename);
-    void onProjectLoaded(int level);
-
-    Menu* currentMenu;
-};
-
-}
-
 
 void HistoryManager::initializeClass(ExtensionManager* ext)
 {
@@ -53,7 +34,7 @@ void HistoryManager::initializeClass(ExtensionManager* ext)
         action->setIcon(icon);
         action->setToolTip(_("Show the history manager"));
         action->sigTriggered().connect([&](){ historyInstance->show(); });
-        HamburgerMenu::instance()->subMenu()->addAction(action);
+        HamburgerMenu::instance()->addAction(action);
     }
 }
 
@@ -61,17 +42,15 @@ void HistoryManager::initializeClass(ExtensionManager* ext)
 HistoryManager::HistoryManager()
     : ArchiveListDialog()
 {
-    impl = new Impl(this);
-}
+    setWindowTitle(_("History Manager"));
+    setArchiveKey("history_list");
+    setFixedSize(800, 450);
 
+    contextMenu_ = HamburgerMenu::instance()->contextMenu();
 
-HistoryManager::Impl::Impl(HistoryManager* self)
-    : self(self)
-{
-    HamburgerMenu::instance()->setClearableContext(_("Clear histories"));
-    currentMenu = HamburgerMenu::instance()->contextMenu();
+    ProjectManager::instance()->sigProjectLoaded().connect([&](int level){ onProjectLoaded(level); });
 
-    auto& recentFiles = *AppConfig::archive()->findListing("histories");
+    auto& recentFiles = *AppConfig::archive()->findListing("history_list");
     if(recentFiles.isValid() && !recentFiles.empty()) {
         for(int i = 0; i < recentFiles.size(); ++i) {
             if(recentFiles[i].isString()) {
@@ -79,82 +58,59 @@ HistoryManager::Impl::Impl(HistoryManager* self)
             }
         }
     }
-
-    self->setWindowTitle(_("History Manager"));
-    self->setArchiveKey("history_list");
-    self->setFixedSize(800, 450);
-
-    ProjectManager::instance()->sigProjectLoaded().connect([&](int level){ onProjectLoaded(level); });
 }
 
 
 HistoryManager::~HistoryManager()
 {
-    delete impl;
-}
 
-
-HistoryManager::Impl::~Impl()
-{
-    auto& recentFiles = *AppConfig::archive()->openListing("histories");
-    recentFiles.clear();
-
-    for(int i = 2; i < currentMenu->actions().size(); ++i) {
-        string filename = currentMenu->actions().at(i)->text().toStdString();
-        recentFiles.append(filename, DOUBLE_QUOTED);
-    }
-
-    if(recentFiles.empty()) {
-        AppConfig::archive()->remove("histories");
-    }
 }
 
 
 void HistoryManager::onItemDoubleClicked(const string& text)
 {
-    impl->loadProject(text);
+    onLoadActionTriggered(text);
 }
 
 
-void HistoryManager::Impl::loadProject(const string& filename)
+void HistoryManager::addProject(const string& filename)
 {
     if(!filename.empty()) {
-        if(ProjectManager::instance()->tryToCloseProject()) {
-            ProjectManager::instance()->clearProject();
-            MessageView::instance()->flush();
-            ProjectManager::instance()->loadProject(filename);
-        }
-    }
-}
-
-
-void HistoryManager::Impl::addProject(const string& filename)
-{
-    if(!filename.empty()) {
-        for(int i = 2; i < currentMenu->actions().size(); ++i) {
-            auto action = currentMenu->actions().at(i);
+        for(auto& action : contextMenu_->actions()) {
             if(action->text().toStdString() == filename) {
-                currentMenu->removeAction(action);
+                contextMenu_->removeAction(action);
             }
         }
 
-        if(currentMenu->actions().size() >= 12) {
-            auto action = currentMenu->actions().at(2);
-            currentMenu->removeAction(action);
+        if(contextMenu_->actions().size() >= 16) {
+            auto action = contextMenu_->actions().at(0);
+            contextMenu_->removeAction(action);
         }
 
-        auto action = currentMenu->addAction(filename.c_str());
-        self->connect(action, &QAction::triggered, [this, filename](){ loadProject(filename); });
+        auto action = contextMenu_->addAction(filename.c_str());
+        connect(action, &QAction::triggered, [this, filename](){ onLoadActionTriggered(filename); });
     }
 }
 
 
-void HistoryManager::Impl::onProjectLoaded(int level)
+void HistoryManager::onProjectLoaded(int level)
 {
-    string filename = ProjectManager::instance()->currentProjectFile().c_str();
+    string filename = ProjectManager::instance()->currentProjectFile();
     if(!filename.empty()) {
         addProject(filename);
-        self->addItem(filename.c_str());
-        self->removeDuplicates();
+        addItem(filename.c_str());
+        removeDuplicates();
+    }
+}
+
+
+void HistoryManager::onLoadActionTriggered(const string& filename)
+{
+    ProjectManager* pm = ProjectManager::instance();
+    bool result = pm->tryToCloseProject();
+    if(result) {
+        pm->clearProject();
+        MessageView::instance()->flush();
+        pm->loadProject(filename);
     }
 }

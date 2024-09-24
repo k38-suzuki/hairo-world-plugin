@@ -6,10 +6,10 @@
 #include <cnoid/AppConfig>
 #include <cnoid/CheckBox>
 #include <cnoid/ExtensionManager>
+#include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
-#include <cnoid/stdx/filesystem>
 #include <cnoid/TimeBar>
 #include <cnoid/ValueTree>
 #include <cnoid/WorldItem>
@@ -20,7 +20,6 @@
 
 using namespace std;
 using namespace cnoid;
-namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
@@ -40,30 +39,23 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
         action->setIcon(icon);
         action->setToolTip(_("Show the world log manager"));
         action->sigTriggered().connect([&](){ logInstance->show(); });
-        HamburgerMenu::instance()->subMenu()->addAction(action);
+        HamburgerMenu::instance()->addAction(action);
     }
 }
 
 
-WorldLogManager* WorldLogManager::instance()
-{
-    return logInstance;
-}
-
-
 WorldLogManager::WorldLogManager()
-    : ArchiveListDialog()
+    : ArchiveListDialog(),
+      is_simulation_started_(false),
+      project_filename_("")
 {
     setWindowTitle(_("World Log Manager"));
     setArchiveKey("world_log_list");
     setFixedSize(800, 450);
 
-    is_simulation_started = false;
-    project_filename.clear();
-
-    saveCheck = new CheckBox;
-    saveCheck->setText(_("Save a World Log"));
-    addWidget(saveCheck);
+    saveCheck_ = new CheckBox;
+    saveCheck_->setText(_("Save a World Log"));
+    addWidget(saveCheck_);
 
     TimeBar::instance()->sigPlaybackStopped().connect(
         [&](double time, bool isStoppedManually){ onPlaybackStopped(time, isStoppedManually); });
@@ -73,7 +65,7 @@ WorldLogManager::WorldLogManager()
 
     auto config = AppConfig::archive()->openMapping("world_log_manager");
     if(config->isValid()) {
-        saveCheck->setChecked(config->get("save_world_log", false));
+        saveCheck_->setChecked(config->get("save_world_log", false));
     }
 }
 
@@ -81,39 +73,34 @@ WorldLogManager::WorldLogManager()
 WorldLogManager::~WorldLogManager()
 {
     auto config = AppConfig::archive()->openMapping("world_log_manager");
-    config->write("save_world_log", saveCheck->isChecked());
+    config->write("save_world_log", saveCheck_->isChecked());
 }
 
 
 void WorldLogManager::onItemDoubleClicked(const string& text)
 {
-    if(!text.empty()) {
-        filesystem::path path(text);
-        string extension = path.extension().string();
-        if(extension == ".cnoid") {
-            ProjectManager* pm = ProjectManager::instance();
-            TimeBar* timeBar = TimeBar::instance();
-            bool result = pm->tryToCloseProject();
-            if(result) {
-                pm->clearProject();
-                pm->loadProject(text);
-                timeBar->stopPlayback(true);
-                timeBar->startPlayback(0.0);
-            }
-        }
+    ProjectManager* pm = ProjectManager::instance();
+    TimeBar* timeBar = TimeBar::instance();
+    bool result = pm->tryToCloseProject();
+    if(result) {
+        pm->clearProject();
+        MessageView::instance()->flush();
+        pm->loadProject(text);
+        timeBar->stopPlayback(true);
+        timeBar->startPlayback(0.0);
     }
 }
 
 
 void WorldLogManager::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 {
-    if(saveCheck->isChecked()) {
-        is_simulation_started = true;
+    if(saveCheck_->isChecked()) {
+        is_simulation_started_ = true;
         ProjectManager* pm = ProjectManager::instance();
         string suffix = getCurrentTimeSuffix();
         string dir = mkdirs(StandardPath::Downloads, "worldlog/" + pm->currentProjectName() + suffix);
 
-        project_filename = dir + "/" + pm->currentProjectName() + ".cnoid";
+        project_filename_ = dir + "/" + pm->currentProjectName() + ".cnoid";
         WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
         if(worldItem) {
             ItemList<WorldLogFileItem> logItems = worldItem->descendantItems<WorldLogFileItem>();
@@ -136,9 +123,10 @@ void WorldLogManager::onSimulationAboutToStart(SimulatorItem* simulatorItem)
 
 void WorldLogManager::onPlaybackStopped(double time, bool isStoppedManually)
 {
-    if(saveCheck->isChecked() && is_simulation_started) {
-        ProjectManager::instance()->saveProject(project_filename);
-        addItem(project_filename.c_str());
+    if(saveCheck_->isChecked() && is_simulation_started_) {
+        ProjectManager::instance()->saveProject(project_filename_);
+        addItem(project_filename_.c_str());
+        removeDuplicates();
     }
-    is_simulation_started = false;
+    is_simulation_started_ = false;
 }
