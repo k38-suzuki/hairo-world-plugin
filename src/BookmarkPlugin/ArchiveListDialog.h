@@ -9,6 +9,8 @@
 
 namespace cnoid {
 
+class Menu;
+
 class ArchiveListDialog : public Dialog
 {
 public:
@@ -21,6 +23,8 @@ public:
     void removeDuplicates();
 
     void setArchiveKey(const std::string& archive_key);
+
+    Menu* contextMenu();
 
 protected:
     virtual void onItemDoubleClicked(const std::string& text);

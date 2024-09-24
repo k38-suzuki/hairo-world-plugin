@@ -56,15 +56,13 @@ BookmarkManager::BookmarkManager()
     setArchiveKey("bookmark_list");
     setFixedSize(800, 450);
 
-    contextMenu_ = new Menu;
-
     auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/bookmark_add_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
     button->setToolTip(_("Bookmark a current project"));
     button->sigClicked().connect([&](){ onAddButtonClicked(); });
 
     button->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(button, &ToolButton::customContextMenuRequested,
-        [&](const QPoint& pos){ contextMenu_->exec(QCursor::pos()); });
+        [&](const QPoint& pos){ this->contextMenu()->exec(QCursor::pos()); });
 
     const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/file_open_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
     auto button2 = new ToolButton;
@@ -79,15 +77,6 @@ BookmarkManager::BookmarkManager()
     auto config = AppConfig::archive()->openMapping("bookmark_manager");
     if(config->isValid()) {
         autoCheck_->setChecked(config->get("auto_play", false));
-    }
-
-    auto& recentList = *AppConfig::archive()->findListing("bookmark_list");
-    if(recentList.isValid() && !recentList.empty()) {
-        for(int i = 0; i < recentList.size(); ++i) {
-            if(recentList[i].isString()) {
-                addAction(recentList[i].toString());
-            }
-        }
     }
 }
 
@@ -114,28 +103,12 @@ void BookmarkManager::onItemDoubleClicked(const string& text)
 }
 
 
-void BookmarkManager::addAction(const string& filename)
-{
-    if(!filename.empty()) {
-        for(auto& action : contextMenu_->actions()) {
-            if(action->text().toStdString() == filename) {
-                contextMenu_->removeAction(action);
-            }
-        }
-    }
-
-    auto action = contextMenu_->addAction(filename.c_str());
-    connect(action, &QAction::triggered, [this, filename](){ onLoadActionTriggered(filename); });
-}
-
-
 void BookmarkManager::onAddButtonClicked()
 {
     string filename = ProjectManager::instance()->currentProjectFile();
     if(!filename.empty()) {
         addItem(filename.c_str());
         removeDuplicates();
-        addAction(filename);
     }
 }
 
@@ -146,17 +119,5 @@ void BookmarkManager::onOpenButtonClicked()
     for(auto& filename : filenames) {
         addItem(filename.c_str());
         removeDuplicates();
-    }
-}
-
-
-void BookmarkManager::onLoadActionTriggered(const string& filename)
-{
-    ProjectManager* pm = ProjectManager::instance();
-    bool result = pm->tryToCloseProject();
-    if(result) {
-        pm->clearProject();
-        MessageView::instance()->flush();
-        pm->loadProject(filename);
     }
 }

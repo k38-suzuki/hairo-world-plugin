@@ -10,7 +10,6 @@
 namespace cnoid {
 
 class ExtensionManager;
-class Menu;
 
 class HistoryManager : public ArchiveListDialog
 {
@@ -26,9 +25,6 @@ protected:
 private:
     void addProject(const std::string& filename);
     void onProjectLoaded(int level);
-    void onLoadActionTriggered(const std::string& filename);
-
-    Menu* contextMenu_;
 };
 
 }

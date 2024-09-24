@@ -5,6 +5,7 @@
 #include "ArchiveListDialog.h"
 #include <cnoid/AppConfig>
 #include <cnoid/Buttons>
+#include <cnoid/Menu>
 #include <cnoid/Separator>
 #include <cnoid/ValueTree>
 #include <QBoxLayout>
@@ -27,17 +28,18 @@ public:
     Impl(ArchiveListDialog* self);
     ~Impl();
 
+    Menu* contextMenu;
+
     QListWidget* listWidget;
     QDialogButtonBox* buttonBox;
-    std::string archive_key_;
-    int max_items;
+    std::string archive_key;
     QHBoxLayout* hbox;
 
-    void onClearButtonClicked();
+    void removeDuplicates();
     void onItemDoubleClicked(QListWidgetItem* item);
+    void onClearButtonClicked();
     void updateList();
     void clearList();
-    void removeDuplicates();
 };
 
 }
@@ -53,8 +55,9 @@ ArchiveListDialog::ArchiveListDialog(QWidget* parent)
 ArchiveListDialog::Impl::Impl(ArchiveListDialog* self)
     : self(self)
 {
-    archive_key_ = "default_archive_key";
-    max_items = 16;
+    archive_key = "default_archive_key";
+
+    contextMenu = new Menu;
 
     auto vbox = new QVBoxLayout;
     self->setLayout(vbox);
@@ -94,7 +97,7 @@ ArchiveListDialog::~ArchiveListDialog()
 ArchiveListDialog::Impl::~Impl()
 {
     QStringList list;
-    auto& recentList = *AppConfig::archive()->openListing(archive_key_);
+    auto& recentList = *AppConfig::archive()->openListing(archive_key);
     recentList.clear();
 
     for(int i = 0; i < listWidget->count(); ++i) {
@@ -103,7 +106,7 @@ ArchiveListDialog::Impl::~Impl()
     }
 
     if(recentList.empty()) {
-        AppConfig::archive()->remove(archive_key_);
+        AppConfig::archive()->remove(archive_key);
     }
 }
 
@@ -111,13 +114,19 @@ ArchiveListDialog::Impl::~Impl()
 void ArchiveListDialog::addItem(const QString& text)
 {
     if(!text.isEmpty()) {
+        auto action = new QAction(text);
+        connect(action, &QAction::triggered,
+            [&, text](){ onItemDoubleClicked(text.toStdString()); });
+
         QFileInfo info(text);
         if(!info.suffix().isEmpty()) {
             if(info.exists()) {
                 impl->listWidget->addItem(text);
+                impl->contextMenu->addAction(action);
             }
         } else {
             impl->listWidget->addItem(text);
+            impl->contextMenu->addAction(action);
         }
     }
 }
@@ -139,56 +148,6 @@ void ArchiveListDialog::addWidget(QWidget* widget)
 }
 
 
-void ArchiveListDialog::setArchiveKey(const std::string& archive_key)
-{
-    impl->archive_key_ = archive_key;
-    impl->updateList();
-}
-
-
-void ArchiveListDialog::Impl::onClearButtonClicked()
-{
-    QListWidgetItem* item = listWidget->currentItem();
-    if(item) {
-        int row = listWidget->currentRow();
-        listWidget->takeItem(row);
-    }
-}
-
-
-void ArchiveListDialog::Impl::onItemDoubleClicked(QListWidgetItem* item)
-{
-    string text = item->text().toStdString();
-    self->onItemDoubleClicked(text);
-}
-
-
-void ArchiveListDialog::Impl::updateList()
-{
-    QStringList list;
-    auto& recentList = *AppConfig::archive()->findListing(archive_key_);
-    if(recentList.isValid() && !recentList.empty()) {
-        for(int i = 0; i < recentList.size(); ++i) {
-            if(recentList[i].isString()) {
-                list << recentList[i].toString().c_str();
-            }
-        }
-    }
-
-    list.removeDuplicates();
-    clearList();
-    self->addItems(list);
-}
-
-
-void ArchiveListDialog::Impl::clearList()
-{
-    while(listWidget->count()) {
-        listWidget->takeItem(0);
-    }
-}
-
-
 void ArchiveListDialog::removeDuplicates()
 {
     impl->removeDuplicates();
@@ -202,14 +161,71 @@ void ArchiveListDialog::Impl::removeDuplicates()
         auto item = listWidget->item(i);
         list << item->text();
     }
-
     list.removeDuplicates();
     clearList();
     self->addItems(list);
 }
 
 
+void ArchiveListDialog::setArchiveKey(const std::string& archive_key)
+{
+    impl->archive_key = archive_key;
+    impl->updateList();
+}
+
+
+Menu* ArchiveListDialog::contextMenu()
+{
+    return impl->contextMenu;
+}
+
+
 void ArchiveListDialog::onItemDoubleClicked(const std::string& text)
 {
 
+}
+
+
+void ArchiveListDialog::Impl::onItemDoubleClicked(QListWidgetItem* item)
+{
+    string text = item->text().toStdString();
+    self->onItemDoubleClicked(text);
+}
+
+
+void ArchiveListDialog::Impl::onClearButtonClicked()
+{
+    QListWidgetItem* item = listWidget->currentItem();
+    if(item) {
+        int row = listWidget->currentRow();
+        listWidget->takeItem(row);
+        auto action = contextMenu->actions()[row];
+        contextMenu->removeAction(action);
+    }
+}
+
+
+void ArchiveListDialog::Impl::updateList()
+{
+    QStringList list;
+    auto& recentList = *AppConfig::archive()->findListing(archive_key);
+    if(recentList.isValid() && !recentList.empty()) {
+        for(int i = 0; i < recentList.size(); ++i) {
+            if(recentList[i].isString()) {
+                list << recentList[i].toString().c_str();
+            }
+        }
+    }
+    list.removeDuplicates();
+    clearList();
+    self->addItems(list);
+}
+
+
+void ArchiveListDialog::Impl::clearList()
+{
+    while(listWidget->count()) {
+        listWidget->takeItem(0);
+    }
+    contextMenu->clear();
 }
