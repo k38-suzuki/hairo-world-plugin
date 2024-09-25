@@ -18,7 +18,7 @@ class WorldLogManager : public ArchiveListDialog
 public:
     static void initializeClass(ExtensionManager* ext);
 
-    WorldLogManager();
+    WorldLogManager(QWidget* parent = nullptr);
     virtual ~WorldLogManager();
 
 protected:

@@ -6,6 +6,7 @@ set(sources
   HistoryManager.cpp
   JoyKey.cpp
   KIOSKManager.cpp
+  LayoutManager.cpp
   SystemTrayIcon.cpp
   WorldLogManager.cpp
 )
@@ -17,6 +18,7 @@ set(headers
   HistoryManager.h
   JoyKey.h
   KIOSKManager.h
+  LayoutManager.h
   SystemTrayIcon.h
   WorldLogManager.h
   exportdecl.h

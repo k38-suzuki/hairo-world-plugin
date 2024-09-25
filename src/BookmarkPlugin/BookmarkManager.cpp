@@ -9,7 +9,6 @@
 #include <cnoid/CheckBox>
 #include <cnoid/ExtensionManager>
 #include <cnoid/ItemManager>
-#include <cnoid/Menu>
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/ValueTree>
@@ -48,8 +47,8 @@ BookmarkManager* BookmarkManager::instance()
 }
 
 
-BookmarkManager::BookmarkManager()
-    : ArchiveListDialog()
+BookmarkManager::BookmarkManager(QWidget* parent)
+    : ArchiveListDialog(parent)
 {
     setWindowTitle(_("Bookmark Manager"));
     setArchiveKey("bookmark_list");

@@ -23,9 +23,6 @@ private:
     Impl* impl;
 };
 
-std::string getSaveFileName(const std::string& caption, const std::string& extensions);
-std::vector<std::string> getSaveFileNames(const std::string& caption, const std::string& extensions);
-
 }
 
 #endif // CNOID_BODYEDIT_PLUGIN_FILE_FORM_WIDGET_H

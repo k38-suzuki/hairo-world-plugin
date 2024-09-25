@@ -5,17 +5,11 @@
 #include "FileFormWidget.h"
 #include <cnoid/BodyItem>
 #include <cnoid/Button>
-#include <cnoid/FileDialog>
-#include <cnoid/ItemFileDialog>
-#include <cnoid/ItemFileIO>
 #include <cnoid/LineEdit>
-#include <cnoid/MainWindow>
-#include <cnoid/MenuManager>
 #include <cnoid/RootItem>
-#include <cnoid/Separator>
 #include <cnoid/stdx/filesystem>
+#include <cnoid/HamburgerMenu>
 #include <QBoxLayout>
-#include <QGridLayout>
 #include <QLabel>
 #include "gettext.h"
 
@@ -117,59 +111,4 @@ void FileFormWidget::Impl::onReloadButtonClicked()
             bodyItem->reload();
         }
     }
-}
-
-
-static QString makeNameFilterString(const std::string& caption, const string& extensions)
-{
-    QString filters =
-        ItemFileDialog::makeNameFilter(
-            caption, ItemFileIO::separateExtensions(extensions));
-
-    filters += _(";;Any files (*)");
-    return filters;
-}
-
-
-namespace cnoid {
-
-string getSaveFileName(const string& caption, const string& extensions)
-{
-    string filename;
-    FileDialog dialog(MainWindow::instance());
-    dialog.setWindowTitle(caption.c_str());
-    dialog.setNameFilter(makeNameFilterString(caption, extensions));
-    dialog.setFileMode(QFileDialog::AnyFile);
-    dialog.setAcceptMode(QFileDialog::AcceptSave);
-    dialog.setViewMode(QFileDialog::List);
-    dialog.setLabelText(QFileDialog::Accept, _("Save"));
-    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
-    dialog.updatePresetDirectories();
-    if(dialog.exec() == QDialog::Accepted) {
-        filename = dialog.selectedFiles().front().toStdString();
-    }
-    return filename;
-}
-
-
-vector<string> getSaveFileNames(const string& caption, const string& extensions)
-{
-    vector<string> filenames;
-    FileDialog dialog(MainWindow::instance());
-    dialog.setWindowTitle(caption.c_str());
-    dialog.setNameFilter(makeNameFilterString(caption, extensions));
-    dialog.setFileMode(QFileDialog::AnyFile);
-    dialog.setAcceptMode(QFileDialog::AcceptSave);
-    dialog.setViewMode(QFileDialog::List);
-    dialog.setLabelText(QFileDialog::Accept, _("Save"));
-    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
-    dialog.updatePresetDirectories();
-    if(dialog.exec() == QDialog::Accepted) {
-        for(auto& file : dialog.selectedFiles()) {
-            filenames.push_back(file.toStdString());
-        }
-    }
-    return filenames;
-}
-
 }

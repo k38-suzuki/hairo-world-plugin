@@ -29,6 +29,7 @@ public:
     ~Impl();
 
     Menu* contextMenu;
+    Signal<void()> sigListUpdated;
 
     QListWidget* listWidget;
     QDialogButtonBox* buttonBox;
@@ -128,6 +129,7 @@ void ArchiveListDialog::addItem(const QString& text)
             impl->listWidget->addItem(text);
             impl->contextMenu->addAction(action);
         }
+        impl->sigListUpdated();
     }
 }
 
@@ -180,6 +182,12 @@ Menu* ArchiveListDialog::contextMenu()
 }
 
 
+SignalProxy<void()> ArchiveListDialog::sigListUpdated()
+{
+    return impl->sigListUpdated;
+}
+
+
 void ArchiveListDialog::Impl::onItemDoubleClicked(QListWidgetItem* item)
 {
     string text = item->text().toStdString();
@@ -195,6 +203,7 @@ void ArchiveListDialog::Impl::onClearButtonClicked()
         listWidget->takeItem(row);
         auto action = contextMenu->actions()[row];
         contextMenu->removeAction(action);
+        sigListUpdated();
     }
 }
 
@@ -222,4 +231,5 @@ void ArchiveListDialog::Impl::clearList()
         listWidget->takeItem(0);
     }
     contextMenu->clear();
+    sigListUpdated();
 }

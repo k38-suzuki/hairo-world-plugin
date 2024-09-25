@@ -21,6 +21,7 @@
 #include <cnoid/Widget>
 #include <cnoid/YAMLReader>
 #include <cnoid/YAMLWriter>
+#include <cnoid/HamburgerMenu>
 #include <QBoxLayout>
 #include <QLabel>
 #include <QStackedWidget>

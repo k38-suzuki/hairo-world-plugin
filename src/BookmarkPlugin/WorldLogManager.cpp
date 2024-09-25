@@ -43,8 +43,8 @@ void WorldLogManager::initializeClass(ExtensionManager* ext)
 }
 
 
-WorldLogManager::WorldLogManager()
-    : ArchiveListDialog(),
+WorldLogManager::WorldLogManager(QWidget* parent)
+    : ArchiveListDialog(parent),
       is_simulation_started_(false),
       project_filename_("")
 {

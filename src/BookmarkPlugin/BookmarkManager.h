@@ -18,7 +18,7 @@ public:
     static void initializeClass(ExtensionManager* ext);
     static BookmarkManager* instance();
 
-    BookmarkManager();
+    BookmarkManager(QWidget* parent = nullptr);
     virtual ~BookmarkManager();
 
 protected:

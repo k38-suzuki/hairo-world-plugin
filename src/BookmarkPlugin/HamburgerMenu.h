@@ -6,6 +6,7 @@
 #define CNOID_BOOKMARK_PLUGIN_HAMBURGER_MENU_H
 
 #include <cnoid/Menu>
+#include <vector>
 #include "exportdecl.h"
 
 namespace cnoid {
@@ -34,6 +35,8 @@ private:
 CNOID_EXPORT Menu* get_Tools_Menu();
 CNOID_EXPORT ToolBar* fileBar();
 CNOID_EXPORT bool loadProject(const std::string& filename);
+CNOID_EXPORT std::string getSaveFileName(const std::string& caption, const std::string& extensions);
+CNOID_EXPORT std::vector<std::string> getSaveFileNames(const std::string& caption, const std::string& extensions);
 
 }
 

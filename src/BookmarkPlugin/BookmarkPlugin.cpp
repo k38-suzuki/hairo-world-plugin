@@ -7,8 +7,9 @@
 #include "BookmarkManager.h"
 #include "HistoryManager.h"
 #include "KIOSKManager.h"
-#include "HamburgerMenu.h"
+#include "LayoutManager.h"
 #include "WorldLogManager.h"
+#include "HamburgerMenu.h"
 
 using namespace cnoid;
 
@@ -25,9 +26,10 @@ public:
     {
         HamburgerMenu::initializeClass(this);
         BookmarkManager::initializeClass(this);
-        WorldLogManager::initializeClass(this);
         HistoryManager::initializeClass(this);
         KIOSKManager::initializeClass(this);
+        LayoutManager::initializeClass(this);
+        WorldLogManager::initializeClass(this);
         return true;
     }
 

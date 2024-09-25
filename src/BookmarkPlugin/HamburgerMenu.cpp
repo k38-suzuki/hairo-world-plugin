@@ -4,6 +4,9 @@
 
 #include "HamburgerMenu.h"
 #include <cnoid/ExtensionManager>
+#include <cnoid/FileDialog>
+#include <cnoid/ItemFileDialog>
+#include <cnoid/ItemFileIO>
 #include <cnoid/MainWindow>
 #include <cnoid/Menu>
 #include <cnoid/MenuManager>
@@ -73,6 +76,17 @@ void HamburgerMenu::initialize()
 }
 
 
+static QString makeNameFilterString(const std::string& caption, const string& extensions)
+{
+    QString filters =
+        ItemFileDialog::makeNameFilter(
+            caption, ItemFileIO::separateExtensions(extensions));
+
+    filters += _(";;Any files (*)");
+    return filters;
+}
+
+
 namespace cnoid {
 
 Menu* get_Tools_Menu()
@@ -105,6 +119,46 @@ bool loadProject(const string& filename)
         pm->loadProject(filename);
     }
     return result;
+}
+
+
+string getSaveFileName(const string& caption, const string& extensions)
+{
+    string filename;
+    FileDialog dialog(MainWindow::instance());
+    dialog.setWindowTitle(caption.c_str());
+    dialog.setNameFilter(makeNameFilterString(caption, extensions));
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setViewMode(QFileDialog::List);
+    dialog.setLabelText(QFileDialog::Accept, _("Save"));
+    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
+    dialog.updatePresetDirectories();
+    if(dialog.exec() == QDialog::Accepted) {
+        filename = dialog.selectedFiles().front().toStdString();
+    }
+    return filename;
+}
+
+
+vector<string> getSaveFileNames(const string& caption, const string& extensions)
+{
+    vector<string> filenames;
+    FileDialog dialog(MainWindow::instance());
+    dialog.setWindowTitle(caption.c_str());
+    dialog.setNameFilter(makeNameFilterString(caption, extensions));
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setViewMode(QFileDialog::List);
+    dialog.setLabelText(QFileDialog::Accept, _("Save"));
+    dialog.setLabelText(QFileDialog::Reject, _("Cancel"));
+    dialog.updatePresetDirectories();
+    if(dialog.exec() == QDialog::Accepted) {
+        for(auto& file : dialog.selectedFiles()) {
+            filenames.push_back(file.toStdString());
+        }
+    }
+    return filenames;
 }
 
 }

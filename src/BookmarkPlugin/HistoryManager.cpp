@@ -4,11 +4,9 @@
 
 #include "HistoryManager.h"
 #include <cnoid/Action>
-#include <cnoid/AppConfig>
 #include <cnoid/ExtensionManager>
 #include <cnoid/Menu>
 #include <cnoid/ProjectManager>
-#include <cnoid/ValueTree>
 #include "HamburgerMenu.h"
 #include "gettext.h"
 
@@ -38,23 +36,18 @@ void HistoryManager::initializeClass(ExtensionManager* ext)
 }
 
 
-HistoryManager::HistoryManager()
-    : ArchiveListDialog()
+HistoryManager::HistoryManager(QWidget* parent)
+    : ArchiveListDialog(parent)
 {
     setWindowTitle(_("History Manager"));
     setArchiveKey("history_list");
     setFixedSize(800, 450);
 
-    ProjectManager::instance()->sigProjectLoaded().connect([&](int level){ onProjectLoaded(level); });
+    ProjectManager::instance()->sigProjectLoaded().connect(
+        [&](int level){ onProjectLoaded(level); });
 
-    auto& recentFiles = *AppConfig::archive()->findListing("history_list");
-    if(recentFiles.isValid() && !recentFiles.empty()) {
-        for(int i = 0; i < recentFiles.size(); ++i) {
-            if(recentFiles[i].isString()) {
-                addProject(recentFiles[i].toString());
-            }
-        }
-    }
+    clampActions();
+    this->sigListUpdated().connect([&](){ clampActions(); });
 }
 
 
@@ -72,33 +65,26 @@ void HistoryManager::onItemDoubleClicked(const string& text)
 }
 
 
-void HistoryManager::addProject(const string& filename)
-{
-    Menu* contextMenu = HamburgerMenu::instance()->contextMenu();
-    if(!filename.empty()) {
-        for(auto& action : contextMenu->actions()) {
-            if(action->text().toStdString() == filename) {
-                contextMenu->removeAction(action);
-            }
-        }
-
-        if(contextMenu->actions().size() >= 16) {
-            auto action = contextMenu->actions().at(0);
-            contextMenu->removeAction(action);
-        }
-
-        auto action = contextMenu->addAction(filename.c_str());
-        connect(action, &QAction::triggered, [this, filename](){ onItemDoubleClicked(filename); });
-    }
-}
-
-
 void HistoryManager::onProjectLoaded(int level)
 {
     string filename = ProjectManager::instance()->currentProjectFile();
     if(!filename.empty()) {
         addItem(filename.c_str());
         removeDuplicates();
-        addProject(filename);
+    }
+}
+
+
+void HistoryManager::clampActions()
+{
+    Menu* contextMenu = HamburgerMenu::instance()->contextMenu();
+    contextMenu->clear();
+
+    for(auto& action : this->contextMenu()->actions()) {
+        if(contextMenu->actions().size() >= 16) {
+            auto action2 = contextMenu->actions().at(0);
+            contextMenu->removeAction(action2);
+        }
+        contextMenu->addAction(action);
     }
 }

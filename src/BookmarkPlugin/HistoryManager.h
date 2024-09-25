@@ -16,15 +16,15 @@ class HistoryManager : public ArchiveListDialog
 public:
     static void initializeClass(ExtensionManager* ext);
 
-    HistoryManager();
+    HistoryManager(QWidget* parent = nullptr);
     virtual ~HistoryManager();
 
 protected:
     virtual void onItemDoubleClicked(const std::string& text) override;
 
 private:
-    void addProject(const std::string& filename);
     void onProjectLoaded(int level);
+    void clampActions();
 };
 
 }

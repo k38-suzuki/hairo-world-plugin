@@ -65,8 +65,26 @@ msgstr "自動再生"
 msgid "Open a project"
 msgstr "プロジェクトを開く"
 
+msgid "Save a project"
+msgstr "プロジェクトの保存"
+
 msgid "I couldn't detect any system tray on this system"
 msgstr ""
 
 msgid "Exit"
 msgstr "終了"
+
+msgid "Layout Manager"
+msgstr "レイアウトマネージャ"
+
+msgid "Show the layout manager"
+msgstr "レイアウトマネージャの表示"
+
+msgid "Save a current layout"
+msgstr "レイアウトの保存"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Cancel"
+msgstr "キャンセル"
