@@ -7,7 +7,6 @@
 #include <cnoid/AppConfig>
 #include <cnoid/ExtensionManager>
 #include <cnoid/Menu>
-#include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include <cnoid/ValueTree>
 #include "HamburgerMenu.h"
@@ -67,12 +66,8 @@ HistoryManager::~HistoryManager()
 
 void HistoryManager::onItemDoubleClicked(const string& text)
 {
-    ProjectManager* pm = ProjectManager::instance();
-    bool result = pm->tryToCloseProject();
-    if(result) {
-        pm->clearProject();
-        MessageView::instance()->flush();
-        pm->loadProject(text);
+    if(loadProject(text)) {
+
     }
 }
 

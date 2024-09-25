@@ -7,6 +7,8 @@
 #include <cnoid/MainWindow>
 #include <cnoid/Menu>
 #include <cnoid/MenuManager>
+#include <cnoid/MessageView>
+#include <cnoid/ProjectManager>
 #include <cnoid/ToolBar>
 #include "gettext.h"
 
@@ -91,6 +93,19 @@ ToolBar* fileBar()
         }
     }
     return fileInstance;
+}
+
+
+bool loadProject(const string& filename)
+{
+    ProjectManager* pm = ProjectManager::instance();
+    bool result = pm->tryToCloseProject();
+    if(!filename.empty() && result) {
+        pm->clearProject();
+        MessageView::instance()->flush();
+        pm->loadProject(filename);
+    }
+    return result;
 }
 
 }

@@ -70,12 +70,3 @@ msgstr ""
 
 msgid "Exit"
 msgstr "終了"
-
-msgid "Remove"
-msgstr "削除"
-
-msgid "Input label"
-msgstr "ラベルの入力"
-
-msgid "Label:"
-msgstr "ラベル:"

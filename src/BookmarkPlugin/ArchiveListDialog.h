@@ -27,7 +27,7 @@ public:
     Menu* contextMenu();
 
 protected:
-    virtual void onItemDoubleClicked(const std::string& text);
+    virtual void onItemDoubleClicked(const std::string& text) = 0;
 
 private:
     class Impl;

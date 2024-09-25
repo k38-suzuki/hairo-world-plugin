@@ -180,12 +180,6 @@ Menu* ArchiveListDialog::contextMenu()
 }
 
 
-void ArchiveListDialog::onItemDoubleClicked(const std::string& text)
-{
-
-}
-
-
 void ArchiveListDialog::Impl::onItemDoubleClicked(QListWidgetItem* item)
 {
     string text = item->text().toStdString();

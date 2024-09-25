@@ -10,7 +10,6 @@
 #include <cnoid/ExtensionManager>
 #include <cnoid/ItemManager>
 #include <cnoid/Menu>
-#include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/ValueTree>
@@ -90,12 +89,7 @@ BookmarkManager::~BookmarkManager()
 
 void BookmarkManager::onItemDoubleClicked(const string& text)
 {
-    ProjectManager* pm = ProjectManager::instance();
-    bool result = pm->tryToCloseProject();
-    if(result) {
-        pm->clearProject();
-        MessageView::instance()->flush();
-        pm->loadProject(text);
+    if(loadProject(text)) {
         if(autoCheck_->isChecked()) {
             SimulationBar::instance()->startSimulation(true);
         }

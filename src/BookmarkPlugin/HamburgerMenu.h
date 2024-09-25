@@ -35,6 +35,7 @@ private:
 
 CNOID_EXPORT Menu* get_Tools_Menu();
 CNOID_EXPORT ToolBar* fileBar();
+CNOID_EXPORT bool loadProject(const std::string& filename);
 
 }
 

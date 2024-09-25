@@ -6,7 +6,6 @@
 #include <cnoid/AppConfig>
 #include <cnoid/CheckBox>
 #include <cnoid/ExtensionManager>
-#include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
@@ -79,13 +78,8 @@ WorldLogManager::~WorldLogManager()
 
 void WorldLogManager::onItemDoubleClicked(const string& text)
 {
-    ProjectManager* pm = ProjectManager::instance();
-    TimeBar* timeBar = TimeBar::instance();
-    bool result = pm->tryToCloseProject();
-    if(result) {
-        pm->clearProject();
-        MessageView::instance()->flush();
-        pm->loadProject(text);
+    if(loadProject(text)) {
+        TimeBar* timeBar = TimeBar::instance();
         timeBar->stopPlayback(true);
         timeBar->startPlayback(0.0);
     }
