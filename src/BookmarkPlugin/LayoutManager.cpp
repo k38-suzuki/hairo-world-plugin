@@ -10,7 +10,6 @@
 #include <cnoid/ProjectManager>
 #include <cnoid/RootItem>
 #include <cnoid/ToolBar>
-#include <QFileDialog>
 #include "HamburgerMenu.h"
 #include "gettext.h"
 
