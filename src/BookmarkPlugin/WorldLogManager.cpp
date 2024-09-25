@@ -54,7 +54,12 @@ WorldLogManager::WorldLogManager()
 
     saveCheck_ = new CheckBox;
     saveCheck_->setText(_("Save a World Log"));
+
+    autoCheck_ = new CheckBox;
+    autoCheck_->setText(_("Autoplay"));
+
     addWidget(saveCheck_);
+    addWidget(autoCheck_);
 
     TimeBar::instance()->sigPlaybackStopped().connect(
         [&](double time, bool isStoppedManually){ onPlaybackStopped(time, isStoppedManually); });
@@ -65,6 +70,7 @@ WorldLogManager::WorldLogManager()
     auto config = AppConfig::archive()->openMapping("world_log_manager");
     if(config->isValid()) {
         saveCheck_->setChecked(config->get("save_world_log", false));
+        autoCheck_->setChecked(config->get("auto_play", false));
     }
 }
 
@@ -73,15 +79,18 @@ WorldLogManager::~WorldLogManager()
 {
     auto config = AppConfig::archive()->openMapping("world_log_manager");
     config->write("save_world_log", saveCheck_->isChecked());
+    config->write("auto_play", autoCheck_->isChecked());
 }
 
 
 void WorldLogManager::onItemDoubleClicked(const string& text)
 {
     if(loadProject(text)) {
-        TimeBar* timeBar = TimeBar::instance();
-        timeBar->stopPlayback(true);
-        timeBar->startPlayback(0.0);
+        if(autoCheck_->isChecked()) {
+            TimeBar* timeBar = TimeBar::instance();
+            timeBar->stopPlayback(true);
+            timeBar->startPlayback(0.0);
+        }
     }
 }
 

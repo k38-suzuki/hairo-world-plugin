@@ -28,6 +28,7 @@ private:
     void onSimulationAboutToStart(SimulatorItem* simulatorItem);
     void onPlaybackStopped(double time, bool isStoppedManually);
 
+    CheckBox* autoCheck_;
     CheckBox* saveCheck_;
     bool is_simulation_started_;
     std::string project_filename_;

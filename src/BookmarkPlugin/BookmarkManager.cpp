@@ -55,12 +55,12 @@ BookmarkManager::BookmarkManager()
     setArchiveKey("bookmark_list");
     setFixedSize(800, 450);
 
-    auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/bookmark_add_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
-    button->setToolTip(_("Bookmark a current project"));
-    button->sigClicked().connect([&](){ onAddButtonClicked(); });
+    auto button1 = fileBar()->addButton(":/GoogleMaterialSymbols/icon/bookmark_add_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
+    button1->setToolTip(_("Bookmark a current project"));
+    button1->sigClicked().connect([&](){ onAddButtonClicked(); });
 
-    button->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(button, &ToolButton::customContextMenuRequested,
+    button1->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(button1, &ToolButton::customContextMenuRequested,
         [&](const QPoint& pos){ this->contextMenu()->exec(QCursor::pos()); });
 
     const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/file_open_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
@@ -70,6 +70,7 @@ BookmarkManager::BookmarkManager()
 
     autoCheck_ = new CheckBox;
     autoCheck_->setText(_("Autoplay"));
+
     addWidget(button2);
     addWidget(autoCheck_);
 
