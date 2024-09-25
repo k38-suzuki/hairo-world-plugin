@@ -62,7 +62,7 @@ void NetworkEmulator::initializeClass(ExtensionManager* ext)
         action->setIcon(icon);
         action->setToolTip(_("Show the network emulator"));
         action->sigTriggered().connect([&](){ emulatorInstance->impl->show(); });
-        HamburgerMenu::instance()->subMenu()->addAction(action);
+        HamburgerMenu::instance()->addAction(action);
     }
 }
 

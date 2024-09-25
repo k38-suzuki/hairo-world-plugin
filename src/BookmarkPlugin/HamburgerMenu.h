@@ -23,13 +23,11 @@ public:
     HamburgerMenu(const QString& title, QWidget* parent = nullptr);
     virtual ~HamburgerMenu();
 
-    Menu* subMenu() { return menu_; }
     Menu* contextMenu() { return contextMenu_; }
 
 private:
     void initialize();
 
-    Menu* menu_;
     Menu* contextMenu_;
 };
 
