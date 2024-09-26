@@ -10,11 +10,15 @@
 #include <cnoid/ProjectManager>
 #include <cnoid/RootItem>
 #include <cnoid/ToolBar>
+#include <cnoid/UTF8>
+#include <cnoid/YAMLWriter>
+#include <cnoid/stdx/filesystem>
 #include "HamburgerMenu.h"
 #include "gettext.h"
 
 using namespace std;
 using namespace cnoid;
+namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
@@ -79,7 +83,19 @@ void LayoutManager::onSaveButtonClicked()
 {
     string filename = getSaveFileName(_("Save a project"), "cnoid");
     if(!filename.empty()) {
-        ProjectManager::instance()->saveProject(filename);
+        filesystem::path path(fromUTF8(filename));
+        string ext = path.extension().string();
+        if(ext != ".cnoid"){
+            filename += ".cnoid";
+        }
+
+        YAMLWriter yamlWriter;
+        yamlWriter.setKeyOrderPreservationMode(true);
+        if(yamlWriter.openFile(filename)) {
+            auto layout = ProjectManager::instance()->storeCurrentLayout();
+            yamlWriter.putNode(layout);
+            yamlWriter.closeFile();
+        }
         addItem(filename.c_str());
         removeDuplicates();
     }

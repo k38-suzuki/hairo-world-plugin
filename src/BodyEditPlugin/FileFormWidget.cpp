@@ -88,11 +88,11 @@ void FileFormWidget::Impl::onSaveButtonClicked()
 
     if(!filename.empty()) {
         filesystem::path path(filename);
-        string extension = path.extension().string();
-        if(extension.empty()) {
+        string ext = path.extension().string();
+        if(ext != ".body") {
            filename += ".body";
-           fileLine->setText(filename.c_str());
         }
+        fileLine->setText(filename.c_str());
         sigClicked_(filename);
     }
 

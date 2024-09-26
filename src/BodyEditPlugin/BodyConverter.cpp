@@ -236,9 +236,9 @@ BodyConverter::~BodyConverter()
 void BodyConverter::Impl::onFileDropped(const string& filename)
 {
     filesystem::path path(filename);
-    string extension = path.extension();
+    string ext = path.extension().string();
 
-    if(extension == ".body") {
+    if(ext == ".body") {
         if(!convertCheck->isChecked()) {
             auto bodyItem = new BodyItem;
             bodyItem->load(filename);
@@ -253,7 +253,7 @@ void BodyConverter::Impl::onFileDropped(const string& filename)
         } else {
             saveFile(filename.c_str());
         }
-    } else if(extension == ".cnoid") {
+    } else if(ext == ".cnoid") {
         ProjectManager* projectManager = ProjectManager::instance();
         if(projectManager->tryToCloseProject()) {
             projectManager->clearProject();

@@ -28,7 +28,7 @@ public:
         BookmarkManager::initializeClass(this);
         HistoryManager::initializeClass(this);
         KIOSKManager::initializeClass(this);
-        // LayoutManager::initializeClass(this);
+        LayoutManager::initializeClass(this);
         WorldLogManager::initializeClass(this);
         return true;
     }

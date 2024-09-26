@@ -642,7 +642,7 @@ void CrawlerGenerator::Impl::onExportButtonClicked()
     if(!filename.empty()) {
        filesystem::path path(filename);
         string ext = path.extension().string();
-        if(ext.empty()) {
+        if(ext != ".yaml") {
             filename += ".yaml";
         }
         save2(filename);
