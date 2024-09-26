@@ -10,7 +10,6 @@
 #include <cnoid/Format>
 #include <cnoid/JoystickCapture>
 #include <cnoid/MainMenu>
-#include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <cnoid/HamburgerMenu>
 #include <QBoxLayout>

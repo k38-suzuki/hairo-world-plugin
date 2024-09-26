@@ -53,9 +53,6 @@ void NetworkEmulator::initializeClass(ExtensionManager* ext)
     if(!emulatorInstance) {
         emulatorInstance = ext->manage(new NetworkEmulator);
 
-        // MainMenu::instance()->add_Tools_Item(
-        //     _("Network Emulator"), []() { emulatorInstance->impl->show(); });
-
         const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/network_manage_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
         auto action = new Action;
         action->setText(_("Network Emulator"));

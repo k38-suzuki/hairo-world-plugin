@@ -3,6 +3,7 @@
 */
 
 #include "BodyConverter.h"
+#include <cnoid/Action>
 #include <cnoid/BodyItem>
 #include <cnoid/Buttons>
 #include <cnoid/CheckBox>
@@ -11,7 +12,6 @@
 #include <cnoid/ExtensionManager>
 #include <cnoid/Format>
 #include <cnoid/ItemManager>
-#include <cnoid/MenuManager>
 #include <cnoid/MessageView>
 #include <cnoid/ProjectManager>
 #include <cnoid/RootItem>
@@ -159,10 +159,6 @@ void BodyConverter::initializeClass(ExtensionManager* ext)
 {
     if(!converterInstance) {
         converterInstance = ext->manage(new BodyConverter);
-
-        // MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
-        // mm.addItem(_("Body Loader"))->sigTriggered().connect(
-        //             [&](){ converterInstance->impl->show(); });
 
         const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/upload_file_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
         auto action = new Action;

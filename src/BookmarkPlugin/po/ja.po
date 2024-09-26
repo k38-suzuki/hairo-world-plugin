@@ -88,3 +88,9 @@ msgstr "保存"
 
 msgid "Cancel"
 msgstr "キャンセル"
+
+msgid "Open a layout"
+msgstr "レイアウトを開く"
+
+msgid "Save a layout"
+msgstr "レイアウトの保存"

@@ -97,8 +97,7 @@ void InertiaCalculator::initializeClass(ExtensionManager* ext)
         calculatorInstance = ext->manage(new InertiaCalculator);
 
         MainMenu::instance()->add_Tools_Item(
-            _("Calculate Inertia"), [](){
-                calculatorInstance->impl->show(); });
+            _("Calculate Inertia"), [](){ calculatorInstance->impl->show(); });
 
         // const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/calculate_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
         // auto action = new Action;

@@ -81,7 +81,7 @@ void LayoutManager::onItemDoubleClicked(const string& text)
 
 void LayoutManager::onSaveButtonClicked()
 {
-    string filename = getSaveFileName(_("Save a project"), "cnoid");
+    string filename = getSaveFileName(_("Save a layout"), "cnoid");
     if(!filename.empty()) {
         filesystem::path path(fromUTF8(filename));
         string ext = path.extension().string();
@@ -104,7 +104,7 @@ void LayoutManager::onSaveButtonClicked()
 
 void LayoutManager::onOpenButtonClicked()
 {
-    vector<string> filenames = getOpenFileNames(_("Open a project"), "cnoid");
+    vector<string> filenames = getOpenFileNames(_("Open a layout"), "cnoid");
     for(auto& filename : filenames) {
         addItem(filename.c_str());
         removeDuplicates();
