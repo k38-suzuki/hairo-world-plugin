@@ -97,7 +97,7 @@ void PipeGenerator::initializeClass(ExtensionManager* ext)
     if(!pipeInstance) {
         pipeInstance = ext->manage(new PipeGenerator);
 
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
+        MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("Make a body file"));
         mm.addItem(_("Pipe"))->sigTriggered().connect(
                     [&](){ pipeInstance->impl->show(); });
     }

@@ -83,7 +83,7 @@ msgstr "ボックステレイン"
 msgid "CrawlerRobot"
 msgstr "クローラロボット"
 
-msgid "Make Body File"
+msgid "Make a body file"
 msgstr "Bodyファイルの生成"
 
 msgid "CrawlerRobot Generator"

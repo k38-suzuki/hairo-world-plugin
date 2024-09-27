@@ -99,7 +99,7 @@ void BentPipeGenerator::initializeClass(ExtensionManager* ext)
     if(!bentInstance) {
         bentInstance = ext->manage(new BentPipeGenerator);
 
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
+        MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("Make a body file"));
         mm.addItem(_("BentPipe"))->sigTriggered().connect(
                     [&](){ bentInstance->impl->show(); });
     }

@@ -20,6 +20,8 @@ using namespace cnoid;
 
 namespace {
 
+Menu* menu_File = nullptr;
+Menu* menu_View = nullptr;
 Menu* menu_Tools = nullptr;
 ToolBar* fileInstance = nullptr;
 
@@ -28,9 +30,15 @@ ToolBar* fileInstance = nullptr;
 
 void HamburgerMenu::initializeClass(ExtensionManager* ext)
 {
+    MenuManager& mm = ext->menuManager();
+    if(!menu_File) {
+        menu_File = mm.setPath("/File").currentMenu();
+    }
+    if(!menu_View) {
+        menu_View = mm.setPath("/View").currentMenu();
+    }
     if(!menu_Tools) {
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools"));
-        menu_Tools = mm.currentMenu();
+        menu_Tools = mm.setPath("/Tools").currentMenu();
     }
 }
 
@@ -88,6 +96,16 @@ static QString makeNameFilterString(const std::string& caption, const string& ex
 
 
 namespace cnoid {
+
+Menu* get_File_Menu()
+{
+    return menu_File;
+}
+
+Menu* get_View_Menu()
+{
+    return menu_View;
+}
 
 Menu* get_Tools_Menu()
 {

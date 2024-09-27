@@ -32,6 +32,9 @@ void HistoryManager::initializeClass(ExtensionManager* ext)
         action->setToolTip(_("Show the history manager"));
         action->sigTriggered().connect([&](){ historyInstance->show(); });
         HamburgerMenu::instance()->addAction(action);
+
+        auto action2 = get_Tools_Menu()->addAction(_("History"));
+        action2->setMenu(historyInstance->contextMenu());
     }
 }
 
@@ -80,11 +83,12 @@ void HistoryManager::clampActions()
     Menu* contextMenu = HamburgerMenu::instance()->contextMenu();
     contextMenu->clear();
 
+    while(this->contextMenu()->actions().size() > 10) {
+            auto action = this->contextMenu()->actions().at(0);
+            this->contextMenu()->removeAction(action);
+    }
+
     for(auto& action : this->contextMenu()->actions()) {
-        if(contextMenu->actions().size() >= 16) {
-            auto action2 = contextMenu->actions().at(0);
-            contextMenu->removeAction(action2);
-        }
         contextMenu->addAction(action);
     }
 }

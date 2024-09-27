@@ -87,7 +87,7 @@ void StairsGenerator::initializeClass(ExtensionManager* ext)
     if(!stairsInstance) {
         stairsInstance = ext->manage(new StairsGenerator);
 
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
+        MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("Make a body file"));
         mm.addItem(_("Stairs"))->sigTriggered().connect(
                     [&](){ stairsInstance->impl->show(); });
     }

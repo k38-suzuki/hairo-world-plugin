@@ -92,7 +92,7 @@ void TerrainGenerator::initializeClass(ExtensionManager* ext)
     if(!terrainInstance) {
         terrainInstance = ext->manage(new TerrainGenerator);
 
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
+        MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("Make a body file"));
         mm.addItem(_("BoxTerrain"))->sigTriggered().connect(
                     [&](){ terrainInstance->impl->show(); });
     }

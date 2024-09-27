@@ -303,7 +303,7 @@ void CrawlerGenerator::initializeClass(ExtensionManager* ext)
     if(!crawlerInstance) {
         crawlerInstance = ext->manage(new CrawlerGenerator);
 
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
+        MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("Make a body file"));
         mm.addItem(_("CrawlerRobot"))->sigTriggered().connect(
                     [&](){ crawlerInstance->impl->show(); });
     }

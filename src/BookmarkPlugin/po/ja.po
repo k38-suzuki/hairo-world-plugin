@@ -26,6 +26,9 @@ msgstr ""
 msgid "Enable KIOSK"
 msgstr "KIOSKモード"
 
+msgid "History"
+msgstr "履歴"
+
 msgid "Show the history manager"
 msgstr "ヒストリマネージャの表示"
 

@@ -104,7 +104,7 @@ void GratingGenerator::initializeClass(ExtensionManager* ext)
     if(!gratingInstance) {
         gratingInstance = ext->manage(new GratingGenerator);
 
-        MenuManager& mm = ext->menuManager().setPath("/" N_("Tools")).setPath(_("Make Body File"));
+        MenuManager& mm = ext->menuManager().setPath("/Tools").setPath(_("Make a body file"));
         mm.addItem(_("Grating"))->sigTriggered().connect(
                     [&](){ gratingInstance->impl->show(); });
     }

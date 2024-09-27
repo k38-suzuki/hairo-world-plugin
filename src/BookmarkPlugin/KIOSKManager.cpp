@@ -64,7 +64,7 @@ void KIOSKManager::initializeClass(ExtensionManager* ext)
     auto config = AppConfig::archive()->openMapping("kiosk_manager");
     is_kiosk_enabled = config->get("kiosk_mode", false);
 
-    MenuManager& mm = ext->menuManager().setPath("/" N_("View"));
+    MenuManager& mm = ext->menuManager().setPath("/View");
     auto currentMenu = mm.currentMenu();
     auto kioskCheck = mm.addCheckItem(_("Enable KIOSK"));
     currentMenu->sigAboutToShow().connect(
