@@ -204,6 +204,7 @@ void WRSUtilBar::Impl::onInputFileOptionsParsed(vector<string>& inputFiles)
     auto it = inputFiles.begin();
     while(it != inputFiles.end()) {
         if(filesystem::path(fromUTF8(*it)).extension().string() == ".yaml") {
+            self->setVisibleByDefault(true);
             self->setRegistrationFile(*it);
             self->update();
             it = inputFiles.erase(it);
