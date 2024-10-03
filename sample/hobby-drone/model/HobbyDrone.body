@@ -112,6 +112,22 @@ links:
         color: [ 0.0, 1.0, 0.0 ]
         transparency: 0.3
         symbol: false
+      -
+        type: SpotLight
+        name: Light
+        translation: [ 0.08, 0, 0 ]
+        direction: [ 1, 0, 0 ]
+        beamWidth: 36
+        cutOffAngle: 40
+        cutOffExponent: 6
+        attenuation: [ 1, 0, 0.01 ]
+        elements:
+          -
+            type: Shape
+            rotation: [ 0, 0, 1, 90 ]
+            translation: [ -0.02, 0, 0 ]
+            geometry: { type: Cone, height: 0.04, radius: 0.025 }
+            appearance: { material: { diffuseColor: [ 1.0, 1.0, 0.4 ] } }
   -
     name: ROTOR_RF
     translation: [ 0.075, -0.075, 0.035 ]

@@ -67,16 +67,16 @@ void JoystickTester::initializeClass(ExtensionManager* ext)
     }
 
     if(!joystickInstance) {
-        joystickInstance = ext->manage(new VirtualJoystickWidget);
-        joystickInstance->setWindowFlags(Qt::WindowStaysOnTopHint);
+        // joystickInstance = ext->manage(new VirtualJoystickWidget);
+        // joystickInstance->setWindowFlags(Qt::WindowStaysOnTopHint);
 
-        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/videogame_asset_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
-        auto action = new Action;
-        action->setText(_("Virtual Joystick2"));
-        action->setIcon(icon);
-        action->setToolTip(_("Show the virtual joystick"));
-        action->sigTriggered().connect([&](){ joystickInstance->show(); });
-        HamburgerMenu::instance()->addAction(action);
+        // const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/videogame_asset_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
+        // auto action = new Action;
+        // action->setText(_("Virtual Joystick2"));
+        // action->setIcon(icon);
+        // action->setToolTip(_("Show the virtual joystick"));
+        // action->sigTriggered().connect([&](){ joystickInstance->show(); });
+        // HamburgerMenu::instance()->addAction(action);
     }
 }
 
