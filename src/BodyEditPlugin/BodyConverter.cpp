@@ -16,8 +16,9 @@
 #include <cnoid/ProjectManager>
 #include <cnoid/RootItem>
 #include <cnoid/Separator>
-#include <cnoid/stdx/filesystem>
+#include <cnoid/UTF8>
 #include <cnoid/WorldItem>
+#include <cnoid/stdx/filesystem>
 #include <cnoid/HamburgerMenu>
 #include <QAction>
 #include <QBoxLayout>
@@ -231,7 +232,7 @@ BodyConverter::~BodyConverter()
 
 void BodyConverter::Impl::onFileDropped(const string& filename)
 {
-    filesystem::path path(filename);
+    filesystem::path path(fromUTF8(filename));
     string ext = path.extension().string();
 
     if(ext == ".body") {

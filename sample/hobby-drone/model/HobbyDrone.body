@@ -3,74 +3,10 @@ formatVersion: 1.0
 angleUnit: degree
 name: HobbyDrone
 
-PURPLE_APP: &PurpleApp
-  appearance:
-    material:
-      diffuseColor: [ 0.5, 0, 1 ]
-      specularColor: [ 0.5, 0, 1 ]
-      shininess: 0.6
-
-WHITE_APP: &WhiteApp
-  appearance:
-    material:
-      diffuseColor: [ 1.0, 1.0, 1.0 ]
-      specularColor: [ 0.2, 0.2, 0.2 ]
-      shininess: 0.6
-      transparency: 0.9
-
-GREEN_APP: &GreenApp
-  appearance:
-    material:
-      diffuseColor: [ 0, 1, 0 ]
-      specularColor: [ 0, 0.2, 0 ]
-      shininess: 0.6
-
-RED_APP: &RedApp
-  appearance:
-    material:
-      diffuseColor: [ 1, 0, 0 ]
-      specularColor: [ 0.2, 0, 0 ]
-      shininess: 0.6
-
-ROTOR_COMMON: &RotorCommon
-  parent: CHASSIS
-  jointType: fixed
-  centerOfMass: [ 0, 0, 0 ]
-  mass: 0.1
-  inertia: [ 2.83333e-05, 0, 0, 0, 2.83333e-05, 0, 0, 0, 4.16667e-05 ]
-
-ROTOR_COMMON_SHAPE: &RotorCommonShape
-  type: Shape
-  geometry:
-    type: Box
-    size: [ 0.05, 0.05, 0.03 ]
-
-CAMERA_COMMON: &CameraCommon
-  type: Camera
-  format: COLOR
-  fieldOfView: 62
-  nearClipDistance: 0.02
-  width: 640
-  height: 480
-  frameRate: 30
-  elements:
-    Shape:
-      rotation: [ 1, 0, 0, 90 ]
-      geometry:
-        type: Cylinder
-        radius: 0.03
-        height: 0.02
-      appearance:
-        material:
-          diffuseColor: [ 0.2, 0.2, 0.8 ]
-          specularColor: [ 0.6, 0.6, 1.0 ]
-          shininess: 0.6
-          transparency: 0.5
-
 links:
   -
     name: CHASSIS
-    translation: [ 0, 0, 0 ]
+    translation: [ 0, 0, 0.3 ]
     jointType: free
     centerOfMass: [ 0, 0, 0 ]
     mass: 1.0
@@ -82,36 +18,29 @@ links:
     elements:
       -
         type: Shape
-        geometry:
-          type: Box
-          size: [ 0.15, 0.15, 0.07 ]
-        <<: *PurpleApp
+        geometry: { type: Box, size: [ 0.15, 0.15, 0.07 ] }
+        appearance: { material: { diffuseColor: [ 0.5, 0, 1 ] } }
       -
         type: Shape
-        geometry:
-          type: Sphere
-          radius: 0.20
-        <<: *WhiteApp
-      - <<: *CameraCommon
+        geometry: { type: Sphere, radius: 0.15 }
+        appearance: { material: { diffuseColor: [ 1.0, 1.0, 1.0 ], transparency: 0.9 } }
+      -
+        type: Camera
         name: FrontCamera
         translation: [ 0.08, 0, 0 ]
         rotation: [ [ 1, 0, 0, 90 ], [ 0, 1, 0, -90 ] ]
-      -
-        type: RateGyroSensor
-        name: GyroSensor
-        maxAngularVelocity: 1000.0
-      -
-        type: AccelerationSensor
-        name: AccSensor
-        maxAcceleration: [ 1000.0, 1000.0, 1000.0 ]
-      -
-        type: PassiveMarker
-        name: GreenMarker
-        translation: [ 0, 0, 0 ]
-        radius: 0.03
-        color: [ 0.0, 1.0, 0.0 ]
-        transparency: 0.3
-        symbol: false
+        format: COLOR
+        fieldOfView: 62
+        nearClipDistance: 0.02
+        width: 640
+        height: 480
+        frameRate: 30
+        elements:
+          -
+            type: Shape
+            rotation: [ 1, 0, 0, 90 ]
+            geometry: { type: Cylinder, radius: 0.03, height: 0.02 }
+            appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.8 ], transparency: 0.5 } }
       -
         type: SpotLight
         name: Light
@@ -128,47 +57,45 @@ links:
             translation: [ -0.02, 0, 0 ]
             geometry: { type: Cone, height: 0.04, radius: 0.025 }
             appearance: { material: { diffuseColor: [ 1.0, 1.0, 0.4 ] } }
-  -
-    name: ROTOR_RF
-    translation: [ 0.075, -0.075, 0.035 ]
-    <<: *RotorCommon
-    elements:
-      - <<: *RotorCommonShape
-        <<: *GreenApp
+      - { type: RateGyroSensor, name: GyroSensor, maxAngularVelocity: 1000.0 }
+      - { type: AccelerationSensor, name: AccSensor, maxAcceleration: [ 1000.0, 1000.0, 1000.0 ] }
       -
-        type: Rotor
-        name: Rotor_RF
+        type: PassiveMarker
+        name: GreenMarker
+        translation: [ 0, 0, 0 ]
+        radius: 0.03
+        color: [ 0.0, 1.0, 0.0 ]
+        transparency: 0.3
         symbol: false
-  -
+  - &rotor_link
+    name: ROTOR_RF
+    parent: CHASSIS
+    translation: [ 0.075, -0.075, 0.035 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.1
+    inertia: [ 2.83333e-05, 0, 0, 0, 2.83333e-05, 0, 0, 0, 4.16667e-05 ]
+    elements:
+      - &rotor_shape
+        type: Shape
+        geometry: { type: Box, size: [ 0.05, 0.05, 0.03 ] }
+        appearance: &green { material: { diffuseColor: [ 0, 1, 0 ] } }
+      - &rotor_device { type: Rotor, name: Rotor_RF, symbol: false }
+  - <<: *rotor_link
     name: ROTOR_LF
     translation: [ 0.075, 0.075, 0.035 ]
-    <<: *RotorCommon
     elements:
-      - <<: *RotorCommonShape
-        <<: *GreenApp
-      -
-        type: Rotor
-        name: Rotor_LF
-        symbol: false
-  -
+      - { <<: *rotor_shape, appearance: *green }
+      - { <<: *rotor_device, name: Rotor_LF }
+  - <<: *rotor_link
     name: ROTOR_LR
     translation: [ -0.075, 0.075, 0.035 ]
-    <<: *RotorCommon
     elements:
-      - <<: *RotorCommonShape
-        <<: *RedApp
-      -
-        type: Rotor
-        name: Rotor_LR
-        symbol: false
-  -
+      - { <<: *rotor_shape, appearance: &red { material: { diffuseColor: [ 1, 0, 0 ] } } }
+      - { <<: *rotor_device, name: Rotor_LR }
+  - <<: *rotor_link
     name: ROTOR_RR
     translation: [ -0.075, -0.075, 0.035 ]
-    <<: *RotorCommon
     elements:
-      - <<: *RotorCommonShape
-        <<: *RedApp
-      -
-        type: Rotor
-        name: Rotor_RR
-        symbol: false
+      - { <<: *rotor_shape, appearance: *red }
+      - { <<: *rotor_device, name: Rotor_RR }

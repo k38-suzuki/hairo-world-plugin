@@ -4,9 +4,9 @@
 
 #include "VFXVisionSimulatorItem.h"
 #include <cnoid/Body>
+#include <cnoid/ConnectionSet>
 #include <cnoid/ItemManager>
 #include <cnoid/WorldItem>
-#include <cnoid/Selection>
 #include <cnoid/Archive>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/DeviceList>
@@ -32,17 +32,12 @@ public:
     Impl(VFXVisionSimulatorItem* self, const Impl& org);
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
-    void onPostDynamics();
-    void onPostDynamics2();
-    void onPostDynamics3();
-    bool setDynamicsType(int dynamicsId);
-    double dynamicsType() const;
+    void onCameraStateChanged(Camera* camera);
 
     DeviceList<Camera> cameras;
     ItemList<MultiColliderItem> colliders;
-    enum DynamicsId { RANDOM_SALT_ONLY, RANDOM_MOSAIC_ONLY, ALL_PROCESS };
-    Selection dynamicsSelection;
     SimulatorItem* simulatorItem;
+    ConnectionSet connections;
     std::mutex convertMutex;
     VFXConverter converter;
     string vfx_event_file_path;
@@ -73,10 +68,6 @@ VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self)
 {
     cameras.clear();
     colliders.clear();
-    dynamicsSelection.setSymbol(RANDOM_SALT_ONLY, N_("Random salt only"));
-    dynamicsSelection.setSymbol(RANDOM_MOSAIC_ONLY, N_("Random mosaic only"));
-    dynamicsSelection.setSymbol(ALL_PROCESS, N_("All process"));
-    dynamicsSelection.select(RANDOM_SALT_ONLY);
     simulatorItem = nullptr;
     events.clear();
 }
@@ -95,7 +86,6 @@ VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self, const Impl& org
 {
     cameras.clear();
     colliders.clear();
-    dynamicsSelection = org.dynamicsSelection;
     vfx_event_file_path = org.vfx_event_file_path;
 }
 
@@ -145,292 +135,149 @@ bool VFXVisionSimulatorItem::Impl::initializeSimulation(SimulatorItem* simulator
         }
     }
 
-    if(cameras.size() > 0) {
-        switch(dynamicsSelection.which()) {
-        case RANDOM_SALT_ONLY:
-                simulatorItem->addPostDynamicsFunction([&](){ onPostDynamics(); });
-            break;
-        case RANDOM_MOSAIC_ONLY:
-                simulatorItem->addPostDynamicsFunction([&](){ onPostDynamics2(); });
-            break;
-        case ALL_PROCESS:
-                simulatorItem->addPostDynamicsFunction([&](){ onPostDynamics3(); });
-            break;
-        default:
-            break;
-        }
+    for(auto& camera : cameras) {
+        connections.add(camera->sigStateChanged().connect([&, camera](){ onCameraStateChanged(camera); }));
     }
 
     return true;
 }
 
 
-void VFXVisionSimulatorItem::Impl::onPostDynamics()
+void VFXVisionSimulatorItem::finalizeSimulation()
+{
+    GLVisionSimulatorItem::finalizeSimulation();
+    impl->connections.disconnect();
+}
+
+
+void VFXVisionSimulatorItem::Impl::onCameraStateChanged(Camera* camera)
 {
     double current_time = simulatorItem->currentTime();
 
-    for(auto& camera : cameras) {
-        Link* link = camera->link();
-        double salt_amount = 0.0;
-        double salt_chance = 0.0;
+    Link* link = camera->link();
+    double hue = 0.0;
+    double saturation = 0.0;
+    double value = 0.0;
+    double red = 0.0;
+    double green = 0.0;
+    double blue = 0.0;
+    double coef_b = 0.0;
+    double coef_d = 1.0;
+    double std_dev = 0.0;
+    double salt_amount = 0.0;
+    double salt_chance = 0.0;
+    double pepper_amount = 0.0;
+    double pepper_chance = 0.0;
+    double mosaic_chance = 0.0;
+    int kernel = 16;
 
-        NoisyCamera* noisyCamera = dynamic_cast<NoisyCamera*>(camera.get());
-        if(noisyCamera) {
-            salt_amount = noisyCamera->saltAmount();
-            salt_chance = noisyCamera->saltChance();
+    NoisyCamera* noisyCamera = dynamic_cast<NoisyCamera*>(camera);
+    if(noisyCamera) {
+        hue = noisyCamera->hsv()[0];
+        saturation = noisyCamera->hsv()[1];
+        value = noisyCamera->hsv()[2];
+        red = noisyCamera->rgb()[0];
+        green = noisyCamera->rgb()[1];
+        blue = noisyCamera->rgb()[2];
+        coef_b = noisyCamera->coefB();
+        coef_d = noisyCamera->coefD();
+        std_dev = noisyCamera->stdDev();
+        salt_amount = noisyCamera->saltAmount();
+        salt_chance = noisyCamera->saltChance();
+        pepper_amount = noisyCamera->pepperAmount();
+        pepper_chance = noisyCamera->pepperChance();
+        mosaic_chance = noisyCamera->mosaicChance();
+        kernel = noisyCamera->kernel();
+    }
+
+    for(auto& collider : colliders) {
+        if(collision(collider, link->T().translation())) {
+            hue = collider->hsv()[0];
+            saturation = collider->hsv()[1];
+            value = collider->hsv()[2];
+            red = collider->rgb()[0];
+            green = collider->rgb()[1];
+            blue = collider->rgb()[2];
+            coef_b = collider->coefB();
+            coef_d = collider->coefD();
+            std_dev = collider->stdDev();
+            salt_amount = collider->saltAmount();
+            salt_chance = collider->saltChance();
+            pepper_amount = collider->pepperAmount();
+            pepper_chance = collider->pepperChance();
+            mosaic_chance = collider->mosaicChance();
+            kernel = collider->kernel();
         }
 
-        for(auto& collider : colliders) {
-            if(collision(collider, link->T().translation())) {
-                salt_amount = collider->saltAmount();
-                salt_chance = collider->saltChance();
-            }
-
-            for(auto& event : events) {
-                for(auto& target_collider : event.targetColliders()) {
-                    if(target_collider == collider->name()) {
-                        double begin_time = event.beginTime();
-                        double end_time = std::max({ event.endTime(), event.beginTime() + event.duration() });
-                        bool is_event_enabled = current_time >= begin_time ? true: false;
-                        is_event_enabled = current_time >= end_time ? false : is_event_enabled;
-                        Vector2 cycle = event.cycle();
-                        if(cycle[0] > 0.0 && cycle[1] > 0.0) {
-                            if(!is_event_enabled && event.isEnabled()) {
-                                event.setBeginTime(end_time + cycle[1]);
-                                event.setEndTime(end_time + cycle[0] + cycle[1]);
-                            }
+        for(auto& event : events) {
+            for(auto& target_collider : event.targetColliders()) {
+                if(target_collider == collider->name()) {
+                    double begin_time = event.beginTime();
+                    double end_time = std::max({ event.endTime(), event.beginTime() + event.duration() });
+                    bool is_event_enabled = current_time >= begin_time ? true: false;
+                    is_event_enabled = current_time >= end_time ? false : is_event_enabled;
+                    Vector2 cycle = event.cycle();
+                    if(cycle[0] > 0.0 && cycle[1] > 0.0) {
+                        if(!is_event_enabled && event.isEnabled()) {
+                            event.setBeginTime(end_time + cycle[1]);
+                            event.setEndTime(end_time + cycle[0] + cycle[1]);
                         }
-                        event.setEnabled(is_event_enabled);
+                    }
+                    event.setEnabled(is_event_enabled);
 
-                        if(is_event_enabled) {
-                            salt_amount = event.saltAmount() > 0.0 ? event.saltAmount() : salt_amount;
-                            salt_chance = event.saltChance() > 0.0 ? event.saltChance() : salt_chance;
-                        }
+                    if(is_event_enabled) {
+                        hue = event.hsv()[0] > 0.0 ? event.hsv()[0] : hue;
+                        saturation = event.hsv()[1] > 0.0 ? event.hsv()[1] : saturation;
+                        value = event.hsv()[2] > 0.0 ? event.hsv()[2] : value;
+                        red = event.rgb()[0] > 0.0 ? event.rgb()[0] : red;
+                        green = event.rgb()[1] > 0.0 ? event.rgb()[1] : green;
+                        blue = event.rgb()[2] > 0.0 ? event.rgb()[2] : blue;
+                        coef_b = event.coefB() < 0.0 ? event.coefB() : coef_b;
+                        coef_d = event.coefD() > 1.0 ? event.coefD() : coef_d;
+                        std_dev = event.stdDev() > 0.0 ? event.stdDev() : std_dev;
+                        salt_amount = event.saltAmount() > 0.0 ? event.saltAmount() : salt_amount;
+                        salt_chance = event.saltChance() > 0.0 ? event.saltChance() : salt_chance;
+                        pepper_amount = event.pepperAmount() > 0.0 ? event.pepperAmount() : pepper_amount;
+                        pepper_chance = event.pepperChance() > 0.0 ? event.pepperChance() : pepper_chance;
+                        mosaic_chance = event.mosaicChance() > 0.0 ? event.mosaicChance() : mosaic_chance;
+                        kernel = event.kernel() != 16 ? event.kernel() : kernel;
                     }
                 }
             }
         }
-
-        {
-            std::lock_guard<std::mutex> lock(convertMutex);
-            std::shared_ptr<Image> image = std::make_shared<Image>(*camera->sharedImage());
-            converter.initialize(image->width(), image->height());
-            if(salt_chance > 0.0) {
-                if(salt_amount > 0.0) {
-                    converter.random_salt(image.get(), salt_amount, salt_chance);
-                }
-            }
-            camera->setImage(image);
-        }
     }
-}
 
-
-void VFXVisionSimulatorItem::Impl::onPostDynamics2()
-{
-    double current_time = simulatorItem->currentTime();
-
-    for(auto& camera : cameras) {
-        Link* link = camera->link();
-        double mosaic_chance = 0.0;
-        int kernel = 16;
-
-        NoisyCamera* noisyCamera = dynamic_cast<NoisyCamera*>(camera.get());
-        if(noisyCamera) {
-            mosaic_chance = noisyCamera->mosaicChance();
-            kernel = noisyCamera->kernel();
+    {
+        std::lock_guard<std::mutex> lock(convertMutex);
+        std::shared_ptr<Image> image = std::make_shared<Image>(*camera->sharedImage());
+        converter.initialize(image->width(), image->height());
+        if(hue > 0.0 || saturation > 0.0 || value > 0.0) {
+            converter.hsv(image.get(), hue, saturation, value);
         }
-
-        for(auto& collider : colliders) {
-            if(collision(collider, link->T().translation())) {
-                mosaic_chance = collider->mosaicChance();
-                kernel = collider->kernel();
-            }
-
-            for(auto& event : events) {
-                for(auto& target_collider : event.targetColliders()) {
-                    if(target_collider == collider->name()) {
-                        double begin_time = event.beginTime();
-                        double end_time = std::max({ event.endTime(), event.beginTime() + event.duration() });
-                        bool is_event_enabled = current_time >= begin_time ? true: false;
-                        is_event_enabled = current_time >= end_time ? false : is_event_enabled;
-                        Vector2 cycle = event.cycle();
-                        if(cycle[0] > 0.0 && cycle[1] > 0.0) {
-                            if(!is_event_enabled && event.isEnabled()) {
-                                event.setBeginTime(end_time + cycle[1]);
-                                event.setEndTime(end_time + cycle[0] + cycle[1]);
-                            }
-                        }
-                        event.setEnabled(is_event_enabled);
-
-                        if(is_event_enabled) {
-                            mosaic_chance = event.mosaicChance() > 0.0 ? event.mosaicChance() : mosaic_chance;
-                            kernel = event.kernel() != 16 ? event.kernel() : kernel;
-                        }
-                    }
-                }
+        if(red > 0.0 || green > 0.0 || blue > 0.0) {
+            converter.rgb(image.get(), red, green, blue);
+        }
+        if(std_dev > 0.0) {
+            converter.gaussian_noise(image.get(), std_dev);
+        }
+        if(salt_chance > 0.0) {
+            if(salt_amount > 0.0) {
+                converter.random_salt(image.get(), salt_amount, salt_chance);
             }
         }
-
-        {
-            std::lock_guard<std::mutex> lock(convertMutex);
-            std::shared_ptr<Image> image = std::make_shared<Image>(*camera->sharedImage());
-            converter.initialize(image->width(), image->height());
-            if(mosaic_chance > 0.0) {
-                converter.random_mosaic(image.get(), mosaic_chance, kernel);
+        if(pepper_chance > 0.0) {
+            if(pepper_amount > 0.0) {
+                converter.random_pepper(image.get(), pepper_amount, pepper_chance);
             }
-            camera->setImage(image);
         }
+        if(coef_b < 0.0 || coef_d > 1.0) {
+            converter.barrel_distortion(image.get(), coef_b, coef_d);
+        }
+        if(mosaic_chance > 0.0) {
+            converter.random_mosaic(image.get(), mosaic_chance, kernel);
+        }
+        camera->setImage(image);
     }
-}
-
-
-void VFXVisionSimulatorItem::Impl::onPostDynamics3()
-{
-    double current_time = simulatorItem->currentTime();
-
-    for(auto& camera : cameras) {
-        Link* link = camera->link();
-        double hue = 0.0;
-        double saturation = 0.0;
-        double value = 0.0;
-        double red = 0.0;
-        double green = 0.0;
-        double blue = 0.0;
-        double coef_b = 0.0;
-        double coef_d = 1.0;
-        double std_dev = 0.0;
-        double salt_amount = 0.0;
-        double salt_chance = 0.0;
-        double pepper_amount = 0.0;
-        double pepper_chance = 0.0;
-        double mosaic_chance = 0.0;
-        int kernel = 16;
-
-        NoisyCamera* noisyCamera = dynamic_cast<NoisyCamera*>(camera.get());
-        if(noisyCamera) {
-            hue = noisyCamera->hsv()[0];
-            saturation = noisyCamera->hsv()[1];
-            value = noisyCamera->hsv()[2];
-            red = noisyCamera->rgb()[0];
-            green = noisyCamera->rgb()[1];
-            blue = noisyCamera->rgb()[2];
-            coef_b = noisyCamera->coefB();
-            coef_d = noisyCamera->coefD();
-            std_dev = noisyCamera->stdDev();
-            salt_amount = noisyCamera->saltAmount();
-            salt_chance = noisyCamera->saltChance();
-            pepper_amount = noisyCamera->pepperAmount();
-            pepper_chance = noisyCamera->pepperChance();
-            mosaic_chance = noisyCamera->mosaicChance();
-            kernel = noisyCamera->kernel();
-        }
-
-        for(auto& collider : colliders) {
-            if(collision(collider, link->T().translation())) {
-                hue = collider->hsv()[0];
-                saturation = collider->hsv()[1];
-                value = collider->hsv()[2];
-                red = collider->rgb()[0];
-                green = collider->rgb()[1];
-                blue = collider->rgb()[2];
-                coef_b = collider->coefB();
-                coef_d = collider->coefD();
-                std_dev = collider->stdDev();
-                salt_amount = collider->saltAmount();
-                salt_chance = collider->saltChance();
-                pepper_amount = collider->pepperAmount();
-                pepper_chance = collider->pepperChance();
-                mosaic_chance = collider->mosaicChance();
-                kernel = collider->kernel();
-            }
-
-            for(auto& event : events) {
-                for(auto& target_collider : event.targetColliders()) {
-                    if(target_collider == collider->name()) {
-                        double begin_time = event.beginTime();
-                        double end_time = std::max({ event.endTime(), event.beginTime() + event.duration() });
-                        bool is_event_enabled = current_time >= begin_time ? true: false;
-                        is_event_enabled = current_time >= end_time ? false : is_event_enabled;
-                        Vector2 cycle = event.cycle();
-                        if(cycle[0] > 0.0 && cycle[1] > 0.0) {
-                            if(!is_event_enabled && event.isEnabled()) {
-                                event.setBeginTime(end_time + cycle[1]);
-                                event.setEndTime(end_time + cycle[0] + cycle[1]);
-                            }
-                        }
-                        event.setEnabled(is_event_enabled);
-
-                        if(is_event_enabled) {
-                            hue = event.hsv()[0] > 0.0 ? event.hsv()[0] : hue;
-                            saturation = event.hsv()[1] > 0.0 ? event.hsv()[1] : saturation;
-                            value = event.hsv()[2] > 0.0 ? event.hsv()[2] : value;
-                            red = event.rgb()[0] > 0.0 ? event.rgb()[0] : red;
-                            green = event.rgb()[1] > 0.0 ? event.rgb()[1] : green;
-                            blue = event.rgb()[2] > 0.0 ? event.rgb()[2] : blue;
-                            coef_b = event.coefB() < 0.0 ? event.coefB() : coef_b;
-                            coef_d = event.coefD() > 1.0 ? event.coefD() : coef_d;
-                            std_dev = event.stdDev() > 0.0 ? event.stdDev() : std_dev;
-                            salt_amount = event.saltAmount() > 0.0 ? event.saltAmount() : salt_amount;
-                            salt_chance = event.saltChance() > 0.0 ? event.saltChance() : salt_chance;
-                            pepper_amount = event.pepperAmount() > 0.0 ? event.pepperAmount() : pepper_amount;
-                            pepper_chance = event.pepperChance() > 0.0 ? event.pepperChance() : pepper_chance;
-                            mosaic_chance = event.mosaicChance() > 0.0 ? event.mosaicChance() : mosaic_chance;
-                            kernel = event.kernel() != 16 ? event.kernel() : kernel;
-                        }
-                    }
-                }
-            }
-        }
-
-        {
-            std::lock_guard<std::mutex> lock(convertMutex);
-            std::shared_ptr<Image> image = std::make_shared<Image>(*camera->sharedImage());
-            converter.initialize(image->width(), image->height());
-            if(hue > 0.0 || saturation > 0.0 || value > 0.0) {
-                converter.hsv(image.get(), hue, saturation, value);
-            }
-            if(red > 0.0 || green > 0.0 || blue > 0.0) {
-                converter.rgb(image.get(), red, green, blue);
-            }
-            if(std_dev > 0.0) {
-                converter.gaussian_noise(image.get(), std_dev);
-            }
-            if(salt_chance > 0.0) {
-                if(salt_amount > 0.0) {
-                    converter.random_salt(image.get(), salt_amount, salt_chance);
-                }
-            }
-            if(pepper_chance > 0.0) {
-                if(pepper_amount > 0.0) {
-                    converter.random_pepper(image.get(), pepper_amount, pepper_chance);
-                }
-            }
-            if(coef_b < 0.0 || coef_d > 1.0) {
-                converter.barrel_distortion(image.get(), coef_b, coef_d);
-            }
-            if(mosaic_chance > 0.0) {
-                converter.random_mosaic(image.get(), mosaic_chance, kernel);
-            }
-            camera->setImage(image);
-        }
-    }
-}
-
-
-bool VFXVisionSimulatorItem::Impl::setDynamicsType(int dynamicsId)
-{
-    if(!dynamicsSelection.select(dynamicsId)) {
-        return false;
-    }
-    self->notifyUpdate();
-    return true;
-}
-
-
-double VFXVisionSimulatorItem::Impl::dynamicsType() const
-{
-    return dynamicsSelection.which();
 }
 
 
@@ -443,8 +290,6 @@ Item* VFXVisionSimulatorItem::doCloneItem(CloneMap* cloneMap) const
 void VFXVisionSimulatorItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     GLVisionSimulatorItem::doPutProperties(putProperty);
-    putProperty(_("Dynamics type"), impl->dynamicsSelection,
-                [this](int which){ return impl->setDynamicsType(which); });
     putProperty(_("VFX event file"), FilePathProperty(impl->vfx_event_file_path),
                 [this](const std::string& value){
                     impl->vfx_event_file_path = value;
@@ -458,7 +303,6 @@ bool VFXVisionSimulatorItem::store(Archive& archive)
     if(!GLVisionSimulatorItem::store(archive)) {
         return false;
     }
-    archive.write("dynamics_type", impl->dynamicsSelection.selectedSymbol());
     archive.writeRelocatablePath("vfx_event_file_path", impl->vfx_event_file_path);
     return true;
 }
@@ -470,9 +314,6 @@ bool VFXVisionSimulatorItem::restore(const Archive& archive)
         return false;
     }
     string symbol;
-    if(archive.read("dynamics_type", symbol)) {
-        impl->dynamicsSelection.select(symbol);
-    }
     if(archive.read("vfx_event_file_path", symbol)) {
         symbol = archive.resolveRelocatablePath(symbol);
         if(!symbol.empty()) {

@@ -48,29 +48,29 @@ string getStandardPath(const int& type)
         default:
             break;
     }
-    return toUTF8(QStandardPaths::writableLocation(pathType).toStdString());
+    return QStandardPaths::writableLocation(pathType).toStdString();
 }
 
 
 string mkdir(const int& type, const std::string& directory)
 {
-    string user_dir = getStandardPath(type) + "/" + directory;
+    string user_dir = toUTF8((filesystem::path(fromUTF8(getStandardPath(type))) / filesystem::path(fromUTF8(directory))).string());
     filesystem::path path(fromUTF8(user_dir));
     if(!filesystem::exists(path)) {
         filesystem::create_directory(path);
     }
-    return toUTF8(path.string());
+    return user_dir;
 }
 
 
 string mkdirs(const int& type, const std::string& directories)
 {
-    string user_dir = getStandardPath(type) + "/" + directories;
+    string user_dir = toUTF8((filesystem::path(fromUTF8(getStandardPath(type))) / filesystem::path(fromUTF8(directories))).string());
     filesystem::path path(fromUTF8(user_dir));
     if(!filesystem::exists(path)) {
         filesystem::create_directories(path);
     }
-    return toUTF8(path.string());
+    return user_dir;
 }
 
 }

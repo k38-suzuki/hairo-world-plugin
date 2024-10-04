@@ -4,6 +4,7 @@
 
 #include <cnoid/Format>
 #include <cnoid/Plugin>
+#include "WRSUtilBar.h"
 
 using namespace cnoid;
 
@@ -18,6 +19,7 @@ public:
 
     virtual bool initialize() override
     {
+        WRSUtilBar::initialize(this);
         return true;
     }
 

@@ -57,20 +57,20 @@ namespace {
 
 void copyQADLIB(const string& filename)
 {
-    filesystem::path path(filename);
-    string qadDirPath = toUTF8((path.parent_path() / "LIB").string());
-    filesystem::path phitsDir(qadDirPath);
-    if(!filesystem::exists(phitsDir)) {
-        filesystem::create_directories(phitsDir);
+    filesystem::path path(fromUTF8(filename));
+    string qad_dir = toUTF8((path.parent_path() / "LIB").string());
+    filesystem::path phitsDirPath(fromUTF8(qad_dir));
+    if(!filesystem::exists(phitsDirPath)) {
+        filesystem::create_directories(phitsDirPath);
     }
 
-    string libDirPath = toUTF8((shareDirPath() / "default" / "LIB").string());
-    filesystem::path libDir(libDirPath);
-    QDir libQDir(libDirPath.c_str());
+    string lib_dir = toUTF8((shareDirPath() / "default" / "LIB").string());
+    filesystem::path libDirPath(fromUTF8(lib_dir));
+    QDir libQDir(lib_dir.c_str());
 
     for(QString file : libQDir.entryList(QDir::Files)) {
-        QString filename0 = toUTF8((libDir / file.toStdString().c_str()).string()).c_str();
-        QString filename1 = toUTF8((phitsDir / file.toStdString().c_str()).string()).c_str();
+        QString filename0 = toUTF8((libDirPath / file.toStdString().c_str()).string()).c_str();
+        QString filename1 = toUTF8((phitsDirPath / file.toStdString().c_str()).string()).c_str();
         QFile::copy(filename0, filename1);
     }
 }
@@ -667,7 +667,7 @@ bool DoseConfigDialog::readPHITSData(const string& filename)
     GammaData qadData;
 
     bool result = false;
-    filesystem::path path(filename);
+    filesystem::path path(fromUTF8(filename));
     string gbin_file = toUTF8((path.parent_path() / path.stem()).string()) + ".gbin";
 
     int index = codeCombo->currentIndex();
@@ -712,21 +712,21 @@ bool DoseConfigDialog::readPHITSData(const string& filename)
 void DoseConfigDialog::start(bool checked)
 {
     if(checked) {
-        filesystem::path homeDir(getenv("HOME"));
+        filesystem::path homeDirPath(fromUTF8(getenv("HOME")));
         QDateTime recordingStartTime = QDateTime::currentDateTime();
         string suffix = recordingStartTime.toString("-yyyy-MM-dd-hh-mm-ss").toStdString();
-        string phitsDirPath = toUTF8((homeDir / "phits_ws" / ("phits" + suffix).c_str()).string());
-        filesystem::path phitsDir(fromUTF8(phitsDirPath));
-        if(!filesystem::exists(phitsDir)) {
-            filesystem::create_directories(phitsDir);
+        string phits_dir = toUTF8((homeDirPath / "phits_ws" / ("phits" + suffix).c_str()).string());
+        filesystem::path phitsDirPath(fromUTF8(phits_dir));
+        if(!filesystem::exists(phitsDirPath)) {
+            filesystem::create_directories(phitsDirPath);
         }
 
         int index = codeCombo->currentIndex();
         string filename;
         if(index == PHITS) {
-            filename = toUTF8((phitsDir / "phits").string()) + ".inp";
+            filename = toUTF8((phitsDirPath / "phits.inp").string());
         } else if(index == QAD) {
-            filename = toUTF8((phitsDir / "qad").string()) + ".inp";
+            filename = toUTF8((phitsDirPath / "qad.inp").string());
         }
 
         bool result = false;
@@ -740,17 +740,17 @@ void DoseConfigDialog::start(bool checked)
             calcInfo.xyze[i].max = maxSpin[i].value();
         }
         calcInfo.inputMode = GammaData::DOSERATE;
-        filesystem::path filePath(filename);
-        filesystem::path dir(filePath.parent_path());
+        filesystem::path filePath(fromUTF8(filename));
+        filesystem::path parentDirPath(filePath.parent_path());
 
         if(index == PHITS) {
-            filename0 = toUTF8((dir / "dose_xy.out").string());
+            filename0 = toUTF8((parentDirPath / "dose_xy.out").string());
             PHITSWriter phitsWriter;
             phitsWriter.setDefaultNuclideTableFile(defaultNuclideTableFile);
             phitsWriter.setDefaultElementTableFile(defaultElementTableFile);
             result = writeTextFile(filename, phitsWriter.writePHITS(calcInfo));
         } else if(index == QAD) {
-            filename0 = toUTF8((dir / filePath.stem()).string()) + ".out";
+            filename0 = toUTF8((parentDirPath / filePath.stem()).string()) + ".out";
             QADWriter qadWriter;
             qadWriter.setDefaultNuclideTableFile(defaultNuclideTableFile);
             qadWriter.setDefaultElementTableFile(defaultElementTableFile);
@@ -758,7 +758,7 @@ void DoseConfigDialog::start(bool checked)
             if(result) {
                 copyQADLIB(filename);
                 for(int i = 1; i < calcInfo.nSrc; ++i) {
-                    string filename1 = toUTF8((dir / filePath.stem()).string()) + "_" + to_string(i) + ".inp";
+                    string filename1 = toUTF8((parentDirPath / filePath.stem()).string()) + "_" + to_string(i) + ".inp";
                     result = writeTextFile(filename1, qadWriter.writeQAD(calcInfo, i));
                 }
             }
@@ -773,8 +773,8 @@ void DoseConfigDialog::start(bool checked)
                 countQAD = 0;
                 phitsRunner.startQAD(filename.c_str(), filename0.c_str());
                 for(int i = 1; i < calcInfo.nSrc; ++i) {
-                    string filename1 = toUTF8((dir / filePath.stem()).string()) + "_" + to_string(i) + ".inp";
-                    string filename2 = toUTF8((dir / filePath.stem()).string()) + "_" + to_string(i) + ".out";
+                    string filename1 = toUTF8((parentDirPath / filePath.stem()).string()) + "_" + to_string(i) + ".inp";
+                    string filename2 = toUTF8((parentDirPath / filePath.stem()).string()) + "_" + to_string(i) + ".out";
                     qadRunners[i].setReadStandardOutput(filename2, GammaData::DOSERATE);
                     qadRunners[i].startQAD(filename1, filename2);
                 }

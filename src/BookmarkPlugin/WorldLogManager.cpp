@@ -10,15 +10,18 @@
 #include <cnoid/SimulationBar>
 #include <cnoid/SimulatorItem>
 #include <cnoid/TimeBar>
+#include <cnoid/UTF8>
 #include <cnoid/ValueTree>
 #include <cnoid/WorldItem>
+#include <cnoid/WorldLogFileItem>
+#include <cnoid/stdx/filesystem>
 #include <cnoid/LoggerUtil>
-#include <src/BodyPlugin/WorldLogFileItem.h>
 #include "HamburgerMenu.h"
 #include "gettext.h"
 
 using namespace std;
 using namespace cnoid;
+namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
@@ -101,9 +104,10 @@ void WorldLogManager::onSimulationAboutToStart(SimulatorItem* simulatorItem)
         is_simulation_started_ = true;
         ProjectManager* pm = ProjectManager::instance();
         string suffix = getCurrentTimeSuffix();
-        string dir = mkdirs(StandardPath::Downloads, "worldlog/" + pm->currentProjectName() + suffix);
+        string log_dir = toUTF8(("worldlog" / filesystem::path(fromUTF8(pm->currentProjectName() + suffix))).string());
+        filesystem::path logDirPath(fromUTF8(mkdirs(StandardPath::Downloads, log_dir)));
 
-        project_filename_ = dir + "/" + pm->currentProjectName() + ".cnoid";
+        project_filename_ = toUTF8((logDirPath / filesystem::path(fromUTF8(pm->currentProjectName() + ".cnoid"))).string());
         WorldItem* worldItem = simulatorItem->findOwnerItem<WorldItem>();
         if(worldItem) {
             ItemList<WorldLogFileItem> logItems = worldItem->descendantItems<WorldLogFileItem>();
@@ -115,7 +119,7 @@ void WorldLogManager::onSimulationAboutToStart(SimulatorItem* simulatorItem)
                 worldItem->addChildItem(logItem);
             }
 
-            string filename = dir + "/" + logItem->name() + ".log";
+            string filename = toUTF8((logDirPath / filesystem::path(fromUTF8(logItem->name() + ".log"))).string());
             logItem->setLogFile(filename);
             logItem->setTimeStampSuffixEnabled(false);
             logItem->setSelected(true);

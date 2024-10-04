@@ -20,6 +20,7 @@ public:
     virtual ~VFXVisionSimulatorItem();
 
     virtual bool initializeSimulation(SimulatorItem* simulatorItem) override;
+    virtual void finalizeSimulation() override;
 
 protected:
     virtual Item* doCloneItem(CloneMap* cloneMap) const override;

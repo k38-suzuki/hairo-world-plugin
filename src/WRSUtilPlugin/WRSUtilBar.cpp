@@ -5,11 +5,13 @@
 #include "WRSUtilBar.h"
 #include <cnoid/AISTSimulatorItem>
 #include <cnoid/BodyItem>
+#include <cnoid/BodySyncCameraItem>
 #include <cnoid/ComboBox>
 #include <cnoid/EigenArchive>
 #include <cnoid/ExecutablePath>
 #include <cnoid/ExtensionManager>
 #include <cnoid/Format>
+#include <cnoid/ItemManager>
 #include <cnoid/ItemTreeView>
 #include <cnoid/MessageView>
 #include <cnoid/NullOut>
@@ -22,12 +24,14 @@
 #include <cnoid/UTF8>
 #include <cnoid/WorldItem>
 #include <cnoid/YAMLReader>
-#include <src/BodyPlugin/WorldLogFileItem.h>
+#include <cnoid/WorldLogFileItem>
+#include <cnoid/stdx/filesystem>
 #include <vector>
 #include "gettext.h"
 
 using namespace std;
 using namespace cnoid;
+namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
@@ -41,6 +45,7 @@ struct ProjectInfo {
     vector<string> simulator_projects;
     vector<string> robot_projects;
     bool is_recording_enabled;
+    bool is_tracking_enabled;
     bool is_ros_enabled;
     Vector3 start_position;
 };
@@ -77,16 +82,21 @@ public:
 
     string project_dir;
     string registration_file;
+    string material_table_file;
     vector<ProjectInfo> projectInfo;
+    vector<WRSUtilBar::FormatInfo> formats;
+    double format_version;
     bool is_initialized;
 
     void onUtilOptionsParsed();
     void onInputFileOptionsParsed(vector<string>& inputFiles);
 
     bool load(const string& filename, ostream& os = nullout());
+    void initialize();
     void update();
     void onOpenButtonClicked();
     void onUpdateButtonClicked();
+    void onLoadButtonClicked();
 };
 
 }
@@ -127,6 +137,8 @@ WRSUtilBar::Impl::Impl(WRSUtilBar* self)
     : self(self),
       project_dir(""),
       registration_file(""),
+      material_table_file(""),
+      format_version(0.0),
       is_initialized(false)
 {
     self->setVisibleByDefault(false);
@@ -142,19 +154,33 @@ WRSUtilBar::Impl::Impl(WRSUtilBar* self)
     projectCombo->setToolTip(_("Select a project"));
     self->addWidget(projectCombo);
 
+    auto openButton = self->addButton(":/GoogleMaterialSymbols/icon/file_open_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
+    openButton->setToolTip(_("Open a registration file"));
+    openButton->sigClicked().connect([&](){ onOpenButtonClicked(); });
+
     auto updateButton = self->addButton(":/GoogleMaterialSymbols/icon/refresh_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
     updateButton->setToolTip(_("Update projects"));
     updateButton->sigClicked().connect([&](){ onUpdateButtonClicked(); });
 
-    auto openButton = self->addButton(":/GoogleMaterialSymbols/icon/open_in_new_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
-    openButton->setToolTip(_("Open the selected project"));
-    openButton->sigClicked().connect([&](){ onOpenButtonClicked(); });
+    auto loadButton = self->addButton(":/GoogleMaterialSymbols/icon/open_in_new_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
+    loadButton->setToolTip(_("Load the selected project"));
+    loadButton->sigClicked().connect([&](){ onLoadButtonClicked(); });
+
+    formats.clear();
+    initialize();
+    update();
 }
 
 
 WRSUtilBar::~WRSUtilBar()
 {
     delete impl;
+}
+
+
+void WRSUtilBar::addFormat(FormatInfo info)
+{
+    impl->formats.push_back(info);
 }
 
 
@@ -167,6 +193,19 @@ void WRSUtilBar::setProjectDirectory(const string& directory)
 void WRSUtilBar::setRegistrationFile(const string& filename)
 {
     impl->registration_file = filename;
+}
+
+
+void WRSUtilBar::Impl::initialize()
+{
+    for(auto& format : formats) {
+        int major_version = (int)format.format_version;
+        if( (int)format_version == major_version) {
+            filesystem::path wrsDirPath(fromUTF8(format.directory));
+            project_dir = toUTF8((shareDir() / wrsDirPath / "project").string());
+            material_table_file = toUTF8((shareDir() / wrsDirPath / "share" / "default" / "materials.yaml").string());
+        }
+    }
 }
 
 
@@ -192,7 +231,7 @@ void WRSUtilBar::Impl::onUtilOptionsParsed()
             string text = projectCombo->itemText(i).toStdString();
             if(text == project) {
                 projectCombo->setCurrentIndex(i);
-                onOpenButtonClicked();
+                onLoadButtonClicked();
             }
         }
     }
@@ -224,6 +263,9 @@ bool WRSUtilBar::Impl::load(const string& filename, ostream& os)
         YAMLReader reader;
         auto archive = reader.loadDocument(filename)->toMapping();
         if(archive) {
+            format_version = archive->get("format_version", 0.0);
+            initialize();
+
             auto& registrationList = *archive->findListing("registrations");
             if(registrationList.isValid()) {
                 for(int i = 0; i < registrationList.size(); ++i) {
@@ -266,8 +308,11 @@ bool WRSUtilBar::Impl::load(const string& filename, ostream& os)
 
                     }
 
-                    bool is_recording_enabled = node->get("enable_recording", true);
+                    bool is_recording_enabled = node->get("enable_recording", false);
                     info.is_recording_enabled = is_recording_enabled;
+
+                    bool is_tracking_enabled = node->get("enable_tracking", false);
+                    info.is_tracking_enabled = is_tracking_enabled;
 
                     bool is_ros_enabled = node->get("enable_ros", false);
                     info.is_ros_enabled = is_ros_enabled;
@@ -286,6 +331,23 @@ bool WRSUtilBar::Impl::load(const string& filename, ostream& os)
 
 
 void WRSUtilBar::Impl::onOpenButtonClicked()
+{
+    string filename = getOpenFileName(_("Registration File"), "yaml");
+    if(!filename.empty()) {
+        self->setRegistrationFile(filename);
+        self->update();
+    }
+}
+
+
+void WRSUtilBar::Impl::onUpdateButtonClicked()
+{
+    update();
+    MessageView::instance()->putln(formatR(_("Projects were updated.")));
+}
+
+
+void WRSUtilBar::Impl::onLoadButtonClicked()
 {
     if(project_dir.empty()) {
         return;
@@ -313,18 +375,21 @@ void WRSUtilBar::Impl::onOpenButtonClicked()
 
     auto worldItem = new WorldItem;
     worldItem->setName("World");
+    worldItem->setDefaultMaterialTableFile(material_table_file);
     rootItem->addChildItem(worldItem);
 
     for(auto& project : info.task_projects) {
+        string filename = toUTF8((filesystem::path(fromUTF8(project_dir)) / filesystem::path(fromUTF8(project + ".cnoid"))).string());
         auto taskItem = new SubProjectItem();
         taskItem->setName(project);
-        taskItem->load(project_dir + "/" + project + ".cnoid");
+        taskItem->load(filename);
         worldItem->addChildItem(taskItem);
         itemTreeView->setExpanded(taskItem, false);
     }
 
     for(auto& project : info.simulator_projects) {
-        projectManager->loadProject(project_dir + "/" + project + ".cnoid", worldItem);
+        string filename = toUTF8((filesystem::path(fromUTF8(project_dir)) / filesystem::path(fromUTF8(project + ".cnoid"))).string());
+        projectManager->loadProject(filename, worldItem);
         ItemList<SimulatorItem> simulatorItems = rootItem->selectedItems();
         for(auto& simulatorItem : simulatorItems) {
             simulatorItem->setSelected(false);
@@ -343,18 +408,20 @@ void WRSUtilBar::Impl::onOpenButtonClicked()
         selectedInfo = alignmentInfo[2];
     } else if(alignment == "Y-") {
         selectedInfo = alignmentInfo[3];
-    } else if(alignment == "X+Z+") {
+    } else if(alignment == "ZX+") {
         selectedInfo = alignmentInfo[4];
-    } else if(alignment == "X-Z+") {
+    } else if(alignment == "ZX-") {
         selectedInfo = alignmentInfo[5];
-    } else if(alignment == "Y+Z+") {
+    } else if(alignment == "ZY+") {
         selectedInfo = alignmentInfo[6];
-    } else if(alignment == "Y-Z+") {
+    } else if(alignment == "ZY-") {
         selectedInfo = alignmentInfo[7];
     }
 
+    int robot_id = 0;
     for(auto& project : info.robot_projects) {
-        ItemList<BodyItem> loadedItems = projectManager->loadProject(project_dir + "/" + project + ".cnoid", worldItem);
+        string filename = toUTF8((filesystem::path(fromUTF8(project_dir)) / filesystem::path(fromUTF8(project + ".cnoid"))).string());
+        ItemList<BodyItem> loadedItems = projectManager->loadProject(filename, worldItem);
         BodyItem* robotItem = nullptr;
 
         if(!loadedItems.size()) {
@@ -374,21 +441,33 @@ void WRSUtilBar::Impl::onOpenButtonClicked()
             // offset[1] += 1.5;
             offset[selectedInfo.offset_id] += selectedInfo.offset_value;
 
+            if(info.is_tracking_enabled) {
+                auto cameraItem = new BodySyncCameraItem;
+                robotItem->addChildItem(cameraItem);
+                cameraItem->setChecked(true);
+            }
+
             if(info.is_ros_enabled) {
                 auto controllerItem = new SimpleControllerItem;
-                controllerItem->setName(robotItem->name() + "-JoystickInput");
+                controllerItem->setName(robotItem->name() + "_JoystickInput");
                 auto mainControllerItem = robotItem->findItem<SimpleControllerItem>();
                 mainControllerItem->addChildItem(controllerItem);
 
                 controllerItem->setController("JoyTopicSubscriberController");
+                if(robot_id > 0) {
+                    string options = "topic joy" + to_string(robot_id + 1);
+                    controllerItem->setOptions(options);
+                }
             }
         }
+        ++robot_id;
     }
 
     if(!info.view_project.empty()) {
+        string filename = toUTF8((filesystem::path(fromUTF8(project_dir)) / filesystem::path(fromUTF8(info.view_project + ".cnoid"))).string());
         auto viewItem = new SubProjectItem();
         viewItem->setName(info.view_project);
-        viewItem->load(project_dir + "/" + info.view_project + ".cnoid");
+        viewItem->load(filename);
         rootItem->addChildItem(viewItem);
         itemTreeView->setExpanded(viewItem, false);
     }
@@ -396,17 +475,10 @@ void WRSUtilBar::Impl::onOpenButtonClicked()
     if(info.is_recording_enabled) {
         auto logItem = new WorldLogFileItem;
         logItem->setLogFile(info.name + ".log");
-        logItem->setTimeStampSuffixEnabled(true);
+        logItem->setTimeStampSuffixEnabled(false);
         logItem->setRecordingFrameRate(100);
         worldItem->addChildItem(logItem);
     }
 
     projectManager->setCurrentProjectName(info.name);
-}
-
-
-void WRSUtilBar::Impl::onUpdateButtonClicked()
-{
-    update();
-    MessageView::instance()->putln(formatR(_("Projects were updated.")));
 }

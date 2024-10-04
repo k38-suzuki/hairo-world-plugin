@@ -12,6 +12,8 @@
 #include <cnoid/PointSetItem>
 #include <cnoid/PutPropertyFunction>
 #include <cnoid/SimulatorItem>
+#include <cnoid/UTF8>
+#include <cnoid/stdx/filesystem>
 #include <vector>
 #include "PassiveMarker.h"
 #include "LoggerUtil.h"
@@ -19,6 +21,7 @@
 
 using namespace std;
 using namespace cnoid;
+namespace filesystem = cnoid::stdx::filesystem;
 
 namespace cnoid {
 
@@ -155,8 +158,8 @@ void MotionCaptureItem::finalizeSimulation()
 void MotionCaptureItem::Impl::finalizeSimulation()
 {
     if(multiPointSetItem) {
-        // string suffix = getCurrentTimeSuffix();
-        // string dir = mkdir(StandardPath::Downloads, "capture");
+        string suffix = getCurrentTimeSuffix();
+        filesystem::path mocapDirPath(fromUTF8(mkdir(StandardPath::Downloads, "mocap")));
 
         multiPointSetItem->setChecked(true);
 
@@ -191,11 +194,11 @@ void MotionCaptureItem::Impl::finalizeSimulation()
             pointSetItem->clearAttentionPoints();
             pointSetItem->notifyUpdate();
 
-            // string filename = dir + "/" +  pointSetItem->name() + suffix + ".pcd";
+            string filename = toUTF8((mocapDirPath / filesystem::path(fromUTF8(pointSetItem->name() + suffix + ".pcd"))).string());
             // pointSetItem->save(filename);
         }
 
-        // string filename0 = dir + "/" + multiPointSetItem->name() + suffix + ".yaml";
+        string filename0 = toUTF8((mocapDirPath / filesystem::path(fromUTF8(multiPointSetItem->name() + suffix + ".yaml"))).string());
         // multiPointSetItem->save(filename0);
     }
 }

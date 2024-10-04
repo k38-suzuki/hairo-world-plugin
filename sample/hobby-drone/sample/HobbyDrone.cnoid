@@ -110,10 +110,10 @@ items:
                 coef_d: 0
                 std_dev: 0
                 salt_amount: 0.01
-                salt_chance: 0.1
+                salt_chance: 0.01
                 pepper_amount: 0
                 pepper_chance: 1
-                mosaic_chance: 0.1
+                mosaic_chance: 0.01
                 kernel: 16
         -
           id: 6
@@ -523,7 +523,7 @@ viewAreas:
                 -
                   type: pane
                   views: [ 5, 13, 0 ]
-                  current: 0
+                  current: 5
                 -
                   type: pane
                   views: [ 7 ]

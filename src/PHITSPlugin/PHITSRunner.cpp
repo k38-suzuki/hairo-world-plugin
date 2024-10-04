@@ -3,8 +3,9 @@
 */
 
 #include "PHITSRunner.h"
-#include <cnoid/stdx/filesystem>
 #include <cnoid/Format>
+#include <cnoid/UTF8>
+#include <cnoid/stdx/filesystem>
 #include <QTextStream>
 #include <QThread>
 #include "ComptonCone.h"
@@ -41,7 +42,7 @@ PHITSRunner::~PHITSRunner()
 void PHITSRunner::startPHITS(std::string filename)
 {
     isPHITS = true;
-    filesystem::path path(filename);
+    filesystem::path path(fromUTF8(filename));
     QStringList arguments;
     arguments << filename.c_str();
     process_.setWorkingDirectory(path.parent_path().string().c_str());
@@ -53,7 +54,7 @@ void PHITSRunner::startPHITS(std::string filename)
 void PHITSRunner::startQAD(std::string inputfile, std::string outputfile)
 {
     isPHITS = false;
-    filesystem::path path(inputfile);
+    filesystem::path path(fromUTF8(inputfile));
     QStringList arguments;
     arguments << inputfile.c_str() << outputfile.c_str();
     process_.setWorkingDirectory(path.parent_path().string().c_str());

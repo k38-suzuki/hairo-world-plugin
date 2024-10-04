@@ -17,10 +17,11 @@
 #include <cnoid/NullOut>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
-#include <cnoid/stdx/filesystem>
+#include <cnoid/UTF8>
 #include <cnoid/Widget>
 #include <cnoid/YAMLReader>
 #include <cnoid/YAMLWriter>
+#include <cnoid/stdx/filesystem>
 #include <cnoid/HamburgerMenu>
 #include <QBoxLayout>
 #include <QLabel>
@@ -640,7 +641,7 @@ void CrawlerGenerator::Impl::onExportButtonClicked()
     string filename = getSaveFileName(_("Save a configuration file"), "yaml;yml");
 
     if(!filename.empty()) {
-       filesystem::path path(filename);
+       filesystem::path path(fromUTF8(filename));
         string ext = path.extension().string();
         if(ext != ".yaml") {
             filename += ".yaml";
@@ -702,8 +703,7 @@ MappingPtr CrawlerGenerator::Impl::writeBody(const string& filename)
 {
     MappingPtr node = new Mapping;
 
-    filesystem::path path(filename);
-    string name = path.stem().string();
+    string name = filesystem::path(fromUTF8(filename)).stem().string();
     bool isAGXChecked = checks[AGX_CHK]->isChecked();
 
     node->write("format", "ChoreonoidBody");
@@ -732,8 +732,7 @@ MappingPtr CrawlerGenerator::Impl::writeConfig(const string& filename)
 {
     MappingPtr node = new Mapping;
 
-    filesystem::path path(filename);
-    string name = path.stem().string();
+    string name = filesystem::path(fromUTF8(filename)).stem().string();
 
     node->write("format", "CrawlerRobotGeneratorYaml");
     node->write("formatVersion", "1.0");
@@ -1479,7 +1478,7 @@ MappingPtr CrawlerGenerator::Impl::writeAGXTrackBelt()
     node->write("nodeWidth", agxdspins[TRK_BNW]->value());
     node->write("nodeThickerThickness", agxdspins[TRK_BNTT]->value());
     node->write("useThickerNodeEvery", agxspins[TRK_BUTNE]->value());
-    node->write("material", "AizuSpiderTracks");
+    node->write("material", "CrawlerTracks");
     node->write("nodeDistanceTension", agxdspins[TRK_BNDTM]->value() * exp10(-agxspins[TRK_BNDTE]->value()));
     node->write("stabilizingHingeFrictionParameter", agxdspins[TRK_BSHFPM]->value() * exp10(-agxspins[TRK_BSHFPE]->value()));
     node->write("minStabilizingHingeNormalForce", agxspins[TRK_BMSHNF]->value());
@@ -1560,7 +1559,7 @@ MappingPtr CrawlerGenerator::Impl::writeAGXSubTrackBelt()
     node->write("nodeWidth", agxdspins[FLP_BNW]->value());
     node->write("nodeThickerThickness", agxdspins[FLP_BNTT]->value());
     node->write("useThickerNodeEvery", agxspins[FLP_BUTNE]->value());
-    node->write("material", "AizuSpiderTracks");
+    node->write("material", "CrawlerTracks");
     node->write("nodeDistanceTension", agxdspins[FLP_BNDTM]->value() * exp10(-agxspins[FLP_BNDTE]->value()));
     node->write("stabilizingHingeFrictionParameter", agxdspins[FLP_BSHFPM]->value() * exp10(-agxspins[FLP_BSHFPE]->value()));
     node->write("minStabilizingHingeNormalForce", agxspins[FLP_BMSHNF]->value());
@@ -1730,7 +1729,7 @@ MappingPtr CrawlerGenerator::Impl::writeAGXWheel()
     node->write("jointType", "revolute");
     node->write("jointAxis", "Y");
     write(node, "centerOfMass", Vector3(0.0, 0.0, 0.0));
-    node->write("material", "AizuSpiderWheel");
+    node->write("material", "CrawlerWheel");
 
     return node;
 }

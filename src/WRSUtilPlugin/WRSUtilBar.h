@@ -20,6 +20,12 @@ public:
 
     WRSUtilBar(const std::string& name);
 
+    struct FormatInfo {
+        std::string directory;
+        double format_version;
+    };
+
+    void addFormat(FormatInfo info);
     void setProjectDirectory(const std::string& directory);
     void setRegistrationFile(const std::string& filename);
     void update();

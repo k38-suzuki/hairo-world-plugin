@@ -7,6 +7,7 @@
 #include <cnoid/Button>
 #include <cnoid/LineEdit>
 #include <cnoid/RootItem>
+#include <cnoid/UTF8>
 #include <cnoid/stdx/filesystem>
 #include <cnoid/HamburgerMenu>
 #include <QBoxLayout>
@@ -87,7 +88,7 @@ void FileFormWidget::Impl::onSaveButtonClicked()
     }
 
     if(!filename.empty()) {
-        filesystem::path path(filename);
+        filesystem::path path(fromUTF8(filename));
         string ext = path.extension().string();
         if(ext != ".body") {
            filename += ".body";

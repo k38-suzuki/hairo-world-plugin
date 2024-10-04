@@ -11,6 +11,7 @@
 #include <cnoid/MenuManager>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
+#include <cnoid/UTF8>
 #include <cnoid/YAMLWriter>
 #include <cnoid/stdx/filesystem>
 #include <QBoxLayout>
@@ -238,7 +239,7 @@ MappingPtr GratingGenerator::Impl::writeBody(const string& filename)
 {
     MappingPtr node = new Mapping;
 
-    filesystem::path path(filename);
+    filesystem::path path(fromUTF8(filename));
     string name = path.stem().string();
 
     node->write("format", "ChoreonoidBody");

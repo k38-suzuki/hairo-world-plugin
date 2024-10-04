@@ -1,22 +1,39 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>hello_world_plugin</name>
-  <version>1.7.0</version>
+  <version>0.0.0</version>
   <description>The package for using HelloWorldPlugin as a Choreonoid plugin</description>
   <maintainer email="suzuki.kenta38@jaea.go.jp">k38-suzuki</maintainer>
   <license>MIT</license>
-  <!-- <author email="suzuki.kenta38@jaea.go.jp">Kenta Suzuki</author>
+  <author email="suzuki.kenta38@jaea.go.jp">Kenta Suzuki</author>
   <url type="website">https://k38-suzuki.github.io/hairo-world-plugin-doc</url>
-  <url type="repository">https://github.com/k38-suzuki/hello_world_plugin.git</url> -->
+  <url type="repository">https://github.com/k38-suzuki/hairo-world-plugin.git</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
   <depend>choreonoid</depend>
-  <depend>roscpp</depend>
-  <depend>std_msgs</depend>
+
+  <depend condition="$ROS_VERSION == 1">roscpp</depend>
+  <depend condition="$ROS_VERSION == 2">rclcpp</depend>
+
+  <!-- <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>geometry_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>image_transport</depend>
+  <depend>image_transport_plugins</depend>
+
+  <depend condition="$ROS_VERSION == 1">pluginlib</depend>
+  <depend condition="$ROS_VERSION == 1">angles</depend>
+  <depend condition="$ROS_VERSION == 1">controller_manager</depend>
+  <depend condition="$ROS_VERSION == 1">hardware_interface</depend>
+  <depend condition="$ROS_VERSION == 1">joint_limits_interface</depend>
+  <depend condition="$ROS_VERSION == 1">transmission_interface</depend>
+  <depend condition="$ROS_VERSION == 1">urdf</depend>
+  <depend condition="$ROS_VERSION == 2">ament_index_cpp</depend> -->
 
   <export>
-    <build_type>cmake</build_type>
+    <build_type condition="$ROS_VERSION == 1">cmake</build_type>
+    <build_type condition="$ROS_VERSION == 2">ament_cmake</build_type>
   </export>
 </package>

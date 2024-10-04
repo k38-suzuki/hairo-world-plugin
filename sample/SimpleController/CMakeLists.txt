@@ -33,9 +33,6 @@ list(APPEND project_files Gen3lite.cnoid)
 choreonoid_add_simple_controller(Gen3JoystickController Gen3JoystickController.cpp)
 list(APPEND project_files Gen3.cnoid)
 
-# MonoCrawler
-choreonoid_add_simple_controller(MonoCrawlerJoystickController MonoCrawlerJoystickController.cpp)
 choreonoid_add_simple_controller(JointMapController JointMapController.cpp)
-list(APPEND project_files MonoCrawlerG3LS.cnoid MonoCrawlerG3LA.cnoid)
 
 install_project_files(${project_files})

@@ -34,7 +34,7 @@ if(make_symlink)
 #  file(MAKE_DIRECTORY ${CHOREONOID_BINARY_SHARE_DIR}/model)
   if(ENABLE_SAMPLES)
     set(sample_model_dirs
-      Gen2 Gen3 Gen3lite Husky Jackal MockupStairs MonoCrawler RobotTestPool TestField TrainingStage)
+      Gen2 Gen3 Gen3lite Husky Jackal MockupStairs RobotTestPool TestField TrainingStage)
     foreach(dir ${sample_model_dirs})
       add_custom_target(
 	symlink_to_model_${dir} ALL

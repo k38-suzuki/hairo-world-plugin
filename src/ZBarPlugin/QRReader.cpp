@@ -9,6 +9,7 @@
 #include <cnoid/ImageView>
 #include <cnoid/ImageableItem>
 #include <cnoid/MessageView>
+#include <cnoid/UTF8>
 #include <cnoid/stdx/filesystem>
 #include "QRDecoder.h"
 #include "gettext.h"
@@ -79,8 +80,9 @@ QRReader::~QRReader()
 
 QRReader::Impl::~Impl()
 {
-    if(filesystem::exists(decoded_image_file)) {
-        filesystem::remove(decoded_image_file);
+    filesystem::path path(fromUTF8(decoded_image_file));
+    if(filesystem::exists(path)) {
+        filesystem::remove(path);
     }
 }
 

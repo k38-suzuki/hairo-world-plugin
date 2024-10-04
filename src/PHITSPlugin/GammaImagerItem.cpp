@@ -488,19 +488,19 @@ void GammaImageVisualizerItem::setCamera(Camera* camera)
 void GammaImageVisualizerItem::start(bool checked)
 {
     if(checked) {
-        filesystem::path homeDir(getenv("HOME"));
+        filesystem::path homeDirPath(fromUTF8(getenv("HOME")));
         QDateTime recordingStartTime = QDateTime::currentDateTime();
         string suffix = recordingStartTime.toString("-yyyy-MM-dd-hh-mm-ss").toStdString();
-        string phitsDirPath = toUTF8((homeDir / "phits_ws" / ("phits" + suffix).c_str()).string());
-        filesystem::path dir(fromUTF8(phitsDirPath));
-        if(!filesystem::exists(dir)) {
-            filesystem::create_directories(dir);
+        string phits_dir = toUTF8((homeDirPath / "phits_ws" / ("phits" + suffix).c_str()).string());
+        filesystem::path phitsDirPath(fromUTF8(phits_dir));
+        if(!filesystem::exists(phitsDirPath)) {
+            filesystem::create_directories(phitsDirPath);
         }
 
         if(comptonCamera || pinholeCamera) {
-            string filename = toUTF8((dir / "phits").string()) + ".inp";
-            filesystem::path filePath(filename);
-            filesystem::path dir(filePath.parent_path());
+            string filename = toUTF8((phitsDirPath / "phits.inp").string());
+            filesystem::path filePath(fromUTF8(filename));
+            filesystem::path parentDirPath(filePath.parent_path());
 
             string filename0;
             GammaData::CalcInfo calcInfo;
@@ -508,10 +508,10 @@ void GammaImageVisualizerItem::start(bool checked)
             calcInfo.maxbch = maxbch;
             if(comptonCamera) {
                 calcInfo.inputMode = GammaData::COMPTON;
-                filename0 = toUTF8((dir / "flux_cross_dmp.out").string());
+                filename0 = toUTF8((parentDirPath / "flux_cross_dmp.out").string());
             } else if(pinholeCamera) {
                 calcInfo.inputMode = GammaData::PINHOLE;
-                filename0 = toUTF8((dir / "cross_xz.out").string());
+                filename0 = toUTF8((parentDirPath / "cross_xz.out").string());
             }
 
             GammaImagerItem* parentItem = dynamic_cast<GammaImagerItem*>(this->parentItem());

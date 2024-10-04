@@ -58,10 +58,10 @@ VFXEffects::VFXEffects()
     coef_d_ = 0.0;
     std_dev_ = 0.0;
     salt_amount_ = 0.0;
-    salt_chance_ = 1.0;
+    salt_chance_ = 0.0;
     pepper_amount_ = 0.0;
-    pepper_chance_ = 1.0;
-    mosaic_chance_ = 1.0;
+    pepper_chance_ = 0.0;
+    mosaic_chance_ = 0.0;
     kernel_ = 16;
 }
 
