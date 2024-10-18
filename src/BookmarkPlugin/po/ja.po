@@ -23,77 +23,65 @@ msgstr ""
 msgid "AC"
 msgstr ""
 
-msgid "Enable KIOSK"
-msgstr "KIOSKモード"
+msgid "KIOSK"
+msgstr ""
+
+msgid "Full screen Mode"
+msgstr "フルスクリーンモード"
+
+msgid "Bookmark"
+msgstr "ブックマーク"
 
 msgid "History"
 msgstr "履歴"
 
-msgid "Show the history manager"
-msgstr "ヒストリマネージャの表示"
-
-msgid "History Manager"
-msgstr "ヒストリマネージャ"
-
-msgid "Clear histories"
-msgstr "履歴のクリア"
-
-msgid "Show the world log manager"
-msgstr "ワールドログマネージャの表示"
-
 msgid "World Log"
 msgstr "ワールドログ"
 
-msgid "World Log Manager"
-msgstr "ワールドログマネージャ"
-
-msgid "Save a World Log"
-msgstr "ワールドログの保存"
-
-msgid "Bookmark a current project"
-msgstr "プロジェクトの登録"
-
-msgid "Show the bookmark manager"
-msgstr "ブックマークマネージャの表示"
+msgid "Layout"
+msgstr "レイアウト"
 
 msgid "Bookmark Manager"
 msgstr "ブックマークマネージャ"
 
-msgid "Clear bookmarks"
-msgstr "ブックマークのクリア"
+msgid "History Manager"
+msgstr "ヒストリマネージャ"
+
+msgid "World Log Manager"
+msgstr "ワールドログマネージャ"
+
+msgid "Show the manager list"
+msgstr "マネージャリストの表示"
+
+msgid "New"
+msgstr "登録"
+
+msgid "Open"
+msgstr "追加"
+
+msgid "Layout Manager"
+msgstr "レイアウトマネージャ"
+
+msgid "Save a World Log"
+msgstr "ワールドログの保存"
 
 msgid "Autoplay"
 msgstr "自動再生"
 
-msgid "Open a project"
-msgstr "プロジェクトを開く"
+msgid "CNOID File"
+msgstr "プロジェクト"
 
 msgid "Save a project"
 msgstr "プロジェクトの保存"
 
 msgid "I couldn't detect any system tray on this system"
-msgstr ""
+msgstr "システムトレイを検出できませんでした．"
 
 msgid "Exit"
 msgstr "終了"
-
-msgid "Layout Manager"
-msgstr "レイアウトマネージャ"
-
-msgid "Show the layout manager"
-msgstr "レイアウトマネージャの表示"
-
-msgid "Save a current layout"
-msgstr "レイアウトの保存"
 
 msgid "Save"
 msgstr "保存"
 
 msgid "Cancel"
 msgstr "キャンセル"
-
-msgid "Open a layout"
-msgstr "レイアウトを開く"
-
-msgid "Save a layout"
-msgstr "レイアウトの保存"

@@ -119,7 +119,7 @@ public:
 
 
 VirtualJoystickWidget::VirtualJoystickWidget(QWidget* parent)
-    : Widget(parent)
+    : QWidget(parent)
 {
     impl = new Impl(this);
 }
@@ -180,7 +180,7 @@ VirtualJoystickWidget::~VirtualJoystickWidget()
 void VirtualJoystickWidget::keyPressEvent(QKeyEvent* event)
 {
     if(!impl->onKeyStateChanged(event->key(), true)) {
-        Widget::keyPressEvent(event);
+        QWidget::keyPressEvent(event);
     }
 }
 
@@ -188,7 +188,7 @@ void VirtualJoystickWidget::keyPressEvent(QKeyEvent* event)
 void VirtualJoystickWidget::keyReleaseEvent(QKeyEvent* event)
 {
     if(!impl->onKeyStateChanged(event->key(), false)) {
-        Widget::keyPressEvent(event);
+        QWidget::keyPressEvent(event);
     }
 }
 

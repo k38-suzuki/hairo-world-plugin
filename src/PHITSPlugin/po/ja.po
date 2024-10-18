@@ -53,9 +53,6 @@ msgstr "線量分布の範囲"
 msgid "Code"
 msgstr "コード"
 
-msgid "&Ok"
-msgstr "了解(&O)"
-
 msgid "Start"
 msgstr "開始"
 

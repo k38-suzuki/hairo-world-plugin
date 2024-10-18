@@ -10,6 +10,7 @@
 using namespace std;
 using namespace cnoid;
 
+
 ComptonCamera::ComptonCamera()
 {
     setDataType(GammaData::COMPTON);

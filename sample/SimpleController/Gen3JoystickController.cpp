@@ -15,7 +15,7 @@ using namespace cnoid;
 namespace {
 
 const double home_position[] = {
-    0.0, -30.0, 0.0, 130.0, 0.0, -10.0, 0.0
+    360.0, 15.0, 180.0, 230.0, 360.0, 55.0, 90.0
 };
 
 }
@@ -73,8 +73,8 @@ public:
         }
 
         ikBody = ioBody->clone();
-        ikWrist = ikBody->link(prefix + "WRIST_ORIGIN");
-        Link* base = ikBody->link(prefix + "BASE");
+        ikWrist = ikBody->link(prefix + "end_effector");
+        Link* base = ikBody->link(prefix + "base_joint");
         baseToWrist = JointPath::getCustomPath(base, ikWrist);
         base->p().setZero();
         base->R().setIdentity();

@@ -15,6 +15,7 @@ public:
     IKPlannerPlugin() : Plugin("IKPlanner")
     {
         require("Body");
+        require("OMPL");
     }
 
     virtual bool initialize() override

@@ -17,6 +17,7 @@ public:
     ColliderTestPlugin() : Plugin("ColliderTest")
     {
         require("Body");
+        require("SimpleCollider");
     }
 
     virtual bool initialize() override

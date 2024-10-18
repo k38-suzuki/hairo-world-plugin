@@ -8,6 +8,7 @@
 
 using namespace cnoid;
 
+
 ColorScale::ColorScale()
 {
     min_ = 0.0;

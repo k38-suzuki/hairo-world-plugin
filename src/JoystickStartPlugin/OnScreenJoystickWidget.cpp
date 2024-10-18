@@ -45,19 +45,19 @@ public:
 
     Impl(OnScreenJoystickWidget* self);
 
-    enum AxisID {
+    enum {
         L_STICK,
         R_STICK,
         DIRECTIONAL_PAD,
         L_TRIGGER_AXIS,
         R_TRIGGER_AXIS,
-        NUM_AXES
+        NumAxes
     };
 
     std::mutex mutex;
     vector<double> axisPositions;
     vector<bool> buttonStates;
-    AxisWidget* axes[NUM_AXES];
+    AxisWidget* axes[NumAxes];
     ToolButton* buttons[Joystick::NUM_STD_BUTTONS];
     JoystickCapture joystick;
 
@@ -84,7 +84,7 @@ public:
 
 
 OnScreenJoystickWidget::OnScreenJoystickWidget(QWidget* parent)
-    : Widget(parent)
+    : QWidget(parent)
 {
     impl = new Impl(this);
 }
@@ -97,7 +97,7 @@ OnScreenJoystickWidget::Impl::Impl(OnScreenJoystickWidget* self)
     buttonStates.resize(Joystick::NUM_STD_BUTTONS, false);
 
     auto hbox1 = new QHBoxLayout;
-    for(int i = 0; i < NUM_AXES; ++i) {
+    for(int i = 0; i < NumAxes; ++i) {
         axes[i] = new AxisWidget;
         AxisWidget* axis = axes[i];
         axis->sigAxis().connect(

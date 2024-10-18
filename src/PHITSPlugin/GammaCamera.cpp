@@ -9,6 +9,7 @@
 using namespace std;
 using namespace cnoid;
 
+
 GammaCamera::GammaCamera()
 {
     isReady_ = false;

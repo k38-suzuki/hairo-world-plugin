@@ -5,13 +5,13 @@
 #ifndef CNOID_BOOKMARK_PLUGIN_HISTORY_MANAGER_H
 #define CNOID_BOOKMARK_PLUGIN_HISTORY_MANAGER_H
 
-#include "ArchiveListDialog.h"
+#include "ArchiveListWidget.h"
 
 namespace cnoid {
 
 class ExtensionManager;
 
-class HistoryManager : public ArchiveListDialog
+class HistoryManager : public ArchiveListWidget
 {
 public:
     static void initializeClass(ExtensionManager* ext);

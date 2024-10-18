@@ -11,10 +11,9 @@
 #include <cnoid/MainMenu>
 #include <cnoid/Separator>
 #include <cnoid/SpinBox>
-#include <cnoid/HamburgerMenu>
 #include <QBoxLayout>
 #include <QDialogButtonBox>
-#include <QGridLayout>
+#include <QFormLayout>
 #include <QLabel>
 #include "gettext.h"
 #include "NetEm.h"
@@ -23,26 +22,24 @@ using namespace cnoid;
 
 namespace {
 
-NetworkEmulator* emulatorInstance = nullptr;
-
-}
-
-namespace cnoid {
-
-class NetworkEmulator::Impl : public Dialog
+class EmulatorDialog : public QDialog
 {
 public:
+    EmulatorDialog(QWidget* parent = nullptr);
+
+private:
+    void on_startButton_toggled(bool checked);
+
+    enum { In, Out, NumInterfaces };
 
     NetEmPtr emulator;
-    ComboBox* interfaceCombo;
-    ComboBox* ifbdeviceCombo;
-    DoubleSpinBox* delaySpins[2];
-    DoubleSpinBox* rateSpins[2];
-    DoubleSpinBox* lossSpins[2];
-    PushButton* startButton;
-
-    Impl();
-    void onStartButtonToggled(bool checked);
+    QComboBox* interfaceComboBox;
+    QComboBox* ifbdeviceComboBox;
+    QDoubleSpinBox* delaySpinBoxes[NumInterfaces];
+    QDoubleSpinBox* rateSpinBoxes[NumInterfaces];
+    QDoubleSpinBox* lossSpinBoxes[NumInterfaces];
+    QPushButton* startButton;
+    QDialogButtonBox* buttonBox;
 };
 
 }
@@ -50,100 +47,88 @@ public:
 
 void NetworkEmulator::initializeClass(ExtensionManager* ext)
 {
-    if(!emulatorInstance) {
-        emulatorInstance = ext->manage(new NetworkEmulator);
+    static EmulatorDialog* dialog = nullptr;
 
-        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/network_manage_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
-        auto action = new Action;
-        action->setText(_("Network Emulator"));
-        action->setIcon(icon);
-        action->setToolTip(_("Show the network emulator"));
-        action->sigTriggered().connect([&](){ emulatorInstance->impl->show(); });
-        HamburgerMenu::instance()->addAction(action);
+    if(!dialog) {
+        dialog = ext->manage(new EmulatorDialog);
+
+        MainMenu::instance()->add_Tools_Item(
+            _("Network Emulator"), [](){ dialog->show(); });
     }
 }
 
 
 NetworkEmulator::NetworkEmulator()
 {
-    impl = new Impl;
-}
 
-
-NetworkEmulator::Impl::Impl()
-    : Dialog()
-{
-    setWindowTitle(_("Network Emulator"));
-
-    emulator = new NetEm;
-
-    static const char* label[] = {
-        _("Interface"), _("IFB Device"),
-        _("Inbound Delay [ms]"), _("Inbound Rate [kbit/s]"),_("Inbound Loss [%]"),
-        _("Outbound Delay [ms]"), _("Outbound Rate [kbit/s]"), _("Outbound Loss [%]")
-    };
-
-    QGridLayout* gbox = new QGridLayout;
-    for(int i = 0; i < 8; ++i) {
-        gbox->addWidget(new QLabel(label[i]), i, 0);
-    }
-
-    interfaceCombo = new ComboBox;
-    for(int i = 0; i < emulator->interfaces().size(); ++i) {
-        interfaceCombo->addItem(emulator->interfaces()[i].c_str());
-    }
-    ifbdeviceCombo = new ComboBox;
-    ifbdeviceCombo->addItems(QStringList() << "ifb0" << "ifb1");
-    ifbdeviceCombo->setCurrentIndex(1);
-
-    for(int i = 0; i < 2; ++i) {
-        delaySpins[i] = new DoubleSpinBox;
-        delaySpins[i]->setRange(0.0, 100000.0);
-        rateSpins[i] = new DoubleSpinBox;
-        rateSpins[i]->setRange(0.0, 11000000.0);
-        lossSpins[i] = new DoubleSpinBox;
-        lossSpins[i]->setRange(0.0, 100.0);
-    }
-
-    gbox->addWidget(interfaceCombo, 0, 1);
-    gbox->addWidget(ifbdeviceCombo, 1, 1);
-    gbox->addWidget(delaySpins[0], 2, 1);
-    gbox->addWidget(rateSpins[0], 3, 1);
-    gbox->addWidget(lossSpins[0], 4, 1);
-    gbox->addWidget(delaySpins[1], 5, 1);
-    gbox->addWidget(rateSpins[1], 6, 1);
-    gbox->addWidget(lossSpins[1], 7, 1);
-
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
-    startButton = new PushButton(_("&Start"));
-    startButton->setCheckable(true);
-    buttonBox->addButton(startButton, QDialogButtonBox::ActionRole);
-    startButton->sigToggled().connect([&](bool checked){ onStartButtonToggled(checked); });
-
-    auto vbox = new QVBoxLayout;
-    vbox->addLayout(gbox);
-    vbox->addStretch();
-    vbox->addWidget(new HSeparator);
-    vbox->addWidget(buttonBox);
-    setLayout(vbox);
 }
 
 
 NetworkEmulator::~NetworkEmulator()
 {
-    delete impl;
+
 }
 
 
-void NetworkEmulator::Impl::onStartButtonToggled(bool checked)
+EmulatorDialog::EmulatorDialog(QWidget* parent)
+    : QDialog(parent)
+{
+    emulator = new NetEm;
+
+    interfaceComboBox = new QComboBox;
+    for(int i = 0; i < emulator->interfaces().size(); ++i) {
+        interfaceComboBox->addItem(emulator->interfaces()[i].c_str());
+    }
+
+    ifbdeviceComboBox = new QComboBox;
+    ifbdeviceComboBox->addItems(QStringList() << "ifb0" << "ifb1");
+    ifbdeviceComboBox->setCurrentIndex(1);
+
+    for(int i = 0; i < NumInterfaces; ++i) {
+        delaySpinBoxes[i] = new QDoubleSpinBox;
+        delaySpinBoxes[i]->setRange(0.0, 100000.0);
+        rateSpinBoxes[i] = new QDoubleSpinBox;
+        rateSpinBoxes[i]->setRange(0.0, 11000000.0);
+        lossSpinBoxes[i] = new QDoubleSpinBox;
+        lossSpinBoxes[i]->setRange(0.0, 100.0);
+    }
+
+    auto formLayout = new QFormLayout;
+    formLayout->addRow(_("Interface"), interfaceComboBox);
+    formLayout->addRow(_("IFB Device"), ifbdeviceComboBox);
+    formLayout->addRow(_("Inbound Delay [ms]"), delaySpinBoxes[In]);
+    formLayout->addRow(_("Inbound Rate [kbit/s]"), rateSpinBoxes[In]);
+    formLayout->addRow(_("Inbound Loss [%]"), lossSpinBoxes[In]);
+    formLayout->addRow(_("Outbound Delay [ms]"), delaySpinBoxes[Out]);
+    formLayout->addRow(_("Outbound Rate [kbit/s]"), rateSpinBoxes[Out]);
+    formLayout->addRow(_("Outbound Loss [%]"), lossSpinBoxes[Out]);
+
+    buttonBox = new QDialogButtonBox(this);
+    startButton = new QPushButton(_("&Start"));
+    startButton->setCheckable(true);
+    buttonBox->addButton(startButton, QDialogButtonBox::ActionRole);
+    connect(startButton, &QPushButton::toggled, [&](bool checked){ on_startButton_toggled(checked); });
+
+    auto mainLayout = new QVBoxLayout;
+    mainLayout->addLayout(formLayout);
+    mainLayout->addStretch();
+    mainLayout->addWidget(new HSeparator);
+    mainLayout->addWidget(buttonBox);
+    setLayout(mainLayout);
+
+    setWindowTitle(_("Network Emulator"));
+}
+
+
+void EmulatorDialog::on_startButton_toggled(bool checked)
 {
     if(checked) {
         startButton->setText(_("&Stop"));
-        emulator->start(interfaceCombo->currentIndex(), ifbdeviceCombo->currentIndex());
-        for(int i = 0; i < 2; ++i) {
-            emulator->setDelay(i, delaySpins[i]->value());
-            emulator->setRate(i, rateSpins[i]->value());
-            emulator->setLoss(i, lossSpins[i]->value());
+        emulator->start(interfaceComboBox->currentIndex(), ifbdeviceComboBox->currentIndex());
+        for(int i = 0; i < NumInterfaces; ++i) {
+            emulator->setDelay(i, delaySpinBoxes[i]->value());
+            emulator->setRate(i, rateSpinBoxes[i]->value());
+            emulator->setLoss(i, lossSpinBoxes[i]->value());
         }
         emulator->update();
     } else {

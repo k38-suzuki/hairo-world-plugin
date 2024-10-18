@@ -15,19 +15,19 @@ class CrawlerJoystickController : public SimpleController
     SimpleControllerIO* io;
     bool usePseudoContinousTrackMode;
 
-    enum TrackID {
+    enum {
         TRACK_L, TRACK_R, TRACK_LF,
         TRACK_RF, TRACK_LR, TRACK_RR,
-        NUM_TRACKS
+        NumTracks
     };
 
-    enum JointID {
+    enum {
         SPACER_LF, SPACER_RF, SPACER_LR,
-        SPACER_RR, NUM_JOINTS
+        SPACER_RR, NumJoints
     };
 
-    Link* track[NUM_TRACKS];
-    Link* spacer[NUM_JOINTS];
+    Link* track[NumTracks];
+    Link* spacer[NumJoints];
 
     Joystick* joystick;
 
@@ -62,7 +62,7 @@ public:
             "SPROCKET_RF", "SPROCKET_LR", "SPROCKET_RR",
         };
 
-        for(int i = 0; i < NUM_TRACKS; ++i) {
+        for(int i = 0; i < NumTracks; ++i) {
             track[i] = body->link(track_name[i]);
             if(!usePseudoContinousTrackMode) {
                 track[i] = body->link(agxtrack_name[i]);
@@ -78,7 +78,7 @@ public:
             "SPACER_LF", "SPACER_RF", "SPACER_LR", "SPACER_RR"
         };
 
-        for(int i = 0; i < NUM_JOINTS; ++i) {
+        for(int i = 0; i < NumJoints; ++i) {
             Link* joint = body->link(joint_name[i]);
             spacer[i] = joint;
             if(!joint) {
@@ -105,7 +105,7 @@ public:
             }
         }
 
-        for(int i = 0; i < NUM_TRACKS / 2; ++i) {
+        for(int i = 0; i < NumTracks / 2; ++i) {
             Link* trackL = track[2 * i];
             Link* trackR = track[2 * i + 1];
             if(usePseudoContinousTrackMode) {

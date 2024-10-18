@@ -40,7 +40,7 @@ public:
     double joy[2];
     int radius;
 
-    Signal<void(double h_position, double v_position)> sigAxis;
+    Signal<void(const double& h_position, const double& v_position)> sigAxis;
 
     void paintEvent(QPaintEvent* event);
     void mousePressEvent(QMouseEvent* event);
@@ -69,14 +69,14 @@ AxisWidget::Impl::Impl(AxisWidget *self)
     radius = 5;
     self->update();
 
-    QGridLayout* gbox = new QGridLayout;
-    gbox->addWidget(new VSeparator, 0, 1);
-    gbox->addWidget(new VSeparator, 2, 1);
-    gbox->addWidget(new HSeparator, 1, 0);
-    gbox->addWidget(new HSeparator, 1, 2);
+    auto gridLayout = new QGridLayout;
+    gridLayout->addWidget(new VSeparator, 0, 1);
+    gridLayout->addWidget(new VSeparator, 2, 1);
+    gridLayout->addWidget(new HSeparator, 1, 0);
+    gridLayout->addWidget(new HSeparator, 1, 2);
 
     auto vbox = new QVBoxLayout;
-    vbox->addLayout(gbox);
+    vbox->addLayout(gridLayout);
     self->setLayout(vbox);
 }
 
@@ -99,7 +99,7 @@ void AxisWidget::setValue(const int& id, const double& value)
 }
 
 
-SignalProxy<void(double h_position, double v_position)> AxisWidget::sigAxis()
+SignalProxy<void(const double& h_position, const double& v_position)> AxisWidget::sigAxis()
 {
     return impl->sigAxis;
 }

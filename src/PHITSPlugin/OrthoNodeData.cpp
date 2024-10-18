@@ -57,14 +57,13 @@ public:
 
 private:
     bool isValid_;
-    vector<double> coordinates_[OrthoNodeData::NUM_AXES];
+    vector<double> coordinates_[OrthoNodeData::NumAxes];
     vector<double> cell_values_;
     vector<double> *cell_shield_values_;
     const double arrowableError_ = 1.0e-3;
 };
 
 }
-
 
 namespace cnoid {
 

@@ -23,12 +23,6 @@ msgstr "ジョイスティックロガーアイテム"
 msgid "Device"
 msgstr "デバイス"
 
-msgid "KeyConfig"
-msgstr "キーコンフィグ"
-
-msgid "&Ok"
-msgstr "了解(&O)"
-
 msgid "Virtual Joystick2"
 msgstr "仮想ジョイスティック2"
 
@@ -56,23 +50,14 @@ msgstr "現在位置からのシミュレーションを開始： SELECT ボタ�
 msgid "Joystick Tester"
 msgstr "ジョイスティックのテスト"
 
-msgid "Show the joystick tester"
-msgstr "ジョイスティックのテスト"
-
 msgid "Interval Timer"
 msgstr "インターバルタイマ"
 
-msgid "Show the interval timer"
-msgstr "インターバルタイマの表示"
+msgid "Interval [s]"
+msgstr "インターバル [s]"
 
-msgid "Interval time"
-msgstr "インターバル時間"
+msgid "Start!!"
+msgstr ""
 
-msgid "Set the interval timer"
-msgstr "インターバルタイマをセット"
-
-msgid "Digital Clock"
-msgstr "デジタルクロック"
-
-msgid "Show the digital clock"
-msgstr "デジタルクロックの表示"
+msgid "Start"
+msgstr "開始"

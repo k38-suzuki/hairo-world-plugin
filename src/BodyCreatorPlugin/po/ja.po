@@ -1,0 +1,378 @@
+# Japanese translations for BodyCreatorPlugin package.
+# Copyright (C) 2023 THE BodyCreatorPlugin'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the BodyCreatorPlugin package.
+# k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: BodyCreatorPlugin\n"
+"Report-Msgid-Bugs-To: suzuki.kenta38@jaea.go.jp\n"
+"POT-Creation-Date: 2023-01-11 05:08-0800\n"
+"PO-Revision-Date: 2023-01-11 05:08-0800\n"
+"Last-Translator: k38-suzuki <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Format Converter"
+msgstr "フォーマットの変換"
+
+msgid "Format conversion"
+msgstr "フォーマットの変換"
+
+msgid "1.0"
+msgstr ""
+
+msgid "2.0"
+msgstr ""
+
+msgid "&Open"
+msgstr "開く(&O)"
+
+msgid "&File"
+msgstr "ファイル(&F)"
+
+msgid "E&xit"
+msgstr "終了(&x)"
+
+msgid "Pipe"
+msgstr "パイプ"
+
+msgid "BentPipe"
+msgstr "ベントパイプ"
+
+msgid "Grating"
+msgstr "グレーチング"
+
+msgid "Slope"
+msgstr "スロープ"
+
+msgid "Stairs"
+msgstr "階段"
+
+msgid "Stairs Creator"
+msgstr "階段の作成"
+
+msgid "Tread [m]"
+msgstr "踏み面 [m]"
+
+msgid "Stair width [m]"
+msgstr "階段幅 [m]"
+
+msgid "Riser [m]"
+msgstr "蹴上げ [m]"
+
+msgid "Width of stringer [m]"
+msgstr "側桁の幅 [m]"
+
+msgid "Tread thickness [m]"
+msgstr "踏み板の厚さ [m]"
+
+msgid "Number of steps [-]"
+msgstr "段数 [-]"
+
+msgid "BoxTerrain"
+msgstr "ボックステレイン"
+
+msgid "Crawler"
+msgstr "クローラ"
+
+msgid "CrawlerRobot"
+msgstr "クローラロボット"
+
+msgid "CrawlerRobot Creator"
+msgstr "クローラロボットの作成"
+
+msgid "Front SubTrack"
+msgstr "サブトラック（前）"
+
+msgid "Rear SubTrack"
+msgstr "サブトラック（後）"
+
+msgid "AGX"
+msgstr ""
+
+msgid "Chassis"
+msgstr "シャーシ"
+
+msgid "Track"
+msgstr "トラック"
+
+msgid "Spacer"
+msgstr "スペーサ"
+
+msgid "mass [kg]"
+msgstr "質量 [kg]"
+
+msgid "color"
+msgstr "色"
+
+msgid "size(x-y-z) [m, m, m]"
+msgstr "サイズ(x-y-z)[m, m, m]"
+
+msgid "radius [m]"
+msgstr "半径 [m]"
+
+msgid "width [m]"
+msgstr "幅 [m]"
+
+msgid "wheelbase [m]"
+msgstr "ホイールベース [m]"
+
+msgid "radius(forward-backward) [m]"
+msgstr "半径（前-後） [m]"
+
+msgid "Track Belt"
+msgstr "ベルト（トラック）"
+
+msgid "SubTrack Belt"
+msgstr "ベルト（サブトラック）"
+
+msgid "number of nodes [-]"
+msgstr "ノードの数 [-]"
+
+msgid "node thickness [m]"
+msgstr "ノードの厚さ（凹） [m]"
+
+msgid "node width [m]"
+msgstr "ノードの幅 [m]"
+
+msgid "node thickerthickness [m]"
+msgstr "ノードの厚さ（凸） [m]"
+
+msgid "use thicker node every [-]"
+msgstr "ノードの周期 [-]"
+
+msgid "node distance tension [m, e-]"
+msgstr "ノードのテンション [m, e-]"
+
+msgid "stabilizing hinge friction parameter [-, e-]"
+msgstr "ヒンジの摩擦 [-, e-]"
+
+msgid "min stabilizing hinge normal force [N]"
+msgstr "ヒンジの法線力 [N]"
+
+msgid "hinge compliance [rad/Nm, e-]"
+msgstr "ヒンジコンプライアンス [rad/Nm, e-]"
+
+msgid "hinge spook damping [s]"
+msgstr "ヒンジスプークダンパ [s]"
+
+msgid "nodes to wheels merge threshold [-]"
+msgstr "ノードのマージ閾値 [-]"
+
+msgid "nodes to wheels split threshold [-]"
+msgstr "ノードのスプリット閾値 [-]"
+
+msgid "&New"
+msgstr ""
+
+msgid "&Import"
+msgstr ""
+
+msgid "&Export"
+msgstr ""
+
+msgid "YAML File"
+msgstr "YAMLファイル"
+
+msgid "Cancel"
+msgstr "キャンセル"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Select a color"
+msgstr "色の選択"
+
+msgid "File"
+msgstr "ファイル"
+
+msgid "&Save"
+msgstr ""
+
+msgid "Save &As..."
+msgstr ""
+
+msgid "Body"
+msgstr "ボディ"
+
+msgid "Grating Creator"
+msgstr "グレーチングの作成"
+
+msgid "Mass [kg]"
+msgstr "質量 [kg]"
+
+msgid "Height [m]"
+msgstr "高さ [m]"
+
+msgid "Frame width [m]"
+msgstr "フレームの横幅 [m]"
+
+msgid "Frame height [m]"
+msgstr "フレームの縦幅 [m]"
+
+msgid "Grid width [m]"
+msgstr "格子の横幅 [m]"
+
+msgid "Grid height [m]"
+msgstr "格子の縦幅 [m]"
+
+msgid "Horizontal grid [-]"
+msgstr "横方向の格子数 [-]"
+
+msgid "Vertical grid [-]"
+msgstr "縦方向の格子数 [-]"
+
+msgid " "
+msgstr ""
+
+msgid "Color [-]"
+msgstr "色 [-]"
+
+msgid "Size [m, m, m]"
+msgstr "大きさ [m, m, m]"
+
+msgid "Pipe Creator"
+msgstr "パイプの作成"
+
+msgid "Length [m]"
+msgstr "長さ [m]"
+
+msgid "Inner diameter [m]"
+msgstr "内径 [m]"
+
+msgid "Outer diameter [m]"
+msgstr "外径 [m]"
+
+msgid "Opening angle [deg]"
+msgstr "開口角度 [deg]"
+
+msgid "Step angle [deg]"
+msgstr "きざみ角度 [deg]"
+
+msgid "Inner step angle [deg]"
+msgstr "きざみ角度（内側） [deg]"
+
+msgid "Outer step angle [deg]"
+msgstr "きざみ角度（外側） [deg]"
+
+msgid "BentPipe Creator"
+msgstr "ベントパイプの作成"
+
+msgid "Bent angle [deg]"
+msgstr "曲げ角度 [deg]"
+
+msgid "Bent radius [m]"
+msgstr "曲げ半径 [m]"
+
+msgid "Bent step angle [deg]"
+msgstr "曲げきざみ角度 [deg]"
+
+msgid "Slope Creator"
+msgstr "スロープの作成"
+
+msgid "Width [m]"
+msgstr "幅 [m]"
+
+msgid "BoxTerrain Creator"
+msgstr "ボックステレインの作成"
+
+msgid "&Load"
+msgstr "読み込み(&L)"
+
+msgid "scale[0.1-10.0]"
+msgstr "スケール[0.1-10.0]"
+
+msgid "CSV File"
+msgstr "CSVファイル"
+
+msgid "Setting 1"
+msgstr "設定1"
+
+msgid "Setting 2"
+msgstr "設定2"
+
+msgid "Setting 3"
+msgstr "設定3"
+
+msgid "Inertia Calculator"
+msgstr "慣性モーメントの計算"
+
+msgid "Box"
+msgstr ""
+
+msgid "Sphere"
+msgstr ""
+
+msgid "Cylinder"
+msgstr ""
+
+msgid "Cone"
+msgstr ""
+
+msgid "&Calc"
+msgstr ""
+
+msgid "C&lear"
+msgstr ""
+
+msgid "x [m]"
+msgstr ""
+
+msgid "y [m]"
+msgstr ""
+
+msgid "z [m]"
+msgstr ""
+
+msgid "height [m]"
+msgstr "高さ [m]"
+
+msgid "axis [-]"
+msgstr "回転軸 [-]"
+
+msgid "shape: Box, mass: {0} [kg], x: {1} [m], y: {2} [m], z: {3} [m]"
+msgstr "形状: Box, 質量: {0} [kg], x: {1} [m], y: {2} [m], z: {3} [m]"
+
+msgid "shape: Sphere, mass: {0} [kg], radius: {1} [m]"
+msgstr "形状: Sphere, 質量: {0} [kg], 半径: {1} [m]"
+
+msgid "shape: Cylinder, mass: {0} [kg], radius: {1} [m], height: {2} [m], axis: {3} [-]"
+msgstr "形状: Cylinder, 質量: {0} [kg], 半径: {1} [m], 高さ: {2} [m], 回転軸: {3} [-]"
+
+msgid "shape: Cone, mass: {0} [kg], radius: {1} [m], height: {2} [m], axis: {3} [-]"
+msgstr "形状: Cylinder, 質量: {0} [kg], 半径: {1} [m], 高さ: {2} [m], 回転軸: {3} [-]"
+
+msgid "inertia: [ {0}, 0, 0, 0, {1}, 0, 0, 0, {2} ]\n"
+msgstr ""
+
+msgid "Drop body(*.body) here."
+msgstr "ここにボディ(*.body)をドロップしてください．"
+
+msgid "{0} is not supported."
+msgstr "{0} はサポートされていません．"
+
+msgid "{0} has been generated."
+msgstr "{0} が生成されました．"
+
+msgid "Advanced settings"
+msgstr "高度な設定"
+
+msgid "SquarePipe Creator"
+msgstr "角パイプの作成"
+
+msgid "Radius [m]"
+msgstr "半径 [m]"
+
+msgid "Create a body"
+msgstr "ボディの作成"
+
+msgid "Body Creator"
+msgstr "ボディクリエイタ"
+
+msgid "Creator ToolBar"
+msgstr "クリエイタツールバー"

@@ -3,7 +3,6 @@
 */
 
 #include "BookmarkManager.h"
-#include <cnoid/Action>
 #include <cnoid/AppConfig>
 #include <cnoid/Buttons>
 #include <cnoid/CheckBox>
@@ -29,14 +28,6 @@ void BookmarkManager::initializeClass(ExtensionManager* ext)
 {
     if(!bookmarkInstance) {
         bookmarkInstance = ext->manage(new BookmarkManager);
-
-        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/collections_bookmark_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
-        auto action = new Action;
-        action->setText(_("Bookmark Manager"));
-        action->setIcon(icon);
-        action->setToolTip(_("Show the bookmark manager"));
-        action->sigTriggered().connect([&](){ bookmarkInstance->show(); });
-        HamburgerMenu::instance()->addAction(action);
     }
 }
 
@@ -48,28 +39,26 @@ BookmarkManager* BookmarkManager::instance()
 
 
 BookmarkManager::BookmarkManager(QWidget* parent)
-    : ArchiveListDialog(parent)
+    : ArchiveListWidget(parent)
 {
     setWindowTitle(_("Bookmark Manager"));
     setArchiveKey("bookmark_list");
     setFixedSize(800, 450);
 
-    auto button1 = fileBar()->addButton(":/GoogleMaterialSymbols/icon/bookmark_add_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
-    button1->setToolTip(_("Bookmark a current project"));
+    auto button1 = new ToolButton(_("New"));
     button1->sigClicked().connect([&](){ onAddButtonClicked(); });
 
     button1->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(button1, &ToolButton::customContextMenuRequested,
         [&](const QPoint& pos){ this->contextMenu()->exec(QCursor::pos()); });
 
-    const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/file_open_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
-    auto button2 = new ToolButton;
-    button2->setIcon(icon);
+    auto button2 = new ToolButton(_("Open"));
     button2->sigClicked().connect([&](){ onOpenButtonClicked(); });
 
     autoCheck_ = new CheckBox;
     autoCheck_->setText(_("Autoplay"));
 
+    addWidget(button1);
     addWidget(button2);
     addWidget(autoCheck_);
 
@@ -109,7 +98,7 @@ void BookmarkManager::onAddButtonClicked()
 
 void BookmarkManager::onOpenButtonClicked()
 {
-    vector<string> filenames = getOpenFileNames(_("Open a project"), "cnoid");
+    vector<string> filenames = getOpenFileNames(_("CNOID File"), "cnoid");
     for(auto& filename : filenames) {
         addItem(filename.c_str());
         removeDuplicates();

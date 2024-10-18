@@ -13,6 +13,7 @@
 using namespace std;
 using namespace cnoid;
 
+
 MultiColliderItem::MultiColliderItem()
     : SimpleColliderItem(),
       CFDEffects(),

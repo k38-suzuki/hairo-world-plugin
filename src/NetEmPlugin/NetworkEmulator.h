@@ -16,10 +16,6 @@ public:
 
     NetworkEmulator();
     virtual ~NetworkEmulator();
-
-private:
-    class Impl;
-    Impl* impl;
 };
 
 }

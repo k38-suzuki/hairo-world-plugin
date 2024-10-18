@@ -5,6 +5,7 @@
 #include <cnoid/Format>
 #include <cnoid/Plugin>
 #include "BodyLocator.h"
+#include "FileExplorer.h"
 
 using namespace cnoid;
 
@@ -20,6 +21,7 @@ public:
     virtual bool initialize() override
     {
         BodyLocator::initializeClass(this);
+        FileExplorer::initializeClass(this);
         return true;
     }
 

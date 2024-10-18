@@ -47,7 +47,7 @@ public:
 
     Selection colorScale;
 
-    enum ColorScaleID { LOG_SCALE, LINER_SCALE, NUM_SCALES };
+    enum ColorScaleId { LOG_SCALE, LINER_SCALE };
 
     bool initializeSimulation(SimulatorItem* simulatorItem);
     void onMidDynamics();

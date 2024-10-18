@@ -1,0 +1,147 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: Gen3Body
+
+links:
+  -
+    name: base_joint
+    translation: [ 0, 0, 0 ]
+    jointType: fixed
+    centerOfMass: [ -0.000648, -0.000166, 0.084487 ]
+    mass: 1.697
+    inertia: [
+      0.004622, 9E-06, 6E-05,
+      0, 0.004495, 9E-06,
+      0, 0, 0.002079 ]
+    elements:
+      -
+        type: Shape
+        geometry: { type: Resource, uri: "parts/base_link.STL" }
+        appearance: &BodyAppearance { material: { diffuseColor: [ 0.75294, 0.75294, 0.75294 ] } }
+  -
+    name: joint_1
+    parent: base_joint
+    translation: [ 0, 0, 0.15643 ]
+    rotation: [ 1, 0, 0, 180 ]
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointRange: [ -360.0, 360.0 ]
+    maxJointVelocity: 1.3963
+    jointId: 0
+    centerOfMass: [ -2.3E-05, -0.010364, -0.07336 ]
+    mass: 1.3773
+    inertia: [
+      0.00457, 1E-06, 2E-06,
+      0, 0.004831, 0.000448,
+      0, 0, 0.001409 ]
+    elements:
+      -
+        type: Shape
+        geometry: { type: Resource, uri: "parts/shoulder_link.STL" }
+        appearance: *BodyAppearance
+  -
+    name: joint_2
+    parent: joint_1
+    translation: [ 0, 0.005375, -0.12838 ]
+    rotation: [ 1, 0, 0, 90 ]
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointRange: [ -128.4, 128.4 ]
+    maxJointVelocity: 1.3963
+    jointId: 1
+    centerOfMass: [ -4.4E-05, -0.09958, -0.013278 ]
+    mass: 1.1636
+    inertia: [
+      0.011088, 5E-06, 0,
+      0, 0.001072, -0.000691,
+      0, 0, 0.011255 ]
+    elements:
+      -
+        type: Shape
+        geometry: { type: Resource, uri: "parts/half_arm_1_link.STL" }
+        appearance: *BodyAppearance
+  -
+    name: joint_3
+    parent: joint_2
+    translation: [ 0, -0.21038, -0.006375 ]
+    rotation: [ 1, 0, 0, -90 ]
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointRange: [ -360.0, 360.0 ]
+    maxJointVelocity: 1.3963
+    jointId: 2
+    centerOfMass: [ -4.4E-05, -0.006641, -0.117892 ]
+    mass: 1.1636
+    inertia: [
+      0.010932, 0, -7E-06,
+      0, 0.011127, 0.000606,
+      0, 0, 0.001043 ]
+    elements:
+      -
+        type: Shape
+        geometry: { type: Resource, uri: "parts/half_arm_2_link.STL" }
+        appearance: *BodyAppearance
+  -
+    name: joint_4
+    parent: joint_3
+    translation: [ 0, 0.006375, -0.21038 ]
+    rotation: [ 1, 0, 0, 90 ]
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointRange: [ -147.3, 147.3 ]
+    maxJointVelocity: 1.3963
+    jointId: 3
+    centerOfMass: [ -1.8E-05, -0.075478, -0.015006 ]
+    mass: 0.9302
+    inertia: [
+      0.008147, -1E-06, 0,
+      0, 0.000631, -0.0005,
+      0, 0, 0.008316 ]
+    elements:
+      -
+        type: Shape
+        geometry: { type: Resource, uri: "parts/forearm_link.STL" }
+        appearance: *BodyAppearance
+  -
+    name: joint_5
+    parent: joint_4
+    translation: [ 0, -0.20843, -0.006375 ]
+    rotation: [ 1, 0, 0, -90 ]
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointRange: [ -360.0, 360.0 ]
+    maxJointVelocity: 1.2218
+    jointId: 4
+    centerOfMass: [ 1E-06, -0.009432, -0.063883 ]
+    mass: 0.6781
+    inertia: [
+      0.001596, 0, 0,
+      0, 0.001607, 0.000256,
+      0, 0, 0.000399 ]
+    elements:
+      -
+        type: Shape
+        geometry: { type: Resource, uri: "parts/spherical_wrist_1_link.STL" }
+        appearance: *BodyAppearance
+  -
+    name: joint_6
+    parent: joint_5
+    translation: [ 0, 0.00017505, -0.10593 ]
+    rotation: [ 1, 0, 0, 90 ]
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointRange: [ -119.8, 119.8 ]
+    maxJointVelocity: 1.2218
+    jointId: 5
+    centerOfMass: [ 1E-06, -0.045483, -0.00965 ]
+    mass: 0.6781
+    inertia: [
+      0.001641, 0, 0,
+      0, 0.00041, -0.000278,
+      0, 0, 0.001641 ]
+    elements:
+      -
+        type: Shape
+        geometry: { type: Resource, uri: "parts/spherical_wrist_2_link.STL" }
+        appearance: *BodyAppearance

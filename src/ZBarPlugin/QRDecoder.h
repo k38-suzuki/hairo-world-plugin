@@ -19,7 +19,7 @@ public:
 
     void decode(const std::string& filename);
 
-    SignalProxy<void(std::string text)> sigDecoded();
+    SignalProxy<void(const std::string& text)> sigDecoded();
 
 private:
     class Impl;

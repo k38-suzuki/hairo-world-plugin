@@ -33,6 +33,7 @@ public:
 
     UnsteadyFlowPlugin() : Plugin("UnsteadyFlow")
     {
+        require("Body");
         require("CFD");
     }
 

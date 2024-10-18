@@ -10,6 +10,7 @@
 using namespace std;
 using namespace cnoid;
 
+
 PinholeCamera::PinholeCamera()
 {
     setDataType(GammaData::PINHOLE);

@@ -358,7 +358,6 @@ vector<DirClippingInfo> getDirectionsClipping(
 
 }
 
-
 namespace cnoid {
 
 class GammaImageGenerator::Impl

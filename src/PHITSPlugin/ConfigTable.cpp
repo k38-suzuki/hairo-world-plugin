@@ -9,6 +9,7 @@
 using namespace std;
 using namespace cnoid;
 
+
 NuclideTable::NuclideTable()
 {
     nuclideName_.clear();

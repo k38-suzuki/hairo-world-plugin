@@ -20,7 +20,7 @@ public:
 
     void setValue(const int& id, const double& value);
 
-    SignalProxy<void(double h_position, double v_position)> sigAxis();
+    SignalProxy<void(const double& h_position, const double& v_position)> sigAxis();
 
 protected:
     virtual void paintEvent(QPaintEvent* event) override;

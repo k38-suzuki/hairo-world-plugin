@@ -1,6 +1,7 @@
 set(sources
   CFDPlugin.cpp
   CFDSimulatorItem.cpp
+  FlightEventReader.cpp
   Rotor.cpp
   Thruster.cpp
   WingDevice.cpp
@@ -8,6 +9,7 @@ set(sources
 
 set(headers
   CFDSimulatorItem.h
+  FlightEventReader.h
   Rotor.h
   Thruster.h
   WingDevice.h
@@ -20,11 +22,11 @@ choreonoid_make_header_public(Thruster.h)
 choreonoid_make_header_public(WingDevice.h)
 
 set(target CnoidCFDPlugin)
-make_gettext_mofiles(${target} mofiles)
+choreonoid_make_gettext_mo_files(${target} mofiles)
 choreonoid_add_plugin(${target} ${sources} ${mofiles} HEADERS ${headers})
 target_link_libraries(${target} PUBLIC CnoidBodyPlugin CnoidSimpleColliderPlugin)
 
-include(CFDBodyBuildFunctions.cmake)
+include(ChoreonoidCFDBuildFunctions.cmake)
 if(CHOREONOID_INSTALL_SDK)
-  install(FILES CFDBodyBuildFunctions.cmake DESTINATION ${CHOREONOID_CMAKE_CONFIG_SUBDIR}/ext)
+  install(FILES ChoreonoidCFDBuildFunctions.cmake DESTINATION ${CHOREONOID_CMAKE_CONFIG_SUBDIR}/ext)
 endif()

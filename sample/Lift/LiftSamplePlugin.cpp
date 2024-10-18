@@ -14,6 +14,7 @@ public:
     LiftSamplePlugin() : Plugin("LiftSample")
     {
         require("Body");
+        require("CFD");
     }
 
     virtual bool initialize() override

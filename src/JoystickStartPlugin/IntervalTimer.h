@@ -16,10 +16,6 @@ public:
 
     IntervalTimer();
     virtual ~IntervalTimer();
-
-private:
-    class Impl;
-    Impl* impl;
 };
 
 }

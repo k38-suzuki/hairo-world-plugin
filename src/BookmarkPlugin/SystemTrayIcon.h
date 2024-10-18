@@ -18,8 +18,8 @@ class Menu;
 class CNOID_EXPORT SystemTrayIcon : public QSystemTrayIcon
 {
 public:
-    SystemTrayIcon(QObject* parent = 0);
-    SystemTrayIcon(const QIcon& icon, QObject* parent = 0);
+    SystemTrayIcon(QObject* parent = nullptr);
+    SystemTrayIcon(const QIcon& icon, QObject* parent = nullptr);
     virtual ~SystemTrayIcon();
 
     static bool isSystemTrayAvailable();
@@ -28,8 +28,8 @@ public:
     Action* addAction(const QString& text);
     Action* addAction(const QIcon& icon, const QString& text);
 
-    QAction* addSection(const QString &text);
-    QAction* addSection(const QIcon &icon, const QString &text);
+    QAction* addSection(const QString& text);
+    QAction* addSection(const QIcon& icon, const QString& text);
     QAction* addSeparator();
 
     Menu* menu();

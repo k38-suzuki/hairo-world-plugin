@@ -7,6 +7,7 @@
 #include <cnoid/ExtensionManager>
 #include <cnoid/Joystick>
 #include <cnoid/JoystickCapture>
+#include <cnoid/MainMenu>
 #include <cnoid/MainWindow>
 #include <cnoid/MenuManager>
 #include <cnoid/OptionManager>
@@ -64,18 +65,21 @@ void KIOSKManager::initializeClass(ExtensionManager* ext)
     auto config = AppConfig::archive()->openMapping("kiosk_manager");
     is_kiosk_enabled = config->get("kiosk_mode", false);
 
-    MenuManager& mm = ext->menuManager().setPath("/View");
-    auto currentMenu = mm.currentMenu();
-    auto kioskCheck = mm.addCheckItem(_("Enable KIOSK"));
-    currentMenu->sigAboutToShow().connect(
-        [kioskCheck](){ kioskCheck->setChecked(is_kiosk_enabled); });
+    if(auto optionsMenu = MainMenu::instance()->get_Options_Menu()) {
+        MenuManager& mm = ext->menuManager();
+        mm.setCurrent(optionsMenu).setPath(N_("KIOSK"));
+        auto currentMenu = mm.currentMenu();
+        auto kioskCheck = mm.addCheckItem(_("Full screen Mode"));
+        currentMenu->sigAboutToShow().connect(
+            [kioskCheck](){ kioskCheck->setChecked(is_kiosk_enabled); });
 
-    kioskCheck->sigToggled().connect(
-        [&](bool checked){
-            is_kiosk_enabled = checked;
-            AppConfig::archive()->openMapping("kiosk_manager")->write("kiosk_mode", checked);
-            kioskInstance->setKIOSKEnabled(checked);
-        });
+        kioskCheck->sigToggled().connect(
+            [&](bool checked){
+                is_kiosk_enabled = checked;
+                AppConfig::archive()->openMapping("kiosk_manager")->write("kiosk_mode", checked);
+                kioskInstance->setKIOSKEnabled(checked);
+            });
+    }
 
     auto om = OptionManager::instance();
     om->add_flag("--kiosk-mode", is_kiosk_enabled, "start kiosk mode automatically");

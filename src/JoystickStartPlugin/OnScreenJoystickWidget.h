@@ -5,11 +5,11 @@
 #ifndef CNOID_JOYSTICKSTART_PLUGIN_ON_SCREEN_JOYSTICK_WIDGET_H
 #define CNOID_JOYSTICKSTART_PLUGIN_ON_SCREEN_JOYSTICK_WIDGET_H
 
-#include <cnoid/Widget>
+#include <QWidget>
 
 namespace cnoid {
 
-class OnScreenJoystickWidget : public Widget
+class OnScreenJoystickWidget : public QWidget
 {
 public:
     OnScreenJoystickWidget(QWidget* parent = nullptr);

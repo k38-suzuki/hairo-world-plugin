@@ -16,6 +16,7 @@
 using namespace std;
 using namespace cnoid;
 
+
 void LiftSimulatorItem::initializeClass(ExtensionManager* ext)
 {
     ext->itemManager()

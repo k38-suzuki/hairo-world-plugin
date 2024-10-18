@@ -68,13 +68,13 @@ Action* SystemTrayIcon::addAction(const QIcon& icon, const QString& text)
 }
 
 
-QAction* SystemTrayIcon::addSection(const QString &text)
+QAction* SystemTrayIcon::addSection(const QString& text)
 {
     return systrayMenu->addSection(text);
 }
 
 
-QAction* SystemTrayIcon::addSection(const QIcon &icon, const QString &text)
+QAction* SystemTrayIcon::addSection(const QIcon& icon, const QString& text)
 {
     return systrayMenu->addSection(icon, text);
 }

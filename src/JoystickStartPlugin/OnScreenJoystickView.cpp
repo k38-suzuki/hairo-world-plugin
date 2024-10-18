@@ -30,6 +30,7 @@ public:
 
 }
 
+
 void OnScreenJoystickView::initializeClass(ExtensionManager* ext)
 {
     ext->viewManager().registerClass<OnScreenJoystickView>(

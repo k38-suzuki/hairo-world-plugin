@@ -26,26 +26,26 @@ namespace filesystem = cnoid::stdx::filesystem;
 
 namespace {
 
-class EnergyFilterDialog : public Dialog
+class EnergyFilterDialog : public QDialog
 {
 public:
-    EnergyFilterDialog();
+    EnergyFilterDialog(QWidget* parent = nullptr);
 
-    enum ItemID { CHECK, SPECIES, MIN, MAX, NUM_ITEMIDS };
+    enum ItemId { CHECK, SPECIES, MIN, MAX };
 
     RadioButton noFilterRadio;
     RadioButton rangeFilterRadio;
     RadioButton nuclideFilterRadio;
-    SpinBox* minChSpin;
-    SpinBox* maxChSpin;
+    SpinBox* minChSpinBox;
+    SpinBox* maxChSpinBox;
     TreeWidget* nuclideTree;
+    QDialogButtonBox* buttonBox;
 
     void storeState(Archive& archive);
     void restoreState(const Archive& archive);
 };
 
 }
-
 
 namespace cnoid {
 
@@ -104,13 +104,13 @@ int EnergyFilter::mode() const
 
 int EnergyFilter::min() const
 {
-    return impl->config->minChSpin->value();
+    return impl->config->minChSpinBox->value();
 }
 
 
 int EnergyFilter::max() const
 {
-    return impl->config->maxChSpin->value();
+    return impl->config->maxChSpinBox->value();
 }
 
 
@@ -181,11 +181,9 @@ void EnergyFilter::restoreState(const Archive& archive)
 }
 
 
-EnergyFilterDialog::EnergyFilterDialog()
-    : Dialog()
+EnergyFilterDialog::EnergyFilterDialog(QWidget* parent)
+    : QDialog(parent)
 {
-    setWindowTitle(_("Energy Filter Config"));
-
     ButtonGroup group;
     group.addButton(&noFilterRadio);
     group.addButton(&rangeFilterRadio);
@@ -198,20 +196,20 @@ EnergyFilterDialog::EnergyFilterDialog()
     rangeHbox->addWidget(&rangeFilterRadio);
     rangeHbox->addStretch();
     rangeHbox->addWidget(new QLabel(_("Min [Ch]")));
-    minChSpin = new SpinBox();
-    minChSpin->setSingleStep(1);
-    minChSpin->setValue(0);
-    minChSpin->setMinimum(0);
-    minChSpin->setMaximum(100000);
-    rangeHbox->addWidget(minChSpin);
+    minChSpinBox = new SpinBox();
+    minChSpinBox->setSingleStep(1);
+    minChSpinBox->setValue(0);
+    minChSpinBox->setMinimum(0);
+    minChSpinBox->setMaximum(100000);
+    rangeHbox->addWidget(minChSpinBox);
     rangeHbox->addSpacing(10);
     rangeHbox->addWidget(new QLabel(_("Max [Ch]")));
-    maxChSpin = new SpinBox();
-    maxChSpin->setSingleStep(1);
-    maxChSpin->setValue(1);
-    maxChSpin->setMinimum(0);
-    maxChSpin->setMaximum(100000);
-    rangeHbox->addWidget(maxChSpin);
+    maxChSpinBox = new SpinBox();
+    maxChSpinBox->setSingleStep(1);
+    maxChSpinBox->setValue(1);
+    maxChSpinBox->setMinimum(0);
+    maxChSpinBox->setMaximum(100000);
+    rangeHbox->addWidget(maxChSpinBox);
 
     auto nuclideHbox = new QHBoxLayout();
     nuclideHbox->addWidget(&nuclideFilterRadio);
@@ -220,35 +218,34 @@ EnergyFilterDialog::EnergyFilterDialog()
     const QStringList headers = { " ", _("Nuclide"), _("Min [Ch]"), _("Max [Ch]") };
     nuclideTree->setHeaderLabels(headers);
 
-    QPushButton* okButton = new QPushButton(_("&Ok"));
-    okButton->setDefault(true);
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(this);
-    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
-    connect(buttonBox,SIGNAL(accepted()), this, SLOT(accept()));
-
     noFilterRadio.setChecked(true);
-    minChSpin->setEnabled(false);
-    maxChSpin->setEnabled(false);
+    minChSpinBox->setEnabled(false);
+    maxChSpinBox->setEnabled(false);
     nuclideTree->setEnabled(false);
     rangeFilterRadio.sigToggled().connect(
         [&](bool checked){
-            minChSpin->setEnabled(checked);
-            maxChSpin->setEnabled(checked);
+            minChSpinBox->setEnabled(checked);
+            maxChSpinBox->setEnabled(checked);
         });
     nuclideFilterRadio.sigToggled().connect(
         [&](bool checked){
             nuclideTree->setEnabled(checked);
         });
 
-    auto vbox = new QVBoxLayout();
-    vbox->addWidget(&noFilterRadio);
-    vbox->addLayout(rangeHbox);
-    vbox->addLayout(nuclideHbox);
-    vbox->addWidget(nuclideTree);
-    vbox->addStretch();
-    vbox->addWidget(new HSeparator());
-    vbox->addWidget(buttonBox);
-    setLayout(vbox);
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
+    connect(buttonBox, &QDialogButtonBox::accepted, [&](){ accept(); });
+
+    auto mainLayout = new QVBoxLayout();
+    mainLayout->addWidget(&noFilterRadio);
+    mainLayout->addLayout(rangeHbox);
+    mainLayout->addLayout(nuclideHbox);
+    mainLayout->addWidget(nuclideTree);
+    mainLayout->addStretch();
+    mainLayout->addWidget(new HSeparator());
+    mainLayout->addWidget(buttonBox);
+    setLayout(mainLayout);
+
+    setWindowTitle(_("Energy Filter Config"));
 }
 
 
@@ -263,8 +260,8 @@ void EnergyFilterDialog::storeState(Archive& archive)
         mode = EnergyFilter::NUCLIDE_FILTER;
     }
     archive.write("mode", mode);
-    archive.write("min", minChSpin->value());
-    archive.write("max", maxChSpin->value());
+    archive.write("min", minChSpinBox->value());
+    archive.write("max", maxChSpinBox->value());
 
     ListingPtr filterListing = new Listing;
 
@@ -297,8 +294,8 @@ void EnergyFilterDialog::restoreState(const Archive& archive)
         nuclideFilterRadio.setChecked(true);
     }
 
-    minChSpin->setValue(archive.get("min", 0));
-    maxChSpin->setValue(archive.get("max", 0));
+    minChSpinBox->setValue(archive.get("min", 0));
+    maxChSpinBox->setValue(archive.get("max", 0));
 
     ListingPtr filterListing = archive.findListing("filters");
     if(filterListing->isValid()) {

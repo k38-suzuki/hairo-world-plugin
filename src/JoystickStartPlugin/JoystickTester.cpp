@@ -3,7 +3,6 @@
 */
 
 #include "JoystickTester.h"
-#include <cnoid/Action>
 #include <cnoid/Buttons>
 #include <cnoid/Dialog>
 #include <cnoid/ExtensionManager>
@@ -11,7 +10,6 @@
 #include <cnoid/JoystickCapture>
 #include <cnoid/MainMenu>
 #include <cnoid/Separator>
-#include <cnoid/HamburgerMenu>
 #include <QBoxLayout>
 #include <QDialogButtonBox>
 #include <QGridLayout>
@@ -19,7 +17,6 @@
 #include <QLabel>
 #include <QProgressBar>
 #include <vector>
-#include "VirtualJoystickWidget.h"
 #include "gettext.h"
 
 using namespace std;
@@ -27,26 +24,19 @@ using namespace cnoid;
 
 namespace {
 
-JoystickTester* testerInstance = nullptr;
-VirtualJoystickWidget* joystickInstance = nullptr;
-
-}
-
-namespace cnoid {
-
-class JoystickTester::Impl : public Dialog
+class TesterDialog : public QDialog
 {
 public:
+    TesterDialog(QWidget* parent = nullptr);
 
-    Impl();
-
-    void onAxis(const int& id, const double& position);
-    void onButton(const int& id, bool isPressed);
-
-    vector<QProgressBar*> bars;
-    vector<PushButton*> buttons;
+private:
+    void onAxis(int id, const double& position);
+    void onButton(int id, bool isPressed);
 
     JoystickCapture joystick;
+    vector<QProgressBar*> bars;
+    vector<QPushButton*> buttons;
+    QDialogButtonBox* buttonBox;
 };
 
 }
@@ -54,50 +44,32 @@ public:
 
 void JoystickTester::initializeClass(ExtensionManager* ext)
 {
-    if(!testerInstance) {
-        testerInstance = ext->manage(new JoystickTester);
+    static TesterDialog* dialog = nullptr;
 
-        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/joystick_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
-        auto action = new Action;
-        action->setText(_("Joystick Tester"));
-        action->setIcon(icon);
-        action->setToolTip(_("Show the joystick tester"));
-        action->sigTriggered().connect([&](){ testerInstance->impl->show(); });
-        HamburgerMenu::instance()->addAction(action);
+    if(!dialog) {
+        dialog = ext->manage(new TesterDialog);
+
+        MainMenu::instance()->add_Tools_Item(
+            _("Joystick Tester"), [](){ dialog->show(); });
     }
-
-    if(!joystickInstance) {
-        // joystickInstance = ext->manage(new VirtualJoystickWidget);
-        // joystickInstance->setWindowFlags(Qt::WindowStaysOnTopHint);
-
-        // const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/videogame_asset_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
-        // auto action = new Action;
-        // action->setText(_("Virtual Joystick2"));
-        // action->setIcon(icon);
-        // action->setToolTip(_("Show the virtual joystick"));
-        // action->sigTriggered().connect([&](){ joystickInstance->show(); });
-        // HamburgerMenu::instance()->addAction(action);
-    }
-}
-
-
-JoystickTester* JoystickTester::instance()
-{
-    return testerInstance;
 }
 
 
 JoystickTester::JoystickTester()
 {
-    impl = new Impl;
+
 }
 
 
-JoystickTester::Impl::Impl()
-    : Dialog()
+JoystickTester::~JoystickTester()
 {
-    setWindowTitle(_("Joystick Tester"));
 
+}
+
+
+TesterDialog::TesterDialog(QWidget* parent)
+    : QDialog(parent)
+{
     joystick.setDevice("/dev/input/js0");
 
     joystick.sigAxis().connect(
@@ -106,9 +78,9 @@ JoystickTester::Impl::Impl()
     joystick.sigButton().connect(
         [&](int id, bool isPressed){ onButton(id, isPressed); });
 
-    QGroupBox* gbox2 = new QGroupBox(_("Axes"));
-    auto vbox1 = new QVBoxLayout;
-    QGridLayout* gbox1 = new QGridLayout;
+    QGroupBox* groupBox = new QGroupBox(_("Axes"));
+    auto vbox = new QVBoxLayout;
+    auto gridLayout = new QGridLayout;
     for(int i = 0; i < joystick.numAxes(); ++i) {
         QProgressBar* bar = new QProgressBar;
         bar->setValue(0);
@@ -116,49 +88,42 @@ JoystickTester::Impl::Impl()
         bar->setFormat(formatC("{0:.3}%", 0.0).c_str());
         bars.push_back(bar);
         const string label = "Axis " + to_string(i) + ":";
-        gbox1->addWidget(new QLabel(label.c_str()), i, 0);
-        gbox1->addWidget(bar, i, 1);
+        gridLayout->addWidget(new QLabel(label.c_str()), i, 0);
+        gridLayout->addWidget(bar, i, 1);
     }
-    vbox1->addLayout(gbox1);
-    vbox1->addStretch();
-    gbox2->setLayout(vbox1);
+    vbox->addLayout(gridLayout);
+    vbox->addStretch();
+    groupBox->setLayout(vbox);
 
-    QGroupBox* gbox3 = new QGroupBox(_("Buttons"));
-    auto vbox2 = new QVBoxLayout;
+    QGroupBox* groupBox2 = new QGroupBox(_("Buttons"));
+    vbox = new QVBoxLayout;
     for(int i = 0; i < joystick.numButtons(); ++i) {
         PushButton* button = new PushButton(to_string(i).c_str());
         buttons.push_back(button);
-        vbox2->addWidget(button);
+        vbox->addWidget(button);
     }
-    vbox2->addStretch();
-    gbox3->setLayout(vbox2);
-
-    auto hbox = new QHBoxLayout;
-    hbox->addWidget(gbox2);
-    hbox->addWidget(gbox3);
-
-    auto okButton = new QPushButton(_("&Ok"));
-    okButton->setDefault(true);
-    auto buttonBox = new QDialogButtonBox(this);
-    buttonBox->addButton(okButton, QDialogButtonBox::AcceptRole);
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-
-    auto vbox = new QVBoxLayout;
-    vbox->addLayout(hbox);
     vbox->addStretch();
-    vbox->addWidget(new HSeparator);
-    vbox->addWidget(buttonBox);
-    setLayout(vbox);
+    groupBox2->setLayout(vbox);
+
+    auto layout = new QHBoxLayout;
+    layout->addWidget(groupBox);
+    layout->addWidget(groupBox2);
+
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
+    connect(buttonBox, &QDialogButtonBox::accepted, [&](){ accept(); });
+
+    auto mainLayout = new QVBoxLayout;
+    mainLayout->addLayout(layout);
+    mainLayout->addStretch();
+    mainLayout->addWidget(new HSeparator);
+    mainLayout->addWidget(buttonBox);
+    setLayout(mainLayout);
+
+    setWindowTitle(_("Joystick Tester"));
 }
 
 
-JoystickTester::~JoystickTester()
-{
-    delete impl;
-}
-
-
-void JoystickTester::Impl::onAxis(const int& id, const double& position)
+void TesterDialog::onAxis(int id, const double& position)
 {
     QProgressBar* bar = bars[id];
     double value = 100.0 * position;
@@ -167,12 +132,11 @@ void JoystickTester::Impl::onAxis(const int& id, const double& position)
 }
 
 
-void JoystickTester::Impl::onButton(const int& id, bool isPressed)
+void TesterDialog::onButton(int id, bool isPressed)
 {
-    PushButton* button = buttons[id];
     QPalette palette;
     if(isPressed) {
         palette.setColor(QPalette::Button, QColor(Qt::red));
     }
-    button->setPalette(palette);
+    buttons[id]->setPalette(palette);
 }

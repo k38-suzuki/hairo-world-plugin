@@ -17,37 +17,29 @@
 #include <cnoid/stdx/filesystem>
 #include <cnoid/LoggerUtil>
 #include "HamburgerMenu.h"
+#include "ProjectListedDialog.h"
+#include "ListedWidget.h"
 #include "gettext.h"
 
 using namespace std;
 using namespace cnoid;
 namespace filesystem = cnoid::stdx::filesystem;
 
-namespace {
-
-WorldLogManager* logInstance = nullptr;
-
-}
-
 
 void WorldLogManager::initializeClass(ExtensionManager* ext)
 {
-    if(!logInstance) {
-        logInstance = ext->manage(new WorldLogManager);
+    static WorldLogManager* widget = nullptr;
 
-        const QIcon icon = QIcon(":/GoogleMaterialSymbols/icon/restore_page_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
-        auto action = new Action;
-        action->setText(_("World Log Manager"));
-        action->setIcon(icon);
-        action->setToolTip(_("Show the world log manager"));
-        action->sigTriggered().connect([&](){ logInstance->show(); });
-        HamburgerMenu::instance()->addAction(action);
+    if(!widget) {
+        widget = ext->manage(new WorldLogManager);
+
+        ProjectListedDialog::instance()->listedWidget()->addWidget(_("World Log"), widget);
     }
 }
 
 
 WorldLogManager::WorldLogManager(QWidget* parent)
-    : ArchiveListDialog(parent),
+    : ArchiveListWidget(parent),
       is_simulation_started_(false),
       project_filename_("")
 {

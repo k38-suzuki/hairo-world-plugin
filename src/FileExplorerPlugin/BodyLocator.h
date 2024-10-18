@@ -1,9 +1,9 @@
 /**
     @author Kenta Suzuki
- */
+*/
 
-#ifndef CNOID_FILE_EXPLORE_PLUGIN_BODY_LOCATOR_H
-#define CNOID_FILE_EXPLORE_PLUGIN_BODY_LOCATOR_H
+#ifndef CNOID_FILE_EXPLORER_PLUGIN_BODY_LOCATOR_H
+#define CNOID_FILE_EXPLORER_PLUGIN_BODY_LOCATOR_H
 
 namespace cnoid {
 
@@ -13,14 +13,9 @@ class BodyLocator
 {
 public:
     static void initializeClass(ExtensionManager* ext);
-    static BodyLocator* instance();
 
     BodyLocator();
     virtual ~BodyLocator();
-
-private:
-    class Impl;
-    Impl* impl;
 };
 
 }

@@ -1,0 +1,39 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: Gen3NV
+
+links:
+  -
+    type: SubBody
+    uri: Gen3Body.body
+    translation: [ 0, 0, 0 ]
+    jointType: fixed
+  -
+    name: joint_7
+    parent: joint_6
+    translation: [ 0, -0.10593, -0.00017505 ]
+    rotation: [ 1, 0, 0, -90 ]
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointRange: [ -360.0, 360.0 ]
+    maxJointVelocity: 1.2218
+    jointId: 6
+    centerOfMass: [ -9.3E-05, 0.000132, -0.022905 ]
+    mass: 0.364
+    inertia: [
+      0.000214, 0, 1E-06,
+      0, 0.000223, -2E-06,
+      0, 0, 0.00024 ]
+    elements:
+      -
+        type: Shape
+        geometry: { type: Resource, uri: "parts/bracelet_no_vision_link.STL" }
+        appearance: { material: { diffuseColor: [ 0.75294, 0.75294, 0.75294 ] } }
+  -
+    name: end_effector
+    parent: joint_7
+    translation: [ 0, 0, -0.0615250000000001 ]
+    rotation: [ 1, 0, 0, 180 ]
+    jointType: fixed
+    jointAxis: [ 0, 0, 0 ]

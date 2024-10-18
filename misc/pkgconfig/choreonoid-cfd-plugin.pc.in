@@ -1,0 +1,18 @@
+# pkg-config source file
+
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/@CNOID_HEADER_SUBDIR@
+subdir=@CNOID_VERSION_SUBDIR@
+sharedir=@CNOID_SHARE_DIR@
+plugindir=${exec_prefix}/@CNOID_PLUGIN_SUBDIR@
+simplecontrollerdir=${plugindir}/simplecontroller
+customizerdir=${plugindir}/simplecontroller/customizer
+
+Name: choreonoid-cfd-plugin
+Description: Choreonoid CFD plugin
+Version: @CNOID_FULL_VERSION@
+Requires: choreonoid-body-plugin = @CNOID_FULL_VERSION@
+Conflicts:
+Libs: -lCnoidCFDPlugin

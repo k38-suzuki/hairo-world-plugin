@@ -16,6 +16,8 @@ public:
     NetEmPlugin() : Plugin("NetEm")
     {
         require("Body");
+        require("SimpleCollider");
+        require("Bookmark");
     }
 
     virtual bool initialize() override

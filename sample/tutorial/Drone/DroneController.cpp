@@ -9,7 +9,7 @@ using namespace cnoid;
 
 class DroneController : public SimpleController
 {
-    enum ControlMode { Mode1, Mode2 };
+    enum { Mode1, Mode2 };
 
     BodyPtr ioBody;
     DeviceList<Rotor> rotors;

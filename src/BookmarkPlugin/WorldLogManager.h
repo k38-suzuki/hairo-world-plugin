@@ -5,7 +5,7 @@
 #ifndef CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_H
 #define CNOID_BOOKMARK_PLUGIN_WORLD_LOG_MANAGER_H
 
-#include "ArchiveListDialog.h"
+#include "ArchiveListWidget.h"
 
 namespace cnoid {
 
@@ -13,7 +13,7 @@ class CheckBox;
 class ExtensionManager;
 class SimulatorItem;
 
-class WorldLogManager : public ArchiveListDialog
+class WorldLogManager : public ArchiveListWidget
 {
 public:
     static void initializeClass(ExtensionManager* ext);

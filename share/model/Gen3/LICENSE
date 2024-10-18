@@ -1,10 +1,10 @@
 BSD 3-Clause License
 
-Copyright (c) 2023, Kenta Suzuki
+Copyright (c) 2025, Kenta Suzuki
 
 This robot model is based on the information written in the URDF model files
-included in ROS's ros_kortex package. The package is copyrighted to
-Kinova ROS Support and is released under the BSD 3-Clause license.
+included in ROS's ros2_kortex package. The package is copyrighted to
+Kinova Robotics inc. and is released under the BSD license.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:

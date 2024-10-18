@@ -17,7 +17,7 @@ public:
     GammaData();
     virtual ~GammaData() { }
 
-    enum DataTypeID { DOSERATE, PINHOLE, COMPTON, NUM_TYPES };
+    enum DataType { DOSERATE, PINHOLE, COMPTON };
 
     struct GeometryInfo {
         int calcPointID;

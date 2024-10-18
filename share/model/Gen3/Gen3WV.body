@@ -1,0 +1,70 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: Gen3WV
+
+links:
+  -
+    type: SubBody
+    uri: Gen3Body.body
+    translation: [ 0, 0, 0 ]
+    jointType: fixed
+  -
+    name: joint_7
+    parent: joint_6
+    translation: [ 0, -0.10593, -0.00017505 ]
+    rotation: [ 1, 0, 0, -90 ]
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointRange: [ -360.0, 360.0 ]
+    maxJointVelocity: 1.2218
+    jointId: 6
+    centerOfMass: [ 0.000281, 0.011402, -0.029798 ]
+    mass: 0.5
+    inertia: [
+      0.000587, 3E-06, 3E-06,
+      0, 0.000369, -0.000118,
+      0, 0, 0.000609 ]
+    elements:
+      -
+        type: Shape
+        geometry: { type: Resource, uri: "parts/bracelet_with_vision_link.STL" }
+        appearance: { material: { diffuseColor: [ 0.75294, 0.75294, 0.75294 ] } }
+  -
+    name: end_effector
+    parent: joint_7
+    translation: [ 0, 0, -0.0615250000000001 ]
+    rotation: [ 1, 0, 0, 180 ]
+    jointType: fixed
+    jointAxis: [ 0, 0, 0 ]
+    elements:
+      -
+        type: Camera
+        name: DepthSensor
+        translation: [ 0.0275, 0.066, -0.00305 ]
+        rotation: [ 0, 1, 0, 180 ]
+        format: DEPTH
+        fieldOfView: 72
+        nearClipDistance: 0.02
+        width: 480
+        height: 270
+        frameRate: 30
+        elements:
+          - &camera
+            type: Shape
+            rotation: [ 1, 0, 0, 90 ]
+            geometry: { type: Cylinder, radius: 0.005, height: 0.01 }
+            appearance: { material: { diffuseColor: [ 0.2, 0.2, 0.8 ] } }
+      -
+        type: Camera
+        name: ColorSensor
+        translation: [ 0, 0.05639, -0.00305 ]
+        rotation: [ 0, 1, 0, 180 ]
+        format: COLOR
+        fieldOfView: 65
+        nearClipDistance: 0.02
+        width: 640
+        height: 480
+        frameRate: 30
+        elements:
+          - { <<: *camera }

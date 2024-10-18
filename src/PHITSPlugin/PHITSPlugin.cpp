@@ -18,6 +18,7 @@ public:
     PHITSPlugin() : Plugin("PHITS")
     {
         require("Body");
+        require("VFX");
     }
 
     virtual bool initialize() override

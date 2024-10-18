@@ -15,6 +15,7 @@ public:
     CFDPlugin() : Plugin("CFD")
     {
         require("Body");
+        require("SimpleCollider");
     }
 
     virtual bool initialize() override

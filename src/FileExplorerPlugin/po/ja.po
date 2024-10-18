@@ -17,14 +17,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-msgid "Open"
-msgstr "開く"
+msgid "File Explorer"
+msgstr "ファイルエクスプローラ"
+
+msgid "Body"
+msgstr "ボディ"
+
+msgid "File Path"
+msgstr "ファイルパス"
+
+msgid "Update"
+msgstr ""
 
 msgid "gedit"
-msgstr "ファイル"
+msgstr ""
 
 msgid "Nautilus"
-msgstr "ディレクトリ"
+msgstr ""
 
 msgid "Body Locator"
 msgstr "ボディの配置"

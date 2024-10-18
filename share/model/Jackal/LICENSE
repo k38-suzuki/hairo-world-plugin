@@ -4,7 +4,7 @@ Copyright (c) 2022, Kenta Suzuki
 
 This robot model is based on the information written in the URDF model files
 included in ROS's jackal package. The package is copyrighted to
-Clearpath Robotics ROS Support and is released under the BSD 3-Clause license.
+Clearpath Robotics Inc. and is released under the BSD license.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:

@@ -42,7 +42,7 @@ public:
     void setCamera(Camera* camera);
     void putMessages(bool checked);
 
-    SignalProxy<void(std::string)> sigReadPHITSData() { return sigReadPHITSData_; }
+    SignalProxy<void(const std::string& filename)> sigReadPHITSData() { return sigReadPHITSData_; }
     SignalProxy<void()> sigProcessFinished() { return sigProcessFinished_; }
 
 private:
@@ -57,7 +57,7 @@ private:
     bool putMessages_;
     bool isPHITS;
 
-    Signal<void(std::string)> sigReadPHITSData_;
+    Signal<void(const std::string& filename)> sigReadPHITSData_;
     Signal<void()> sigProcessFinished_;
 
     void onReadyReadStandardOutput();

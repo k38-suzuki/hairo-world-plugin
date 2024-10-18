@@ -5,11 +5,11 @@
 #ifndef CNOID_JOYSTICKSTART_PLUGIN_VIRTUAL_JOYSTICK_WIDGET_H
 #define CNOID_JOYSTICKSTART_PLUGIN_VIRTUAL_JOYSTICK_WIDGET_H
 
-#include <cnoid/Widget>
+#include <QWidget>
 
 namespace cnoid {
 
-class VirtualJoystickWidget : public Widget
+class VirtualJoystickWidget : public QWidget
 {
 public:
     VirtualJoystickWidget(QWidget* parent = nullptr);

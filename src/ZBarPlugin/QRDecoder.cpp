@@ -18,7 +18,7 @@ public:
     ~Impl();
 
     Process process;
-    Signal<void(string text)> sigDecoded;
+    Signal<void(const string& text)> sigDecoded;
 
     void decode(const string& filename);
     bool terminate();
@@ -95,7 +95,7 @@ void QRDecoder::Impl::onReadyReadStandardOutput()
 }
 
 
-SignalProxy<void(string text)> QRDecoder::sigDecoded()
+SignalProxy<void(const string& text)> QRDecoder::sigDecoded()
 {
     return impl->sigDecoded;
 }

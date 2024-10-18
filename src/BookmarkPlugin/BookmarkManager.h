@@ -5,14 +5,14 @@
 #ifndef CNOID_BOOKMARK_PLUGIN_BOOKMARK_MANAGER_H
 #define CNOID_BOOKMARK_PLUGIN_BOOKMARK_MANAGER_H
 
-#include "ArchiveListDialog.h"
+#include "ArchiveListWidget.h"
 
 namespace cnoid {
 
 class CheckBox;
 class ExtensionManager;
 
-class BookmarkManager : public ArchiveListDialog
+class BookmarkManager : public ArchiveListWidget
 {
 public:
     static void initializeClass(ExtensionManager* ext);

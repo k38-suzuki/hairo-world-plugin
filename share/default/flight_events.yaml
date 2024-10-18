@@ -1,0 +1,9 @@
+events:
+  -
+    name: Event1
+    mass: 1000.0
+    duration: 960.0
+  -
+    name: Event2
+    mass: 1.0
+    duration: 480.0

@@ -211,7 +211,6 @@ public:
 
 }
 
-
 namespace cnoid {
 
 class EquisolidAngleProjection

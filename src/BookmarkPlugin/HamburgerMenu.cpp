@@ -74,7 +74,8 @@ void HamburgerMenu::initialize()
 {
     contextMenu_ = new Menu;
 
-    auto button = fileBar()->addButton(":/GoogleMaterialSymbols/icon/menu_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
+    // auto button = fileBar()->addButton(":/BookmarkPlugin/icon/menu.svg");
+    auto button = new ToolButton;
     button->setMenu(this);
     button->setPopupMode(QToolButton::InstantPopup);
 

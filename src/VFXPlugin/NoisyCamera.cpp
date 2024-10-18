@@ -10,6 +10,7 @@
 using namespace std;
 using namespace cnoid;
 
+
 NoisyCamera::NoisyCamera()
     : spec(new Spec),
       Camera(),

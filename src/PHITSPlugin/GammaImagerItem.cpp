@@ -105,7 +105,6 @@ protected:
 
 }
 
-
 namespace cnoid {
 
 class GammaImagerItem::Impl

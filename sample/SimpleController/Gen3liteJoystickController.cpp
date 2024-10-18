@@ -74,12 +74,12 @@ public:
             }
         }
 
-        ioLeftHand = ioBody->link(prefix + "LEFT_FINGER_PROX");
-        ioRightHand = ioBody->link(prefix + "RIGHT_FINGER_PROX");
+        ioLeftHand = ioBody->link(prefix + "left_finger_bottom_joint");
+        ioRightHand = ioBody->link(prefix + "right_finger_bottom_joint");
 
         ikBody = ioBody->clone();
-        ikWrist = ikBody->link(prefix + "WRIST_ORIGIN");
-        Link* base = ikBody->link(prefix + "BASE");
+        ikWrist = ikBody->link(prefix + "end_effector");
+        Link* base = ikBody->link(prefix + "base_joint");
         baseToWrist = JointPath::getCustomPath(base, ikWrist);
         base->p().setZero();
         base->R().setIdentity();

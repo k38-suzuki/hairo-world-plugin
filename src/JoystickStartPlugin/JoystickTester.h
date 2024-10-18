@@ -13,14 +13,9 @@ class JoystickTester
 {
 public:
     static void initializeClass(ExtensionManager* ext);
-    static JoystickTester* instance();
 
     JoystickTester();
     virtual ~JoystickTester();
-
-private:
-    class Impl;
-    Impl* impl;
 };
 
 }

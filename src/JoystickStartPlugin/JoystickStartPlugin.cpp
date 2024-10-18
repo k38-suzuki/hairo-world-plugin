@@ -9,7 +9,6 @@
 #include "OnScreenJoystickView.h"
 #include "JoystickTester.h"
 #include "JoystickStarter.h"
-#include "DigitalClock.h"
 
 using namespace cnoid;
 
@@ -20,6 +19,8 @@ public:
     JoystickStartPlugin() : Plugin("JoystickStart")
     {
         require("Body");
+        require("MotionCapture");
+        require("Bookmark");
     }
 
     virtual bool initialize() override
@@ -29,7 +30,6 @@ public:
         OnScreenJoystickView::initializeClass(this);
         JoystickTester::initializeClass(this);
         JoystickStarter::initializeClass(this);
-        DigitalClock::initializeClass(this);
         return true;
     }
 

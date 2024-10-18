@@ -25,7 +25,7 @@ public:
         X_AXIS,
         Y_AXIS,
         Z_AXIS,
-        NUM_AXES
+        NumAxes
     };
 
     bool createShieldData(std::string& filename, const GammaData& gammaData);
@@ -63,7 +63,7 @@ private:
     array3d cell_;
     array3d* cell_shield_;
     array3d node_;
-    std::vector<double> coordinates_[NUM_AXES];
+    std::vector<double> coordinates_[NumAxes];
 };
 
 typedef ref_ptr<OrthoNodeData> OrthoNodeDataPtr;

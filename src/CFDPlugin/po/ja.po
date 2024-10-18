@@ -19,3 +19,9 @@ msgstr ""
 
 msgid "CFDSimulatorItem"
 msgstr "CFDシミュレータアイテム"
+
+msgid "Flight event file"
+msgstr "フライトイベントファイル"
+
+msgid "Flight events were loaded."
+msgstr "フライトイベントが読み込まれました．"

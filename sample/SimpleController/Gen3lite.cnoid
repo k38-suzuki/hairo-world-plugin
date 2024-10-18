@@ -17,12 +17,12 @@ items:
       children:
         -
           id: 2
-          name: "GEN3-LITE"
+          name: "Gen3lite"
           plugin: Body
           class: BodyItem
           is_checked: true
           data:
-            file: "${SHARE}/model/Gen3lite/GEN3-LITE.body"
+            file: "${SHARE}/model/Gen3lite/Gen3lite.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, 0 ]
             rootAttitude: [

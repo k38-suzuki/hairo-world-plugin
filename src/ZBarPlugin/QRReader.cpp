@@ -18,12 +18,6 @@ using namespace std;
 using namespace cnoid;
 namespace filesystem = cnoid::stdx::filesystem;
 
-namespace {
-
-QRReader* readerInstance = nullptr;
-
-}
-
 namespace cnoid {
 
 class QRReader::Impl
@@ -46,8 +40,10 @@ public:
 
 void QRReader::initializeClass(ExtensionManager* ext)
 {
-    if(!readerInstance) {
-        readerInstance = ext->manage(new QRReader);
+    static QRReader* reader = nullptr;
+
+    if(!reader) {
+        reader = ext->manage(new QRReader);
     }
 }
 
@@ -66,7 +62,7 @@ QRReader::Impl::Impl()
     decoder->sigDecoded().connect([&](std::string text){
         MessageView::instance()->putln(formatR(_("\"{0}\" has been read."), text)); });
 
-    auto button = imageViewBar->addButton(":/GoogleMaterialSymbols/icon/qr_code_scanner_24dp_5F6368_FILL1_wght400_GRAD0_opsz24.svg");
+    auto button = imageViewBar->addButton(":/ZBarPlugin/icon/qr-code-scanner.svg");
     button->setToolTip(_("Read QR"));
     button->sigClicked().connect([&](){ onDecodeButtonClicked(); });
 }

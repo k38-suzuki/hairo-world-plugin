@@ -1,0 +1,66 @@
+# Japanese translations for MinIOClientPlugin package.
+# Copyright (C) 2025 THE MinIOClientPlugin'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the MinIOClientPlugin package.
+# k38-suzuki <suzuki.kenta38@jaea.go.jp>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: MinIOClientPlugin\n"
+"Report-Msgid-Bugs-To: suzuki.kenta38@jaea.go.jp\n"
+"POT-Creation-Date: 2025-02-28 23:00-0800\n"
+"PO-Revision-Date: 2025-02-28 23:00-0800\n"
+"Last-Translator: k38-suzuki <suzuki.kenta38@jaea.go.jp>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "MinIO Client found."
+msgstr "MinIO Clientが見つかりました．"
+
+msgid "MinIO Client not found."
+msgstr "MinIO Clientが見つかりませんでした．"
+
+msgid "Object Browser"
+msgstr "オブジェクトブラウザ"
+
+msgid "Download"
+msgstr "ダウンロード"
+
+msgid "Object"
+msgstr "オブジェクト"
+
+msgid "Alias"
+msgstr "エイリアス"
+
+msgid "{0} has been uploaded."
+msgstr "{0} がアップロードされました．"
+
+msgid "Create Bucket"
+msgstr "バケットの作成"
+
+msgid "Bucket name:"
+msgstr "バケット名:"
+
+msgid "Create a new bucket"
+msgstr "新しいバケットの作成"
+
+msgid "Update the object list"
+msgstr "オブジェクトリストの更新"
+
+msgid "Download objects"
+msgstr "オブジェクトのダウンロード"
+
+msgid "Delete objects"
+msgstr "オブジェクトの削除"
+
+msgid "The objects are checked."
+msgstr "オブジェクトがチェックされています．"
+
+msgid "Do you want to delete objects?"
+msgstr "オブジェクトを削除しますか？"
+
+msgid "Delete Objects"
+msgstr "オブジェクトの削除"

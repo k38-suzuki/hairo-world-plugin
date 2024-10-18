@@ -24,7 +24,6 @@ using namespace cnoid;
 
 namespace {
 
-JoystickStarter* starterInstance = nullptr;
 bool is_starter_enabled = false;
 
 }
@@ -75,8 +74,10 @@ void JoystickStarter::initializeClass(ExtensionManager* ext)
             });
     }
 
-    if(!starterInstance) {
-        starterInstance = ext->manage(new JoystickStarter);
+    static JoystickStarter* starter = nullptr;
+
+    if(!starter) {
+        starter = ext->manage(new JoystickStarter);
     }
 }
 

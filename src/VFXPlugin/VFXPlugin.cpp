@@ -15,6 +15,8 @@ public:
     VFXPlugin() : Plugin("VFX")
     {
         require("Body");
+        require("GLVisionSimulator");
+        require("SimpleCollider");
     }
 
     virtual bool initialize() override
