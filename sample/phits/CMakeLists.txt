@@ -1,4 +1,8 @@
-option(BUILD_PHITS_SAMPLES "Building PHITS sampels" ON)
+if(NOT BUILD_PHITS_PLUGIN)
+  return()
+endif()
+
+option(BUILD_PHITS_SAMPLES "Building PHITS samples" OFF)
 if(NOT BUILD_PHITS_SAMPLES)
   return()
 endif()

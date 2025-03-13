@@ -3,6 +3,7 @@
 #include <cnoid/SharedJoystick>
 #include <cnoid/RateGyroSensor>
 #include <cnoid/Rotor>
+#include <vector>
 
 using namespace std;
 using namespace cnoid;
@@ -29,9 +30,22 @@ class DroneController : public SimpleController
     int currentMode;
     double timeStep;
 
+    struct ActionInfo {
+        int actionId;
+        int buttonId;
+        bool prevButtonState;
+        bool stateChanged;
+        ActionInfo(int actionId, int buttonId)
+            : actionId(actionId),
+              buttonId(buttonId),
+              prevButtonState(false),
+              stateChanged(false)
+        { }
+    };
+    vector<ActionInfo> actions;
+
     SharedJoystickPtr joystick;
     int targetMode;
-    bool prevButtonState[2];
 
 public:
 
@@ -44,7 +58,6 @@ public:
         power = true;
         currentMode = Mode1;
 
-        prevButtonState[0] = prevButtonState[1] = false;
         for(auto opt : io->options()) {
             if(opt == "mode2") {
                 currentMode = Mode2;
@@ -63,6 +76,11 @@ public:
         xyref = xyprev = getXY();
         dxyref = dxyprev = Vector2::Zero();
 
+        actions = {
+            { 0, Joystick::A_BUTTON },
+            { 1, Joystick::B_BUTTON }
+        };
+
         joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
         targetMode = joystick->addMode();
 
@@ -71,20 +89,22 @@ public:
 
     virtual bool control() override
     {
-        static const int buttonID[] = { Joystick::A_BUTTON, Joystick::B_BUTTON };
-
         joystick->updateState(targetMode);
 
-        for(int i = 0; i < 2; ++i) {
-            bool currentState = joystick->getButtonState(targetMode, buttonID[i]);
-            if(currentState && !prevButtonState[i]) {
-                if(i == 0) {
+        for(auto& info : actions) {
+            bool stateChanged = false;
+            bool buttonState = joystick->getButtonState(targetMode, info.buttonId);
+            if(buttonState && !info.prevButtonState) {
+                stateChanged = true;
+            }
+            info.prevButtonState = buttonState;
+            if(stateChanged) {
+                if(info.actionId == 0) {
                     power = !power;
-                } else if(i == 1) {
+                } else if(info.actionId == 1) {
                     currentMode = currentMode == Mode1 ? Mode2 : Mode1;
                 }
             }
-            prevButtonState[i] = currentState;
         }
 
         static const int modeID[][4] = {

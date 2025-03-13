@@ -1,4 +1,8 @@
-option(BUILD_QAD_SAMPLES "Building QAD sampels" OFF)
+if(NOT BUILD_PHITS_PLUGIN)
+  return()
+endif()
+
+option(BUILD_QAD_SAMPLES "Building QAD samples" OFF)
 if(NOT BUILD_QAD_SAMPLES)
   return()
 endif()

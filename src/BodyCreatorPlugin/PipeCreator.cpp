@@ -140,7 +140,7 @@ PipeCreatorWidget::PipeCreatorWidget(QWidget* parent)
                             };
 
     for(int i = 0; i < NumDoubleSpinBoxes; ++i) {
-        DoubleSpinInfo info = doubleSpinInfo[i];
+        DoubleSpinInfo& info = doubleSpinInfo[i];
         info.spin = doubleSpinBoxes[i] = new DoubleSpinBox;
         info.spin->setRange(info.min, info.max);
         info.spin->setSingleStep(info.step);
@@ -155,7 +155,7 @@ PipeCreatorWidget::PipeCreatorWidget(QWidget* parent)
     const QStringList list2 = { _("Opening angle [deg]"), _("Inner step angle [deg]"), _("Outer step angle [deg]") };
 
     for(int i = 0; i < NumSpinBoxes; ++i) {
-        SpinInfo info = spinInfo[i];
+        SpinInfo& info = spinInfo[i];
         info.spin = spinBoxes[i] = new SpinBox;
         info.spin->setRange(info.min, info.max);
         info.spin->setValue(info.value);
@@ -197,13 +197,13 @@ void PipeCreatorWidget::contextMenuEvent(QContextMenuEvent* event)
 void PipeCreatorWidget::reset()
 {
     for(int i = 0; i < NumDoubleSpinBoxes; ++i) {
-        DoubleSpinInfo info = doubleSpinInfo[i];
+        DoubleSpinInfo& info = doubleSpinInfo[i];
         info.spin = doubleSpinBoxes[i];
         info.spin->setValue(info.value);
     }
 
     for(int i = 0; i < NumSpinBoxes; ++i) {
-        SpinInfo info = spinInfo[i];
+        SpinInfo& info = spinInfo[i];
         info.spin = spinBoxes[i];
         info.spin->setValue(info.value);
     }

@@ -239,7 +239,7 @@ links:
     rotation: [ 0, 0, 1, -90 ]
     <<: *CommonSettings
     elements:
-      Visual: { resource: { uri: "./parts/grating.wrl" } }
+      Visual: { resource: { uri: "./resource/grating.wrl" } }
   -
     name: SUPPORT
     translation: [ -2.325, -1.2, 0.32 ]

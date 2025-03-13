@@ -91,7 +91,7 @@ JoyKey::Impl::Impl(JoyKey* self, bool useDefaultKey)
     if(useDefaultKey) {
         for(int i = 0; i < 10; ++i) {
             int inputID = defaultKey[i];
-            JoystickInfo info = joystickInfo[inputID];
+            JoystickInfo& info = joystickInfo[inputID];
             key.push_back(info);
         }
     }
@@ -110,7 +110,7 @@ JoyKey::~JoyKey()
 
 void JoyKey::addInput(const int& inputID)
 {
-    JoystickInfo info = joystickInfo[inputID];
+    JoystickInfo& info = joystickInfo[inputID];
     impl->key.push_back(info);
 }
 
@@ -137,7 +137,7 @@ SignalProxy<void()> JoyKey::sigUnlocked()
 void JoyKey::Impl::onAxis(const int& id, const double& position)
 {
     if(fabs(position) > 0.0) {
-        JoystickInfo info = key[count];
+        JoystickInfo& info = key[count];
         if(info.isAxis) {
             if((int)position == (int)info.position) {
                 if(id == info.id) {
@@ -156,7 +156,7 @@ void JoyKey::Impl::onAxis(const int& id, const double& position)
 void JoyKey::Impl::onButton(const int& id, bool isPressed)
 {
     if(isPressed) {
-        JoystickInfo info = key[count];
+        JoystickInfo& info = key[count];
         if(!info.isAxis) {
             if(id == info.id) {
                 ++count;

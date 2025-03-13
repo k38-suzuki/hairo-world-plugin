@@ -1,5 +1,5 @@
-option(BUILD_HOBBY_DRONE_SAMPLES "Building HobbyDrone sampels" ON)
-if(NOT BUILD_HOBBY_DRONE_SAMPLES)
+option(BUILD_HOBBY_DRONE_SAMPLE "Building HobbyDrone sample" ON)
+if(NOT BUILD_HOBBY_DRONE_SAMPLE)
   return()
 endif()
 

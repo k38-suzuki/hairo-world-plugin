@@ -1,0 +1,61 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: SpotWB
+
+links:
+  -
+    type: SubBody
+    uri: Spot.body
+    translation: [ 0, 0, 0 ]
+    jointType: fixed
+  -
+    name: pack_mount_joint
+    parent: base_link_joint
+    translation: [ -0.019986, 0, 0.093662 ]
+    jointType: fixed
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/pack_top.dae" }
+      Collision:
+        elements:
+          - { type: Resource, uri: "resource/pack_body.dae" }
+  -
+    name: pack_mount_joint2
+    parent: base_link_joint
+    translation: [ -0.019986, 0, 0.093662 ]
+    jointType: fixed
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/pack_body.dae" }
+  -
+    name: lidar_mount_joint
+    parent: pack_mount_joint
+    translation: [ 0.015, 0, 0.149285 ]
+    jointType: fixed
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/lidar_mount.dae" }
+      Collision:
+        elements:
+          - { type: Resource, uri: "resource/lidar_mount_collision.stl" }
+  -
+    nama: velodyne_cage_joint
+    parent: lidar_mount_joint
+    translation: [ 0, 0, 0 ]
+    jointType: fixed
+    elements:
+      Visual:
+        scale: [ 0.001, 0.001, 0.001 ]
+        elements:
+          -
+            type: Shape
+            geometry:  { type: Resource, uri: "resource/velodyne_cage.stl" }
+            appearance: &black { material: { diffuseColor: [ 0.3, 0.3, 0.3 ] } }
+      Collision:
+        scale: [ 0.001, 0.001, 0.001 ]
+        elements:
+          - { type: Resource, uri: "resource/velodyne_cage.stl" }

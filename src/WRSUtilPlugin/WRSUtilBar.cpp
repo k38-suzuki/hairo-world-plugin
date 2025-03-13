@@ -374,7 +374,7 @@ void WRSUtilBar::Impl::onLoadButtonClicked()
         return;
     }
 
-    ProjectInfo info = projectInfo[index];
+    ProjectInfo& info = projectInfo[index];
 
     auto worldItem = new WorldItem;
     worldItem->setName("World");

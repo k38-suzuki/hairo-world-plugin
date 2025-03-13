@@ -8,6 +8,7 @@
 #include <cnoid/EigenUtil>
 #include <cnoid/RateGyroSensor>
 #include <cnoid/Thruster>
+#include <vector>
 
 using namespace std;
 using namespace cnoid;
@@ -33,9 +34,22 @@ class HaiROVJoystickController : public SimpleController
     bool power;
     bool manualMode;
 
+    struct ActionInfo {
+        int actionId;
+        int buttonId;
+        bool prevButtonState;
+        bool stateChanged;
+        ActionInfo(int actionId, int buttonId)
+            : actionId(actionId),
+              buttonId(buttonId),
+              prevButtonState(false),
+              stateChanged(false)
+        { }
+    };
+    vector<ActionInfo> actions;
+
     SharedJoystickPtr joystick;
     int targetMode;
-    bool prevButtonState;
 
 public:
 
@@ -47,7 +61,6 @@ public:
         power = true;
         manualMode = false;
 
-        prevButtonState = false;
         for(auto opt : io->options()) {
             if(opt == "manual") {
                 manualMode = true;
@@ -86,6 +99,10 @@ public:
         xyref = xyprev = getXY();
         dxyref = dxyprev = Vector2::Zero();
 
+        actions = {
+            { 0, Joystick::A_BUTTON }
+        };
+
         joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
         targetMode = joystick->addMode();
 
@@ -101,11 +118,19 @@ public:
 
         joystick->updateState(targetMode);
 
-        bool currentState = joystick->getButtonState(targetMode, Joystick::A_BUTTON);
-        if(currentState && !prevButtonState) {
-            power = !power;
+        for(auto& info : actions) {
+            bool stateChanged = false;
+            bool buttonState = joystick->getButtonState(targetMode, info.buttonId);
+            if(buttonState && !info.prevButtonState) {
+                stateChanged = true;
+            }
+            info.prevButtonState = buttonState;
+            if(stateChanged) {
+                if(info.actionId == 0) {
+                    power = !power;
+                }
+            }
         }
-        prevButtonState = currentState;
 
         double pos[2];
         for(int i = 0; i < 2; ++i) {

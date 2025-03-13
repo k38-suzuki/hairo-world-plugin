@@ -17,7 +17,6 @@
     vector<Link*> armJoints;
     vector<Link*> fingerJoints;
     double dt;
-    bool prevButtonState[2];
     int currentJoint;
     int robotType;
     int max_joints;
@@ -71,6 +70,20 @@
         NUM_G3L_FINGERS
     };
 
+    struct ActionInfo {
+        int actionId;
+        int buttonId;
+        bool prevButtonState;
+        bool stateChanged;
+        ActionInfo(int actionId, int buttonId)
+            : actionId(actionId),
+              buttonId(buttonId),
+              prevButtonState(false),
+              stateChanged(false)
+        { }
+    };
+    vector<ActionInfo> actions;
+
     SharedJoystickPtr joystick;
     int targetMode;
 
@@ -84,7 +97,6 @@ public:
 
         // jointActuationMode = Link::JointEffort;
         jointActuationMode = Link::JointVelocity;
-        prevButtonState[0] = prevButtonState[1] = false;
         armJoints.clear();
         fingerJoints.clear();
         currentJoint = 0;
@@ -118,17 +130,17 @@ public:
 
         switch(robotType) {
             case GEN2:
-                armJoints[0] = body->link("SHOULDER");
-                armJoints[1] = body->link("ARM_HALF_1");
-                armJoints[2] = body->link("ARM_HALF_2");
-                armJoints[3] = body->link("FOREARM");
-                armJoints[4] = body->link("WRIST_SPHERICAL_1");
-                armJoints[5] = body->link("WRIST_SPHERICAL_2");
-                armJoints[6] = body->link("HAND_3FINGER");
+                armJoints[0] = body->link("j2s7s300_joint_1");
+                armJoints[1] = body->link("j2s7s300_joint_2");
+                armJoints[2] = body->link("j2s7s300_joint_3");
+                armJoints[3] = body->link("j2s7s300_joint_4");
+                armJoints[4] = body->link("j2s7s300_joint_5");
+                armJoints[5] = body->link("j2s7s300_joint_6");
+                armJoints[6] = body->link("j2s7s300_joint_7");
 
-                fingerJoints[0] = body->link("FINGER_PROXIMAL_1");
-                fingerJoints[1] = body->link("FINGER_PROXIMAL_2");
-                fingerJoints[2] = body->link("FINGER_PROXIMAL_3");
+                fingerJoints[0] = body->link("j2s7s300_joint_finger_1");
+                fingerJoints[1] = body->link("j2s7s300_joint_finger_2");
+                fingerJoints[2] = body->link("j2s7s300_joint_finger_3");
                 break;
             case GEN3:
                 armJoints[0] = body->link("joint_1");
@@ -178,6 +190,10 @@ public:
 
         dt = io->timeStep();
 
+        actions = {
+            { 0, 0 },
+        };
+
         joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
         targetMode = joystick->addMode();
 
@@ -224,23 +240,34 @@ public:
             }
         }
 
-        for(int i = 0; i < 2; ++i) {
+        if(1) {
             double pos = joystick->getPosition(targetMode,
                 Joystick::DIRECTIONAL_PAD_H_AXIS);
             if(fabs(pos) < 0.2) {
                 pos = 0.0;
             }
 
-            bool currentState = i == 0 ? (pos < 0.0 ? true : false) : (pos > 0.0 ? true : false);
-            if(currentState && !prevButtonState[i]) {
-                if(i == 0) {
-                    currentJoint = currentJoint == 0 ? max_joints : currentJoint - 1;
-                } else if(i == 1) {
-                    currentJoint = currentJoint == max_joints ? 0 : currentJoint + 1;
+            bool getPadState[1];
+            getPadState[0] = fabs(pos) > 0 ? true : false;
+
+            for(auto& info : actions) {
+                bool stateChanged = false;
+                bool buttonState = getPadState[info.buttonId];
+                if(buttonState && !info.prevButtonState) {
+                    stateChanged = true;
                 }
-                io->os() << "Current joint is " << currentJoint << ": " << armJoints[currentJoint]->name() << "." << endl;
+                info.prevButtonState = buttonState;
+                if(stateChanged) {
+                    if(info.actionId == 0) {
+                        if(pos == -1) {
+                            currentJoint = currentJoint == 0 ? max_joints : currentJoint - 1;
+                        } else if(pos == 1) {
+                            currentJoint = currentJoint == max_joints ? 0 : currentJoint + 1;
+                        }
+                        io->os() << "Current joint is " << currentJoint << ": " << armJoints[currentJoint]->name() << "." << endl;
+                    }
+                }
             }
-            prevButtonState[i] = currentState;
         }
 
         for(size_t i = 0; i < armJoints.size(); ++i) {

@@ -98,7 +98,7 @@ SlopeCreatorWidget::SlopeCreatorWidget(QWidget* parent)
     };
 
     for(int i = 0; i < NumDoubleSpinBoxes; ++i) {
-        DoubleSpinInfo info = doubleSpinInfo[i];
+        DoubleSpinInfo& info = doubleSpinInfo[i];
         info.spin = doubleSpinBoxes[i] = new DoubleSpinBox;
         info.spin->setRange(info.min, info.max);
         info.spin->setSingleStep(info.step);
@@ -130,7 +130,7 @@ SlopeCreatorWidget::SlopeCreatorWidget(QWidget* parent)
 void SlopeCreatorWidget::reset()
 {
     for(int i = 0; i < NumDoubleSpinBoxes; ++i) {
-        DoubleSpinInfo info = doubleSpinInfo[i];
+        DoubleSpinInfo& info = doubleSpinInfo[i];
         info.spin = doubleSpinBoxes[i];
         info.spin->setValue(info.value);
     }

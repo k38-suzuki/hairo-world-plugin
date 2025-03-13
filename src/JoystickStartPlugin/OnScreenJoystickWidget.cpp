@@ -145,7 +145,7 @@ OnScreenJoystickWidget::~OnScreenJoystickWidget()
 
 void OnScreenJoystickWidget::Impl::onAxis(const int& id, const double& position)
 {
-    AxisInfo info = axisInfo[id];
+    AxisInfo& info = axisInfo[id];
     axes[info.index]->setValue(info.id, position);
     axisPositions[id] = position;
 }

@@ -8,6 +8,7 @@
 #include <cnoid/SharedJoystick>
 #include <cnoid/SimpleController>
 #include <sample/SimpleController/Interpolator.h>
+#include <vector>
 
 using namespace std;
 using namespace cnoid;
@@ -43,9 +44,22 @@ class Gen2JoystickController : public SimpleController
     int currentMode;
     bool is_pose_enabled;
 
+    struct ActionInfo {
+        int actionId;
+        int buttonId;
+        bool prevButtonState;
+        bool stateChanged;
+        ActionInfo(int actionId, int buttonId)
+            : actionId(actionId),
+              buttonId(buttonId),
+              prevButtonState(false),
+              stateChanged(false)
+        { }
+    };
+    vector<ActionInfo> actions;
+
     SharedJoystickPtr joystick;
     int targetMode;
-    bool prevButtonState[3];
 
 public:
 
@@ -55,7 +69,6 @@ public:
         ostream& os = io->os();
         ioBody = io->body();
 
-        prevButtonState[0] = prevButtonState[1] = prevButtonState[2] = false;
         jointActuationMode = Link::JointVelocity;
         string prefix;
 
@@ -69,13 +82,13 @@ public:
             }
         }
 
-        ioFinger1 = ioBody->link(prefix + "FINGER_PROXIMAL_1");
-        ioFinger2 = ioBody->link(prefix + "FINGER_PROXIMAL_2");
-        ioFinger3 = ioBody->link(prefix + "FINGER_PROXIMAL_3");
+        ioFinger1 = ioBody->link(prefix + "j2s7s300_joint_finger_1");
+        ioFinger2 = ioBody->link(prefix + "j2s7s300_joint_finger_2");
+        ioFinger3 = ioBody->link(prefix + "j2s7s300_joint_finger_3");
 
         ikBody = ioBody->clone();
-        ikWrist = ikBody->link(prefix + "WRIST_ORIGIN");
-        Link* base = ikBody->link(prefix + "BASE");
+        ikWrist = ikBody->link(prefix + "j2s7s300_joint_end_effector");
+        Link* base = ikBody->link(prefix + "j2s7s300_joint_base");
         baseToWrist = JointPath::getCustomPath(base, ikWrist);
         base->p().setZero();
         base->R().setIdentity();
@@ -102,6 +115,12 @@ public:
         currentMode = TranslationMode;
         is_pose_enabled = false;
 
+        actions = {
+            { 0, Joystick::A_BUTTON    },
+            { 1, Joystick::B_BUTTON    },
+            { 2, Joystick::LOGO_BUTTON }
+        };
+
         joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
         targetMode = joystick->addMode();
 
@@ -118,7 +137,6 @@ public:
         static const int axisID[] = {
             Joystick::L_STICK_H_AXIS, Joystick::L_STICK_V_AXIS, Joystick::DIRECTIONAL_PAD_H_AXIS
         };
-        static const int buttonID[] = { Joystick::A_BUTTON, Joystick::B_BUTTON, Joystick::LOGO_BUTTON };
 
         joystick->updateState(targetMode);
 
@@ -130,20 +148,25 @@ public:
             }
         }
 
-        for(int i = 0; i < 3; ++i) {
-            bool currentState = joystick->getButtonState(targetMode, buttonID[i]);
-            if(currentState && !prevButtonState[i]) {
-                if(i == 0) {
+        for(auto& info :actions) {
+            bool stateChanged = false;
+            bool buttonState = joystick->getButtonState(targetMode, info.buttonId);
+            if(buttonState && !info.prevButtonState) {
+                stateChanged = true;
+            }
+            info.prevButtonState = buttonState;
+            if(stateChanged) {
+                if(info.actionId == 0) {
                     currentMode = FingersMode;
                     io->os() << "fingers-mode has set." << endl;
-                } else if(i == 1) {
+                } else if(info.actionId == 1) {
                     currentMode = currentMode == TranslationMode ? WristMode : TranslationMode;
                     if(currentMode == TranslationMode) {
                         io->os() << "translation-mode has set." << endl;
                     } else {
                         io->os() << "wrist-mode has set." << endl;
                     }
-                } else if(i == 2) {
+                } else if(info.actionId == 2) {
                     // home position
                     jointInterpolator.clear();
                     jointInterpolator.appendSample(time, qref);
@@ -160,7 +183,6 @@ public:
                     is_pose_enabled = true;
                 }
             }
-            prevButtonState[i] = currentState;
         }
 
         if(!is_pose_enabled) {

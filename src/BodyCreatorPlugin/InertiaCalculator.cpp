@@ -121,7 +121,7 @@ CalculatorWidget::CalculatorWidget(QWidget* parent)
     };
 
     for(int i = 0; i < NumDoubleSpinBoxes; ++i) {
-        DoubleSpinInfo info = doubleSpinInfo[i];
+        DoubleSpinInfo& info = doubleSpinInfo[i];
         info.spin = doubleSpinBoxes[i] = new QDoubleSpinBox;
         info.spin->setDecimals(7);
         info.spin->setSingleStep(0.01);

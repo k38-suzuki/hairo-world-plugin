@@ -242,7 +242,7 @@ QString ConverterWidget::convert(const QString& line) const
     QString newLine(line);
 
     for(int i = 0; i < 58; ++i) {
-        KeyInfo info = keyInfo[i];
+        KeyInfo& info = keyInfo[i];
         if(formatComboBox->currentIndex() == 0) {
             if(newLine.contains(info.newKey)) {
                 newLine.replace(info.newKey, info.oldKey);

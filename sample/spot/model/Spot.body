@@ -1,0 +1,307 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: radian
+name: Spot
+
+links:
+  -
+    name: base_link_joint
+    translation: [ 0, 0, 0 ]
+    jointType: free
+    centerOfMass: [ 0, 0, -0.00496172 ]
+    mass: 16.70765207
+    inertia: [
+      0.081543792, 0, 0,
+      0, 0.549231154, 0,
+      0, 0, 0.569454373 ]
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/body.dae" }
+      Collision:
+        elements:
+          - { type: Resource, uri: "resource/body_collision.stl" }
+  -
+    name: front_rail_joint
+    parent: base_link_joint
+    translation: [ 0.223, 0, 0.0805 ]
+    jointType: fixed
+  -
+    name: real_front_rail_joint
+    parent: base_link_joint
+    translation: [ 0.2075, 0, 0.0805 ]
+    jointType: fixed
+  -
+    name: rear_rail_joint
+    parent: base_link_joint
+    translation: [ -0.223, 0, 0.0805 ]
+    jointType: fixed
+  -
+    name: real_rear_rail_joint
+    parent: base_link_joint
+    translation: [ -0.415, 0, 0 ]
+    jointType: fixed
+  -
+    name: front_left_hip_x
+    parent: base_link_joint
+    translation: [ 0.29785, 0.05500, 0.00000 ]
+    jointType: revolute
+    jointAxis: [ 1, 0, 0 ]
+    jointRange: [ -0.78539816339744827899, 0.78539816339744827899 ]
+    maxJointVelocity: 1000
+    jointId: 0
+    centerOfMass: [ -0.01586739, 0.00855842, 0.00000903 ]
+    mass: 1.13688339
+    inertia: [
+      0.00122166, -0.00017754, 0.00000043,
+      0, 0.00158957, -0.00000049,
+      0, 0, 0.00172903 ]
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/front_left_hip.dae" }
+      Collision:
+        elements:
+          - { type: Resource, uri: "resource/front_left_hip_collision.stl" }
+  -
+    name: front_left_hip_y
+    parent: front_left_hip_x
+    translation: [ 0.0, 0.110945, 0.0 ]
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointRange: [ -0.89884456477707963539, 2.2951079663725435509 ]
+    maxJointVelocity: 1000
+    jointId: 1
+    centerOfMass: [ 0.00214442, -0.01110184, -0.07881204 ]
+    mass: 2.25620359
+    inertia: [
+      0.02692501, -0.00008782, 0.00054873,
+      0, 0.02583907, 0.00207146,
+      0, 0, 0.00318737 ]
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/front_left_upper_leg.dae" }
+      Collision:
+        elements:
+          - { type: Resource, uri: "resource/front_left_upper_leg_collision.stl" }
+  -
+    name: front_left_knee
+    parent: front_left_hip_y
+    translation: [ 0.025, 0.000, -0.3205 ]
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointRange: [ -2.7929, -0.254801 ]
+    maxJointVelocity: 1000
+    jointId: 2
+    centerOfMass: [ 0.00597360, 0.0, -0.17466427 ]
+    mass: 0.330
+    inertia: [
+      0.00701356, 0.0, 0.00006600,
+      0, 0.00709946, 0.0,
+      0, 0, 0.00014529 ]
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/front_left_lower_leg.dae" }
+      Collision:
+        elements:
+          - { type: Resource, uri: "resource/front_left_lower_leg_collision.stl" }
+  -
+    name: front_right_hip_x
+    parent: base_link_joint
+    translation: [ 0.29785, -0.05500, 0.00000 ]
+    jointType: revolute
+    jointAxis: [ 1, 0, 0 ]
+    jointRange: [ -0.78539816339744827899, 0.78539816339744827899 ]
+    maxJointVelocity: 1000
+    jointId: 3
+    centerOfMass: [ -0.01586739, -0.00855842, 0.00000903 ]
+    mass: 1.13688339
+    inertia: [
+      0.00122166, 0.00017754, 0.00000043,
+      0, 0.00158957, 0.00000049,
+      0, 0, 0.00172903 ]
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/front_right_hip.dae" }
+      Collision:
+        elements:
+          - { type: Resource, uri: "resource/front_right_hip_collision.stl" }
+  -
+    name: front_right_hip_y
+    parent: front_right_hip_x
+    translation: [ 0.0, -0.110945, 0.0 ]
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointRange: [ -0.89884456477707963539, 2.2951079663725435509 ]
+    maxJointVelocity: 1000
+    jointId: 4
+    centerOfMass: [ 0.00214442, 0.01110184, -0.07881204 ]
+    mass: 2.25620359
+    inertia: [
+      0.02692501, 0.00008782, 0.00054873,
+      0, 0.02583907, -0.00207146,
+      0, 0, 0.00318737 ]
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/front_right_upper_leg.dae" }
+      Collision:
+        elements:
+          - { type: Resource, uri: "resource/front_right_upper_leg_collision.stl" }
+  -
+    name: front_right_knee
+    parent: front_right_hip_y
+    translation: [ 0.025, 0.000, -0.3205 ]
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointRange: [ -2.7929, -0.247563 ]
+    maxJointVelocity: 1000
+    jointId: 5
+    centerOfMass: [ 0.00597360, 0.0, -0.17466427 ]
+    mass: 0.330
+    inertia: [
+      0.00701356, 0.0, 0.00006600,
+      0, 0.00709946, 0.0,
+      0, 0, 0.00014529 ]
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/front_right_lower_leg.dae" }
+      Collision:
+        elements:
+          - { type: Resource, uri: "resource/front_right_lower_leg_collision.stl" }
+  -
+    name: rear_left_hip_x
+    parent: base_link_joint
+    translation: [ -0.29785, 0.05500, 0.00000 ]
+    jointType: revolute
+    jointAxis: [ 1, 0, 0 ]
+    jointRange: [ -0.78539816339744827899, 0.78539816339744827899 ]
+    maxJointVelocity: 1000
+    jointId: 6
+    centerOfMass: [ 0.01586739, 0.00855842, 0.00000903 ]
+    mass: 1.13688339
+    inertia: [
+      0.00122166, 0.00017754, -0.00000043,
+      0, 0.00158957, -0.00000049,
+      0, 0, 0.00172903 ]
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/rear_left_hip.dae" }
+      Collision:
+        elements:
+          - { type: Resource, uri: "resource/rear_left_hip_collision.stl" }
+  -
+    name: rear_left_hip_y
+    parent: rear_left_hip_x
+    translation: [ 0.0, 0.110945, 0.0 ]
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointRange: [ -0.89884456477707963539, 2.2951079663725435509 ]
+    maxJointVelocity: 1000
+    jointId: 7
+    centerOfMass: [ 0.00214442, -0.01110184, -0.07881204 ]
+    mass: 2.25620359
+    inertia: [
+      0.02692501, -0.00008782, 0.00054873,
+      0, 0.02583907, 0.00207146,
+      0, 0, 0.00318737 ]
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/rear_left_upper_leg.dae" }
+      Collision:
+        elements:
+          - { type: Resource, uri: "resource/rear_left_upper_leg_collision.stl" }
+  -
+    name: rear_left_knee
+    parent: rear_left_hip_y
+    translation: [ 0.025, 0.000, -0.3205 ]
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointRange: [ -2.7929, -0.267153 ]
+    maxJointVelocity: 1000
+    jointId: 8
+    centerOfMass: [ 0.00597360, 0.0, -0.17466427 ]
+    mass: 0.330
+    inertia: [
+      0.00701356, 0.0, 0.00006600,
+      0, 0.00709946, 0.0,
+      0, 0, 0.00014529 ]
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/rear_left_lower_leg.dae" }
+      Collision:
+        elements:
+          - { type: Resource, uri: "resource/rear_left_lower_leg_collision.stl" }
+  -
+    name: rear_right_hip_x
+    parent: base_link_joint
+    translation: [ -0.29785, -0.05500, 0.00000 ]
+    jointType: revolute
+    jointAxis: [ 1, 0, 0 ]
+    jointRange: [ -0.78539816339744827899, 0.78539816339744827899 ]
+    maxJointVelocity: 1000
+    jointId: 9
+    centerOfMass: [ 0.01586739, -0.00855842, 0.00000903 ]
+    mass: 1.13688339
+    inertia: [
+      0.00122166, -0.00017754, -0.00000043,
+      0, 0.00158957, 0.00000049,
+      0, 0, 0.00172903 ]
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/rear_right_hip.dae" }
+      Collision:
+        elements:
+          - { type: Resource, uri: "resource/rear_right_hip_collision.stl" }
+  -
+    name: rear_right_hip_y
+    parent: rear_right_hip_x
+    translation: [ 0.0, -0.110945, 0.0 ]
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointRange: [ -0.89884456477707963539, 2.2951079663725435509 ]
+    maxJointVelocity: 1000
+    jointId: 10
+    centerOfMass: [ 0.00214442, 0.01110184, -0.07881204 ]
+    mass: 2.25620359
+    inertia: [
+      0.02692501, 0.00008782, 0.00054873,
+      0, 0.02583907, -0.00207146,
+      0, 0, 0.00318737 ]
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/rear_right_upper_leg.dae" }
+      Collision:
+        elements:
+          - { type: Resource, uri: "resource/rear_right_upper_leg_collision.stl" }
+  -
+    name: rear_right_knee
+    parent: rear_right_hip_y
+    translation: [ 0.025, 0.000, -0.3205 ]
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointRange: [ -2.7929, -0.257725 ]
+    maxJointVelocity: 1000
+    jointId: 11
+    centerOfMass: [ 0.00597360, 0.0, -0.17466427 ]
+    mass: 0.330
+    inertia: [
+      0.00701356, 0.0, 0.00006600,
+      0, 0.00709946, 0.0,
+      0, 0, 0.00014529 ]
+    elements:
+      Visual:
+        elements:
+          - { type: Resource, uri: "resource/rear_right_lower_leg.dae" }
+      Collision:
+        elements:
+          - { type: Resource, uri: "resource/rear_right_lower_leg_collision.stl" }

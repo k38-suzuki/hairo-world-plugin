@@ -28,7 +28,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/bracelet_no_vision_link.STL" }
+        geometry: { type: Resource, uri: "resource/bracelet_no_vision_link.STL" }
         appearance: { material: { diffuseColor: [ 0.75294, 0.75294, 0.75294 ] } }
   -
     name: end_effector

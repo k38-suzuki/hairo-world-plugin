@@ -3,29 +3,6 @@ formatVersion: 1.0
 angleUnit: degree
 name: Jackal
 
-WHEEL_COMMON: &WheelCommon
-  parent: CHASSIS
-  jointType: revolute
-  jointAxis: Y
-  mass: 0.477
-  inertia: [ 0.0013, 0, 0, 0, 0.0024, 0, 0, 0, 0.0013 ]
-  elements:
-    -
-      type: Visual
-      elements:
-        -
-          type: Shape
-          rotation: [ 1, 0, 0, 90 ]
-          geometry: { type: Resource, uri: "resource/jackal-wheel.stl" }
-          appearance: &black { material: { diffuseColor: [ 0.15, 0.15, 0.15 ] } }
-    -
-      type: Collision
-      elements:
-        -
-          type: Shape
-          geometry: { type: Cylinder, radius: 0.098, height: 0.04 }
-          appearance: *black
-
 links:
   -
     name: CHASSIS
@@ -66,19 +43,31 @@ links:
             translation: [ 0.0, 0.0, 0.092 ]
             geometry: { type: Box, size: [ 0.42, 0.31, 0.184 ] }
             appearance: *dark_grey
-  -
+  - &wheel
     name: FRONT_LEFT
+    parent: CHASSIS
     translation: [ 0.131, 0.187795, 0.0345 ]
-    <<: *WheelCommon
-  -
-    name: FRONT_RIGHT
-    translation: [ 0.131, -0.187795, 0.0345 ]
-    <<: *WheelCommon
-  -
-    name: REAR_LEFT
-    translation: [ -0.131, 0.187795, 0.0345 ]
-    <<: *WheelCommon
-  -
-    name: REAR_RIGHT
-    translation: [ -0.131, -0.187795, 0.0345 ]
-    <<: *WheelCommon
+    jointType: revolute
+    jointAxis: Y
+    jointRange: unlimited
+    jointId: 0
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.477
+    inertia: [ 0.0013, 0, 0, 0, 0.0024, 0, 0, 0, 0.0013 ]
+    elements:
+      Visual:
+        elements:
+          -
+            type: Shape
+            rotation: [ 1, 0, 0, 90 ]
+            geometry: { type: Resource, uri: "resource/jackal-wheel.stl" }
+            appearance: &black { material: { diffuseColor: [ 0.15, 0.15, 0.15 ] } }
+      Collision:
+        elements:
+          -
+            type: Shape
+            geometry: { type: Cylinder, radius: 0.098, height: 0.04 }
+            appearance: *black
+  - { <<: *wheel, name: FRONT_RIGHT, translation: [  0.131, -0.187795, 0.0345 ], jointId: 1 }
+  - { <<: *wheel, name:   REAR_LEFT, translation: [ -0.131,  0.187795, 0.0345 ], jointId: 2 }
+  - { <<: *wheel, name:  REAR_RIGHT, translation: [ -0.131, -0.187795, 0.0345 ], jointId: 3 }

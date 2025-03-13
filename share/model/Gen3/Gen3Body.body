@@ -17,7 +17,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/base_link.STL" }
+        geometry: { type: Resource, uri: "resource/base_link.STL" }
         appearance: &BodyAppearance { material: { diffuseColor: [ 0.75294, 0.75294, 0.75294 ] } }
   -
     name: joint_1
@@ -38,7 +38,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/shoulder_link.STL" }
+        geometry: { type: Resource, uri: "resource/shoulder_link.STL" }
         appearance: *BodyAppearance
   -
     name: joint_2
@@ -59,7 +59,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/half_arm_1_link.STL" }
+        geometry: { type: Resource, uri: "resource/half_arm_1_link.STL" }
         appearance: *BodyAppearance
   -
     name: joint_3
@@ -80,7 +80,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/half_arm_2_link.STL" }
+        geometry: { type: Resource, uri: "resource/half_arm_2_link.STL" }
         appearance: *BodyAppearance
   -
     name: joint_4
@@ -101,7 +101,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/forearm_link.STL" }
+        geometry: { type: Resource, uri: "resource/forearm_link.STL" }
         appearance: *BodyAppearance
   -
     name: joint_5
@@ -122,7 +122,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/spherical_wrist_1_link.STL" }
+        geometry: { type: Resource, uri: "resource/spherical_wrist_1_link.STL" }
         appearance: *BodyAppearance
   -
     name: joint_6
@@ -143,5 +143,5 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/spherical_wrist_2_link.STL" }
+        geometry: { type: Resource, uri: "resource/spherical_wrist_2_link.STL" }
         appearance: *BodyAppearance

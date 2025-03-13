@@ -3,28 +3,6 @@ formatVersion: 1.0
 angleUnit: degree
 name: Husky
 
-WHEEL_COMMON: &WheelCommon
-  parent: BASE
-  jointType: revolute
-  jointAxis: Y
-  mass: 2.637
-  inertia: [ 0.02467, 0, 0, 0, 0.04411, 0, 0, 0, 0.02467 ]
-  elements:
-    -
-      type: Visual
-      elements:
-        -
-          type: Shape
-          geometry: { type: Resource, uri: "resource/wheel.stl" }
-          appearance: &black { material: { diffuseColor: [ 0.15, 0.15, 0.15 ] } }
-    -
-      type: Collision
-      elements:
-        -
-          type: Shape
-          geometry: { type: Cylinder, radius: 0.1651, height: 0.1143 }
-          appearance: *black
-
 links:
   -
     name: BASE
@@ -40,7 +18,7 @@ links:
           -
             type: Shape
             geometry: { type: Resource, uri: "resource/base_link.stl" }
-            appearance: *black
+            appearance: &black { material: { diffuseColor: [ 0.15, 0.15, 0.15 ] } }
           -
             type: Shape
             geometry: { type: Resource, uri: "resource/top_chassis.stl" }
@@ -66,26 +44,33 @@ links:
             type: Shape
             translation: [ 0.0, 0.0, 0.175625 ]
             geometry: { type: Box, size: [ 0.9874, 0.5709, 0.12375 ] }
-  -
+  - &wheel
     name: FRONT_LEFT
+    parent: BASE
     translation: [ 0.256, 0.2854, 0.03282 ]
+    jointType: revolute
+    jointAxis: Y
+    jointRange: unlimited
     jointId: 0
-    <<: *WheelCommon
-  -
-    name: FRONT_RIGHT
-    translation: [ 0.256, -0.2854, 0.03282 ]
-    jointId: 1
-    <<: *WheelCommon
-  -
-    name: REAR_LEFT
-    translation: [ -0.256, 0.2854, 0.03282 ]
-    jointId: 2
-    <<: *WheelCommon
-  -
-    name: REAR_RIGHT
-    translation: [ -0.256, -0.2854, 0.03282 ]
-    jointId: 3
-    <<: *WheelCommon
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 2.637
+    inertia: [ 0.02467, 0, 0, 0, 0.04411, 0, 0, 0, 0.02467 ]
+    elements:
+      Visual:
+        elements:
+          -
+            type: Shape
+            geometry: { type: Resource, uri: "resource/wheel.stl" }
+            appearance: *black
+      Collision:
+        elements:
+          -
+            type: Shape
+            geometry: { type: Cylinder, radius: 0.1651, height: 0.1143 }
+            appearance: *black
+  - { <<: *wheel, name: FRONT_RIGHT, translation: [  0.256, -0.2854, 0.03282 ], jointId: 1 }
+  - { <<: *wheel, name:   REAR_LEFT, translation: [ -0.256,  0.2854, 0.03282 ], jointId: 2 }
+  - { <<: *wheel, name:  REAR_RIGHT, translation: [ -0.256, -0.2854, 0.03282 ], jointId: 3 }
   -
     type: SubBody
     uri: "resource/bumper.body"

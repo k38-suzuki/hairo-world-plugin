@@ -17,7 +17,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/base_link.STL" }
+        geometry: { type: Resource, uri: "resource/base_link.STL" }
         appearance: &BodyAppearance { material: { diffuseColor: [ 0.803, 0.824, 0.820 ] } }
   -
     name: joint_1
@@ -37,7 +37,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/shoulder_link.STL" }
+        geometry: { type: Resource, uri: "resource/shoulder_link.STL" }
         appearance: *BodyAppearance
   -
     name: joint_2
@@ -58,7 +58,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/arm_link.STL" }
+        geometry: { type: Resource, uri: "resource/arm_link.STL" }
         appearance: *BodyAppearance
   -
     name: joint_3
@@ -79,7 +79,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/forearm_link.STL" }
+        geometry: { type: Resource, uri: "resource/forearm_link.STL" }
         appearance: *BodyAppearance
   -
     name: joint_4
@@ -100,7 +100,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/lower_wrist_link.STL" }
+        geometry: { type: Resource, uri: "resource/lower_wrist_link.STL" }
         appearance: *BodyAppearance
   -
     name: joint_5
@@ -121,7 +121,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/upper_wrist_link.STL" }
+        geometry: { type: Resource, uri: "resource/upper_wrist_link.STL" }
         appearance: *BodyAppearance
   -
     name: joint_6
@@ -151,7 +151,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/gripper_base_link.STL" }
+        geometry: { type: Resource, uri: "resource/gripper_base_link.STL" }
         appearance: *BodyAppearance
   -
     name: right_finger_bottom_joint
@@ -172,7 +172,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/right_finger_prox_link.STL" }
+        geometry: { type: Resource, uri: "resource/right_finger_prox_link.STL" }
         appearance: *BodyAppearance
   -
     name: right_finger_tip_joint
@@ -192,7 +192,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/right_finger_dist_link.STL" }
+        geometry: { type: Resource, uri: "resource/right_finger_dist_link.STL" }
         appearance: &FingerAppearance { material: { diffuseColor: [ 0, 0.055 0.525, 1 ] } }
   -
     name: left_finger_bottom_joint
@@ -213,7 +213,7 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/left_finger_prox_link.STL" }
+        geometry: { type: Resource, uri: "resource/left_finger_prox_link.STL" }
         appearance: *BodyAppearance
   -
     name: left_finger_tip_joint
@@ -233,5 +233,5 @@ links:
     elements:
       -
         type: Shape
-        geometry: { type: Resource, uri: "parts/left_finger_dist_link.STL" }
+        geometry: { type: Resource, uri: "resource/left_finger_dist_link.STL" }
         appearance: *FingerAppearance

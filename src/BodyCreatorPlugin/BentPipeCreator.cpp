@@ -106,7 +106,7 @@ BentPipeCreatorWidget::BentPipeCreatorWidget(QWidget* parent)
     };
 
     for(int i = 0; i < NumDoubleSpinBoxes; ++i) {
-        DoubleSpinInfo info = doubleSpinInfo[i];
+        DoubleSpinInfo& info = doubleSpinInfo[i];
         info.spin = doubleSpinBoxes[i] = new DoubleSpinBox;
         info.spin->setRange(info.min, info.max);
         info.spin->setSingleStep(info.step);
@@ -124,7 +124,7 @@ BentPipeCreatorWidget::BentPipeCreatorWidget(QWidget* parent)
     };
 
     for(int i = 0; i < NumSpinBoxes; ++i) {
-        SpinInfo info = spinInfo[i];
+        SpinInfo& info = spinInfo[i];
         info.spin = spinBoxes[i] = new SpinBox;
         info.spin->setRange(info.min, info.max);
         info.spin->setValue(info.value);
@@ -155,13 +155,13 @@ BentPipeCreatorWidget::BentPipeCreatorWidget(QWidget* parent)
 void BentPipeCreatorWidget::reset()
 {
     for(int i = 0; i < NumDoubleSpinBoxes; ++i) {
-        DoubleSpinInfo info = doubleSpinInfo[i];
+        DoubleSpinInfo& info = doubleSpinInfo[i];
         info.spin = doubleSpinBoxes[i];
         info.spin->setValue(info.value);
     }
 
     for(int i = 0; i < NumSpinBoxes; ++i) {
-        SpinInfo info = spinInfo[i];
+        SpinInfo& info = spinInfo[i];
         info.spin = spinBoxes[i];
         info.spin->setValue(info.value);
     }

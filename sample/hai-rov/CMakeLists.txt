@@ -1,5 +1,5 @@
-option(BUILD_HAI_ROV_SAMPLES "Building HaiROV sampels" ON)
-if(NOT BUILD_HAI_ROV_SAMPLES)
+option(BUILD_HAI_ROV_SAMPLE "Building HaiROV sample" ON)
+if(NOT BUILD_HAI_ROV_SAMPLE)
   return()
 endif()
 

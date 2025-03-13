@@ -305,18 +305,18 @@ CrawlerCreatorWidget::CrawlerCreatorWidget(QWidget* parent)
     };
 
     for(int i = 0; i < 22; ++i) {
-        LabelInfo info = labelInfo[i];
+        LabelInfo& info = labelInfo[i];
         gridLayouts[info.group]->addWidget(new QLabel(list2[i]), info.row, info.column);
     }
 
     for(int i = 0; i < NumDoubleSpinBoxes; ++i) {
-        DoubleSpinInfo info = doubleSpinInfo[i];
+        DoubleSpinInfo& info = doubleSpinInfo[i];
         doubleSpinBoxes[i] = new DoubleSpinBox;
         gridLayouts[info.group]->addWidget(doubleSpinBoxes[i], info.row, info.column);
     }
 
     for(int i = 0; i < NumColorButtons; ++i) {
-        ButtonInfo info = buttonInfo[i];
+        ButtonInfo& info = buttonInfo[i];
         colorButtons[i] = new ColorButton;
         gridLayouts[info.group]->addWidget(colorButtons[i], info.row, info.column);
     }
@@ -349,18 +349,18 @@ CrawlerCreatorWidget::CrawlerCreatorWidget(QWidget* parent)
     };
 
     for(int i = 0; i < 24; ++i) {
-        LabelInfo info = agxlabelInfo[i];
+        LabelInfo& info = agxlabelInfo[i];
         gridLayouts2[info.group]->addWidget(new QLabel(list4[i % 12]), info.row, info.column);
     }
 
     for(int i = 0; i < NumAGXDoubleSpinBoxes; ++i) {
-        DoubleSpinInfo info = agxdoubleSpinInfo[i];
+        DoubleSpinInfo& info = agxdoubleSpinInfo[i];
         agxDoubleSpinBoxes[i] = new DoubleSpinBox;
         gridLayouts2[info.group]->addWidget(agxDoubleSpinBoxes[i], info.row, info.column);
     }
 
     for(int i = 0; i < NumAGXSpinBoxes; ++i) {
-        SpinInfo info = agxspinInfo[i];
+        SpinInfo& info = agxspinInfo[i];
         agxSpinBoxes[i] = new SpinBox;
         gridLayouts2[info.group]->addWidget(agxSpinBoxes[i], info.row, info.column);
     }
@@ -443,7 +443,7 @@ bool CrawlerCreatorWidget::save2(const string& filename)
 void CrawlerCreatorWidget::initialize()
 {
     for(int i = 0; i < NumDoubleSpinBoxes; ++i) {
-        DoubleSpinInfo info = doubleSpinInfo[i];
+        DoubleSpinInfo& info = doubleSpinInfo[i];
         DoubleSpinBox* spin = doubleSpinBoxes[i];
         spin->setDecimals(info.decimals);
         spin->setRange(info.min, info.max);
@@ -451,7 +451,7 @@ void CrawlerCreatorWidget::initialize()
     }
 
     for(int i = 0; i < NumAGXDoubleSpinBoxes; ++i) {
-        DoubleSpinInfo info = agxdoubleSpinInfo[i];
+        DoubleSpinInfo& info = agxdoubleSpinInfo[i];
         DoubleSpinBox* spin = agxDoubleSpinBoxes[i];
         spin->setDecimals(info.decimals);
         spin->setRange(info.min, info.max);
@@ -459,20 +459,20 @@ void CrawlerCreatorWidget::initialize()
     }
 
     for(int i = 0; i < NumAGXSpinBoxes; ++i) {
-        SpinInfo info = agxspinInfo[i];
+        SpinInfo& info = agxspinInfo[i];
         SpinBox* spin = agxSpinBoxes[i];
         spin->setRange(info.min, info.max);
         spin->setValue(info.value);
     }
 
     for(int i = 0; i < NumColorButtons; ++i) {
-        ButtonInfo info = buttonInfo[i];
+        ButtonInfo& info = buttonInfo[i];
         ColorButton* button = colorButtons[i];
         button->setColor(Vector3(info.red, info.green, info.blue));
     }
 
     for(int i = 0; i < 3; ++i) {
-        CheckInfo info = checkInfo[i];
+        CheckInfo& info = checkInfo[i];
         groupBoxes[i + 3]->setChecked(info.checked);
     }
 }
