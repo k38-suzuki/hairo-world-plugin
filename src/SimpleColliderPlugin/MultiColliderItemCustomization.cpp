@@ -169,6 +169,8 @@ public:
         colliderCombo->addItem(_("CFD"));
         colliderCombo->addItem(_("TC"));
         colliderCombo->addItem(_("VFX"));
+        connect(colliderCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            [=](int index){ onColliderComboCurrentIndexChanged(index); });
         hbox2->addWidget(colliderCombo);
 
         vbox->addLayout(hbox2);
@@ -177,6 +179,7 @@ public:
     virtual bool initializeCreation(MultiColliderItem* protoItem, Item* parentItem) override
     {
         nameEntry->setText(protoItem->name().c_str());
+        nameEntry->setText("CFDCollider");
         return true;
     }
 
@@ -186,6 +189,13 @@ public:
         protoItem->setColliderType(colliderCombo->currentIndex());
 
         return true;
+    }
+
+    void onColliderComboCurrentIndexChanged(int index)
+    {
+        const QStringList texts = { "CFD", "TC", "VFX" };
+        QString text = texts.at(index) + "Collider";
+        nameEntry->setText(text);
     }
 };
 

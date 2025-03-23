@@ -7,13 +7,13 @@
 
 #include <cnoid/Selection>
 #include "SimpleColliderItem.h"
-#include "CustomEffects.h"
+#include "CustomEffect.h"
 #include "exportdecl.h"
 
 namespace cnoid {
 
 class CNOID_EXPORT MultiColliderItem : public SimpleColliderItem,
-                            public CFDEffects, public TCEffects, public VFXEffects
+                            public CFDEffect, public TCEffect, public VisualEffect
 {
 public:
     static void initializeClass(ExtensionManager* ext);

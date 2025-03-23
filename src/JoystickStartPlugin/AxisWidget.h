@@ -6,13 +6,13 @@
 #define CNOID_JOYSTICKSTART_PLUGIN_AXIS_WIDGET_H
 
 #include <cnoid/Signal>
-#include <cnoid/Widget>
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <QWidget>
 
 namespace cnoid {
 
-class AxisWidget : public Widget
+class AxisWidget : public QWidget
 {
 public:
     AxisWidget(QWidget* parent = nullptr);

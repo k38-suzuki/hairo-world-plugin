@@ -58,6 +58,9 @@ set(headers
   exportdecl.h
 )
 
+add_subdirectory(qad)
+add_subdirectory(yaml)
+
 choreonoid_make_header_public(ComptonCamera.h)
 choreonoid_make_header_public(DoseMeter.h)
 choreonoid_make_header_public(PinholeCamera.h)

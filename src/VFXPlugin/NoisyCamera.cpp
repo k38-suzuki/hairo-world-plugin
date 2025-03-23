@@ -14,7 +14,7 @@ using namespace cnoid;
 NoisyCamera::NoisyCamera()
     : spec(new Spec),
       Camera(),
-      VFXEffects()
+      VisualEffect()
 {
 
 }
@@ -22,7 +22,7 @@ NoisyCamera::NoisyCamera()
 
 NoisyCamera::NoisyCamera(const NoisyCamera& org, bool copyStateOnly)
     : Camera(org, copyStateOnly),
-      VFXEffects(org)
+      VisualEffect(org)
 {
     if(!copyStateOnly) {
         spec = make_unique<Spec>();
@@ -119,22 +119,7 @@ bool NoisyCamera::readSpecifications(const Mapping* info)
         return false;
     }
 
-    Vector3 v;
-    if(read(info, "hsv", v)) {
-        setHsv(v);
-    }
-    if(read(info, "rgb", v)) {
-        setRgb(v);
-    }
-    setCoefB(info->get({ "coef_b", "coefB" }, 0.0));
-    setCoefD(info->get({ "coef_d", "coefD" }, 1.0));
-    setStdDev(info->get({ "std_dev", "stdDev" }, 0.0));
-    setSaltAmount(info->get({ "salt_amount", "saltAmount" }, 0.0));
-    setSaltChance(info->get({ "salt_chance", "saltChance" }, 0.0));
-    setPepperAmount(info->get({ "pepper_amount", "pepperAmount" }, 0.0));
-    setPepperChance(info->get({ "pepper_chance", "pepperChance" }, 0.0));
-    setMosaicChance(info->get({ "mosaic_chance", "mosaicChance" }, 0.0));
-    setKernel(info->get("kernel", 16));
+    this->readCameraInfo(info);
 
     return true;
 }

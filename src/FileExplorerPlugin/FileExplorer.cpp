@@ -66,13 +66,15 @@ FileExplorer::~FileExplorer()
 ExplorerDialog::ExplorerDialog(QWidget* parent)
     : QDialog(parent)
 {
+    setMinimumSize(640, 480);
+
     treeWidget = new QTreeWidget(this);
     treeWidget->setHeaderLabels(QStringList()<< _("Body") << _("File Path"));
 
     const QIcon updateIcon = QIcon::fromTheme("view-refresh");
     auto updateButton = new QPushButton(updateIcon, _("Update"));
     connect(updateButton, &QPushButton::clicked, [&](){ on_updateButton_clicked(); });
-    
+
     const QIcon fileIcon = QIcon::fromTheme("document-open");
     auto fileButton = new QPushButton(fileIcon, _("gedit"));
     connect(fileButton, &QPushButton::clicked, [&](){ on_fileButton_clicked(); });

@@ -16,7 +16,7 @@ using namespace cnoid;
 namespace cnoid {
 
 VFXEvent::VFXEvent()
-    : VFXEffects()
+    : VisualEffect()
 {
     name_ = "";
     begin_time_ = 0.0;
@@ -29,7 +29,7 @@ VFXEvent::VFXEvent()
 
 
 VFXEvent::VFXEvent(const VFXEvent& org)
-    : VFXEffects(org)
+    : VisualEffect(org)
 {
     name_ = org.name_;
     begin_time_ = org.begin_time_;

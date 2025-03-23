@@ -1,16 +1,14 @@
 set(sources
-  ImageGenerator.cpp
   NoisyCamera.cpp
-  VFXConverter.cpp
+  VisualFilter.cpp
   VFXPlugin.cpp
   VFXEventReader.cpp
   VFXVisionSimulatorItem.cpp
 )
 
 set(headers
-  ImageGenerator.h
   NoisyCamera.h
-  VFXConverter.h
+  VisualFilter.h
   VFXEventReader.h
   VFXVisionSimulatorItem.h
   exportdecl.h
@@ -18,7 +16,7 @@ set(headers
 
 choreonoid_make_header_public(ImageGenerator.h)
 choreonoid_make_header_public(NoisyCamera.h)
-choreonoid_make_header_public(VFXConverter.h)
+choreonoid_make_header_public(VisualFilter.h)
 choreonoid_make_header_public(VFXVisionSimulatorItem.h)
 
 set(target CnoidVFXPlugin)

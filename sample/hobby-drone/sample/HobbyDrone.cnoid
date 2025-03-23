@@ -23,7 +23,7 @@ items:
           class: BodyItem
           is_checked: true
           data:
-            file: "${SHARE}/HobbyDrone/model/HobbyDrone.body"
+            file: "${SHARE}/model/HobbyDrone/HobbyDrone.body"
             format: CHOREONOID-BODY
             currentBaseLink: "CHASSIS"
             rootPosition: [ -2, -0.5, 0.3 ]

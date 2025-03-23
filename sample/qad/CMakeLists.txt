@@ -1,4 +1,4 @@
-if(NOT BUILD_PHITS_PLUGIN)
+if(NOT ENABLE_QAD)
   return()
 endif()
 

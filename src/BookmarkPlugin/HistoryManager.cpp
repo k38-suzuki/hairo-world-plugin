@@ -36,7 +36,7 @@ HistoryManager::HistoryManager(QWidget* parent)
 {
     setWindowTitle(_("History Manager"));
     setArchiveKey("history_list");
-    setFixedSize(800, 450);
+    setMinimumSize(640, 480);
 
     ProjectManager::instance()->sigProjectLoaded().connect(
         [&](int level){ onProjectLoaded(level); });

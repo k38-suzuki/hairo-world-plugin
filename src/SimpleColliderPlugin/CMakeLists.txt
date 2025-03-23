@@ -1,5 +1,5 @@
 set(sources
-  CustomEffects.cpp
+  CustomEffect.cpp
   MultiColliderItem.cpp
   MultiColliderItemCustomization.cpp
   SimpleColliderItem.cpp
@@ -7,7 +7,7 @@ set(sources
 )
 
 set(headers
-  CustomEffects.h
+  CustomEffect.h
   MultiColliderItem.h
   SimpleColliderItem.h
   exportdecl.h
@@ -15,7 +15,7 @@ set(headers
 
 choreonoid_make_header_public(SimpleColliderItem.h)
 choreonoid_make_header_public(MultiColliderItem.h)
-choreonoid_make_header_public(CustomEffects.h)
+choreonoid_make_header_public(CustomEffect.h)
 
 set(target CnoidSimpleColliderPlugin)
 choreonoid_make_gettext_mo_files(${target} mofiles)

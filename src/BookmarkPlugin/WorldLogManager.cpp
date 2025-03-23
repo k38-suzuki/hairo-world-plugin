@@ -45,7 +45,7 @@ WorldLogManager::WorldLogManager(QWidget* parent)
 {
     setWindowTitle(_("World Log Manager"));
     setArchiveKey("world_log_list");
-    setFixedSize(800, 450);
+    setMinimumSize(640, 480);
 
     saveCheck_ = new CheckBox;
     saveCheck_->setText(_("Save a World Log"));

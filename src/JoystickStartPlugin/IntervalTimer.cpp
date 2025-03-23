@@ -92,7 +92,7 @@ TimerDialog::TimerDialog(QWidget* parent)
       is_simulation_started(false),
       counter(5)
 {
-    setFixedSize(320, 240);
+    setMinimumSize(320, 240);
 
     // interval timer
     intervalSpinBox = new SpinBox;

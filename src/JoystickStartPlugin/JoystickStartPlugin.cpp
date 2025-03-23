@@ -6,7 +6,7 @@
 #include <cnoid/Plugin>
 #include "IntervalTimer.h"
 #include "JoystickLoggerItem.h"
-#include "OnScreenJoystickView.h"
+#include "VirtualJoystickView2.h"
 #include "JoystickTester.h"
 #include "JoystickStarter.h"
 
@@ -27,7 +27,7 @@ public:
     {
         IntervalTimer::initializeClass(this);
         JoystickLoggerItem::initializeClass(this);
-        OnScreenJoystickView::initializeClass(this);
+        VirtualJoystickView2::initializeClass(this);
         JoystickTester::initializeClass(this);
         JoystickStarter::initializeClass(this);
         return true;

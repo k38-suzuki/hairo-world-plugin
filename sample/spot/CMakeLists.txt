@@ -1,15 +1,17 @@
-option(BUILD_SPOT_SAMPLE "Building Spot sample" ON)
-if(NOT BUILD_SPOT_SAMPLE)
+if(NOT ENABLE_SAMPLES)
   return()
 endif()
 
 if(UNIX)
-  add_custom_target(
-    symlink_to_Spot ALL
-    COMMAND ${CMAKE_COMMAND} -E create_symlink
-    ${CMAKE_CURRENT_SOURCE_DIR} ${CHOREONOID_BINARY_SHARE_DIR}/Spot)
+  set(sample_model_dirs Spot)
+  foreach(dir ${sample_model_dirs})
+    add_custom_target(
+      symlink_to_${dir} ALL
+      COMMAND ${CMAKE_COMMAND} -E create_symlink
+      ${CMAKE_CURRENT_SOURCE_DIR}/model/${dir} ${CHOREONOID_BINARY_SHARE_DIR}/model/${dir})
+  endforeach()
 endif()
 
-install(DIRECTORY model DESTINATION ${CHOREONOID_SHARE_SUBDIR}/Spot)
+install(DIRECTORY model DESTINATION ${CHOREONOID_SHARE_SUBDIR})
 
 add_subdirectory(sample)

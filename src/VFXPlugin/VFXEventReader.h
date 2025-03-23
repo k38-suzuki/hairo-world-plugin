@@ -5,12 +5,12 @@
 #ifndef CNOID_VFX_PLUGIN_VFX_EVENT_READER_H
 #define CNOID_VFX_PLUGIN_VFX_EVENT_READER_H
 
-#include <cnoid/CustomEffects>
+#include <cnoid/CustomEffect>
 #include <vector>
 
 namespace cnoid {
 
-class VFXEvent : public VFXEffects
+class VFXEvent : public VisualEffect
 {
 public:
     VFXEvent();

@@ -26,11 +26,8 @@ msgstr "デバイス"
 msgid "Virtual Joystick2"
 msgstr "仮想ジョイスティック2"
 
-msgid "Show the virtual joystick"
-msgstr "仮想ジョイスティックの表示"
-
-msgid "On-screen Joystick"
-msgstr "オンスクリーンジョイスティック"
+msgid "Dragger mode"
+msgstr "ドラッガーモード"
 
 msgid "Joystick"
 msgstr ""

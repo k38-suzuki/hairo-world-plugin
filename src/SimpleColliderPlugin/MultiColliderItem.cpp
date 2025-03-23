@@ -16,9 +16,9 @@ using namespace cnoid;
 
 MultiColliderItem::MultiColliderItem()
     : SimpleColliderItem(),
-      CFDEffects(),
-      TCEffects(),
-      VFXEffects()
+      CFDEffect(),
+      TCEffect(),
+      VisualEffect()
 {
     colliderTypeSelection.setSymbol(CFD, N_("CFD"));
     colliderTypeSelection.setSymbol(TC, N_("TC"));
@@ -29,9 +29,9 @@ MultiColliderItem::MultiColliderItem()
 
 MultiColliderItem::MultiColliderItem(const MultiColliderItem& org)
     : SimpleColliderItem(org),
-      CFDEffects(org),
-      TCEffects(org),
-      VFXEffects(org)
+      CFDEffect(org),
+      TCEffect(org),
+      VisualEffect(org)
 {
     colliderTypeSelection = org.colliderTypeSelection;
 

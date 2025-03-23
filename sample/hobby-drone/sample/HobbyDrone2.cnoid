@@ -22,7 +22,7 @@ items:
           class: BodyItem
           is_checked: true
           data:
-            file: "${SHARE}/HobbyDrone/model/HobbyDrone2.body"
+            file: "${SHARE}/model/HobbyDrone/HobbyDrone2.body"
             format: CHOREONOID-BODY
             rootPosition: [ -4, 0, 0.2 ]
             rootAttitude: [
@@ -72,7 +72,7 @@ items:
           class: BodyItem
           is_checked: true
           data:
-            file: "${SHARE}/HobbyDrone/model/floor.body"
+            file: "${SHARE}/model/HobbyDrone/floor.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, -0.1 ]
             rootAttitude: [

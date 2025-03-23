@@ -6,7 +6,7 @@
 #include <cnoid/Camera>
 #include <cnoid/EigenUtil>
 #include <cnoid/Link>
-#include <cnoid/ImageGenerator>
+#include <cnoid/VisualFilter>
 #include <QImage>
 #include <QPainter>
 #include <limits>
@@ -417,7 +417,7 @@ void GammaImageGenerator::Impl::generateImage(Camera* camera, std::shared_ptr<Im
     }
     this->camera = camera;
 
-    QImage qImage = toQImage(*image.get());
+    QImage qImage = toQImage(image.get());
     if(camera) {
         onGenerateGammaImage(*image.get());
         if(!qImage.isNull() && !g_qimage.isNull()) {
@@ -428,7 +428,7 @@ void GammaImageGenerator::Impl::generateImage(Camera* camera, std::shared_ptr<Im
             painter.end();
         }
     }
-    *image.get() = toCnoidImage(qImage);
+    toCnoidImage(image.get(), qImage);
 }
 
 

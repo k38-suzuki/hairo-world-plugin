@@ -13,7 +13,7 @@
 #include <cnoid/SimulatorItem>
 #include <cnoid/MultiColliderItem>
 #include <mutex>
-#include "VFXConverter.h"
+#include "VisualFilter.h"
 #include "NoisyCamera.h"
 #include "VFXEventReader.h"
 #include "gettext.h"
@@ -39,7 +39,7 @@ public:
     SimulatorItem* simulatorItem;
     ConnectionSet connections;
     std::mutex convertMutex;
-    VFXConverter converter;
+    VisualFilter filter;
     string vfx_event_file_path;
     vector<VFXEvent> events;
 };
@@ -66,6 +66,8 @@ VFXVisionSimulatorItem::Impl::Impl(VFXVisionSimulatorItem* self)
     : self(self),
       vfx_event_file_path("")
 {
+    self->setName("VFXVisionSimulator");
+
     cameras.clear();
     colliders.clear();
     simulatorItem = nullptr;
@@ -191,6 +193,7 @@ void VFXVisionSimulatorItem::Impl::onCameraStateChanged(Camera* camera)
     }
 
     for(auto& collider : colliders) {
+        bool is_link_collided = false;
         if(collision(collider, link->T().translation())) {
             hue = collider->hsv()[0];
             saturation = collider->hsv()[1];
@@ -207,11 +210,13 @@ void VFXVisionSimulatorItem::Impl::onCameraStateChanged(Camera* camera)
             pepper_chance = collider->pepperChance();
             mosaic_chance = collider->mosaicChance();
             kernel = collider->kernel();
+
+            is_link_collided = true;
         }
 
         for(auto& event : events) {
             for(auto& target_collider : event.targetColliders()) {
-                if(target_collider == collider->name()) {
+                if(target_collider == collider->name() && is_link_collided) {
                     double begin_time = event.beginTime();
                     double end_time = std::max({ event.endTime(), event.beginTime() + event.duration() });
                     bool is_event_enabled = current_time >= begin_time ? true: false;
@@ -250,31 +255,31 @@ void VFXVisionSimulatorItem::Impl::onCameraStateChanged(Camera* camera)
     {
         std::lock_guard<std::mutex> lock(convertMutex);
         std::shared_ptr<Image> image = std::make_shared<Image>(*camera->sharedImage());
-        converter.initialize(image->width(), image->height());
+        filter.initialize(image->width(), image->height());
         if(hue > 0.0 || saturation > 0.0 || value > 0.0) {
-            converter.hsv(image.get(), hue, saturation, value);
+            filter.hsv(image.get(), hue, saturation, value);
         }
         if(red > 0.0 || green > 0.0 || blue > 0.0) {
-            converter.rgb(image.get(), red, green, blue);
+            filter.rgb(image.get(), red, green, blue);
         }
         if(std_dev > 0.0) {
-            converter.gaussian_noise(image.get(), std_dev);
+            filter.gaussian_noise(image.get(), std_dev);
         }
         if(salt_chance > 0.0) {
             if(salt_amount > 0.0) {
-                converter.random_salt(image.get(), salt_amount, salt_chance);
+                filter.random_salt(image.get(), salt_amount, salt_chance);
             }
         }
         if(pepper_chance > 0.0) {
             if(pepper_amount > 0.0) {
-                converter.random_pepper(image.get(), pepper_amount, pepper_chance);
+                filter.random_pepper(image.get(), pepper_amount, pepper_chance);
             }
         }
         if(coef_b < 0.0 || coef_d > 1.0) {
-            converter.barrel_distortion(image.get(), coef_b, coef_d);
+            filter.barrel_distortion(image.get(), coef_b, coef_d);
         }
         if(mosaic_chance > 0.0) {
-            converter.random_mosaic(image.get(), mosaic_chance, kernel);
+            filter.random_mosaic(image.get(), mosaic_chance, kernel);
         }
         camera->setImage(image);
     }

@@ -43,7 +43,7 @@ BookmarkManager::BookmarkManager(QWidget* parent)
 {
     setWindowTitle(_("Bookmark Manager"));
     setArchiveKey("bookmark_list");
-    setFixedSize(800, 450);
+    setMinimumSize(640, 480);
 
     auto button1 = new ToolButton(_("New"));
     button1->sigClicked().connect([&](){ onAddButtonClicked(); });

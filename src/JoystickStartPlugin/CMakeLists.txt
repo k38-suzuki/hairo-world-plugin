@@ -4,7 +4,7 @@ set(sources
   IntervalTimer.cpp
   JoystickLoggerItem.cpp
   JoystickStartPlugin.cpp
-  OnScreenJoystickView.cpp
+  VirtualJoystickView2.cpp
   JoystickTester.cpp
   JoystickStarter.cpp
   VirtualJoystickWidget.cpp
@@ -12,19 +12,17 @@ set(sources
 
 set(headers
   AxisWidget.h
-  ConfigurableJoystick.h
   DelayedJoystick.h
   OnScreenJoystickWidget.h
   IntervalTimer.h
   JoystickLoggerItem.h
-  OnScreenJoystickView.h
+  VirtualJoystickView2.h
   JoystickTester.h
   JoystickStarter.h
   VirtualJoystickWidget.h
   exportdecl.h
 )
 
-choreonoid_make_header_public(ConfigurableJoystick.h)
 choreonoid_make_header_public(DelayedJoystick.h)
 
 set(target CnoidJoystickStartPlugin)

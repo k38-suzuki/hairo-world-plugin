@@ -52,7 +52,7 @@ public:
 
 
 AxisWidget::AxisWidget(QWidget* parent)
-    : Widget(parent)
+    : QWidget(parent)
 {
     impl = new Impl(this);
 }
