@@ -32,23 +32,16 @@ items:
             jointDisplacements: [
               0, 0, 0, 0, 0, -150, 120, -60, -90, 0,
               0, 0, 0, 0, 0, 0 ]
-            jointPositions: [
-              0, 0, 0, 0, 0, -2.61799, 2.0944, -1.0472, -1.5708, 0,
-              0, 0, 0, 0, 0, 0 ]
             initialRootPosition: [ 0, 0, 0.15 ]
             initialRootAttitude: [
               1, 0, 0,
               0, 1, 0,
               0, 0, 1 ]
-            initialJointPositions: [
-              0, 0, 0, 0, 0, -2.61799, 2.0944, -1.0472, -1.5708, 0,
-              0, 0, 0, 0, 0, 0 ]
             fix_root: false
             collisionDetection: true
             selfCollisionDetection: false
             lock_location: false
             scene_sensitive: true
-            zmp: [ 0, 0, 0 ]
           children:
             -
               id: 3
@@ -58,7 +51,7 @@ items:
               data:
                 isNoDelayMode: false
                 controllerOptions: ""
-                controller: "HuskyJoystickController"
+                controller: "UGVJoystickController"
                 base_directory: "Controller directory"
                 reloading: false
                 export_symbols: false
@@ -89,7 +82,6 @@ items:
               1, 0, 0,
               0, 1, 0,
               0, 0, 1 ]
-            jointPositions: [  ]
             initialRootPosition: [ 0, 0, -0.1 ]
             initialRootAttitude: [
               1, 0, 0,
@@ -100,7 +92,6 @@ items:
             selfCollisionDetection: false
             lock_location: false
             scene_sensitive: true
-            zmp: [ 0, 0, 0 ]
         -
           id: 6
           name: "AISTSimulator"
@@ -137,17 +128,21 @@ views:
   -
     id: 0
     plugin: Base
+    class: GeneralSliderView
+  -
+    id: 1
+    plugin: Base
     class: ItemPropertyView
     mounted: true
   -
-    id: 1
+    id: 2
     plugin: Base
     class: ItemTreeView
     mounted: true
     state:
       expanded: [ 1, 2, 3 ]
   -
-    id: 2
+    id: 3
     plugin: Base
     class: LocationView
     mounted: true
@@ -158,12 +153,12 @@ views:
       show_rotation_matrix: false
       coordinate: world
   -
-    id: 3
+    id: 4
     plugin: Base
     class: MessageView
     mounted: true
   -
-    id: 4
+    id: 5
     plugin: Base
     class: SceneView
     mounted: true
@@ -214,7 +209,7 @@ views:
       xz_grid_color: [ 0.9, 0.9, 0.9 ]
       yz_grid_color: [ 0.9, 0.9, 0.9 ]
   -
-    id: 5
+    id: 6
     plugin: Body
     class: JointDisplacementView
     mounted: true
@@ -228,7 +223,7 @@ views:
       limit_ranges: false
       show_selected_joints: false
   -
-    id: 6
+    id: 7
     plugin: Body
     class: LinkDeviceListView
     mounted: true
@@ -236,7 +231,7 @@ views:
       element_type: all
       listing_mode: list
   -
-    id: 7
+    id: 8
     plugin: Body
     class: LinkPositionView
     mounted: true
@@ -249,12 +244,12 @@ views:
       show_rotation_matrix: false
       target_link_type: ik_link
   -
-    id: 8
+    id: 9
     plugin: Body
     class: LinkPropertyView
     mounted: true
   -
-    id: 9
+    id: 10
     plugin: Python
     class: PythonConsoleView
     mounted: true
@@ -318,12 +313,12 @@ viewAreas:
     contents:
       type: splitter
       orientation: horizontal
-      sizes: [ 1400, 444 ]
+      sizes: [ 1402, 444 ]
       children:
         -
           type: splitter
           orientation: horizontal
-          sizes: [ 362, 1034 ]
+          sizes: [ 363, 1035 ]
           children:
             -
               type: splitter
@@ -332,11 +327,11 @@ viewAreas:
               children:
                 -
                   type: pane
-                  views: [ 1 ]
+                  views: [ 2 ]
                 -
                   type: pane
-                  views: [ 0, 8 ]
-                  current: 0
+                  views: [ 1, 9 ]
+                  current: 1
             -
               type: splitter
               orientation: vertical
@@ -344,11 +339,11 @@ viewAreas:
               children:
                 -
                   type: pane
-                  views: [ 4 ]
+                  views: [ 5 ]
                 -
                   type: pane
-                  views: [ 3, 9 ]
-                  current: 3
+                  views: [ 4, 10 ]
+                  current: 4
         -
           type: splitter
           orientation: vertical
@@ -356,7 +351,7 @@ viewAreas:
           children:
             -
               type: pane
-              views: [ 2 ]
+              views: [ 3 ]
             -
               type: splitter
               orientation: vertical
@@ -364,11 +359,11 @@ viewAreas:
               children:
                 -
                   type: pane
-                  views: [ 7 ]
+                  views: [ 8 ]
                 -
                   type: pane
-                  views: [ 6, 5 ]
-                  current: 5
+                  views: [ 7, 6 ]
+                  current: 6
 layoutOfToolBars:
   rows:
     -

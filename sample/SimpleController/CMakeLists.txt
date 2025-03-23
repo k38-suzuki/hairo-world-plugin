@@ -13,12 +13,9 @@ set(project_files "")
 choreonoid_add_simple_controller(Gen2JoystickController Gen2JoystickController.cpp)
 list(APPEND project_files Gen2.cnoid)
 
-# Husky
-choreonoid_add_simple_controller(HuskyJoystickController HuskyJoystickController.cpp)
+# Husky and Jackal
+choreonoid_add_simple_controller(UGVJoystickController UGVJoystickController.cpp)
 list(APPEND project_files Husky.cnoid Husky-UR5-2F85.cnoid)
-
-# Jackal
-choreonoid_add_simple_controller(JackalJoystickController JackalJoystickController.cpp)
 list(APPEND project_files Jackal.cnoid)
 
 # Universal Robots
