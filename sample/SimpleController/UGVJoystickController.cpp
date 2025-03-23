@@ -1,4 +1,5 @@
 /**
+    UGV Joystick Controller
     @author Kenta Suzuki
 */
 
@@ -14,15 +15,15 @@ class UGVJoystickController : public SimpleController
     Link* wheel[4];
     double radius;
 
-    struct BodyInfo {
+    struct UGVInfo {
         char* bodyName;
         double radius;
-        BodyInfo(char* bodyName, double radius)
+        UGVInfo(char* bodyName, double radius)
             : bodyName(bodyName),
               radius(radius)
         { }
     };
-    vector<BodyInfo> bodies;
+    vector<UGVInfo> ugvs;
 
     SharedJoystickPtr joystick;
     int targetMode;
@@ -49,13 +50,13 @@ public:
             io->enableOutput(wheel[i]);
         }
 
-        bodies = {
+        ugvs = {
             { "Jackal"        , 0.0980 },
             { "Husky"         , 0.1651 },
             { "Husky-UR5-2F85", 0.1651 }
         };
 
-        for(auto& info : bodies) {
+        for(auto& info : ugvs) {
             if(body->name() == info.bodyName) {
                 radius = info.radius;
                 os << info.bodyName << " is found." << endl;

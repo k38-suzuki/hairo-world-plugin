@@ -41,7 +41,7 @@ items:
             lock_location: false
             scene_sensitive: true
             link_kinematics:
-              "WRIST_ORIGIN":
+              "end_effector":
                 base_frame: 0
                 offset_frame: 0
           children:
@@ -53,7 +53,7 @@ items:
               data:
                 isNoDelayMode: false
                 controllerOptions: ""
-                controller: "Gen3JoystickController"
+                controller: "RAJoystickController"
                 base_directory: "Controller directory"
                 reloading: false
                 export_symbols: false
@@ -87,7 +87,7 @@ items:
           plugin: Body
           class: AISTSimulatorItem
           data:
-            time_step: 0.01
+            time_step: 0.005
             realtime_sync_mode: compensatory
             recording: full
             time_range_mode: unlimited
@@ -239,6 +239,11 @@ views:
     mounted: true
   -
     id: 10
+    plugin: JoystickStart
+    class: OnScreenJoystickView
+    mounted: true
+  -
+    id: 11
     plugin: Python
     class: PythonConsoleView
     mounted: true
@@ -268,7 +273,7 @@ toolbars:
 Body:
   "BodySelectionManager":
     current_body_item: 2
-    current_link: "WRIST_ORIGIN"
+    current_link: "end_effector"
   "KinematicFaultChecker":
     checkJointPositions: true
     angleMargin: 0
@@ -330,9 +335,17 @@ viewAreas:
                   type: pane
                   views: [ 5 ]
                 -
-                  type: pane
-                  views: [ 4, 10 ]
-                  current: 4
+                  type: splitter
+                  orientation: horizontal
+                  sizes: [ 516, 515 ]
+                  children:
+                    -
+                      type: pane
+                      views: [ 4, 11 ]
+                      current: 4
+                    -
+                      type: pane
+                      views: [ 10 ]
         -
           type: splitter
           orientation: vertical

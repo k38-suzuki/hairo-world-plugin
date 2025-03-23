@@ -64,7 +64,7 @@ items:
                   data:
                     isNoDelayMode: false
                     controllerOptions: ""
-                    controller: "URJoystickController"
+                    controller: "RAJoystickController"
                     base_directory: "Controller directory"
                     reloading: false
                     export_symbols: false
@@ -250,6 +250,11 @@ views:
     mounted: true
   -
     id: 10
+    plugin: JoystickStart
+    class: OnScreenJoystickView
+    mounted: true
+  -
+    id: 11
     plugin: Python
     class: PythonConsoleView
     mounted: true
@@ -341,9 +346,17 @@ viewAreas:
                   type: pane
                   views: [ 5 ]
                 -
-                  type: pane
-                  views: [ 4, 10 ]
-                  current: 4
+                  type: splitter
+                  orientation: horizontal
+                  sizes: [ 516, 515 ]
+                  children:
+                    -
+                      type: pane
+                      views: [ 4, 11 ]
+                      current: 4
+                    -
+                      type: pane
+                      views: [ 10 ]
         -
           type: splitter
           orientation: vertical

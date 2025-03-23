@@ -9,27 +9,12 @@ endif()
 
 set(project_files "")
 
-# Gen2
-choreonoid_add_simple_controller(Gen2JoystickController Gen2JoystickController.cpp)
-list(APPEND project_files Gen2.cnoid)
+# Gen2, Gen3, Gen3lite and Universal Robots
+choreonoid_add_simple_controller(RAJoystickController RAJoystickController.cpp)
+list(APPEND project_files Gen2.cnoid Gen3.cnoid Gen3lite.cnoid UR3-2F85.cnoid UR5-2F85.cnoid UR10-2F85.cnoid)
 
-# Husky and Jackal
+# Jackal and Husky
 choreonoid_add_simple_controller(UGVJoystickController UGVJoystickController.cpp)
-list(APPEND project_files Husky.cnoid Husky-UR5-2F85.cnoid)
-list(APPEND project_files Jackal.cnoid)
-
-# Universal Robots
-choreonoid_add_simple_controller(URJoystickController URJoystickController.cpp)
-list(APPEND project_files UR3-2F85.cnoid UR5-2F85.cnoid UR10-2F85.cnoid)
-
-# Gen3lite
-choreonoid_add_simple_controller(Gen3liteJoystickController Gen3liteJoystickController.cpp)
-list(APPEND project_files Gen3lite.cnoid)
-
-# Gen3
-choreonoid_add_simple_controller(Gen3JoystickController Gen3JoystickController.cpp)
-list(APPEND project_files Gen3.cnoid)
-
-choreonoid_add_simple_controller(JointMapController JointMapController.cpp)
+list(APPEND project_files Jackal.cnoid Husky.cnoid Husky-UR5-2F85.cnoid)
 
 install_project_files(${project_files})
