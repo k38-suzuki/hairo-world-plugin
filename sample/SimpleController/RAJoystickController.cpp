@@ -150,13 +150,14 @@ public:
         }
 
         arms = {
-            { "Gen2",      "j2s7s300_joint_base", "j2s7s300_joint_end_effector", 3, 0.20, 1.0, "j2s7s300_joint_finger_1",  "j2s7s300_joint_finger_2",   "j2s7s300_joint_finger_3",     GEN2_Home,     GEN2_Limits },
-            { "Gen3NV",    "base_joint",          "end_effector",                0, 0.50, 1.0, "",                         "",                          "",                            GEN3_Home,     GEN3_Limits },
-            { "Gen3WV",    "base_joint",          "end_effector",                0, 0.50, 1.0, "",                         "",                          "",                            GEN3_Home,     GEN3_Limits },
-            { "Gen3lite",  "base_joint",          "end_effector",                2, 0.25, 1.0, "left_finger_bottom_joint", "right_finger_bottom_joint", "",                        GEN3LITE_Home, GEN3LITE_Limits },
-            { "UR3-2F85",  "BASE",                "Gripper_Base",                0, 0.25, 1.0, "",                         "",                          "",                             UR3_Home,      UR3_Limits },
-            { "UR5-2F85",  "BASE",                "Gripper_Base",                0, 0.50, 1.0, "",                         "",                          "",                             UR5_Home,      UR5_Limits },
-            { "UR10-2F85", "BASE",                "Gripper_Base",                0, 0.50, 1.0, "",                         "",                          "",                            UR10_Home,     UR10_Limits }
+            { "Gen2",            "j2s7s300_joint_base", "j2s7s300_joint_end_effector", 3, 0.20, 1.0, "j2s7s300_joint_finger_1",  "j2s7s300_joint_finger_2",   "j2s7s300_joint_finger_3",     GEN2_Home,     GEN2_Limits },
+            { "Gen3NV",          "base_joint",          "end_effector",                0, 0.50, 1.0, "",                         "",                          "",                            GEN3_Home,     GEN3_Limits },
+            { "Gen3WV",          "base_joint",          "end_effector",                0, 0.50, 1.0, "",                         "",                          "",                            GEN3_Home,     GEN3_Limits },
+            { "Gen3lite",        "base_joint",          "end_effector",                2, 0.25, 1.0, "left_finger_bottom_joint", "right_finger_bottom_joint", "",                        GEN3LITE_Home, GEN3LITE_Limits },
+            { "UR3-2F85",        "BASE",                "Gripper_Base",                0, 0.25, 1.0, "",                         "",                          "",                             UR3_Home,      UR3_Limits },
+            { "UR5-2F85",        "BASE",                "Gripper_Base",                0, 0.50, 1.0, "",                         "",                          "",                             UR5_Home,      UR5_Limits },
+            { "Husky-UR5-2F85",  "UR5_BASE",            "UR5_Gripper_Base",            0, 0.50, 1.0, "",                         "",                          "",                             UR5_Home,      UR5_Limits },
+            { "UR10-2F85",       "BASE",                "Gripper_Base",                0, 0.50, 1.0, "",                         "",                          "",                            UR10_Home,     UR10_Limits }
         };
 
         for(auto& info : arms) {

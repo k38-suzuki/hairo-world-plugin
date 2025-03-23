@@ -51,7 +51,7 @@ items:
               data:
                 isNoDelayMode: false
                 controllerOptions: ""
-                controller: "UGVJoystickController"
+                controller: "RAJoystickController"
                 base_directory: "Controller directory"
                 reloading: false
                 export_symbols: false
@@ -64,7 +64,7 @@ items:
                   data:
                     isNoDelayMode: false
                     controllerOptions: ""
-                    controller: "RAJoystickController"
+                    controller: "UGVJoystickController"
                     base_directory: "Controller directory"
                     reloading: false
                     export_symbols: false
