@@ -5,10 +5,10 @@
 
 #include <cnoid/AccelerationSensor>
 #include <cnoid/EigenUtil>
-#include <cnoid/SimpleController>
-#include <cnoid/SharedJoystick>
+#include <cnoid/Joystick>
 #include <cnoid/RateGyroSensor>
 #include <cnoid/Rotor>
+#include <cnoid/SimpleController>
 #include <vector>
 
 using namespace std;
@@ -16,7 +16,10 @@ using namespace cnoid;
 
 class HobbyDroneJoystickController : public SimpleController
 {
-    enum { Mode1, Mode2 };
+    enum {
+        Mode1,
+        Mode2
+    };
 
     BodyPtr ioBody;
     DeviceList<Rotor> rotors;
@@ -37,27 +40,27 @@ class HobbyDroneJoystickController : public SimpleController
     bool power;
     bool manualMode;
     int currentMode;
-    bool wailly;
 
     struct ActionInfo {
         int actionId;
         int buttonId;
         bool prevButtonState;
         bool stateChanged;
+
         ActionInfo(int actionId, int buttonId)
-            : actionId(actionId),
-              buttonId(buttonId),
-              prevButtonState(false),
-              stateChanged(false)
-        { }
+            : actionId(actionId)
+            , buttonId(buttonId)
+            , prevButtonState(false)
+            , stateChanged(false)
+        {
+        }
     };
+
     vector<ActionInfo> actions;
 
-    SharedJoystickPtr joystick;
-    int targetMode;
+    Joystick* joystick;
 
 public:
-
     virtual bool initialize(SimpleControllerIO* io) override
     {
         ioBody = io->body();
@@ -68,8 +71,8 @@ public:
         power = true;
         manualMode = false;
         currentMode = Mode1;
-        wailly = false;
 
+        string device = "/dev/input/js0";
         for(auto opt : io->options()) {
             if(opt == "manual") {
                 manualMode = true;
@@ -77,9 +80,8 @@ public:
             if(opt == "mode2") {
                 currentMode = Mode2;
             }
-            if(opt == "wailly") {
-                wailly = true;
-                power = true;
+            if(opt == "/dev/input/js1") {
+                device = "/dev/input/js1";
             }
         }
 
@@ -97,23 +99,22 @@ public:
         dxyref = dxyprev = Vector2::Zero();
 
         actions = {
-            { 0, Joystick::A_BUTTON },
-            { 1, Joystick::B_BUTTON }
+            {0, Joystick::A_BUTTON},
+            {1, Joystick::B_BUTTON}
         };
 
-        joystick = io->getOrCreateSharedObject<SharedJoystick>("joystick");
-        targetMode = joystick->addMode();
+        joystick = new Joystick(device.c_str());
 
         return true;
     }
 
     virtual bool control() override
     {
-        joystick->updateState(targetMode);
+        joystick->readCurrentState();
 
         for(auto& info : actions) {
             bool stateChanged = false;
-            bool buttonState = joystick->getButtonState(targetMode, info.buttonId);
+            bool buttonState = joystick->getButtonState(info.buttonId);
             if(buttonState && !info.prevButtonState) {
                 stateChanged = true;
             }
@@ -128,50 +129,31 @@ public:
         }
 
         static const int modeID[][4] = {
-            { Joystick::R_STICK_V_AXIS, Joystick::R_STICK_H_AXIS, Joystick::L_STICK_V_AXIS, Joystick::L_STICK_H_AXIS },
-            { Joystick::L_STICK_V_AXIS, Joystick::R_STICK_H_AXIS, Joystick::R_STICK_V_AXIS, Joystick::L_STICK_H_AXIS }
+            {Joystick::R_STICK_V_AXIS, Joystick::R_STICK_H_AXIS, Joystick::L_STICK_V_AXIS, Joystick::L_STICK_H_AXIS},
+            {Joystick::L_STICK_V_AXIS, Joystick::R_STICK_H_AXIS, Joystick::R_STICK_V_AXIS, Joystick::L_STICK_H_AXIS}
         };
 
-        static const int waillyModeID[][4] = {
-            { 1, 0, 2, 5 },
-            { 2, 0, 1, 5 }
-        };
-
-        int axisID[4] = { 0 };
-        if(currentMode == Mode1) {
-            for(int i = 0; i < 4; i++) {
-                if(!wailly) {
-                    axisID[i] = modeID[0][i];
-                } else {
-                    axisID[i] = waillyModeID[0][i];
-                }
-            }
-        } else {
-            for(int i = 0; i < 4; i++) {
-                if(!wailly) {
-                    axisID[i] = modeID[1][i];
-                } else {
-                    axisID[i] = waillyModeID[1][i];
-                }
-            }
+        int axisID[4];
+        for(int i = 0; i < 4; i++) {
+            axisID[i] = modeID[currentMode == Mode1 ? 0 : 1][i];
         }
 
-        static const double P[] = { 10.0, 1.0, 1.0, 0.01 };
-        static const double D[] = { 5.0, 1.0, 1.0, 0.002 };
-        static const double X[] = { -0.001, 1.0, -1.0, -1.0 };
+        static const double P[] = {10.0, 1.0, 1.0, 0.01};
+        static const double D[] = {5.0, 1.0, 1.0, 0.002};
+        static const double X[] = {-0.001, 1.0, -1.0, -1.0};
 
-        static const double KP[] = { 1.0, 1.0 };
-        static const double KD[] = { 1.0, 1.0 };
-        static const double KX[] = { -1.0, -1.0 };
+        static const double KP[] = {1.0, 1.0};
+        static const double KD[] = {1.0, 1.0};
+        static const double KX[] = {-1.0, -1.0};
 
         static const double sign[4][4] = {
-            { 1.0, -1.0, -1.0, -1.0 },
-            { 1.0, 1.0, -1.0, 1.0 },
-            { 1.0, 1.0, 1.0, -1.0 },
-            { 1.0, -1.0, 1.0, 1.0 }
+            {1.0, -1.0, -1.0, -1.0},
+            {1.0,  1.0, -1.0,  1.0},
+            {1.0,  1.0,  1.0, -1.0},
+            {1.0, -1.0,  1.0,  1.0}
         };
 
-        static const double dir[] = { -1.0, 1.0, -1.0, 1.0 };
+        static const double dir[] = {-1.0, 1.0, -1.0, 1.0};
 
         Vector4 f = Vector4::Zero();
         Vector4 z = getZRPY();
@@ -184,7 +166,7 @@ public:
 
         Vector3 dv(0.0, 0.0, 9.80665);
         if(accSensor) {
-//            dv = accSensor->dv();
+            //            dv = accSensor->dv();
         }
 
         Vector4 ddz = (dz - dzprev) / timeStep;
@@ -196,7 +178,7 @@ public:
         Vector2 ddxy_local = Eigen::Rotation2Dd(-z[3]) * ddxy;
 
         double cc = cos(z[1]) * cos(z[2]);
-        double gfcoef = ioBody->mass() * dv[2] / 4.0 / cc ;
+        double gfcoef = ioBody->mass() * dv[2] / 4.0 / cc;
 
         if((fabs(degree(z[1])) > 45.0) || (fabs(degree(z[2])) > 45.0)) {
             power = false;
@@ -209,12 +191,9 @@ public:
 
         double pos[4];
         for(int i = 0; i < 4; i++) {
-            pos[i] = joystick->getPosition(targetMode, axisID[i]);
+            pos[i] = joystick->getPosition(axisID[i]);
             if(fabs(pos[i]) < 0.2) {
                 pos[i] = 0.0;
-            }
-            if(wailly && (currentMode == Mode1) && (i == 0)) {
-                pos[i] *= -1.0;
             }
 
             if(i == 3) {
