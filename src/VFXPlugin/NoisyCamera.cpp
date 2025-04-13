@@ -10,15 +10,12 @@
 using namespace std;
 using namespace cnoid;
 
-
 NoisyCamera::NoisyCamera()
     : spec(new Spec),
       Camera(),
       VisualEffect()
 {
-
 }
-
 
 NoisyCamera::NoisyCamera(const NoisyCamera& org, bool copyStateOnly)
     : Camera(org, copyStateOnly),
@@ -27,20 +24,16 @@ NoisyCamera::NoisyCamera(const NoisyCamera& org, bool copyStateOnly)
     if(!copyStateOnly) {
         spec = make_unique<Spec>();
         if(org.spec) {
-
         } else {
-
         }
     }
     copyNoisyCameraStateFrom(org, false, org.isImageStateClonable());
 }
 
-
 const char* NoisyCamera::typeName() const
 {
     return "NoisyCamera";
 }
-
 
 void NoisyCamera::copyStateFrom(const DeviceState& other)
 {
@@ -50,12 +43,10 @@ void NoisyCamera::copyStateFrom(const DeviceState& other)
     copyNoisyCameraStateFrom(static_cast<const NoisyCamera&>(other), true, true);
 }
 
-
 DeviceState* NoisyCamera::cloneState() const
 {
     return new NoisyCamera(*this, true);
 }
-
 
 void NoisyCamera::forEachActualType(std::function<bool(const std::type_info& type)> func)
 {
@@ -64,22 +55,19 @@ void NoisyCamera::forEachActualType(std::function<bool(const std::type_info& typ
     }
 }
 
-
 void NoisyCamera::clearState()
 {
     Camera::clearState();
 }
-
 
 int NoisyCamera::stateSize() const
 {
     return Camera::stateSize() + 15;
 }
 
-
-const double* NoisyCamera::readState(const double* buf)
+const double* NoisyCamera::readState(const double* buf, int size)
 {
-    buf = VisionSensor::readState(buf);
+    buf = Camera::readState(buf, size);
     setHsv(Eigen::Map<const Vector3>(buf));
     setRgb(Eigen::Map<const Vector3>(buf));
     setCoefB(buf[6]);
@@ -94,10 +82,9 @@ const double* NoisyCamera::readState(const double* buf)
     return buf + 15;
 }
 
-
 double* NoisyCamera::writeState(double* out_buf) const
 {
-    out_buf = VisionSensor::writeState(out_buf);
+    out_buf = Camera::writeState(out_buf);
     Eigen::Map<Vector3>(out_buf) << hsv();
     Eigen::Map<Vector3>(out_buf) << rgb();
     out_buf[6] = coefB();
@@ -112,7 +99,6 @@ double* NoisyCamera::writeState(double* out_buf) const
     return out_buf + 15;
 }
 
-
 bool NoisyCamera::readSpecifications(const Mapping* info)
 {
     if(!Camera::readSpecifications(info)) {
@@ -123,7 +109,6 @@ bool NoisyCamera::readSpecifications(const Mapping* info)
 
     return true;
 }
-
 
 bool NoisyCamera::writeSpecifications(Mapping* info) const
 {
@@ -146,7 +131,6 @@ bool NoisyCamera::writeSpecifications(Mapping* info) const
     return true;
 }
 
-
 void NoisyCamera::copyNoisyCameraStateFrom(const NoisyCamera& other, bool doCopyCameraState, bool doCopyImage)
 {
     if(doCopyCameraState) {
@@ -166,12 +150,10 @@ void NoisyCamera::copyNoisyCameraStateFrom(const NoisyCamera& other, bool doCopy
     setKernel(other.kernel());
 }
 
-
 Referenced* NoisyCamera::doClone(CloneMap* cloneMap) const
 {
     return new NoisyCamera(*this, false);
 }
-
 
 namespace {
 
@@ -198,17 +180,15 @@ bool readNoisyCamera(StdBodyLoader* loader, const Mapping* info)
     return result;
 }
 
-
-struct NoisyCameraRegistration
-{
-    NoisyCameraRegistration() {
+struct NoisyCameraRegistration {
+    NoisyCameraRegistration()
+    {
         StdBodyLoader::registerNodeType("NoisyCamera", readNoisyCamera);
         StdBodyWriter::registerDeviceWriter<NoisyCamera>(
-                    "NoisyCamera",
-                    [](StdBodyWriter* /* writer */, Mapping* info, const NoisyCamera* camera) {
-            return camera->writeSpecifications(info);
-        });
+            "NoisyCamera", [](StdBodyWriter* /* writer */, Mapping* info, const NoisyCamera* camera) {
+                return camera->writeSpecifications(info);
+            });
     }
 } registrationNoisyCamera;
 
-}
+} // namespace

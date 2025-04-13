@@ -24,7 +24,7 @@ public:
     virtual void clearState() override;
 
     virtual int stateSize() const override;
-    virtual const double* readState(const double* buf) override;
+    virtual const double* readState(const double* buf, int size) override;
     virtual double* writeState(double* out_buf) const override;
 
     bool readSpecifications(const Mapping* info);
@@ -35,15 +35,14 @@ protected:
     virtual Referenced* doClone(CloneMap* cloneMap) const override;
 
 private:
-
     struct Spec {
-
     };
+
     std::unique_ptr<Spec> spec;
 };
 
 typedef ref_ptr<NoisyCamera> NoisyCameraPtr;
 
-}
+} // namespace cnoid
 
 #endif // CNOID_VFX_PLUGIN_NOISY_CAMERA_H
