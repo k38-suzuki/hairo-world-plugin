@@ -18,6 +18,6 @@ public:
     virtual ~JoystickTester();
 };
 
-}
+} // namespace cnoid
 
 #endif // CNOID_JOYSTICKSTART_PLUGIN_JOYSTICK_TESTER_H

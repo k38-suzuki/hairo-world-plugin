@@ -34,14 +34,23 @@ namespace filesystem = stdx::filesystem;
 namespace {
 
 const map<string, int> modelIdMap = {
-    { "Sony Computer Entertainment Wireless Controller", 0 },
-    { "Sony Interactive Entertainment Wireless Controller", 0 },
-    { "Sony Interactive Entertainment DUALSHOCK®4 USB Wireless Adaptor", 0 },
-    { "Sony PLAYSTATION(R)3 Controller", 0 },
-    { "Microsoft X-Box 360 pad", 0 },
-    { "Microsoft X-Box One pad", 0 },
-    { "Logitech Gamepad F310", 0 },
-    { "Logicool Logicool Dual Action", 0 }
+    {                  "Sony Computer Entertainment Wireless Controller", 0},
+    {               "Sony Interactive Entertainment Wireless Controller", 0},
+    {                                              "Wireless Controller", 0},
+    { "Sony Interactive Entertainment DUALSHOCK®4 USB Wireless Adaptor", 0},
+    {                                  "Sony PLAYSTATION(R)3 Controller", 0},
+    {     "Sony Interactive Entertainment DualSense Wireless Controller", 0},
+    {                                    "DualSense Wireless Controller", 0},
+    {"Sony Interactive Entertainment DualSense Edge Wireless Controller", 0},
+    {                               "DualSense Edge Wireless Controller", 0},
+    {                                          "Microsoft X-Box 360 pad", 0},
+    {                                          "Microsoft X-Box One pad", 0},
+    {                             "Microsoft Xbox Series S|X Controller", 0},
+    {                                  "Microsoft X-Box One Elite 2 pad", 0},
+    {                                         "Xbox Wireless Controller", 0},
+    {                                            "Logitech Gamepad F310", 0},
+    {                                            "Logitech Gamepad F710", 0},
+    {                                    "Logicool Logicool Dual Action", 0}
 };
 
 class TesterWidget : public QWidget
@@ -78,8 +87,7 @@ private:
     QDialogButtonBox* buttonBox;
 };
 
-}
-
+} // namespace
 
 void JoystickTester::initializeClass(ExtensionManager* ext)
 {
@@ -88,23 +96,17 @@ void JoystickTester::initializeClass(ExtensionManager* ext)
     if(!dialog) {
         dialog = ext->manage(new TesterDialog);
 
-        MainMenu::instance()->add_Tools_Item(
-            _("Joystick Tester"), [](){ dialog->show(); });
+        MainMenu::instance()->add_Tools_Item(_("Joystick Tester"), []() { dialog->show(); });
     }
 }
 
-
 JoystickTester::JoystickTester()
 {
-
 }
-
 
 JoystickTester::~JoystickTester()
 {
-
 }
-
 
 TesterWidget::TesterWidget(const QString& device, QWidget* parent)
     : QWidget(parent),
@@ -112,11 +114,9 @@ TesterWidget::TesterWidget(const QString& device, QWidget* parent)
 {
     joystick.setDevice(device.toStdString().c_str());
 
-    joystick.sigAxis().connect(
-        [&](int id, double position){ onAxis(id, position); });
+    joystick.sigAxis().connect([&](int id, double position) { onAxis(id, position); });
 
-    joystick.sigButton().connect(
-        [&](int id, bool isPressed){ onButton(id, isPressed); });
+    joystick.sigButton().connect([&](int id, bool isPressed) { onButton(id, isPressed); });
 
     auto groupBox = new QGroupBox(_("Axes"));
     auto vbox = new QVBoxLayout;
@@ -155,7 +155,6 @@ TesterWidget::TesterWidget(const QString& device, QWidget* parent)
     setLayout(mainLayout);
 }
 
-
 void TesterWidget::onAxis(int id, const double& position)
 {
     QProgressBar* bar = bars[id];
@@ -163,7 +162,6 @@ void TesterWidget::onAxis(int id, const double& position)
     bar->setValue(value);
     bar->setFormat(formatC("{0:.3}%", value).c_str());
 }
-
 
 void TesterWidget::onButton(int id, bool isPressed)
 {
@@ -174,15 +172,15 @@ void TesterWidget::onButton(int id, bool isPressed)
     buttons[id]->setPalette(palette);
 }
 
-
 TesterDialog::TesterDialog(QWidget* parent)
     : QDialog(parent)
 {
     setWindowTitle(_("Joystick Tester"));
 
     deviceComboBox = new QComboBox(this);
-    connect(deviceComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        [=](int index){ on_deviceComboBox_currentIndexChanged(index); });
+    connect(deviceComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
+        on_deviceComboBox_currentIndexChanged(index);
+    });
 
     stackedLayout = new QStackedLayout;
 
@@ -216,7 +214,7 @@ TesterDialog::TesterDialog(QWidget* parent)
     layout->addWidget(deviceComboBox);
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
-    connect(buttonBox, &QDialogButtonBox::accepted, [&](){ this->accept(); });
+    connect(buttonBox, &QDialogButtonBox::accepted, [&]() { this->accept(); });
 
     auto mainLayout = new QVBoxLayout;
     mainLayout->addLayout(layout);
@@ -226,7 +224,6 @@ TesterDialog::TesterDialog(QWidget* parent)
     mainLayout->addWidget(buttonBox);
     setLayout(mainLayout);
 }
-
 
 void TesterDialog::on_deviceComboBox_currentIndexChanged(int index)
 {
@@ -241,7 +238,6 @@ void TesterDialog::on_deviceComboBox_currentIndexChanged(int index)
     model_name += ret < 0 ? " (Unsupported)" : " (Supported)";
     setWindowTitle(model_name.c_str());
 }
-
 
 void TesterDialog::createTesterWidget(const QString& device)
 {
