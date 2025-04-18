@@ -12,7 +12,6 @@ using namespace cnoid;
 
 class TiltCameraJoystickController : public SimpleController
 {
-    SimpleControllerIO* io;
     Link* turret;
     double qref;
     double qprev;
@@ -23,7 +22,6 @@ class TiltCameraJoystickController : public SimpleController
     int targetMode;
 
 public:
-
     virtual bool initialize(SimpleControllerIO* io) override
     {
         Body* body = io->body();
@@ -31,7 +29,7 @@ public:
 
         turret = body->link("TURRET_T");
 
-        if(!turret){
+        if(!turret) {
             return false;
         }
         qref = qprev = turret->q();
@@ -50,11 +48,10 @@ public:
     {
         joystick->updateState(targetMode);
 
-        static const int axisID[] = { Joystick::DIRECTIONAL_PAD_V_AXIS, Joystick::L_TRIGGER_AXIS };
-
         double pos[2];
         for(int i = 0; i < 2; ++i) {
-            pos[i] = joystick->getPosition(targetMode, axisID[i]);
+            pos[i] =
+                joystick->getPosition(targetMode, i == 0 ? Joystick::DIRECTIONAL_PAD_V_AXIS : Joystick::L_TRIGGER_AXIS);
             if(fabs(pos[i]) < 0.2) {
                 pos[i] = 0.0;
             }
@@ -76,7 +73,7 @@ public:
         bool changed = false;
         if(!joystick->getButtonState(targetMode, Joystick::L_BUTTON)) {
             pos2 = pos[1];
-        } else  {
+        } else {
             pos2 = -1.0;
         }
 
