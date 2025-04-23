@@ -86,19 +86,19 @@ class RAJoystickController : public SimpleController
     bool isKinematicsMode;
 
     struct ArmInfo {
-        char* bodyName;
-        char* baseName;
-        char* wristName;
+        const char* bodyName;
+        const char* baseName;
+        const char* wristName;
         int numFingers;
         double maxV;
         double maxW;
-        char* finger1Name;
-        char* finger2Name;
-        char* finger3Name;
+        const char* finger1Name;
+        const char* finger2Name;
+        const char* finger3Name;
         const double* homePose;
         const double* speedLimits;
-        ArmInfo(char* bodyName, char* baseName, char* wristName, int numFingers, double maxV, double maxW,
-            char* finger1Name, char* finger2Name, char* finger3Name, const double* homePose, const double* speedLimits)
+        ArmInfo(const char* bodyName, const char* baseName, const char* wristName, int numFingers, double maxV, double maxW,
+            const char* finger1Name, const char* finger2Name, const char* finger3Name, const double* homePose, const double* speedLimits)
             : bodyName(bodyName),
               baseName(baseName),
               wristName(wristName),

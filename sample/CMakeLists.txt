@@ -1,5 +1,4 @@
 add_subdirectory(ColliderTest)
-add_subdirectory(gain-test-plugin)
 add_subdirectory(hai-rov)
 add_subdirectory(hobby-drone)
 add_subdirectory(IconPreview)

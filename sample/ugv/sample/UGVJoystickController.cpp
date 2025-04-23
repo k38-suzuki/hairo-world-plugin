@@ -16,9 +16,9 @@ class UGVJoystickController : public SimpleController
     double radius;
 
     struct UGVInfo {
-        char* bodyName;
+        const char* bodyName;
         double radius;
-        UGVInfo(char* bodyName, double radius)
+        UGVInfo(const char* bodyName, double radius)
             : bodyName(bodyName),
               radius(radius)
         { }
