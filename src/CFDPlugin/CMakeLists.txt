@@ -3,6 +3,7 @@ set(sources
   CFDSimulatorItem.cpp
   FlightEventReader.cpp
   Rotor.cpp
+  SimplePilot.cpp
   Thruster.cpp
   WingDevice.cpp
 )
@@ -11,6 +12,7 @@ set(headers
   CFDSimulatorItem.h
   FlightEventReader.h
   Rotor.h
+  SimplePilot.h
   Thruster.h
   WingDevice.h
   exportdecl.h
@@ -18,6 +20,7 @@ set(headers
 
 choreonoid_make_header_public(CFDSimulatorItem.h)
 choreonoid_make_header_public(Rotor.h)
+choreonoid_make_header_public(SimplePilot.h)
 choreonoid_make_header_public(Thruster.h)
 choreonoid_make_header_public(WingDevice.h)
 
