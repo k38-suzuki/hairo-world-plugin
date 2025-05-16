@@ -1,0 +1,8 @@
+choreonoid_add_simple_controller(UAVtypeTJoystickController UAVtypeTJoystickController.cpp)
+target_link_libraries(UAVtypeTJoystickController CnoidCFDPlugin)
+
+choreonoid_add_simple_controller(UAVtypeTv2JoystickController UAVtypeTv2JoystickController.cpp)
+target_link_libraries(UAVtypeTv2JoystickController CnoidCFDPlugin)
+
+install(FILES SimpleUAV-typeT.cnoid SimpleUAV-typeTv2.cnoid
+    DESTINATION ${CHOREONOID_SHARE_SUBDIR}/project)

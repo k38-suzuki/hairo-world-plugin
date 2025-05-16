@@ -1,0 +1,119 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: SimpleUAV-typeTv2
+
+links:
+  -
+    name: CHASSIS
+    translation: [ 0, 0, 0.03 ]
+    jointType: free
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.093
+    inertia: [
+      1.43e-05, 0, 0,
+      0, 3.76e-05, 0,
+      0, 0, 4.22e-05 ]
+    elements:
+      -
+        type: Shape
+        geometry: { type: Box, size: [ 0.065, 0.035, 0.025 ] }
+        appearance: { material: { diffuseColor: [ 0.8, 0.8, 0.8 ] } }
+      -
+        type: Shape
+        rotation: [ 0, 0, 1, 42 ]
+        geometry: { type: Box, size: [ 0.01, 0.12, 0.01 ] }
+        appearance: &BodyAppearance { material: { diffuseColor: [ 0.3, 0.3, 0.3 ] } }
+      -
+        type: Shape
+        rotation: [ 0, 0, 1, -42 ]
+        geometry: { type: Box, size: [ 0.01, 0.12, 0.01 ] }
+        appearance: *BodyAppearance
+      -
+        type: Shape
+        translation: [ 0, 0, 0.02 ]
+        geometry: { type: Box, size: [ 0.17, 0.175, 0.02 ] }
+        appearance: { material: { diffuseColor: [ 0.3, 0.3, 0.3 ], transparency: 0.5 } }
+      -
+        type: Camera
+        name: Camera
+        translation: [ 0.0325, 0, 0 ]
+        rotation: [ [ 1, 0, 0, 90 ], [ 0, 1, 0, -90 ] ]
+        format: COLOR
+        fieldOfView: 62
+        nearClipDistance: 0.06
+        width: 640
+        height: 480
+        frameRate: 30
+        elements:
+          -
+            type: Shape
+            rotation: [ 1, 0, 0, 90 ]
+            geometry: { type: Cylinder, height: 0.005, radius: 0.005 }
+            appearance: { material: { diffuseColor: [ 0.3, 0.3, 0.3 ] } }
+      - { type: RateGyroSensor, name: GyroSensor, maxAngularVelocity: 1000.0 }
+      - { type: AccelerationSensor, name: AccSensor, maxAcceleration: [ 1000.0, 1000.0, 1000.0 ] }
+  -
+    name: ROTOR_FR
+    parent: CHASSIS
+    translation: [ 0.04, -0.045, 0.015 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.0005
+    inertia: [
+      1.92e-07, 0, 0,
+      0, 1.92e-07, 0,
+      0, 0, 3.52e-07 ]
+    elements:
+      - &rotor_shape1
+        type: Shape
+        rotation: [ 1, 0, 0, -90 ]
+        geometry: { type: Cylinder, height: 0.02, radius: 0.0375 }
+        appearance: { material: { diffuseColor: [ 0.3, 0.8, 0.3 ], transparency: 0.9 } }
+      - &rotor_device { type: Rotor, name: Rotor_FR, symbol: false }
+  -
+    name: ROTOR_FL
+    parent: CHASSIS
+    translation: [ 0.04, 0.045, 0.015 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.0005
+    inertia: [
+      1.92e-07, 0, 0,
+      0, 1.92e-07, 0,
+      0, 0, 3.52e-07 ]
+    elements:
+      - { <<: *rotor_shape1 }
+      - { <<: *rotor_device, name: Rotor_FL }
+  -
+    name: ROTOR_RL
+    parent: CHASSIS
+    translation: [ -0.04, 0.045, 0.015 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.0005
+    inertia: [
+      1.92e-07, 0, 0,
+      0, 1.92e-07, 0,
+      0, 0, 3.52e-07 ]
+    elements:
+      - &rotor_shape2
+        type: Shape
+        rotation: [ 1, 0, 0, -90 ]
+        geometry: { type: Cylinder, height: 0.02, radius: 0.0375 }
+        appearance: { material: { diffuseColor: [ 0.8, 0.3, 0.3 ], transparency: 0.9 } }
+      - { <<: *rotor_device, name: Rotor_RL }
+  -
+    name: ROTOR_RR
+    parent: CHASSIS
+    translation: [ -0.04, -0.045, 0.015 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.0005
+    inertia: [
+      1.92e-07, 0, 0,
+      0, 1.92e-07, 0,
+      0, 0, 3.52e-07 ]
+    elements:
+      - { <<: *rotor_shape2 }
+      - { <<: *rotor_device, name: Rotor_RR }
