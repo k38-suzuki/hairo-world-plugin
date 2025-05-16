@@ -1,0 +1,156 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: SimpleROV
+
+links:
+  -
+    name: CHASSIS
+    translation: [ 0, 0, 0.13 ]
+    jointType: free
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 9.5
+    inertia: [
+      0.14, 0, 0,
+      0, 0.22, 0,
+      0, 0, 0.26 ]
+    elements:
+      - &plate_shape
+        type: Shape
+        translation: [ 0, 0.159, 0 ]
+        geometry: { type: Box, size: [ 0.457, 0.02, 0.254 ] }
+        appearance: &BodyAppearance { material: { diffuseColor: [ 0.3, 0.3, 0.3 ] } }
+      - { <<: *plate_shape, translation: [ 0, -0.159, 0 ] }
+      - &buoyancy_shape
+        type: Shape
+        translation: [ 0, 0.105, 0.0935 ]
+        geometry: { type: Box, size: [ 0.457, 0.089, 0.067 ] }
+        appearance: &BuoyancyAppearance { material: { diffuseColor: [ 0.3, 0.8, 0.8 ] } }
+      - { <<: *buoyancy_shape, translation: [ 0, -0.105, 0.0935 ] }
+      -
+        type: Shape
+        translation: [ 0, 0, 0.05 ]
+        geometry: { type: Box, size: [ 0.457, 0.575, 0.02 ] }
+        appearance: *BodyAppearance
+      -
+        type: Shape
+        translation: [ 0, 0, 0.05 ]
+        rotation: [ 0, 0, 1, -90 ]
+        geometry: { type: Capsule, height: 0.337, radius: 0.06 }
+        appearance: *BodyAppearance
+  -
+    name: THRUSTER_FR
+    parent: CHASSIS
+    translation: [ 0.12, -0.22825, 0.05 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.75
+    inertia: [
+      0.0011, 0, 0,
+      0, 0.0011, 0,
+      0, 0, 0.0013 ]
+    elements:
+      - &thruster_shape
+        type: Shape
+        rotation: [ 1, 0, 0, -90 ]
+        geometry: { type: Cylinder, height: 0.08, radius: 0.05925 }
+        appearance: *BodyAppearance
+      - &thruster { type: Thruster, name: Thruster_FR, rotation: [ 0, 1, 0, -90 ], symbol: true }
+  -
+    name: THRUSTER_FL
+    parent: CHASSIS
+    translation: [ 0.12, 0.22825, 0.05 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.75
+    inertia: [
+      0.0011, 0, 0,
+      0, 0.0011, 0,
+      0, 0, 0.0013 ]
+    elements:
+      - { <<: *thruster_shape }
+      - { <<: *thruster, name: Thruster_FL }
+  -
+    name: THRUSTER_RL
+    parent: CHASSIS
+    translation: [ -0.12, 0.22825, 0.05 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.75
+    inertia: [
+      0.0011, 0, 0,
+      0, 0.0011, 0,
+      0, 0, 0.0013 ]
+    elements:
+      - { <<: *thruster_shape }
+      - { <<: *thruster, name: Thruster_RL }
+  -
+    name: THRUSTER_RR
+    parent: CHASSIS
+    translation: [ -0.12, -0.22825, 0.05 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.75
+    inertia: [
+      0.0011, 0, 0,
+      0, 0.0011, 0,
+      0, 0, 0.0013 ]
+    elements:
+      - { <<: *thruster_shape }
+      - { <<: *thruster, name: Thruster_RR }
+  -
+    name: THRUSTER_FR2
+    parent: CHASSIS
+    translation: [ 0.12, -0.105, -0.02 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.75
+    inertia: [
+      0.0011, 0, 0,
+      0, 0.0011, 0,
+      0, 0, 0.0013 ]
+    elements:
+      - { <<: *thruster_shape, rotation: [ 0, 0, 1, -60 ] }
+      - { <<: *thruster, name: Thruster_FR2, rotation: [ 0, 0, 1, 30 ] }
+  -
+    name: THRUSTER_FL2
+    parent: CHASSIS
+    translation: [ 0.12, 0.105, -0.02 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.75
+    inertia: [
+      0.0011, 0, 0,
+      0, 0.0011, 0,
+      0, 0, 0.0013 ]
+    elements:
+      - { <<: *thruster_shape, rotation: [ 0, 0, 1, 60 ] }
+      - { <<: *thruster, name: Thruster_FL2, rotation: [ 0, 0, 1, -30 ] }
+  -
+    name: THRUSTER_RL2
+    parent: CHASSIS
+    translation: [ -0.12, 0.105, -0.02 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.75
+    inertia: [
+      0.0011, 0, 0,
+      0, 0.0011, 0,
+      0, 0, 0.0013 ]
+    elements:
+      - { <<: *thruster_shape, rotation: [ 0, 0, 1, -60 ] }
+      - { <<: *thruster, name: Thruster_RL2, rotation: [ 0, 0, 1, 30 ] }
+  -
+    name: THRUSTER_RR2
+    parent: CHASSIS
+    translation: [ -0.12, -0.105, -0.02 ]
+    jointType: fixed
+    centerOfMass: [ 0, 0, 0 ]
+    mass: 0.75
+    inertia: [
+      0.0011, 0, 0,
+      0, 0.0011, 0,
+      0, 0, 0.0013 ]
+    elements:
+      - { <<: *thruster_shape, rotation: [ 0, 0, 1, 60 ] }
+      - { <<: *thruster, name: Thruster_RR2, rotation: [ 0, 0, 1, -30 ] }

@@ -1,3 +1,13 @@
+# HobbyDrone
+choreonoid_add_simple_controller(HobbyDroneJoystickController HobbyDroneJoystickController.cpp)
+target_link_libraries(HobbyDroneJoystickController CnoidCFDPlugin)
+
+choreonoid_add_simple_controller(TiltCameraJoystickController TiltCameraJoystickController.cpp)
+
+install(FILES HobbyDrone.cnoid HobbyDrone2.cnoid
+    DESTINATION ${CHOREONOID_SHARE_SUBDIR}/project)
+
+# SimpleUAV
 choreonoid_add_simple_controller(UAVtypeTJoystickController UAVtypeTJoystickController.cpp)
 target_link_libraries(UAVtypeTJoystickController CnoidCFDPlugin)
 

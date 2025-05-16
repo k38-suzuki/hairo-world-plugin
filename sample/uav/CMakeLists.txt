@@ -3,7 +3,7 @@ if(NOT ENABLE_SAMPLES)
 endif()
 
 if(UNIX)
-  set(sample_model_dirs SimpleUAV-typeT)
+  set(sample_model_dirs HobbyDrone SimpleUAV-typeT)
   foreach(dir ${sample_model_dirs})
     add_custom_target(
       symlink_to_${dir} ALL
